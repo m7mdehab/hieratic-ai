@@ -1,0 +1,38 @@
+name: Sealed Evaluation Policy Integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "eval/sealed/**"
+      - "schemas/sealed_eval.schema.json"
+      - "docs/evaluation/SEALED_EVALUATION_PROTOCOL.md"
+      - "tests/evaluation/test_sealed_eval.py"
+      - ".github/workflows/sealed-eval.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sealed-policy:
+    name: Verify frozen protocol and fail-closed release controls
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install existing validation requirements
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Validate project state
+        run: python -m tools.projectctl validate
+      - name: Validate sealed policy references
+        run: python -m eval.sealed.protocolctl validate-protocol
+      - name: Validate draft-only synthetic release record
+        run: python -m eval.sealed.protocolctl validate-release --input eval/sealed/examples/draft.synthetic.json
+      - name: Run evaluation integrity and sealed-release regressions
+        run: python -m unittest discover -s tests/evaluation -v
+      # No external assets, sealed images, hidden gold, model calls or score artifacts.

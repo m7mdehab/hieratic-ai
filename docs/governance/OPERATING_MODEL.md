@@ -14,9 +14,10 @@ The overseer maintains a coherent research program and gives execution agents bo
 4. **Execute** — agent works on an isolated branch/worktree.
 5. **Return evidence** — agent provides code/artifacts plus test/evaluation evidence.
 6. **Audit** — overseer inspects actual changes and evidence, not only the summary.
-7. **Verdict** — accepted, revision-required, or rejected.
-8. **Integrate** — accepted work merges; canonical state updates.
-9. **Unblock** — newly dependency-safe tasks are dispatched.
+7. **Report** — overseer gives Mohammed the mandatory completion/pending/progress/checklist status report.
+8. **Verdict** — accepted, revision-required, or rejected.
+9. **Integrate** — accepted work merges; canonical state updates.
+10. **Unblock** — newly dependency-safe tasks are dispatched.
 
 ## Task verdicts
 
@@ -28,6 +29,24 @@ The overseer maintains a coherent research program and gives execution agents bo
 
 **Rejected**
 : implementation is unsafe, methodologically invalid, non-reproducible, outside scope, or not worth repairing.
+
+## Mandatory review response
+
+Every time an execution-agent result or remediation result is brought back for review, the overseer must produce a user-facing review report following `REVIEW_REPORTING_PROTOCOL.md`.
+
+The report is mandatory even when:
+- the task is fully accepted;
+- no goal-progress points change;
+- the work is an unweighted control-plane task;
+- the returned result is incomplete;
+- the agent reports success but evidence is missing.
+
+The report must distinguish:
+- **verified capability progress** from
+- **research coverage** from
+- **operational/task completion**.
+
+This prevents infrastructure progress, partial acceptance criteria, or agent-reported completion from being mistaken for scientific capability.
 
 ## Parallelization policy
 
@@ -71,6 +90,8 @@ After acceptance, the overseer updates:
 - last accepted task;
 - handoff;
 - decisions/experiments if affected.
+
+The status report shown to Mohammed must reflect the **post-review canonical state** when the state update has already been applied, or explicitly say that the displayed state is **pre-merge/pre-state-update** when it has not.
 
 ## Adaptation
 

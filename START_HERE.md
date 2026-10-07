@@ -25,7 +25,8 @@ The overseer owns:
 - acceptance criteria;
 - review of code, data, claims, and evidence;
 - project-state updates;
-- dispatch of newly unblocked work.
+- dispatch of newly unblocked work;
+- a complete user-facing status report after every returned agent task/revision is reviewed.
 
 ### Execution agents
 
@@ -33,7 +34,7 @@ Execution agents implement bounded tasks from explicit briefs. They do not redef
 
 The intended cycle is:
 
-`research/reason -> brief -> parallel execution -> evidence -> overseer review -> accept/revise -> state update -> next wave`
+`research/reason -> brief -> parallel execution -> evidence -> overseer review -> status report -> accept/revise -> state update -> next wave`
 
 ## 3. Current state
 
@@ -87,13 +88,15 @@ Avoid loading the entire repository into context unless necessary.
 - Never redistribute third-party material without a recorded license basis.
 - Every experiment must be reproducible enough to identify data version, code version, configuration, model/checkpoint, and evaluation output.
 - Every task must have acceptance criteria and an evidence package.
+- Every returned execution-agent result must receive an overseer review before acceptance.
+- Every overseer review must end with the standardized status report defined in `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
 - Parallel work is preferred when dependencies and file ownership make it safe.
 - One task/branch should have a bounded write scope.
 - The implementation may change; the capability goal and scientific integrity do not.
 
 ## 7. Progress semantics
 
-Two numbers are maintained:
+Two project-level numbers are maintained:
 
 **Goal progress (0-100):** demonstrated capability toward the ultimate goal. Only accepted weighted milestones count.
 
@@ -101,7 +104,25 @@ Two numbers are maintained:
 
 A negative experiment can increase research coverage while adding zero goal-progress points.
 
-## 8. Continuity protocol
+Review reports may also show operational percentages such as task acceptance-criteria completion or control-plane gate completion. These must be labeled separately and must never be conflated with verified goal progress.
+
+## 8. Review reporting protocol
+
+Whenever Mohammed brings back execution-agent feedback, a PR, commit, evidence package, or remediation result, the overseer must inspect the actual evidence and then report:
+
+- verdict: accepted / revision required / rejected;
+- what has been completed;
+- what remains pending;
+- task acceptance checklist with completed items checked and incomplete items unchecked;
+- verified goal progress and how much remains;
+- research coverage;
+- current phase earned points / phase weight;
+- relevant operational gate/task completion;
+- next checklist, including newly unblocked work.
+
+The authoritative format is defined in `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
+
+## 9. Continuity protocol
 
 Before ending a major overseer cycle, update `OVERSEER_HANDOFF.md` with:
 - current verified progress;

@@ -14,7 +14,7 @@ Updated: 2026-10-07
 
 ## What was just completed
 
-The public repository is live and the v0.1 canonical project operating system was reviewed and merged through PR #1.
+The public repository is live and the v0.1 canonical project operating system was reviewed and merged.
 
 CTRL-001 established:
 - capability-based rather than time-based progress;
@@ -25,6 +25,25 @@ CTRL-001 established:
 - research, experiment, and decision registries;
 - a task-brief template;
 - the rule that the live dashboard derives from canonical repository state.
+
+A further mandatory governance rule was then added: **every execution-agent result brought back by Mohammed must receive an overseer review followed by a complete status report**. The required format is in `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
+
+## Mandatory review-response rule
+
+After every agent/revision review, report:
+- verdict;
+- completed items;
+- pending items;
+- checked/unchecked acceptance criteria;
+- task evidence completion;
+- verified goal progress and remaining percentage;
+- research coverage;
+- current phase progress;
+- relevant gate completion;
+- next checklist;
+- exact percentage changes caused by the review.
+
+Never confuse task/gate completion percentages with verified Hieratic capability progress.
 
 ## Dependency-safe work now ready
 
@@ -57,16 +76,18 @@ Production subdomain/DNS/deployment integration can wait until the shell is acce
 1. Hand CTRL-002 and CTRL-003 briefs to separate execution agents.
 2. Continue FND-003/FND-004 research.
 3. Review each returned branch/PR against its evidence package.
-4. Accept or issue remediation.
-5. Only then update canonical state and unblock downstream tasks.
+4. Use the mandatory review/status report.
+5. Accept or issue remediation.
+6. Only then update canonical state and unblock downstream tasks.
 
 ## Resume instructions for a new chat
 
 Read:
 1. `START_HERE.md`
 2. this file
-3. `PROJECT_STATE.yaml`
-4. `TASKS.yaml` entries whose status is ready/active/under_review
-5. only relevant task briefs and evidence
+3. `docs/governance/REVIEW_REPORTING_PROTOCOL.md`
+4. `PROJECT_STATE.yaml`
+5. `TASKS.yaml` entries whose status is ready/active/under_review
+6. only relevant task briefs and evidence
 
 Do not ask Mohammed to reconstruct prior chat context unless the repository is inconsistent or inaccessible.

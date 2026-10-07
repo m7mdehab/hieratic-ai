@@ -146,9 +146,7 @@ Every target span/item should be able to declare:
 
 #### SCRIPT-ACC — accuracy
 
-[
-Accuracy = \frac{correct}{N}
-]
+`Accuracy = correct / N`
 
 Use only where each item has one resolved gold class.
 
@@ -206,9 +204,7 @@ Fraction of evaluable region pairs whose relative order is correct.
 
 Normalized edit distance between predicted and gold reading-order sequences after region matching:
 
-[
-ORDER\text{-}ER = \frac{S+D+I}{N}
-]
+`ORDER-ER = (S + D + I) / N`
 
 This is preferred to exact-only page accuracy because one local order mistake should not erase all information.
 
@@ -301,9 +297,7 @@ Sequence recognition is the core reading metric for specialist HTR and multimoda
 
 For gold sequence (g) and prediction (p):
 
-[
-GER = \frac{S + D + I}{N}
-]
+`GER = (S + D + I) / N`
 
 where substitutions, deletions, and insertions are obtained from minimum edit distance over the canonical grapheme token sequence and (N) is gold grapheme count.
 
@@ -331,9 +325,7 @@ Useful but never the only sequence metric.
 
 If gold contains a finite acceptable set (G = \{g_1,...,g_m\}), use:
 
-[
-d(p,G) = \min_{g \in G} d(p,g)
-]
+`d(p, G) = min_{g in G} d(p, g)`
 
 for edit-distance metrics.
 

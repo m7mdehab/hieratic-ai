@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EVAL-003 frontier model original run preparation evidence, no inference",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "state",
+    "run_id",
+    "suite_id",
+    "model_key",
+    "provider_model_id",
+    "provider_route",
+    "official_benchmark_commit",
+    "official_prompt_source_sha256",
+    "public_item_manifest_sha256",
+    "prompt_attempts_manifest_sha256",
+    "model_settings_sha256",
+    "model_checkpoint_or_version",
+    "inference_code_commit",
+    "inference_runtime_sha256",
+    "scorer_source_sha256",
+    "metric_contract_sha256",
+    "samples_per_item",
+    "attempts_planned",
+    "budget_cap_usd",
+    "approval",
+    "archive",
+    "benchmark_rights"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "locked"
+      ]
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^FRONTIER-[A-Z0-9-]+$"
+    },
+    "suite_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider_model_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "provider_route": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "official_benchmark_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "official_prompt_source_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "public_item_manifest_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "prompt_attempts_manifest_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "model_settings_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "model_checkpoint_or_version": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "inference_code_commit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "inference_runtime_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "scorer_source_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "metric_contract_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "samples_per_item": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "attempts_planned": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "budget_cap_usd": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approved",
+        "approved_by",
+        "approved_at",
+        "evidence_ref"
+      ],
+      "properties": {
+        "approved": {
+          "type": "boolean"
+        },
+        "approved_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "approved_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "evidence_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "archive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_private_store",
+        "access_restricted",
+        "raw_response_retention",
+        "append_only",
+        "encryption_at_rest"
+      ],
+      "properties": {
+        "external_private_store": {
+          "type": "boolean"
+        },
+        "access_restricted": {
+          "type": "boolean"
+        },
+        "raw_response_retention": {
+          "enum": [
+            "private",
+            "no_raw_results"
+          ]
+        },
+        "append_only": {
+          "type": "boolean"
+        },
+        "encryption_at_rest": {
+          "type": "boolean"
+        }
+      }
+    },
+    "benchmark_rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluation_only",
+        "sealed_items_excluded",
+        "used_for_training_or_dev",
+        "few_shot_uses_benchmark",
+        "image_rights_reviewed",
+        "item_overlap_reviewed",
+        "rights_review_ref",
+        "overlap_review_ref"
+      ],
+      "properties": {
+        "evaluation_only": {
+          "const": true
+        },
+        "sealed_items_excluded": {
+          "const": true
+        },
+        "used_for_training_or_dev": {
+          "const": false
+        },
+        "few_shot_uses_benchmark": {
+          "const": false
+        },
+        "image_rights_reviewed": {
+          "type": "boolean"
+        },
+        "item_overlap_reviewed": {
+          "type": "boolean"
+        },
+        "rights_review_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "overlap_review_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

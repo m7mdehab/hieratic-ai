@@ -132,3 +132,14 @@ Methodological constraint: external item content, source near-duplicates, and be
 Defines 48 failure codes across 16 visual, linguistic, uncertainty, generalization and evaluation-integrity layers. Review events are typed, evidence-linked, may express upstream causal relationships, and track adjudication, gold missingness, contamination, stratum metadata and publication scope. Public summary logic suppresses sealed-record aggregates. Error counts are not performance rates without frozen scored denominators.
 
 Evidence: `docs/evaluation/ERROR_TAXONOMY_AND_ANALYSIS.md`, `eval/analysis/`, dedicated passing GitHub Actions error-analysis workflow, 23 new synthetic tests.
+
+
+### R-009 — Untuned frontier model baseline preregistration
+
+**Status:** PROTOCOL-STAGED / no experimental evidence.
+
+A versioned, fail-closed untuned frontier VLM evaluation protocol has been implemented for public HieraticBench script-ID and isolated-sign rungs. Candidate provider lanes are OpenAI, Anthropic and Google; exact provider IDs/configurations remain unresolved. Prompt source and dataset commit are pinned to accepted EVAL-002, but frozen item manifest and exact prompt hashes still require verification.
+
+Read-only tooling validates planned capture completeness, hashes and provider/prompt consistency using synthetic offline tests. No API calls, new model predictions, official new scores, or trained models have been produced. This is **not** a verified EVAL-003 baseline and does **not** change research coverage.
+
+See `docs/evaluation/FRONTIER_BASELINES.md`, `eval/baselines/` and PR #31.

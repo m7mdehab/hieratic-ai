@@ -1,0 +1,53 @@
+# Research Registry
+
+This file tracks the compact research state. Detailed notes may later live under `docs/research/`.
+
+## Evidence labels
+
+- **VERIFIED-PRIMARY** — checked against the original paper/repository/dataset/site or other primary source.
+- **VERIFIED-SECONDARY** — supported by a reliable secondary source but primary source not yet inspected.
+- **CANDIDATE** — discovered during reconnaissance and awaiting verification.
+- **REJECTED** — investigated and found irrelevant, inaccurate, inaccessible, or otherwise unsuitable.
+
+## Current research conclusions
+
+### R-001 — Overall feasibility
+
+**Status:** preliminary, to be strengthened with primary-source citations.
+
+The problem is best treated as a sequence of capabilities rather than a single classifier: script/document understanding, visual recognition/HTR, transliteration/normalization, linguistic interpretation, and translation.
+
+The current program assumes that partial computational work on Hieratic exists while robust, general-purpose reading across unseen documents/scribes remains unsolved enough to justify research. This must be documented rigorously in FND-004.
+
+### R-002 — HieraticBench
+
+**Status:** CANDIDATE / external benchmark.
+
+HieraticBench is treated as an external evaluation resource, not the definition of project success. Its exact composition, methodology, model results, source repository, leakage risks, and licensing must be verified from primary sources before being encoded into evaluation claims.
+
+### R-003 — Data landscape
+
+**Status:** CANDIDATE.
+
+Initial reconnaissance identified candidate Hieratic sign/image resources, computational prior art, palaeographic databases, and at least one recent dataset direction. No candidate is considered cleared for training or redistribution until provenance, labels, access method, and license are verified.
+
+## Active research questions
+
+1. What are the strongest primary-source prior-art examples specifically involving Hieratic, distinct from hieroglyphic/Demotic/Coptic OCR?
+2. What legally usable image/transliteration pairs exist at sign, line, page, and document level?
+3. Which variation axes must be isolated in train/dev/test splits: document, scribe, period, material, collection, edition?
+4. What constitutes a defensible transliteration target when multiple scholarly readings are valid?
+5. Which external benchmark items may have appeared in foundation-model pretraining or public digital editions?
+6. How should expert uncertainty and alternative readings be represented?
+7. What is the best first specialist baseline that provides information useful to later VLM work?
+
+## Immediate overseer research outputs
+
+FND-003:
+- validated writing-system/problem map.
+
+FND-004:
+- primary-source prior-art/data registry including license and ML usefulness.
+
+FND-005:
+- enforceable licensing/provenance policy.

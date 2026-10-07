@@ -1,0 +1,65 @@
+schema_version: "0.1.0"
+roadmap_version: "0.1.0"
+updated_at: "2026-10-07"
+
+project:
+  name: "Hieratic AI"
+  repository: "m7mdehab/hieratic-ai"
+  visibility: "public"
+  ultimate_goal: >-
+    Build and publicly demonstrate a reproducible multimodal AI system that can
+    take genuinely unseen Hieratic handwriting, recognize what is written,
+    produce a defensible transliteration and normalization, and derive
+    meaning/translation with calibrated uncertainty while generalizing beyond
+    memorized documents or scribes and improving over untuned frontier VLMs
+    and appropriate specialist baselines.
+
+progress:
+  goal_progress: 2.5
+  goal_total: 100.0
+  research_coverage: 14.0
+  semantics:
+    goal_progress: "Only accepted weighted capability milestones count."
+    research_coverage: "Coverage of planned research and experiment space; may increase without capability gains."
+
+state:
+  current_phase: "P1_RESEARCH_FOUNDATION"
+  current_wave: "W0_CONTROL_PLANE"
+  control_plane_gate: "bootstrap_in_progress"
+  validated_experiments: 0
+  trained_models: 0
+  best_verified_result: null
+  last_accepted_task: "FND-002"
+  blockers: []
+
+canonical_files:
+  start: "START_HERE.md"
+  roadmap: "ROADMAP.md"
+  tasks: "TASKS.yaml"
+  agents: "AGENTS.md"
+  handoff: "OVERSEER_HANDOFF.md"
+  decisions: "DECISIONS.md"
+  experiments: "EXPERIMENTS.md"
+  research: "RESEARCH.md"
+  repo_map: "REPO_MAP.md"
+
+critical_gates:
+  - id: "GATE-CONTROL"
+    name: "Canonical control plane operational"
+    status: "in_progress"
+  - id: "GATE-EVAL"
+    name: "Leakage-resistant evaluation protocol"
+    status: "not_started"
+  - id: "GATE-LICENSE"
+    name: "Data provenance and redistribution policy enforced"
+    status: "not_started"
+  - id: "GATE-GENERALIZATION"
+    name: "Unseen-document/scribe generalization demonstrated"
+    status: "not_started"
+  - id: "GATE-EXPERT"
+    name: "Expert or equivalent blind validation completed"
+    status: "not_started"
+
+next_overseer_action: >-
+  Complete and review the v0.1 repository operating system, then dispatch the
+  first dependency-safe parallel implementation wave.

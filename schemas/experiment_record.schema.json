@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hieratic AI reproducible experiment record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "task_id",
+    "status",
+    "hypothesis",
+    "code_commit",
+    "data_version",
+    "split_version",
+    "model",
+    "config",
+    "seeds",
+    "environment",
+    "entry_point",
+    "metrics",
+    "artifacts",
+    "result",
+    "decision",
+    "caveats",
+    "provenance_review"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^EXP-[A-Z0-9-]+$"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Z]+-[0-9]{3}$"
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "running",
+        "completed",
+        "validated",
+        "invalidated"
+      ]
+    },
+    "hypothesis": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code_commit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "data_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "split_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "config": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "seeds": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "environment": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "entry_point": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "sha256",
+          "role"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "role": {
+            "enum": [
+              "raw_predictions",
+              "scores",
+              "trace",
+              "config",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    "result": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "caveats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "provenance_review": {
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "not_applicable"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "validated"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code_commit": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{40}$"
+          },
+          "data_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "split_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "config": {
+            "type": "object",
+            "minProperties": 1
+          },
+          "seeds": {
+            "minItems": 1
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1
+          },
+          "entry_point": {
+            "type": "string",
+            "minLength": 1
+          },
+          "metrics": {
+            "minProperties": 1
+          },
+          "artifacts": {
+            "minItems": 1
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provenance_review": {
+            "const": "approved"
+          }
+        }
+      }
+    }
+  ]
+}

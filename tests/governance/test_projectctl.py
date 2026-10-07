@@ -31,8 +31,9 @@ class ProjectCtlTests(unittest.TestCase):
     def test_current_repository_state_passes(self) -> None:
         errors, state, tasks = projectctl.validate_repository(ROOT)
         self.assertEqual([], errors)
-        self.assertEqual(2.5, state["progress"]["goal_progress"])
-        self.assertEqual(2.5, tasks["rules"]["progress"]["validated_weighted_tasks_expected"])
+        validated_weight = sum(task["weight"] for task in tasks["tasks"] if task["status"] == "validated")
+        self.assertEqual(validated_weight, state["progress"]["goal_progress"])
+        self.assertEqual(validated_weight, tasks["rules"]["progress"]["validated_weighted_tasks_expected"])
 
     def test_dependency_cycle_fails(self) -> None:
         tasks = copy.deepcopy(self.tasks)
@@ -66,8 +67,11 @@ class ProjectCtlTests(unittest.TestCase):
 
     def test_overseer_context_includes_current_progress_and_coverage(self) -> None:
         packet = projectctl.overseer_context(ROOT, self.state, self.tasks)
-        self.assertIn("Verified goal progress: 2.5 / 100", packet)
-        self.assertIn("Research coverage: 14.0%", packet)
+        self.assertIn(
+            f"Verified goal progress: {self.state['progress']['goal_progress']} / {self.state['progress']['goal_total']}",
+            packet,
+        )
+        self.assertIn(f"Research coverage: {self.state['progress']['research_coverage']}%", packet)
 
     def test_ctrl_003_context_omits_unrelated_research(self) -> None:
         packet = projectctl.task_context(ROOT, "CTRL-003", self.state, self.tasks)
@@ -95,10 +99,14 @@ class ProjectCtlTests(unittest.TestCase):
         tasks = copy.deepcopy(self.tasks)
         tasks["tasks"].append(copy.deepcopy(tasks["tasks"][0]))
         state = copy.deepcopy(self.state)
-        state["state"]["active_tasks"].append("CTRL-002")
+        duplicate_membership_id = state["state"]["ready_tasks"][0]
+        state["state"]["active_tasks"].append(duplicate_membership_id)
         errors = self.errors(state=state, tasks=tasks)
         self.assertTrue(any("duplicate task ID CTRL-001" in error for error in errors), errors)
-        self.assertTrue(any("CTRL-002 appears in incompatible state arrays" in error for error in errors), errors)
+        self.assertTrue(
+            any(f"{duplicate_membership_id} appears in incompatible state arrays" in error for error in errors),
+            errors,
+        )
 
     def test_negative_and_nonzero_control_plane_weights_fail(self) -> None:
         tasks = copy.deepcopy(self.tasks)

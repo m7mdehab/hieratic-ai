@@ -281,9 +281,7 @@ class PublicBenchmarkFreezeTests(unittest.TestCase):
             prompt.parent.mkdir(parents=True)
             prompt.write_text("export const syntheticOnly=true;",encoding="utf-8")
             fake={"benchmark":{"pinned_commit":self.f.load_manifest()["benchmark"]["pinned_commit"]}}
-            with patch.object(self.f,"load_manifest",return_value=fake), \\
-                 patch.object(self.f,"assert_pinned_checkout") as pinned, \\
-                 patch.object(self.f,"inspect_items",return_value=self.items):
+            with (\n                patch.object(self.f,"load_manifest",return_value=fake),\n                patch.object(self.f,"assert_pinned_checkout") as pinned,\n                patch.object(self.f,"inspect_items",return_value=self.items),\n            ):
                 manifest,receipt=self.f.build_snapshot(checkout)
             pinned.assert_called_once()
             self.assertEqual(266,receipt["public_item_rung_count"])

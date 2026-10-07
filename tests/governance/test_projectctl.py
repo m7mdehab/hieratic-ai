@@ -106,8 +106,14 @@ class ProjectCtlTests(unittest.TestCase):
         tasks = copy.deepcopy(self.tasks)
         tasks["tasks"].append(copy.deepcopy(tasks["tasks"][0]))
         state = copy.deepcopy(self.state)
-        duplicate_membership_id = state["state"]["ready_tasks"][0]
-        state["state"]["active_tasks"].append(duplicate_membership_id)
+        # The canonical ready queue may legitimately be empty after dispatch.
+        # Make an incompatible membership pair regardless of current queue state.
+        if state["state"]["ready_tasks"]:
+            duplicate_membership_id = state["state"]["ready_tasks"][0]
+            state["state"]["active_tasks"].append(duplicate_membership_id)
+        else:
+            duplicate_membership_id = state["state"]["active_tasks"][0]
+            state["state"]["ready_tasks"].append(duplicate_membership_id)
         errors = self.errors(state=state, tasks=tasks)
         self.assertTrue(any("duplicate task ID CTRL-001" in error for error in errors), errors)
         self.assertTrue(

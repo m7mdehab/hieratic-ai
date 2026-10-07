@@ -141,3 +141,20 @@ Sonnet and Gemini are not planned as simultaneous independent lanes. Mohammed sw
 A provider/model switch does not create a new project or task. The incoming model resumes from canonical repository state and the relevant task brief/handoff. Repository state remains authoritative over model memory or prior chat summaries.
 
 Wave plans must therefore assign work to the **Anti-Gravity lane**, while naming the currently active model in parentheses.
+
+
+## ADR-0012 — Evaluation v1 has no primary composite score
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+Hieratic AI evaluation v1 reports layer-specific metrics rather than one primary composite score.
+
+Reason:
+- script identification, visual recognition, transliteration, linguistic analysis, translation, and uncertainty are different capabilities;
+- a single weighted average can hide catastrophic failure at an earlier reading layer;
+- fluent translation must not compensate for incorrect visual reading.
+
+A future public composite may be introduced only through a versioned decision with fixed predeclared weights, visible component metrics, and hard capability floors.
+
+The canonical metric contract is `docs/evaluation/METRICS_SPEC.md` plus `eval/metric_contract.yaml`.

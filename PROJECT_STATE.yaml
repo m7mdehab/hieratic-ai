@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 4.5
+  goal_progress: 6.0
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,13 +29,13 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "CTRL-004"
+  last_accepted_task: "EVAL-001"
   ready_tasks:
     - "FND-006"
     - "DATA-001"
-    - "EVAL-001"
     - "EVAL-002"
     - "EVAL-004"
+    - "EVAL-005"
   active_tasks:
     - "CTRL-003"
   review_tasks: []
@@ -77,7 +77,7 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review CTRL-003 when Sonnet returns. The next approved parallel wave should
-  assign Luna to DATA-001, keep the Anti-Gravity lane on CTRL-003, and assign
-  the overseer to EVAL-001. FND-006 is now ready but remains unstarted pending
-  an explicit overseer-wave approval.
+  Review CTRL-003 when Sonnet returns and DATA-001 when Luna returns. EVAL-001
+  is validated; EVAL-005 is now ready. Prepare the next three-lane wave from
+  current canonical state, keeping FND-006 explicitly scheduled rather than
+  auto-validating it.

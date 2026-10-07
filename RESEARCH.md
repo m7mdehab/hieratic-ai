@@ -82,3 +82,20 @@ FND-004:
 
 FND-005:
 - enforceable licensing/provenance policy.
+
+
+### R-006 — Layered evaluation contract
+
+**Status:** VERIFIED / completed as EVAL-001.
+
+The project now evaluates reading as a layered capability chain rather than as one end-to-end score.
+
+Key decisions:
+- visual recognition, transliteration, linguistic interpretation, translation, and uncertainty remain separately measurable;
+- multiple acceptable scholarly readings and illegible spans are supported;
+- document-macro aggregation is required where micro averaging could be dominated by large/easy documents;
+- translation uses source-faithfulness plus adequacy, with automated MT metrics treated as supporting diagnostics;
+- calibration and selective-risk reporting are part of the reading objective rather than optional polish;
+- no primary composite score is used in evaluation v1.
+
+See `docs/evaluation/METRICS_SPEC.md` and `eval/metric_contract.yaml`.

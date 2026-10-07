@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "REPORT-SYNTHETIC-NO-SCORES",
+  "evaluation_id": "SEAL-SYNTHETIC-NO-RUN",
+  "report_state": "draft",
+  "metric_contract_sha256": null,
+  "sealed_protocol_sha256": null,
+  "release_record_sha256": null,
+  "model_id": "synthetic-not-a-run",
+  "metric_rows": [],
+  "public_claim_layers": [],
+  "comparisons": [],
+  "end_to_end_evidence": {
+    "trace_sha256": null,
+    "expert_review_sha256": null,
+    "heldout_document_count": 0
+  },
+  "report_note": "Synthetic structural example only; no gold, model inference or scientific metrics"
+}

@@ -4,8 +4,8 @@ Updated: 2026-10-08
 
 ## Current verified state
 
-- Goal progress: **4.5 / 100**
-- Goal remaining: **95.5**
+- Goal progress: **6.0 / 100**
+- Goal remaining: **94.0**
 - Research coverage: **~14%**
 - Current capability phase: **P1 — Research Foundation**
 - Phase 1 progress: **4.5 / 5 (90%)**
@@ -120,3 +120,39 @@ Verified:
 - successful GitHub Actions job.
 
 CTRL-004 is unweighted infrastructure, so capability remains 4.5/100.
+
+
+## Latest accepted overseer work
+
+**EVAL-001 — validated and merged via PR #16.**
+
+The project now has a canonical evaluation contract spanning:
+- script/domain ID;
+- layout and reading order;
+- sign detection/classification and palaeographic retrieval;
+- line/sequence HTR;
+- standardized hieroglyphic rendering;
+- Egyptological transliteration;
+- normalization/tokenization;
+- lemma and morphology;
+- translation/source faithfulness;
+- calibration, abstention, and alternative sets;
+- generalization strata;
+- blind expert evaluation.
+
+Important decisions:
+- no primary composite score in v1;
+- translation cannot compensate for failed visual reading;
+- multiple scholarly readings and illegible spans are first-class;
+- document-macro reporting is required for heterogeneous sequence tasks;
+- benchmark-specific scores remain separate from project success.
+
+Evidence:
+- `docs/evaluation/METRICS_SPEC.md`
+- `docs/evaluation/NORMALIZATION_PROFILES.md`
+- `docs/evaluation/SCORING_EXAMPLES.md`
+- `eval/metric_contract.yaml`
+
+EVAL-001 earns **1.5 capability points**, moving verified goal progress from 4.5 to 6.0.
+
+EVAL-005 is newly ready.

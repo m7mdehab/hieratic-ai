@@ -36,7 +36,7 @@ tasks:
     phase: "P0_CONTROL_PLANE"
     title: "Implement project-state validator and context generator"
     weight: 0.00
-    status: "revision_required"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["CTRL-001"]
     acceptance_summary: "Validator catches malformed/inconsistent state; generator emits compact overseer and task-specific context packets."
@@ -54,7 +54,7 @@ tasks:
     phase: "P0_CONTROL_PLANE"
     title: "Add CI governance checks and branch/PR guardrails"
     weight: 0.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["CTRL-002"]
     acceptance_summary: "PR CI runs governance validation and requires evidence-oriented PR metadata."

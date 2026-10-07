@@ -25,13 +25,13 @@ progress:
 state:
   current_phase: "P1_RESEARCH_FOUNDATION"
   current_wave: "W0_CONTROL_PLANE"
-  control_plane_gate: "ctrl_002_validated_ctrl_003_active"
+  control_plane_gate: "ctrl_004_validated_ctrl_003_active"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "CTRL-002"
+  last_accepted_task: "CTRL-004"
   ready_tasks:
-    - "CTRL-004"
+    - "FND-006"
     - "DATA-001"
     - "EVAL-001"
     - "EVAL-002"
@@ -58,7 +58,6 @@ critical_gates:
     status: "in_progress"
     remaining:
       - "CTRL-003"
-      - "CTRL-004"
       - "FND-006"
   - id: "GATE-EVAL"
     name: "Leakage-resistant evaluation protocol"
@@ -78,6 +77,7 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Dispatch CTRL-004 now that CTRL-002 is validated, review CTRL-003 when Sonnet
-  returns, and continue dependency-ready DATA/EVAL work under the active
-  licensing/provenance policy.
+  Review CTRL-003 when Sonnet returns. The next approved parallel wave should
+  assign Luna to DATA-001, keep the Anti-Gravity lane on CTRL-003, and assign
+  the overseer to EVAL-001. FND-006 is now ready but remains unstarted pending
+  an explicit overseer-wave approval.

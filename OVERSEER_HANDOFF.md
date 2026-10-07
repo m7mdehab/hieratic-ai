@@ -79,3 +79,14 @@ Every returned agent task receives:
 - phase/gate progress;
 - next dependency-aware checklist;
 - exact percentage changes.
+
+
+## Parallel-wave rule
+
+Future waves must include an overseer assignment whenever a high-value dependency-ready task is safe to run alongside the execution agents.
+
+The overseer presents the whole wave first, including its own task, and waits for Mohammed's approval before starting that task.
+
+The preferred overseer work is scientific evaluation design, architecture, source-grounded research, synthesis, or another reasoning-heavy task.
+
+For the next wave, the proposed overseer assignment is EVAL-001: specify evaluation metrics across the reading stack.

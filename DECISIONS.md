@@ -98,3 +98,28 @@ Training permission, dataset redistribution permission, and model-weight release
 HieraticBench is quarantined for external evaluation even when an individual public benchmark image would otherwise have a permissive source license.
 
 The canonical policy is `docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md`.
+
+
+## ADR-0010 — Every dispatch wave includes approved overseer work when safe
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+The project should maximize safe parallel throughput across Luna, Sonnet, Gemini/other execution agents, and the overseer.
+
+Whenever at least one substantial dependency-ready task is suitable for the overseer's strengths, the overseer must include that task in the same wave plan rather than waiting idly for execution agents.
+
+Before starting, the overseer presents the complete wave assignment to Mohammed, including:
+- each execution agent's task;
+- the overseer's own task;
+- why each task is assigned that way;
+- dependencies and collision risks;
+- expected capability or infrastructure effect.
+
+Mohammed approves the wave before the overseer begins its own task.
+
+The overseer-owned task should normally be a high-leverage research, architecture, evaluation, scientific-method, or integration task. Filler work is prohibited.
+
+If no safe overseer task is available, the overseer must explicitly state the blocking dependency instead of inventing work.
+
+The detailed protocol is `docs/governance/PARALLEL_WAVE_PROTOCOL.md`.

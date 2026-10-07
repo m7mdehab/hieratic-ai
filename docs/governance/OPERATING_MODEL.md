@@ -10,14 +10,15 @@ The overseer maintains a coherent research program and gives execution agents bo
 
 1. **Research / reason** — overseer determines what capability or infrastructure is actually needed.
 2. **Specify** — overseer writes a task brief with dependencies, scope, interfaces, acceptance criteria, tests, and prohibited shortcuts.
-3. **Dispatch** — every dependency-safe task may be assigned in parallel.
-4. **Execute** — agent works on an isolated branch/worktree.
-5. **Return evidence** — agent provides code/artifacts plus test/evaluation evidence.
-6. **Audit** — overseer inspects actual changes and evidence, not only the summary.
-7. **Report** — overseer gives Mohammed the mandatory completion/pending/progress/checklist status report.
-8. **Verdict** — accepted, revision-required, or rejected.
-9. **Integrate** — accepted work merges; canonical state updates.
-10. **Unblock** — newly dependency-safe tasks are dispatched.
+3. **Wave plan** — overseer assigns dependency-safe tasks to execution agents and selects one substantive overseer-owned task when available.
+4. **User approval** — Mohammed sees the full parallel plan, including what the overseer will work on, and approves before the overseer starts that work.
+5. **Parallel execute** — execution agents work on isolated branches/worktrees while the overseer performs its approved research/architecture/evaluation task in parallel.
+6. **Return evidence** — agents provide code/artifacts plus test/evaluation evidence; the overseer also returns its own completed artifact/result.
+7. **Audit** — overseer inspects actual changes and evidence, not only the summary.
+8. **Report** — overseer gives Mohammed the mandatory completion/pending/progress/checklist status report for all returned work, including its own parallel contribution.
+9. **Verdict** — accepted, revision-required, or rejected.
+10. **Integrate** — accepted work merges; canonical state updates.
+11. **Unblock** — newly dependency-safe tasks are prepared for the next approved wave.
 
 ## Task verdicts
 
@@ -102,3 +103,27 @@ Methods, models, and tools may change rapidly. When evidence invalidates an assu
 - version the roadmap/schema if required;
 - preserve old evidence;
 - never rewrite history to make the project appear more linear than it was.
+
+
+## Parallel wave contract
+
+Every execution wave should be planned as a portfolio rather than as a single handoff.
+
+Before beginning its own work, the overseer must present Mohammed with the assignments for Luna, Sonnet, Gemini/other agents, and the overseer, including:
+- task ID/title;
+- why that worker is appropriate;
+- dependency state;
+- write-scope/collision risk;
+- expected capability or infrastructure effect.
+
+Rules:
+
+- The overseer must choose meaningful heavy-lifting work, not filler, whenever a safe dependency-ready task exists.
+- Overseer-owned work should preferentially involve scientific judgment, architecture, evaluation design, research synthesis, task decomposition, or integration.
+- The overseer must avoid write-scope collisions with active execution agents.
+- If no safe overseer task exists, the overseer must say exactly why instead of manufacturing work.
+- The overseer does not begin its own task until Mohammed approves the wave plan.
+- Once approved, the overseer works immediately using available tools; it does not promise invisible background execution.
+- When agent results return, the overseer combines them with its own completed work into one integrated project-status picture and prepares the next wave.
+
+The detailed protocol is `docs/governance/PARALLEL_WAVE_PROTOCOL.md`.

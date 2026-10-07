@@ -30,7 +30,7 @@ state:
   trained_models: 0
   best_verified_result: null
   last_accepted_task: "FND-006"
-  ready_tasks:
+  ready_tasks: []
   active_tasks:
     - "CTRL-003"
     - "EVAL-003"

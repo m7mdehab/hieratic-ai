@@ -31,6 +31,21 @@ HieraticBench is treated as an external evaluation resource, not the definition 
 
 Initial reconnaissance identified candidate Hieratic sign/image resources, computational prior art, palaeographic databases, and at least one recent dataset direction. No candidate is considered cleared for training or redistribution until provenance, labels, access method, and license are verified.
 
+### R-004 — Hieratic writing-system and machine-reading problem map
+
+**Status:** VERIFIED-PRIMARY / completed as FND-003.
+
+A source-grounded problem map is now available at `docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`.
+
+Key validated implications:
+- Hieratic varies strongly across period, register, scribe, material, and layout.
+- Allography, abbreviation, and ligatures prevent a simple fixed-font classification framing.
+- visually ambiguous signs can require phonetic/classifier and sequence context;
+- image-to-translation must be decomposed into auditable recognition, standardized rendering, Egyptological transliteration, linguistic analysis, and translation layers;
+- evaluation must eventually include provenance-aware held-out splits rather than random crop splits.
+
+FND-003 is validated. It unblocks EVAL-001.
+
 ## Active research questions
 
 1. What are the strongest primary-source prior-art examples specifically involving Hieratic, distinct from hieroglyphic/Demotic/Coptic OCR?
@@ -44,7 +59,7 @@ Initial reconnaissance identified candidate Hieratic sign/image resources, compu
 ## Immediate overseer research outputs
 
 FND-003:
-- validated writing-system/problem map.
+- **completed** — see `docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`.
 
 FND-004:
 - primary-source prior-art/data registry including license and ML usefulness.

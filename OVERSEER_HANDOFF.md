@@ -4,81 +4,78 @@ Updated: 2026-10-07
 
 ## Current verified state
 
-- Goal progress: **2.5 / 100**
+- Goal progress: **3.25 / 100**
 - Research coverage: **~14%**
 - Current capability phase: **P1 — Research Foundation**
+- Phase 1 progress: **3.25 / 5**
 - Control-plane wave: **W0**
 - Validated experiments: **0**
 - Trained models: **0**
-- Last accepted task: **CTRL-001**
+- Last accepted task: **FND-003**
 
-## What was just completed
+## Work currently happening in parallel
 
-The public repository is live and the v0.1 canonical project operating system was reviewed and merged.
+### Execution agents
 
-CTRL-001 established:
-- capability-based rather than time-based progress;
-- the 100-point roadmap;
-- the overseer/execution-agent split;
-- repository-first continuity;
-- branch/write-scope rules for parallel agents;
-- research, experiment, and decision registries;
-- a task-brief template;
-- the rule that the live dashboard derives from canonical repository state.
+- **CTRL-002 — active**: project-state validator + context generator.
+- **CTRL-003 — active**: live dashboard/control-plane shell.
 
-A further mandatory governance rule was then added: **every execution-agent result brought back by Mohammed must receive an overseer review followed by a complete status report**. The required format is in `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
+These were dispatched by Mohammed to separate execution agents and remain isolated by write scope.
+
+### Overseer
+
+- **FND-003 — completed and validated**: writing-system and task-decomposition problem map.
+- **FND-004 — ready**: primary-source prior-art/data verification is the next overseer-owned research task.
+
+## What FND-003 established
+
+The research-backed problem map now explicitly covers:
+- diachronic variation;
+- literary vs administrative register variation;
+- scribe-specific and within-scribe variation;
+- materials/supports and layout;
+- right-to-left reading order and historical layout change;
+- allography;
+- ligatures and abbreviation;
+- visually ambiguous forms requiring sequence/context;
+- phonograms, logograms, and classifiers;
+- the distinction between visual recognition, standardized hieroglyphic rendering, Egyptological transliteration, linguistic analysis, and translation;
+- uncertainty propagation from image to translation.
+
+Evidence:
+`docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`
+
+FND-003's 0.75 capability points are now earned.
+
+## Newly unblocked
+
+- **EVAL-001 — ready**: Specify evaluation metrics across the reading stack.
+
+It is ready by dependency but is not automatically assigned; the overseer should deliberately allocate an execution slot.
+
+## Research coverage note
+
+Research coverage remains **14%** for now. FND-003 unquestionably completed planned research, but the research-coverage denominator has not yet been formalized enough to justify inventing a new percentage. Verified capability progress did change because FND-003 has an explicit roadmap weight.
 
 ## Mandatory review-response rule
 
-After every agent/revision review, report:
+After every execution-agent result, report:
 - verdict;
-- completed items;
-- pending items;
-- checked/unchecked acceptance criteria;
+- completed and pending items;
+- checked/unchecked acceptance checklist;
 - task evidence completion;
-- verified goal progress and remaining percentage;
+- verified goal progress and remaining;
 - research coverage;
-- current phase progress;
-- relevant gate completion;
-- next checklist;
-- exact percentage changes caused by the review.
-
-Never confuse task/gate completion percentages with verified Hieratic capability progress.
-
-## Dependency-safe work now ready
-
-### Execution-agent work — parallel
-
-- **CTRL-002** — project-state validator + context generator.
-- **CTRL-003** — live dashboard/control-plane shell.
-
-These write to separate areas and are deliberately safe to execute concurrently.
-
-### Overseer work — parallel with both agents
-
-- **FND-003** — writing-system/task-decomposition problem map.
-- **FND-004** — primary-source prior-art/data verification.
-
-## Important dashboard direction
-
-The interface should inherit the personal website's current visual direction: professional, minimal, clean, visual, typography-led, generous whitespace, controlled asymmetry, restrained motion, and no generic SaaS/bento/neon dashboard treatment.
-
-It is a research control plane embedded in the personal-site ecosystem, not a stock admin template.
-
-## Blockers
-
-No current blocker to CTRL-002 or CTRL-003.
-
-Production subdomain/DNS/deployment integration can wait until the shell is accepted; it must not block local/preview implementation.
+- phase/gate progress;
+- next dependency-aware checklist;
+- exact percentage change.
 
 ## Next overseer action
 
-1. Hand CTRL-002 and CTRL-003 briefs to separate execution agents.
-2. Continue FND-003/FND-004 research.
-3. Review each returned branch/PR against its evidence package.
-4. Use the mandatory review/status report.
-5. Accept or issue remediation.
-6. Only then update canonical state and unblock downstream tasks.
+1. Continue FND-004.
+2. Review CTRL-002 and CTRL-003 immediately when their evidence packages return.
+3. Decide whether to assign EVAL-001 while FND-004 proceeds.
+4. Do not merge agent work without overseer review.
 
 ## Resume instructions for a new chat
 
@@ -87,7 +84,5 @@ Read:
 2. this file
 3. `docs/governance/REVIEW_REPORTING_PROTOCOL.md`
 4. `PROJECT_STATE.yaml`
-5. `TASKS.yaml` entries whose status is ready/active/under_review
-6. only relevant task briefs and evidence
-
-Do not ask Mohammed to reconstruct prior chat context unless the repository is inconsistent or inaccessible.
+5. ready/active/review entries in `TASKS.yaml`
+6. relevant task briefs/evidence only.

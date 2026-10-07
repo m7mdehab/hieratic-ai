@@ -179,5 +179,119 @@ class FrontierBaselineContractTests(unittest.TestCase):
         self.assertNotIn("anthropic.",source)
 
 
+
+class PublicBenchmarkFreezeTests(unittest.TestCase):
+    """Synthetic-only checks of public benchmark identity/metadata freeze."""
+
+    def setUp(self):
+        from eval.baselines import public_freeze as f
+        self.f=f
+        self.tmp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.dir=Path(self.tmp.name)
+        self.items={}
+        for n in range(116):
+            key=f"syn-identify-{n:04d}"
+            self.items[key]={"split":"public","rungs":("identify",),"id":key}
+        for n in range(150):
+            key=f"syn-sign-{n:04d}"
+            self.items[key]={"split":"public","rungs":("signs",),"id":key}
+        for n in range(2):
+            key=f"syn-sealed-{n}"
+            self.items[key]={"split":"sealed","rungs":("identify","signs"),"id":key}
+
+    def test_only_266_public_item_rung_records(self):
+        rows=self.f.safe_public_pairs(self.items)
+        self.assertEqual(266,len(rows))
+        self.assertEqual(116,sum(r["rung"]=="identify" for r in rows))
+        self.assertEqual(150,sum(r["rung"]=="signs" for r in rows))
+        self.assertTrue(all(r["split"]=="public" for r in rows))
+
+    def test_never_exports_sealed_ids_or_reading_gold(self):
+        binary=self.f.manifest_bytes(self.items)
+        self.assertNotIn(b"syn-sealed",binary)
+        self.assertNotIn(b"gardiner",binary)
+        self.assertNotIn(b"transliteration",binary)
+        self.assertNotIn(b"translation",binary)
+
+    def test_count_drift_refused(self):
+        del self.items["syn-identify-0000"]
+        with self.assertRaisesRegex(self.f.PublicFreezeError,"inventory count"):
+            self.f.safe_public_pairs(self.items)
+
+    def test_unauthorized_new_public_item_rung_refused(self):
+        self.items["syn-sealed-0"]["split"]="public"
+        with self.assertRaisesRegex(self.f.PublicFreezeError,"count mismatch"):
+            self.f.safe_public_pairs(self.items)
+
+    def test_manifest_is_byte_deterministic_across_dictionary_order(self):
+        left=self.f.manifest_bytes(self.items)
+        right=self.f.manifest_bytes(dict(reversed(list(self.items.items()))))
+        self.assertEqual(left,right)
+
+    def _stub_snapshot(self):
+        import unittest.mock
+        binary=self.f.manifest_bytes(self.items)
+        receipt={"schema_version":"1.0.0","manifest_sha256":self.f.content_hash(binary),
+                 "official_prompt_source_sha256":"c"*64,"public_item_rung_count":266}
+        return unittest.mock.patch.object(self.f,"build_snapshot",return_value=(binary,receipt))
+
+    def test_freeze_and_verify_offline_synthetic(self):
+        with self._stub_snapshot():
+            self.f.freeze(self.dir,self.dir)
+            verified=self.f.verify(self.dir,self.dir)
+            self.assertEqual(266,verified["public_item_rung_count"])
+
+    def test_freeze_cannot_overwrite_original_receipt(self):
+        with self._stub_snapshot():
+            self.f.freeze(self.dir,self.dir)
+            with self.assertRaisesRegex(self.f.PublicFreezeError,"do not overwrite"):
+                self.f.freeze(self.dir,self.dir)
+
+    def test_tampered_public_item_manifest_rejected(self):
+        with self._stub_snapshot():
+            self.f.freeze(self.dir,self.dir)
+            (self.dir/"public-item-rungs.jsonl").write_text("tampered",encoding="utf-8")
+            with self.assertRaisesRegex(self.f.PublicFreezeError,"differs"):
+                self.f.verify(self.dir,self.dir)
+
+    def test_tampered_prompt_hash_receipt_rejected(self):
+        with self._stub_snapshot():
+            self.f.freeze(self.dir,self.dir)
+            p=self.dir/"public-freeze-receipt.json"
+            rec=json.loads(p.read_text(encoding="utf-8"))
+            rec["official_prompt_source_sha256"]="a"*64
+            p.write_text(json.dumps(rec),encoding="utf-8")
+            with self.assertRaisesRegex(self.f.PublicFreezeError,"differs"):
+                self.f.verify(self.dir,self.dir)
+
+    def test_repo_as_artifact_store_refused(self):
+        with self.assertRaisesRegex(self.f.PublicFreezeError,"outside this repository"):
+            self.f._validate_dest(self.f.ROOT)
+
+    def test_missing_output_directory_refused(self):
+        with self.assertRaisesRegex(self.f.PublicFreezeError,"Existing external output"):
+            self.f._validate_dest(self.dir/"missing-directory")
+
+    def test_pinned_snapshot_inspects_only_metadata_and_prompt_hash(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as check:
+            checkout=Path(check)
+            prompt=checkout/"bench/src/prompts.ts"
+            prompt.parent.mkdir(parents=True)
+            prompt.write_text("export const syntheticOnly=true;",encoding="utf-8")
+            fake={"benchmark":{"pinned_commit":self.f.load_manifest()["benchmark"]["pinned_commit"]}}
+            with (
+                patch.object(self.f,"load_manifest",return_value=fake),
+                patch.object(self.f,"assert_pinned_checkout") as pinned,
+                patch.object(self.f,"inspect_items",return_value=self.items),
+            ):
+                manifest,receipt=self.f.build_snapshot(checkout)
+            pinned.assert_called_once()
+            self.assertEqual(266,receipt["public_item_rung_count"])
+            self.assertEqual(self.f.content_hash(prompt.read_bytes()),receipt["official_prompt_source_sha256"])
+            self.assertNotIn(b"syn-sealed",manifest)
+
+
 if __name__=="__main__":
     unittest.main()

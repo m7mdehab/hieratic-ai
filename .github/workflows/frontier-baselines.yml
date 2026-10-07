@@ -45,3 +45,25 @@ jobs:
 
       - name: Run entire evaluation test suite
         run: python -m unittest discover -s tests/evaluation -v
+
+      - name: Checkout pinned external benchmark metadata and prompt source
+        uses: actions/checkout@v7
+        with:
+          repository: alymoursy/hieraticbench
+          ref: d587dc990013f18007f1e7a8f56f96ff2f7127e2
+          path: _external/hieraticbench
+          sparse-checkout: |
+            data/items
+            bench/src/prompts.ts
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Freeze then reverify public-only item and prompt-source hashes
+        env:
+          BENCH_CHECKOUT: _external/hieraticbench
+          FREEZE_DIR: ${{ runner.temp }}/hieratic-public-freeze
+        run: |
+          mkdir -p "$FREEZE_DIR"
+          python -m eval.baselines.public_freeze freeze --checkout "$BENCH_CHECKOUT" --output-dir "$FREEZE_DIR"
+          python -m eval.baselines.public_freeze verify --checkout "$BENCH_CHECKOUT" --output-dir "$FREEZE_DIR"
+          # No public benchmark items, gold or prompt source uploaded as artifacts.

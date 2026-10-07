@@ -158,3 +158,31 @@ This iteration produces the protocol/tooling foundation. EVAL-003 remains **acti
 - No new model scores, no real benchmark gold, no copies of raw third-party assets.
 
 This creates the technical and scientific preconditions for honest EVAL-003 baseline experiments, without claiming they already exist.
+
+
+## 10. Pinned, deterministic public item and prompt-source freeze utility
+
+New `eval/baselines/public_freeze.py` is a **non-inference artifact preparer**: it obtains the metadata-only inventory from EVAL-002's pinned HieraticBench adapter, selects exactly 116 public script-ID items and 150 public isolated-sign items, and emits a sorted JSONL of **only item_id, rung, split**. Both sealed items are excluded.
+
+It separately hashes the exact upstream `bench/src/prompts.ts` bytes (rather than copying those prompts into our repository). Receipt includes the item-manifest SHA-256, official prompt-source SHA-256, pinned upstream Git SHA, safe item-rung counts and an explicit exclusion/no-training declaration.
+
+Usage, with a pinned **external** checkout and an existing **external artifact directory**:
+
+```bash
+python -m eval.baselines.public_freeze freeze \
+  --checkout /external/pinned-hieraticbench \
+  --output-dir /private/hieratic-baseline-freeze
+
+python -m eval.baselines.public_freeze verify \
+  --checkout /external/pinned-hieraticbench \
+  --output-dir /private/hieratic-baseline-freeze
+```
+
+The tool fails closed on mismatched Git commit, missing prompt-source bytes, unexpected rung inventory, sealed exposure, write locations under this repository, attempted overwrite and mutated artifact receipt/bytes.
+
+**Important limits:**
+- The receipt contains prompt-**source** byte hashes, not a cryptographic digest of every dynamically composed runtime prompt. Before actual paid inference, the EVAL-003 provider adapter must additionally freeze the exact rendered item prompt bytes and image preprocessing configuration. Neither a source hash nor receipt by itself proves executed runtime prompts matched.
+- This produces benchmark evaluation metadata only; it grants no right to train on HieraticBench or related source crops.
+- External checkout in CI is ephemeral and must not upload public gold, model responses or images.
+- The new receipt is not automatically inserted into `suite.yaml` because the suite remains `planning` until explicit provider/budget approval.
+- No model calls, metric scores or accepted EVAL-003 points are created.

@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 11.0
+  goal_progress: 11.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -23,18 +23,17 @@ progress:
     research_coverage: "Coverage of planned research and experiment space; may increase without capability gains."
 
 state:
-  current_phase: "P1_RESEARCH_FOUNDATION"
+  current_phase: "P2_EVALUATION"
   current_wave: "W0_CONTROL_PLANE"
-  control_plane_gate: "ctrl_004_validated_ctrl_003_active"
+  control_plane_gate: "ctrl_003_active_fnd_006_validated"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "EVAL-005"
+  last_accepted_task: "FND-006"
   ready_tasks:
-    - "FND-006"
-    - "EVAL-003"
   active_tasks:
     - "CTRL-003"
+    - "EVAL-003"
   review_tasks: []
   blockers:
     - "DATA-002 revision required (PR #20): conditional item-rights approval lacks verified item-level reviewer and overlap clearance."
@@ -59,7 +58,6 @@ critical_gates:
     status: "in_progress"
     remaining:
       - "CTRL-003"
-      - "FND-006"
   - id: "GATE-EVAL"
     name: "Leakage-resistant evaluation protocol"
     status: "not_started"
@@ -79,8 +77,9 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Luna to remediate PRs #20, #23, and #24 on their existing branches and return
-  refreshed task-specific tests/CI evidence. Anti-Gravity/Sonnet to remediate
-  CTRL-003 draft PR #27. No capability points awarded to unaccepted work.
-  After remediation, review the next wave including independent overseer-owned
-  EVAL-003, while preserving sealed benchmark and data-rights integrity.
+  FND-006 is accepted; all five P1 foundation points are earned. Overseer
+  is implementing EVAL-003 methodology/tooling but must not claim validated
+  frontier-model baselines before paid model runs and preserved raw output
+  evidence. Luna continues targeted corrections to DATA-002, DATA-004 and
+  EVAL-004; Anti-Gravity/Sonnet continues CTRL-003 draft remediation. Review
+  each returned PR independently before accepting capability points.

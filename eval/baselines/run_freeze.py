@@ -233,6 +233,94 @@ def validate_locked(
     }
 
 
+
+def audit_original_capture(
+    freeze: dict[str,Any], suite: dict[str,Any], *,
+    items_path: Path, attempts_path: Path, vault_path: Path,
+    upstream_checkout: Path, capture_path: Path, receipt: dict[str,Any],
+    actual_approval_confirmed: bool = False,
+) -> dict[str,Any]:
+    """Verify private raw model results against *each* frozen rendered prompt.
+
+    Unlike the legacy raw capture audit, prompt_sha256 is per attempted
+    item/sample rather than erroneously equated to one shared prompt-bundle
+    hash. Checks identity, all attempted/failure rows and archived bytes.
+    A passing result does NOT claim original model calls or scientific scores:
+    a human must authenticate provider receipts and replay official scoring.
+    """
+    freeze_report=validate_locked(
+        freeze,suite,items_path=items_path,attempts_path=attempts_path,
+        vault_path=vault_path,upstream_checkout=upstream_checkout,
+        actual_approval_confirmed=actual_approval_confirmed,
+    )
+    _external_file(capture_path,"private response archive")
+    required_receipt={
+        "schema_version","state","run_id","model_key","provider_model_id",
+        "capture_sha256","rendered_attempts_sha256","records_expected",
+    }
+    if not isinstance(receipt,dict) or set(receipt)!=required_receipt:
+        raise FreezeError("Raw archive receipt fields missing or extraneous")
+    if receipt["schema_version"]!="1.0.0" or receipt["state"]!="captured":
+        raise FreezeError("Raw capture receipt cannot masquerade as a score or accepted experiment")
+    if receipt["run_id"]!=freeze["run_id"] or receipt["model_key"]!=freeze["model_key"] or receipt["provider_model_id"]!=freeze["provider_model_id"]:
+        raise FreezeError("Capture receipt model/run identity mismatch")
+    if receipt["capture_sha256"]!=sha256_file(capture_path) or receipt["rendered_attempts_sha256"]!=sha256_file(attempts_path):
+        raise FreezeError("Raw capture/attempts digest differs from frozen private archive")
+    if type(receipt["records_expected"]) is not int or receipt["records_expected"]!=freeze_report["planned_attempts"]:
+        raise FreezeError("Raw receipt denominator differs from frozen planned attempts")
+    planned={}
+    for n,line in enumerate(attempts_path.read_text(encoding="utf-8").splitlines(),1):
+        row=json.loads(line)
+        planned[(row["item_id"],row["rung"],row["sample_index"])]=row["prompt_sha256"]
+    seen=set()
+    fail_counts=Counter()
+    required_row={"item_id","rung","sample_index","provider_model_id","prompt_sha256",
+                  "status","response_text","provider_response_id","timestamp"}
+    with capture_path.open(encoding="utf-8") as handle:
+        for line_no,line in enumerate(handle,1):
+            if not line.strip():
+                raise FreezeError(f"Raw capture line {line_no}: blank lines cannot hide failed attempts")
+            try:
+                result=json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise FreezeError(f"Raw capture line {line_no}: invalid JSON") from exc
+            if not isinstance(result,dict) or set(result)!=required_row:
+                raise FreezeError(f"Raw capture line {line_no}: unsupported fields or missing provenance")
+            if type(result["sample_index"]) is not int:
+                raise FreezeError(f"Raw capture line {line_no}: invalid sample index")
+            token=(result["item_id"],result["rung"],result["sample_index"])
+            if token not in planned or token in seen:
+                raise FreezeError(f"Raw capture line {line_no}: duplicated or unplanned item/rung/sample")
+            seen.add(token)
+            if result["provider_model_id"]!=freeze["provider_model_id"]:
+                raise FreezeError(f"Raw capture line {line_no}: model identity changed")
+            if result["prompt_sha256"]!=planned[token]:
+                raise FreezeError(f"Raw capture line {line_no}: prompt digest differs from frozen rendered input")
+            if result["status"] not in {"ok","failed","abstained","timeout","refused"}:
+                raise FreezeError(f"Raw capture line {line_no}: missing status/coverage category")
+            if not isinstance(result["response_text"],str):
+                raise FreezeError(f"Raw capture line {line_no}: response text is not preserved")
+            if result["status"]=="ok" and (not result["response_text"] or not isinstance(result["provider_response_id"],str) or not result["provider_response_id"]):
+                raise FreezeError(f"Raw capture line {line_no}: successful response lacks raw text and provider receipt")
+            try:
+                _clock(result["timestamp"])
+            except (TypeError,ValueError,AttributeError) as exc:
+                raise FreezeError(f"Raw capture line {line_no}: invalid timestamp/UTC offset") from exc
+            fail_counts[result["status"]]+=1
+    if seen!=set(planned):
+        raise FreezeError(f"Incomplete original model capture: {len(seen)} of {len(planned)} attempts recorded")
+    return {
+        "scope":"private_raw_capture_integrity_only_no_proof_of_provider_execution",
+        "run_id":freeze["run_id"],
+        "model_key":freeze["model_key"],
+        "attempts_planned":len(planned),
+        "preserved_by_status":dict(sorted(fail_counts.items())),
+        "official_scorer_rerun":False,
+        "model_results_independently_authenticated":False,
+        "scientific_experiment_validated":False,
+    }
+
+
 def main(argv: list[str]|None=None) -> int:
     p=argparse.ArgumentParser(description="EVAL-003: metadata-only preregistration / rendered-input audit")
     sub=p.add_subparsers(dest="command",required=True)

@@ -1,0 +1,71 @@
+name: HieraticBench Reproduction Audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "eval/benchmarks/hieraticbench/**"
+      - "docs/evaluation/HIERATICBENCH_REPRODUCTION.md"
+      - "tests/evaluation/test_hieraticbench_adapter.py"
+      - ".github/workflows/hieraticbench-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-reproduction:
+    name: Verify pinned public benchmark aggregates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Hieratic AI
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install Python validation dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+
+      - name: Run synthetic and quarantine regression tests
+        run: python -m unittest discover -s tests/evaluation -v
+
+      - name: Check out pinned HieraticBench (metadata/code/results only)
+        uses: actions/checkout@v7
+        with:
+          repository: alymoursy/hieraticbench
+          ref: d587dc990013f18007f1e7a8f56f96ff2f7127e2
+          path: _external/hieraticbench
+          sparse-checkout: |
+            data/items
+            results
+            bench
+            package.json
+            package-lock.json
+            site/package.json
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Verify upstream inventory without reading images
+        run: python -m eval.benchmarks.hieraticbench.adapter inventory --checkout _external/hieraticbench
+
+      - name: Reproduce publicly published score aggregation
+        run: python -m eval.benchmarks.hieraticbench.adapter verify-leaderboard --checkout _external/hieraticbench
+
+      - name: Set up Node for upstream official scorer tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pinned upstream scoring-test dependencies
+        working-directory: _external/hieraticbench
+        run: npm ci --ignore-scripts
+
+      - name: Run upstream HieraticBench official scoring tests
+        working-directory: _external/hieraticbench
+        run: npm test
+
+      # Do not upload/download benchmark images, raw responses or artifacts.
+      # The external checkout exists only inside this ephemeral evaluation job.

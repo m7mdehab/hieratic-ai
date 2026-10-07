@@ -1,6 +1,6 @@
 schema_version: "0.2.0"
 roadmap_version: "0.1.0"
-updated_at: "2026-10-07"
+updated_at: "2026-10-08"
 
 project:
   name: "Hieratic AI"
@@ -25,12 +25,13 @@ progress:
 state:
   current_phase: "P1_RESEARCH_FOUNDATION"
   current_wave: "W0_CONTROL_PLANE"
-  control_plane_gate: "bootstrap_complete_agents_active"
+  control_plane_gate: "ctrl_002_validated_ctrl_003_active"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "FND-005"
+  last_accepted_task: "CTRL-002"
   ready_tasks:
+    - "CTRL-004"
     - "DATA-001"
     - "EVAL-001"
     - "EVAL-002"
@@ -38,8 +39,7 @@ state:
   active_tasks:
     - "CTRL-003"
   review_tasks: []
-  blockers:
-    - "CTRL-002 revision required: PR #5 tests hard-code historical 2.5 progress and must be rebased/made state-dynamic."
+  blockers: []
 
 canonical_files:
   start: "START_HERE.md"
@@ -57,7 +57,6 @@ critical_gates:
     name: "Canonical control plane operational"
     status: "in_progress"
     remaining:
-      - "CTRL-002"
       - "CTRL-003"
       - "CTRL-004"
       - "FND-006"
@@ -79,6 +78,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Await/remediate CTRL-002 PR #5, review CTRL-003 when it returns, and continue
-  dependency-ready DATA/EVAL work under the active licensing/provenance policy.
-  Do not advance CTRL-004 until CTRL-002 is validated.
+  Dispatch CTRL-004 now that CTRL-002 is validated, review CTRL-003 when Sonnet
+  returns, and continue dependency-ready DATA/EVAL work under the active
+  licensing/provenance policy.

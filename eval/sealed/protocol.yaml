@@ -1,0 +1,97 @@
+protocol_version: "1.0.0"
+task_id: "EVAL-006"
+protocol_state: "frozen_policy"
+effective_at: "2026-10-08"
+source_authorities:
+  metric_contract_path: "eval/metric_contract.yaml"
+  metric_contract_version: "1.0.0"
+  error_taxonomy_path: "eval/analysis/error_taxonomy.yaml"
+  error_taxonomy_version: "1.0.0"
+  split_profiles_path: "eval/splits/profiles.yaml"
+  split_profiles_version: "1.1.0"
+  benchmark_manifest_path: "eval/benchmarks/hieraticbench/manifest.yaml"
+  external_benchmark_commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+scope:
+  target: "genuinely unseen Hieratic documents/scribes, not benchmark-learned memorization"
+  evaluation_only_assets: true
+  train_dev_test_group_separation: ["document_id", "page_id", "source_object_id", "image_sha256", "normalized_sha256", "perceptual_near_duplicate_review"]
+  public_external_benchmark_excluded_from_training: true
+  sealed_benchmark_gold_access: "custodian_only"
+  gold_ambiguity_states:
+    - certain
+    - uncertain_with_alternatives
+    - illegible_unscorable
+    - missing_annotation
+    - adjudication_pending
+  unscorable_policy: "exclude_from_metric_denominator_and_report_count"
+freeze_requirements:
+  pre_result_freeze: true
+  immutable_fields:
+    - dataset_manifest_sha256
+    - split_manifest_sha256
+    - overlap_review_sha256
+    - rights_review_sha256
+    - accepted_gold_manifest_sha256
+    - model_checkpoint_sha256
+    - model_config_sha256
+    - inference_code_commit
+    - prompt_bundle_sha256
+    - metric_contract_sha256
+    - normalization_profiles_sha256
+    - scorer_sha256
+    - metric_ids
+    - analysis_plan_sha256
+    - attempt_manifest_sha256
+    - environment_lock_sha256
+  freeze_timing: "Before first sealed prediction or any sealed result/gold disclosure"
+  freeze_change_response: "new protocol version and independent fresh blind set; never overwrite scored evaluation"
+roles:
+  training_operator: "May see train/dev only, submits pre-registered checkpoint"
+  sealed_custodian: "Controls sealed labels, hashes and authorized item access"
+  blind_scorer: "Scores only immutable submitted predictions against separately held gold"
+  adjudicator: "Resolves expert ambiguity blind to model branding and test-driven tuning"
+  release_authority: "Independently approves release evidence and contestation handling"
+  separation_rules:
+    - "training_operator != sealed_custodian"
+    - "training_operator != blind_scorer"
+    - "training_operator != release_authority"
+    - "sealed_custodian != release_authority"
+scoring:
+  metrics_must_be_pre_registered: true
+  no_composite_primary: true
+  no_adaptive_normalization: true
+  raw_and_normalized_scores_distinct: true
+  group_primary: "document_macro"
+  uncertainty_group: "document"
+  bootstrap_resamples: 2000
+  bootstrap_interval: 0.95
+  preserve_failures_abstentions: true
+  report_model_coverage: true
+  no_gold_unavailable_scoring: true
+  separate_layers:
+    - script_identification
+    - layout
+    - sign_recognition
+    - sequence_recognition
+    - hieroglyphic_rendering
+    - transliteration
+    - normalization
+    - translation
+contamination:
+  suspected_action: "quarantine_affected_claims_pending_review"
+  confirmed_action: "invalidate_affected_blind_evaluation_and_disclose_scope"
+  uncertainty_action: "treat_unclear_overlaps_as_not_cleared"
+  retest_policy: "new independent sealed holdout, new freeze and public revision history"
+  incidents_must_include: ["incident_id", "status", "affected_runs", "evidence_refs", "reviewer_id", "decision", "public_disclosure"]
+release:
+  minimum_independent_approvers: 2
+  require_complete_prediction_attempts: true
+  require_reproducible_metrics: true
+  require_rights_and_overlap_clearance: true
+  require_approved_gold_adjudication: true
+  require_contamination_clean: true
+  require_doc_group_uncertainty: true
+  require_all_failed_trials_reported: true
+  prohibit_claims_for_unmeasured_stages: true
+  prohibit_public_raw_golds_or_copyrighted_images: true
+  historical_revisions_preserved: true

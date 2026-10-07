@@ -99,3 +99,27 @@ Key decisions:
 - no primary composite score is used in evaluation v1.
 
 See `docs/evaluation/METRICS_SPEC.md` and `eval/metric_contract.yaml`.
+
+
+### R-007 — Pinned HieraticBench external reproduction (EVAL-002)
+
+**Status:** VERIFIED-PRIMARY, source-code inspected and CI reproduced public aggregates.
+
+Pinned benchmark commit: `d587dc990013f18007f1e7a8f56f96ff2f7127e2`; harness `0.1.0`.
+
+Official structure: 268 items, 266 public + two sealed images of the same commissioned sentence; 150 public AKU-PAL single signs; 118 identify-eligible items; 13 published model/effort rows in the Oct 5 snapshot.
+
+The benchmark's 0/0.5/1 script-ID credit, first-code sign scoring, bounded 1-minus-edit-distance sign/transliteration scoring and chrF translation function are **official benchmark rules**, not interchangeable with Hieratic AI's EVAL-001 metrics.
+
+Reproducibility:
+- successful independent GitHub Actions audit of pinned upstream public run data;
+- 1,892 run records inspected, 1,738 item/model/rung means and 17 aggregate model/rung values verified against official leaderboard;
+- 13 synthetic Python tests and eight original upstream scorer tests passed;
+- model provider calls **not** rerun;
+- no public machine-scored readings/translations for the sealed sentences; no answer key inferred.
+
+Evidence: `docs/evaluation/HIERATICBENCH_REPRODUCTION.md`,
+`eval/benchmarks/hieraticbench/`,
+[Actions audit run 37693626552](https://github.com/m7mdehab/hieratic-ai/actions/runs/37693626552).
+
+Methodological constraint: external item content, source near-duplicates, and benchmark gold stay out of training/dev, regardless of source-license permissiveness.

@@ -226,3 +226,19 @@ FND-006 made project governance executable via evidence/experiment schemas, task
 - FND-006 closes foundation P1 at 5/5; CTRL-003 remains an independent, unresolved control-plane gate item.
 
 Reference: `docs/governance/REPRODUCIBILITY_GATES.md`.
+
+
+## ADR-0017 — Reviewable acquisition and split plans do not constitute dataset clearance
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+DATA-002, DATA-004 and EVAL-004 infrastructure was accepted after code, CI and negative-test review, but **only the mechanisms** have been validated:
+
+- Acquisition manifests plan source handling without downloading, licensing, granting rights or admitting assets into a training/dev corpus; real per-item license/rightsholder/reviewer and independent overlap evidence must exist.
+- A syntactically reviewed `benchmark_overlap_review.status: clear` is an attestation that must be independently checked; it does not prove the item was compared with all 268 pinned HieraticBench examples. The aggregate-only roster is explicitly insufficient to automate exhaustive overlap clearance.
+- Any real/production split must pass item-level provenance and exact/near-duplicate comparison before downstream training or blind-evaluation claims; unreviewed high-risk items remain excluded.
+- Annotation examples are synthetic. EVAL-001 scoring against actual expert gold still needs reviewed real annotations with permission.
+- Downstream tasks `EVAL-006`, `DATA-003`, `DATA-005`, `DATA-006`, `DATA-007` become **dependency-ready only**; ready is not automatically active or validated.
+
+The accepted implementation PRs are #20, #23 and #24, with W1 acceptance recorded in canonical state. The limitation protects the difference between validated engineering guardrails and scientific or licensing evidence.

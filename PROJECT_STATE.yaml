@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 11.5
+  goal_progress: 18.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,17 +29,19 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "FND-006"
-  ready_tasks: []
+  last_accepted_task: "DATA-002"
+  ready_tasks:
+    - "DATA-003"
+    - "DATA-005"
+    - "DATA-006"
+    - "DATA-007"
+    - "EVAL-006"
   active_tasks:
     - "CTRL-003"
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "DATA-002 revision required (PR #20): conditional item-rights approval lacks verified item-level reviewer and overlap clearance."
-    - "DATA-004 revision required (PR #23): certain gold values can be unselected and reading_order allows repeated IDs."
-    - "EVAL-004 revision required (PR #24): benchmark overlap roster/clearance fails open for public AKU-PAL benchmark items."
-    - "CTRL-003 draft PR #27 needs current-main compatibility, 320px responsive fixes and security/accessibility QA."
+    - "CTRL-003 PR #27 needs current-main compatibility, 320px responsive fixes and security/accessibility QA."
 
 canonical_files:
   start: "START_HERE.md"
@@ -60,15 +62,16 @@ critical_gates:
       - "CTRL-003"
   - id: "GATE-EVAL"
     name: "Leakage-resistant evaluation protocol"
-    status: "not_started"
+    status: "in_progress"
   - id: "GATE-LICENSE"
     name: "Data provenance and redistribution policy enforced"
     status: "policy_active"
     policy: "docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md"
     enforcement_note: >-
       Policy is mandatory and the machine-readable source registry is now
-      operational. Acquisition-level manifest enforcement remains pending
-      DATA-002.
+      operational. DATA-002 now implements rights-aware dry-run acquisition
+      manifests; real item license/overlap rights and admission still require
+      independent review before any training or development use.
   - id: "GATE-GENERALIZATION"
     name: "Unseen-document/scribe generalization demonstrated"
     status: "not_started"
@@ -77,9 +80,13 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  FND-006 is accepted; all five P1 foundation points are earned. Overseer
-  is implementing EVAL-003 methodology/tooling but must not claim validated
-  frontier-model baselines before paid model runs and preserved raw output
-  evidence. Luna continues targeted corrections to DATA-002, DATA-004 and
-  EVAL-004; Anti-Gravity/Sonnet continues CTRL-003 draft remediation. Review
-  each returned PR independently before accepting capability points.
+  W1 DATA-002, DATA-004 and EVAL-004 were accepted after source review, targeted
+  remediation and passing CI. Queue now includes EVAL-006, DATA-003, DATA-005,
+  DATA-006 and DATA-007, which are dependency-ready but not yet dispatched.
+  Agree the next parallel wave with the user first and assign a meaningful
+  overseer-owned scientific task. Review CTRL-003 PR #27 after Anti-Gravity
+  resolves current-main, mobile and npm dependency QA issues. EVAL-003 has
+  accepted offline methodology/tooling only: actual provider calls, an approved
+  budget, private outputs and reproduced scores are still required for its
+  1.5 points. Real dataset admission and benchmark overlap verification remain
+  externally reviewed, never inferred from synthetic fixtures.

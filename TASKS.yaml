@@ -144,7 +144,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Construct leakage-resistant development and test splits"
     weight: 2.00
-    status: "revision_required"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["FND-003", "FND-004"]
     acceptance_summary: "Splits isolate appropriate document/scribe/source variation and pass overlap/leakage checks."
@@ -162,7 +162,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Freeze sealed evaluation protocol"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["EVAL-004", "EVAL-005"]
     acceptance_summary: "Final evaluation rules prevent adaptive test-set tuning and define contamination handling and release conditions."
@@ -180,7 +180,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Implement reproducible data acquisition manifests"
     weight: 2.00
-    status: "revision_required"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["DATA-001"]
     acceptance_summary: "Permitted sources can be fetched or referenced deterministically without silently redistributing restricted assets."
@@ -189,7 +189,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Implement preprocessing and dataset versioning"
     weight: 3.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-002"]
     acceptance_summary: "Image/text preprocessing is deterministic, versioned, and traceable to source records."
@@ -198,7 +198,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Define canonical annotation schema"
     weight: 3.00
-    status: "revision_required"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["FND-003", "DATA-001"]
     acceptance_summary: "Schema represents document/line/sign/text relations, uncertainty, alternatives, provenance, and reviewer state."
@@ -207,7 +207,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Build sign and palaeography mappings"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-001", "DATA-004"]
     acceptance_summary: "Sign identities and known variants map consistently to supported scholarly/palaeographic references."
@@ -216,7 +216,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Align images with transliteration targets"
     weight: 3.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-002", "DATA-004"]
     acceptance_summary: "Training examples expose image regions and defensible transliteration targets with alignment confidence."
@@ -225,7 +225,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Represent ambiguity and expert QA"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-004"]
     acceptance_summary: "Ambiguous/multiple readings and expert-review state are first-class data, not forced into false certainty."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 11.5
+    validated_weighted_tasks_expected: 18.5
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

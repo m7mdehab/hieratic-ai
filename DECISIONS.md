@@ -123,3 +123,21 @@ The overseer-owned task should normally be a high-leverage research, architectur
 If no safe overseer task is available, the overseer must explicitly state the blocking dependency instead of inventing work.
 
 The detailed protocol is `docs/governance/PARALLEL_WAVE_PROTOCOL.md`.
+
+
+## ADR-0011 — Sonnet and Gemini share one Anti-Gravity execution lane
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+The normal parallel topology is three lanes:
+
+1. Luna;
+2. one Anti-Gravity lane occupied by either Sonnet or Gemini 3.8 Flash;
+3. the overseer.
+
+Sonnet and Gemini are not planned as simultaneous independent lanes. Mohammed switches the Anti-Gravity lane between them according to model limits and availability.
+
+A provider/model switch does not create a new project or task. The incoming model resumes from canonical repository state and the relevant task brief/handoff. Repository state remains authoritative over model memory or prior chat summaries.
+
+Wave plans must therefore assign work to the **Anti-Gravity lane**, while naming the currently active model in parentheses.

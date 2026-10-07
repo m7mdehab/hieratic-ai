@@ -36,7 +36,7 @@ tasks:
     phase: "P0_CONTROL_PLANE"
     title: "Implement project-state validator and context generator"
     weight: 0.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["CTRL-001"]
     acceptance_summary: "Validator catches malformed/inconsistent state; generator emits compact overseer and task-specific context packets."
@@ -45,7 +45,7 @@ tasks:
     phase: "P0_CONTROL_PLANE"
     title: "Build live dashboard/control-plane shell"
     weight: 0.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["CTRL-001"]
     acceptance_summary: "Responsive public interface reads canonical repo state and exposes project progress/tasks without a second manual status database."
@@ -81,7 +81,7 @@ tasks:
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Validate writing-system and task-decomposition problem map"
     weight: 0.75
-    status: "ready"
+    status: "validated"
     owner_role: "overseer"
     depends_on: ["FND-002"]
     acceptance_summary: "Reliable sources document Hieratic variation and the image-to-translation task boundaries."
@@ -117,7 +117,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Specify evaluation metrics across the reading stack"
     weight: 1.50
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["FND-003"]
     acceptance_summary: "Metrics and scoring rules cover script ID, recognition, transliteration, uncertainty, and translation without conflating tasks."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 2.5
+    validated_weighted_tasks_expected: 3.25
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

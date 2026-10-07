@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 2.5
+  goal_progress: 3.25
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -25,17 +25,17 @@ progress:
 state:
   current_phase: "P1_RESEARCH_FOUNDATION"
   current_wave: "W0_CONTROL_PLANE"
-  control_plane_gate: "bootstrap_complete_wave_ready"
+  control_plane_gate: "bootstrap_complete_agents_active"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "CTRL-001"
+  last_accepted_task: "FND-003"
   ready_tasks:
+    - "FND-004"
+    - "EVAL-001"
+  active_tasks:
     - "CTRL-002"
     - "CTRL-003"
-    - "FND-003"
-    - "FND-004"
-  active_tasks: []
   review_tasks: []
   blockers: []
 
@@ -73,6 +73,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Dispatch CTRL-002 and CTRL-003 in parallel while continuing overseer-owned
-  FND-003 and FND-004 research. Review returned artifacts before any state
-  transition or progress award.
+  Continue FND-004 primary-source prior-art/data verification while CTRL-002
+  and CTRL-003 execute in parallel. EVAL-001 is now dependency-unblocked but
+  should only be dispatched when an execution slot is intentionally assigned.

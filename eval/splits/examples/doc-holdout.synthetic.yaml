@@ -1,0 +1,529 @@
+split_version: 1.1.0
+generator_version: split-system/1.1.0
+seed: 41
+profile_id: PROFILE-DOC-HOLDOUT
+benchmark_overlap_policy:
+  policy_version: 1.0.0
+  risk_authority: data/sources/registry.yaml:benchmark_overlap_risk
+  high_risk_action: exclude_unreviewed_or_overlapping
+  roster:
+    version: hieraticbench-d587dc9-inventory-268-v1
+    manifest_path: eval/benchmarks/hieraticbench/manifest.yaml
+    pinned_commit: d587dc990013f18007f1e7a8f56f96ff2f7127e2
+    total_items: 268
+    public_items: 266
+    sealed_items: 2
+    item_ids_embedded: false
+    coverage: aggregate_counts_only
+source_metadata_version: synthetic-split-fixture/1.1.0
+source_metadata_sha256: dde39b5bae8f8e39abcf159739180c82e4da2cb717a0a8cc14bc6977b4ac15df
+generation_timestamp: '2026-10-07T22:46:37Z'
+grouping_keys_used:
+- document_id
+- page_id
+- source_id
+- source_object_id
+- image_sha256
+- normalized_sha256
+- perceptual_hash_review_hook
+holdout_values: []
+assignments:
+- document_id: benchmark-doc-synthetic
+  page_id: page-benchmark
+  source_id: SRC-HIERATICBENCH
+  source_object_id: hb-0001
+  institution: Synthetic-Benchmark
+  scribe_group: null
+  period: null
+  material_support: null
+  genre_register: null
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: &id001
+    status: not_assessed
+    reviewer_id: null
+    evidence_ref: null
+    overlap_check_version: null
+    roster_version: null
+    reviewed_at: null
+  item_id: hb-0001
+  partition: excluded
+  exclusion_reason: benchmark_quarantine
+  atomic_group_id: d43bc077fbb8a62f
+- document_id: doc-a1
+  page_id: page-a1-1
+  source_id: SRC-HPDB
+  source_object_id: object-a1
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-a
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a1-page1
+  partition: dev
+  exclusion_reason: null
+  atomic_group_id: 1f26cd759e558d21
+- document_id: doc-a1
+  page_id: page-a1-2
+  source_id: SRC-HPDB
+  source_object_id: object-a1
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-a
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a1-page2
+  partition: dev
+  exclusion_reason: null
+  atomic_group_id: 1f26cd759e558d21
+- document_id: doc-a2
+  page_id: page-a2
+  source_id: SRC-HPDB
+  source_object_id: object-a2
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-a
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a2
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 2ed022538ee1cd86
+- document_id: doc-a3
+  page_id: page-a3
+  source_id: SRC-HPDB
+  source_object_id: object-a3
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-b
+  period: late
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a3
+  partition: test
+  exclusion_reason: null
+  atomic_group_id: 8283fc51647068cd
+- document_id: doc-a4
+  page_id: page-a4
+  source_id: SRC-HPDB
+  source_object_id: object-a4
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-b
+  period: late
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a4
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 7b3db8d7a28e62d0
+- document_id: doc-a5
+  page_id: page-a5
+  source_id: SRC-HPDB
+  source_object_id: object-a5
+  institution: Synthetic-Archive-A
+  scribe_group: null
+  period: null
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-a5
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 655b524399a4b6cd
+- document_id: doc-b1
+  page_id: page-b1
+  source_id: SRC-DDD
+  source_object_id: object-b1
+  institution: Synthetic-Archive-B
+  scribe_group: scribe-c
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-b1
+  partition: test
+  exclusion_reason: null
+  atomic_group_id: 7bf69e52f36021b1
+- document_id: doc-b2
+  page_id: page-b2
+  source_id: SRC-DDD
+  source_object_id: object-b2
+  institution: Synthetic-Archive-B
+  scribe_group: scribe-c
+  period: late
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-b2
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 64e3094bbc6bd31d
+- document_id: doc-b3
+  page_id: page-b3
+  source_id: SRC-DDD
+  source_object_id: object-b3
+  institution: Synthetic-Archive-B
+  scribe_group: scribe-d
+  period: late
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-b3
+  partition: dev
+  exclusion_reason: null
+  atomic_group_id: e536419a32f33312
+- document_id: doc-b4
+  page_id: page-b4
+  source_id: SRC-DDD
+  source_object_id: object-b4
+  institution: Synthetic-Archive-B
+  scribe_group: scribe-d
+  period: early
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-b4
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 5d4c273c29ae30a5
+- document_id: doc-b5
+  page_id: page-b5
+  source_id: SRC-DDD
+  source_object_id: object-b5
+  institution: Synthetic-Archive-B
+  scribe_group: scribe-d
+  period: null
+  material_support: papyrus
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review: *id001
+  item_id: item-b5
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: dbc565b48630db80
+- document_id: doc-c1
+  page_id: page-c1
+  source_id: SRC-AKU-PAL
+  source_object_id: object-c1
+  institution: Synthetic-Archive-C
+  scribe_group: scribe-e
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: synthetic_cleared
+    reviewer_id: synthetic-reviewer-001
+    evidence_ref: synthetic:aku-pal-item-c1-vs-hieraticbench
+    overlap_check_version: synthetic-overlap-scan/1
+    roster_version: synthetic:hieraticbench-fixture-roster/1
+    reviewed_at: '2026-10-08T10:00:00Z'
+  item_id: item-c1
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 65cc972185c5b740
+- document_id: doc-c2
+  page_id: page-c2
+  source_id: SRC-AKU-PAL
+  source_object_id: object-c2
+  institution: Synthetic-Archive-C
+  scribe_group: scribe-e
+  period: early
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: synthetic_cleared
+    reviewer_id: synthetic-reviewer-001
+    evidence_ref: synthetic:aku-pal-item-c2-vs-hieraticbench
+    overlap_check_version: synthetic-overlap-scan/1
+    roster_version: synthetic:hieraticbench-fixture-roster/1
+    reviewed_at: '2026-10-08T10:00:00Z'
+  item_id: item-c2
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: c918ac758491caf1
+- document_id: doc-c3
+  page_id: page-c3
+  source_id: SRC-AKU-PAL
+  source_object_id: object-c3
+  institution: Synthetic-Archive-C
+  scribe_group: scribe-f
+  period: late
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: synthetic_cleared
+    reviewer_id: synthetic-reviewer-001
+    evidence_ref: synthetic:aku-pal-item-c3-vs-hieraticbench
+    overlap_check_version: synthetic-overlap-scan/1
+    roster_version: synthetic:hieraticbench-fixture-roster/1
+    reviewed_at: '2026-10-08T10:00:00Z'
+  item_id: item-c3
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 0fd5100c55799c14
+- document_id: doc-c4
+  page_id: page-c4
+  source_id: SRC-AKU-PAL
+  source_object_id: object-c4
+  institution: Synthetic-Archive-C
+  scribe_group: scribe-f
+  period: late
+  material_support: ostracon
+  genre_register: literary
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: synthetic_cleared
+    reviewer_id: synthetic-reviewer-001
+    evidence_ref: synthetic:aku-pal-item-c4-vs-hieraticbench
+    overlap_check_version: synthetic-overlap-scan/1
+    roster_version: synthetic:hieraticbench-fixture-roster/1
+    reviewed_at: '2026-10-08T10:00:00Z'
+  item_id: item-c4
+  partition: dev
+  exclusion_reason: null
+  atomic_group_id: 84c1c7030e6f029c
+- document_id: doc-c5
+  page_id: page-c5
+  source_id: SRC-AKU-PAL
+  source_object_id: object-c5
+  institution: Synthetic-Archive-C
+  scribe_group: scribe-f
+  period: null
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: synthetic_cleared
+    reviewer_id: synthetic-reviewer-001
+    evidence_ref: synthetic:aku-pal-item-c5-vs-hieraticbench
+    overlap_check_version: synthetic-overlap-scan/1
+    roster_version: synthetic:hieraticbench-fixture-roster/1
+    reviewed_at: '2026-10-08T10:00:00Z'
+  item_id: item-c5
+  partition: test
+  exclusion_reason: null
+  atomic_group_id: f65d6cd376dd2bd8
+near_duplicate_review_queue:
+- left_item_id: item-a1-page1
+  right_item_id: item-a1-page2
+  method: embedding_similarity
+  similarity: 0.92
+  review_status: pending
+  reviewer_id: null
+  evidence_ref: synthetic-only-candidate; no image data included
+statistics:
+  item_counts:
+    train: 9
+    dev: 4
+    test: 3
+    excluded: 1
+  document_counts:
+    train: 9
+    dev: 3
+    test: 3
+    excluded: 1
+  dimension_counts:
+    source_id:
+      SRC-HIERATICBENCH:
+        train: 0
+        dev: 0
+        test: 0
+        excluded: 1
+      SRC-HPDB:
+        train: 3
+        dev: 2
+        test: 1
+        excluded: 0
+      SRC-DDD:
+        train: 3
+        dev: 1
+        test: 1
+        excluded: 0
+      SRC-AKU-PAL:
+        train: 3
+        dev: 1
+        test: 1
+        excluded: 0
+    institution:
+      Synthetic-Benchmark:
+        train: 0
+        dev: 0
+        test: 0
+        excluded: 1
+      Synthetic-Archive-A:
+        train: 3
+        dev: 2
+        test: 1
+        excluded: 0
+      Synthetic-Archive-B:
+        train: 3
+        dev: 1
+        test: 1
+        excluded: 0
+      Synthetic-Archive-C:
+        train: 3
+        dev: 1
+        test: 1
+        excluded: 0
+    scribe_group:
+      UNKNOWN:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 1
+      scribe-a:
+        train: 1
+        dev: 2
+        test: 0
+        excluded: 0
+      scribe-b:
+        train: 1
+        dev: 0
+        test: 1
+        excluded: 0
+      scribe-c:
+        train: 1
+        dev: 0
+        test: 1
+        excluded: 0
+      scribe-d:
+        train: 2
+        dev: 1
+        test: 0
+        excluded: 0
+      scribe-e:
+        train: 2
+        dev: 0
+        test: 0
+        excluded: 0
+      scribe-f:
+        train: 1
+        dev: 1
+        test: 1
+        excluded: 0
+    period:
+      UNKNOWN:
+        train: 2
+        dev: 0
+        test: 1
+        excluded: 1
+      early:
+        train: 4
+        dev: 2
+        test: 1
+        excluded: 0
+      late:
+        train: 3
+        dev: 2
+        test: 1
+        excluded: 0
+    material_support:
+      UNKNOWN:
+        train: 0
+        dev: 0
+        test: 0
+        excluded: 1
+      papyrus:
+        train: 6
+        dev: 2
+        test: 2
+        excluded: 0
+      ostracon:
+        train: 3
+        dev: 2
+        test: 1
+        excluded: 0
+    genre_register:
+      UNKNOWN:
+        train: 0
+        dev: 0
+        test: 0
+        excluded: 1
+      administrative:
+        train: 5
+        dev: 2
+        test: 2
+        excluded: 0
+      literary:
+        train: 4
+        dev: 2
+        test: 1
+        excluded: 0
+  warning_count: 1
+  known_scribe_counts:
+    train: 6
+    dev: 3
+    test: 3
+    excluded: 0
+  excluded_or_quarantined_count: 1
+warnings:
+- 'near_duplicate_review_pending: item-a1-page1 / item-a1-page2; same partition retained
+  pending review'
+sealed_test_policy: null

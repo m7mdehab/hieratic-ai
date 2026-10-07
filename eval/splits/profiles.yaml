@@ -1,0 +1,43 @@
+profiles_version: "1.0.0"
+benchmark_quarantine_source_ids: [SRC-HIERATICBENCH]
+known_benchmark_item_ids: [hb-0001, hb-0002]
+profiles:
+  PROFILE-DOC-HOLDOUT:
+    kind: group_holdout
+    group_by: document_id
+    ratios: {train: 0.6, dev: 0.2, test: 0.2}
+    stratify_by: [source_id]
+    minimum_groups_per_stratum_for_all_partitions: 3
+    description: "Primary generalization profile; document and page groups stay isolated."
+  PROFILE-SCRIBE-HOLDOUT:
+    kind: metadata_holdout
+    group_by: document_id
+    holdout_dimension: scribe_group
+    held_partition: test
+    remaining_ratios: {train: 0.85, dev: 0.15}
+    unknown_value_policy: train_only
+    stratify_by: [source_id]
+    description: "Held-out scribes are test-only; unknown-scribe documents are explicitly train-only."
+  PROFILE-SOURCE-HOLDOUT:
+    kind: metadata_holdout
+    group_by: document_id
+    holdout_dimension: source_id
+    held_partition: test
+    remaining_ratios: {train: 0.85, dev: 0.15}
+    stratify_by: [source_id]
+    description: "Hold out selected source/institution groups when sample size permits."
+  PROFILE-PERIOD-HOLDOUT:
+    kind: metadata_holdout
+    group_by: document_id
+    holdout_dimension: period
+    held_partition: test
+    remaining_ratios: {train: 0.85, dev: 0.15}
+    stratify_by: [source_id]
+    description: "Hold out selected chronological bands; period values remain source metadata."
+  PROFILE-SEALED-TEST:
+    kind: policy_only
+    instantiable: false
+    freeze_before_final_model_selection: true
+    labels_follow_sealed_protocol: true
+    regeneration_after_results_allowed: false
+    description: "Future sealed test membership is frozen before model selection and never adaptively regenerated after results."

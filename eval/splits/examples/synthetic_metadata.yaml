@@ -1,0 +1,210 @@
+metadata_version: "synthetic-split-fixture/1.0.0"
+quarantined_source_ids: []
+quarantined_object_ids: []
+defaults: &defaults
+  source_object_id: null
+  institution: null
+  scribe_group: null
+  period: null
+  material_support: null
+  genre_register: null
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+items:
+  - <<: *defaults
+    item_id: item-a1-page1
+    source_id: SRC-HPDB
+    source_object_id: object-a1
+    document_id: doc-a1
+    page_id: page-a1-1
+    institution: Synthetic-Archive-A
+    scribe_group: scribe-a
+    period: early
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-a1-page2
+    source_id: SRC-HPDB
+    source_object_id: object-a1
+    document_id: doc-a1
+    page_id: page-a1-2
+    institution: Synthetic-Archive-A
+    scribe_group: scribe-a
+    period: early
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-a2
+    source_id: SRC-HPDB
+    source_object_id: object-a2
+    document_id: doc-a2
+    page_id: page-a2
+    institution: Synthetic-Archive-A
+    scribe_group: scribe-a
+    period: early
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-a3
+    source_id: SRC-HPDB
+    source_object_id: object-a3
+    document_id: doc-a3
+    page_id: page-a3
+    institution: Synthetic-Archive-A
+    scribe_group: scribe-b
+    period: late
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-a4
+    source_id: SRC-HPDB
+    source_object_id: object-a4
+    document_id: doc-a4
+    page_id: page-a4
+    institution: Synthetic-Archive-A
+    scribe_group: scribe-b
+    period: late
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-a5
+    source_id: SRC-HPDB
+    source_object_id: object-a5
+    document_id: doc-a5
+    page_id: page-a5
+    institution: Synthetic-Archive-A
+    scribe_group: null
+    period: null
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-b1
+    source_id: SRC-DDD
+    source_object_id: object-b1
+    document_id: doc-b1
+    page_id: page-b1
+    institution: Synthetic-Archive-B
+    scribe_group: scribe-c
+    period: early
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-b2
+    source_id: SRC-DDD
+    source_object_id: object-b2
+    document_id: doc-b2
+    page_id: page-b2
+    institution: Synthetic-Archive-B
+    scribe_group: scribe-c
+    period: late
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-b3
+    source_id: SRC-DDD
+    source_object_id: object-b3
+    document_id: doc-b3
+    page_id: page-b3
+    institution: Synthetic-Archive-B
+    scribe_group: scribe-d
+    period: late
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-b4
+    source_id: SRC-DDD
+    source_object_id: object-b4
+    document_id: doc-b4
+    page_id: page-b4
+    institution: Synthetic-Archive-B
+    scribe_group: scribe-d
+    period: early
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-b5
+    source_id: SRC-DDD
+    source_object_id: object-b5
+    document_id: doc-b5
+    page_id: page-b5
+    institution: Synthetic-Archive-B
+    scribe_group: scribe-d
+    period: null
+    material_support: papyrus
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-c1
+    source_id: SRC-AKU-PAL
+    source_object_id: object-c1
+    document_id: doc-c1
+    page_id: page-c1
+    institution: Synthetic-Archive-C
+    scribe_group: scribe-e
+    period: early
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-c2
+    source_id: SRC-AKU-PAL
+    source_object_id: object-c2
+    document_id: doc-c2
+    page_id: page-c2
+    institution: Synthetic-Archive-C
+    scribe_group: scribe-e
+    period: early
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-c3
+    source_id: SRC-AKU-PAL
+    source_object_id: object-c3
+    document_id: doc-c3
+    page_id: page-c3
+    institution: Synthetic-Archive-C
+    scribe_group: scribe-f
+    period: late
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: item-c4
+    source_id: SRC-AKU-PAL
+    source_object_id: object-c4
+    document_id: doc-c4
+    page_id: page-c4
+    institution: Synthetic-Archive-C
+    scribe_group: scribe-f
+    period: late
+    material_support: ostracon
+    genre_register: literary
+  - <<: *defaults
+    item_id: item-c5
+    source_id: SRC-AKU-PAL
+    source_object_id: object-c5
+    document_id: doc-c5
+    page_id: page-c5
+    institution: Synthetic-Archive-C
+    scribe_group: scribe-f
+    period: null
+    material_support: papyrus
+    genre_register: administrative
+  - <<: *defaults
+    item_id: hb-0001
+    source_id: SRC-HIERATICBENCH
+    source_object_id: hb-0001
+    document_id: benchmark-doc-synthetic
+    page_id: page-benchmark
+    institution: Synthetic-Benchmark
+    scribe_group: null
+    period: null
+    material_support: null
+    genre_register: null
+near_duplicate_candidates:
+  - left_item_id: item-a1-page1
+    right_item_id: item-a1-page2
+    method: embedding_similarity
+    similarity: 0.92
+    review_status: pending
+    reviewer_id: null
+    evidence_ref: synthetic-only-candidate; no image data included

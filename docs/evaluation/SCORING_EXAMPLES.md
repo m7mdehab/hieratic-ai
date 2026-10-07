@@ -377,15 +377,11 @@ Document B:
 
 Global micro GER is dominated by Document A:
 
-[
-(18 + 40) / 1000 = 5.8\%
-]
+`(18 + 40) / 1000 = 5.8%`
 
 Document-macro GER:
 
-[
-(2\% + 40\%) / 2 = 21\%
-]
+`(2% + 40%) / 2 = 21%`
 
 Both are reported.
 

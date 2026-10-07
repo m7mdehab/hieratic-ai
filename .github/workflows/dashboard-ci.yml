@@ -31,32 +31,52 @@ jobs:
     steps:
       - name: Checkout complete repository state
         uses: actions/checkout@v7
+      - name: Detect dashboard during staged rollout
+        id: detect
+        run: |
+          if test -f dashboard/package.json; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Dashboard implementation is still under review; suite activates after CTRL-003 integration."
+          fi
+        working-directory: .
       - name: Set up Node 22
+        if: steps.detect.outputs.exists == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: dashboard/package-lock.json
       - name: Install locked dependencies
+        if: steps.detect.outputs.exists == 'true'
         run: npm ci
       - name: Enforce production dependency security
+        if: steps.detect.outputs.exists == 'true'
         run: npm audit --omit=dev --audit-level=high
       - name: Report all dependency audit findings
+        if: steps.detect.outputs.exists == 'true'
         run: npm audit --json > npm-audit.json || true
       - name: Typecheck
+        if: steps.detect.outputs.exists == 'true'
         run: npm run typecheck
       - name: Lint
+        if: steps.detect.outputs.exists == 'true'
         run: npm run lint
       - name: Run canonical state and fixture tests
+        if: steps.detect.outputs.exists == 'true'
         run: npm test
       - name: Build static dashboard from canonical checkout
+        if: steps.detect.outputs.exists == 'true'
         run: npm run build
       - name: Install Playwright Chromium with OS dependencies
+        if: steps.detect.outputs.exists == 'true'
         run: npx playwright install --with-deps chromium
       - name: Test 320px, 390px and 1440px and capture full-page screenshots
+        if: steps.detect.outputs.exists == 'true'
         run: npm run screenshots
       - name: Upload QA screenshots and security report
-        if: always()
+        if: always() && steps.detect.outputs.exists == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: dashboard-qa-${{ github.sha }}

@@ -170,3 +170,14 @@ PRs #35 and #40 passed CI and were accepted (+2.0 points). A total of 145 evalua
 Separately, EVAL-003's pinned public metadata freeze was implemented in PR #38. Ephemeral CI examined only permitted metadata/prompt source in the EVAL-002 upstream checkout at commit `d587dc990013f18007f1e7a8f56f96ff2f7127e2` and verified 116 public script-ID + 150 sign item/rung records (2 sealed items excluded). It creates no inference results or spending authorization; EVAL-003 retains 0/1.5 points.
 
 New goal progress: **20.5/100**, P2 evaluation **8.5/10**, research coverage 14%, 0 validated experiments and 0 trained models.
+
+
+### R-012 — W2 data-engine contracts and strict provenance/ambiguity gates
+
+**Status: REVIEWED ENGINEERING INFRASTRUCTURE — not a real corpus or experimental result.**
+
+DATA-003 #36: deterministic image preprocessing, SHA256 lineage, coordinate transforms and dataset IDs. DATA-005 #37: versioned Hieratic identity/variant claims separated from hieroglyphic and transliteration with verified citation metadata. DATA-006 #39: rights-linked image/line/sign/token alignment and synthetic-source exclusion from gold scoring. DATA-007 #41: independent blinded reviewer decisions, append-only supersessions, adjudication and transparent paired denominators.
+
+All four merged following independent negative-test review, targeted fixes and final green CI (34 governance/80 data/145 evaluation tests by last PR). No copyrighted manuscript images, real historical mappings, expert adjudication, trained models, model outputs, or benchmark scores were produced.
+
+**Verified progress +10.0** to 30.5/100, P3 17/20, P2 8.5/10, coverage unchanged at 14%. DATA-008, VLM-001 and LING-001 become dependency-ready only.

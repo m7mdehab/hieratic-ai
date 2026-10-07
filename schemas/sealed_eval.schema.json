@@ -1,0 +1,637 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sealed Hieratic evaluation preregistration and publication decision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "state",
+    "protocol_version",
+    "protocol_sha256",
+    "freeze_sha256",
+    "freeze_created_at",
+    "first_sealed_access_at",
+    "roles",
+    "frozen_inputs",
+    "metric_ids",
+    "rights",
+    "overlap",
+    "attempts",
+    "scoring",
+    "adjudication",
+    "contamination",
+    "approvals",
+    "release_artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "evaluation_id": {
+      "type": "string",
+      "pattern": "^SEAL-[A-Z0-9-]+$"
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "frozen",
+        "scored",
+        "adjudicated",
+        "publishable",
+        "blocked",
+        "withdrawn"
+      ]
+    },
+    "protocol_version": {
+      "const": "1.0.0"
+    },
+    "protocol_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "freeze_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "freeze_created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "first_sealed_access_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "training_operator",
+        "sealed_custodian",
+        "blind_scorer",
+        "adjudicator",
+        "release_authorities"
+      ],
+      "properties": {
+        "training_operator": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sealed_custodian": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "blind_scorer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "adjudicator": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "release_authorities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "frozen_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_manifest_sha256",
+        "split_manifest_sha256",
+        "overlap_review_sha256",
+        "rights_review_sha256",
+        "accepted_gold_manifest_sha256",
+        "model_checkpoint_sha256",
+        "model_config_sha256",
+        "prompt_bundle_sha256",
+        "metric_contract_sha256",
+        "normalization_profiles_sha256",
+        "scorer_sha256",
+        "analysis_plan_sha256",
+        "attempt_manifest_sha256",
+        "environment_lock_sha256",
+        "inference_code_commit"
+      ],
+      "properties": {
+        "dataset_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "split_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "overlap_review_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rights_review_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "accepted_gold_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "model_checkpoint_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "model_config_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "prompt_bundle_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "metric_contract_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "normalization_profiles_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "scorer_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "analysis_plan_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attempt_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "environment_lock_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inference_code_commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      }
+    },
+    "metric_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewer_id",
+        "evidence_ref"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unreviewed",
+            "cleared",
+            "denied"
+          ]
+        },
+        "reviewer_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "evidence_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(artifact:|sha256:|https://).+"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "overlap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "roster_sha256",
+        "reviewer_id",
+        "evidence_ref",
+        "unresolved_candidates"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unreviewed",
+            "cleared",
+            "contaminated"
+          ]
+        },
+        "roster_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reviewer_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "evidence_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(artifact:|sha256:|https://).+"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unresolved_candidates": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "attempts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "received",
+        "failed",
+        "abstained",
+        "excluded_unscorable"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "received": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "abstained": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded_unscorable": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "scorer_sha256",
+        "prediction_archive_sha256",
+        "score_archive_sha256",
+        "document_macro_report_sha256",
+        "bootstrap_report_sha256",
+        "official_external_metric_separate",
+        "attempted_metric_ids"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_run",
+            "scored",
+            "independently_reproduced"
+          ]
+        },
+        "scorer_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "prediction_archive_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "score_archive_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_macro_report_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bootstrap_report_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "official_external_metric_separate": {
+          "type": "boolean"
+        },
+        "attempted_metric_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "adjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "blinded_to_model",
+        "reviewer_id",
+        "evidence_ref",
+        "unresolved_gold_count"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_started",
+            "pending",
+            "complete"
+          ]
+        },
+        "blinded_to_model": {
+          "type": "boolean"
+        },
+        "reviewer_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "evidence_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(artifact:|sha256:|https://).+"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unresolved_gold_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "contamination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "incidents"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "none_detected",
+            "suspected",
+            "confirmed",
+            "unreviewed"
+          ]
+        },
+        "incidents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "incident_id",
+              "status",
+              "affected_runs",
+              "evidence_refs",
+              "reviewer_id",
+              "decision",
+              "public_disclosure"
+            ],
+            "properties": {
+              "incident_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "suspected",
+                  "under_review",
+                  "confirmed",
+                  "dismissed"
+                ]
+              },
+              "affected_runs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "pattern": "^(artifact:|sha256:|https://).+"
+                }
+              },
+              "reviewer_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "decision": {
+                "type": "string",
+                "minLength": 1
+              },
+              "public_disclosure": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reviewer_id",
+          "approved",
+          "evidence_ref",
+          "reviewed_at"
+        ],
+        "properties": {
+          "reviewer_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "pattern": "^(artifact:|sha256:|https://).+"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "release_artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "sha256",
+          "reference"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "protocol_freeze",
+              "training_exclusion_report",
+              "rights_clearance",
+              "overlap_clearance",
+              "prediction_receipt",
+              "score_reproduction",
+              "group_uncertainty",
+              "blinded_adjudication",
+              "contamination_check",
+              "public_report"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reference": {
+            "type": "string",
+            "pattern": "^(artifact:|sha256:|https://).+"
+          }
+        }
+      }
+    }
+  }
+}

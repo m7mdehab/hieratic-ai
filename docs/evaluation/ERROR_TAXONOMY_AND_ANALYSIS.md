@@ -1,7 +1,7 @@
 # Hieratic AI: Error Taxonomy and Analysis Workflow v1.0
 
 **Task:** EVAL-005  
-**Status:** Candidate for acceptance  
+**Status:** Accepted / canonical v1.0  
 **Date:** 2026-10-08  
 **Dependencies:** EVAL-001 (validated)  
 **Codebook:** `eval/analysis/error_taxonomy.yaml`  

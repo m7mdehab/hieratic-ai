@@ -198,3 +198,15 @@ and harness `0.1.0`.
 - Any future upstream benchmark version requires a new reviewed manifest, scorer comparison and benchmark-integrity decision.
 
 References: `docs/evaluation/HIERATICBENCH_REPRODUCTION.md` and `eval/benchmarks/hieraticbench/manifest.yaml`.
+
+
+## ADR-0015 — Error-review events are not performance denominators
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+EVAL-005 formalizes an evidence-linked taxonomy with one primary failure code, optional secondary codes, adjudication status, gold eligibility, contamination status, causal references, and subgroup metadata.
+
+Error-review counts must **not** be interpreted as rates, model accuracy or reading proficiency without a separately frozen EVAL-001 scored-item universe and documented sampling design. Public summaries exclude sealed-aggregate records before computing any statistics. Disputed/uncertain/contaminated events may be logged diagnostically but do not enter confirmed clean-error distributions.
+
+See `docs/evaluation/ERROR_TAXONOMY_AND_ANALYSIS.md` and `eval/analysis/error_taxonomy.yaml`.

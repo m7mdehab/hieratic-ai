@@ -153,8 +153,8 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Define error taxonomy and analysis workflow"
     weight: 1.00
-    status: "ready"
-    owner_role: "execution_agent"
+    status: "validated"
+    owner_role: "overseer"
     depends_on: ["EVAL-001"]
     acceptance_summary: "Recognition and linguistic failure modes can be labeled consistently and summarized reproducibly."
 
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 10.0
+    validated_weighted_tasks_expected: 11.0
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

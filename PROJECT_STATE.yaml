@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 6.0
+  goal_progress: 8.0
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,10 +29,11 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "EVAL-001"
+  last_accepted_task: "DATA-001"
   ready_tasks:
     - "FND-006"
-    - "DATA-001"
+    - "DATA-002"
+    - "DATA-004"
     - "EVAL-002"
     - "EVAL-004"
     - "EVAL-005"
@@ -67,8 +68,9 @@ critical_gates:
     status: "policy_active"
     policy: "docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md"
     enforcement_note: >-
-      Policy is mandatory now; automated manifest/CI enforcement will be added
-      as DATA-001/CTRL-004 mature.
+      Policy is mandatory and the machine-readable source registry is now
+      operational. Acquisition-level manifest enforcement remains pending
+      DATA-002.
   - id: "GATE-GENERALIZATION"
     name: "Unseen-document/scribe generalization demonstrated"
     status: "not_started"
@@ -77,7 +79,7 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review CTRL-003 when Sonnet returns and DATA-001 when Luna returns. EVAL-001
-  is validated; EVAL-005 is now ready. Prepare the next three-lane wave from
-  current canonical state, keeping FND-006 explicitly scheduled rather than
-  auto-validating it.
+  Review CTRL-003 when Sonnet returns. DATA-001 is validated, so DATA-002 and
+  DATA-004 are ready. Prepare a larger Luna work package from multiple
+  independent ready tasks, while assigning the overseer a substantial
+  reasoning-heavy task in the same approved wave.

@@ -1,0 +1,34 @@
+scope_version: "1.0.0"
+task_scopes:
+  CTRL-003:
+    - "dashboard/**"
+  DATA-002:
+    - "data/acquisition/**"
+    - "schemas/acquisition_manifest.schema.json"
+    - "tests/data/test_acquisition.py"
+    - "tools/acquisition.py"
+  DATA-004:
+    - "schemas/annotation.schema.json"
+    - "docs/data/**"
+    - "data/examples/**"
+    - "tests/data/test_annotation_schema.py"
+    - "tools/annotation_validation.py"
+  EVAL-004:
+    - "eval/splits/**"
+    - "schemas/split_manifest.schema.json"
+    - "tests/evaluation/test_split_system.py"
+    - "tools/split_system.py"
+  FND-006:
+    - "tasks/FND-006.md"
+    - "docs/governance/**"
+    - "schemas/agent_evidence.schema.json"
+    - "schemas/experiment_record.schema.json"
+    - "tests/governance/**"
+    - "tools/governance_contract.py"
+    - ".github/workflows/governance.yml"
+  EVAL-003:
+    - "tasks/EVAL-003.md"
+    - "eval/baselines/**"
+    - "docs/evaluation/FRONTIER_BASELINES.md"
+    - "tests/evaluation/test_frontier_baselines.py"
+    - ".github/workflows/frontier-baselines.yml"

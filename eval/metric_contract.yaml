@@ -1,0 +1,550 @@
+contract_version: "1.0.0"
+task: "EVAL-001"
+status: "proposed"
+updated_at: "2026-10-08"
+
+principles:
+  composite_primary_score: false
+  preserve_layer_separation: true
+  allow_multiple_valid_gold: true
+  abstention_requires_coverage_reporting: true
+  document_macro_required_for_heterogeneous_sequence_tasks: true
+  sealed_metric_changes_require_versioned_decision: true
+
+normalization_profiles:
+  raw_identity: "docs/evaluation/NORMALIZATION_PROFILES.md#raw_identity"
+  grapheme_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#grapheme_v1"
+  hieroglyphic_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#hieroglyphic_v1"
+  translit_diplomatic_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#translit_diplomatic_v1"
+  translit_compare_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#translit_compare_v1"
+  tokenized_egyptian_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#tokenized_egyptian_v1"
+  translation_reference_v1: "docs/evaluation/NORMALIZATION_PROFILES.md#translation_reference_v1"
+
+gold_status_values:
+  - certain
+  - uncertain_with_alternatives
+  - illegible_unscorable
+  - missing_annotation
+  - adjudication_pending
+
+default_aggregation:
+  sequence_primary: document_macro
+  classification_primary: class_macro_and_document_macro
+  translation_human_primary: document_macro
+  confidence_interval_unit: document
+  bootstrap_resamples: 2000
+  bootstrap_interval: 0.95
+
+metrics:
+  - id: SCRIPT_ACC
+    layer: script_identification
+    name: "Script/domain accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [script_label]
+    normalization_profile: raw_identity
+    aggregation: item_micro
+    uncertainty_support: abstention
+    subgroup_reporting: [source, period_if_known]
+
+  - id: SCRIPT_MACRO_F1
+    layer: script_identification
+    name: "Script/domain macro F1"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [script_label]
+    normalization_profile: raw_identity
+    aggregation: class_macro
+    uncertainty_support: abstention
+    subgroup_reporting: [source]
+
+  - id: SCRIPT_SELECTIVE_RISK
+    layer: script_identification
+    name: "Selective classification risk"
+    unit: proportion
+    direction: lower
+    primary: false
+    required_gold_fields: [script_label]
+    normalization_profile: raw_identity
+    aggregation: coverage_curve
+    uncertainty_support: required
+    subgroup_reporting: [source]
+
+  - id: LAYOUT_AP
+    layer: layout
+    name: "Region detection AP@[IoU=.50:.05:.95]"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [regions]
+    normalization_profile: raw_identity
+    aggregation: corpus_detection
+    uncertainty_support: optional
+    subgroup_reporting: [source, layout_type, material]
+
+  - id: LAYOUT_ORDER_PAIR_ACC
+    layer: layout
+    name: "Pairwise reading-order accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [regions, reading_order]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: optional
+    subgroup_reporting: [source, layout_type]
+
+  - id: LAYOUT_ORDER_ER
+    layer: layout
+    name: "Reading-order sequence error rate"
+    unit: error_rate
+    direction: lower
+    primary: false
+    required_gold_fields: [regions, reading_order]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: optional
+    subgroup_reporting: [source, layout_type]
+
+  - id: SIGN_DET_AP
+    layer: sign_recognition
+    name: "Sign detection AP@[IoU=.50:.05:.95]"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [sign_regions, sign_grouping_policy]
+    normalization_profile: raw_identity
+    aggregation: corpus_detection
+    uncertainty_support: optional
+    subgroup_reporting: [document, source, period, material]
+
+  - id: SIGN_TOP1
+    layer: sign_recognition
+    name: "Top-1 acceptable grapheme accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [acceptable_grapheme_ids]
+    normalization_profile: grapheme_v1
+    aggregation: document_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [class, document, source, period, scribe_if_known]
+
+  - id: SIGN_TOPK
+    layer: sign_recognition
+    name: "Fixed-k acceptable grapheme accuracy"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [acceptable_grapheme_ids]
+    normalization_profile: grapheme_v1
+    aggregation: document_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [class, document, source]
+    parameters:
+      allowed_k: [3, 5]
+
+  - id: SIGN_MACRO_F1
+    layer: sign_recognition
+    name: "Sign class macro F1"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [acceptable_grapheme_ids]
+    normalization_profile: grapheme_v1
+    aggregation: class_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [document, period]
+
+  - id: RET_R_AT_K
+    layer: palaeographic_retrieval
+    name: "Recall at fixed k"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [relevant_exemplar_ids, relevance_definition]
+    normalization_profile: raw_identity
+    aggregation: query_macro
+    uncertainty_support: multiple_relevant
+    subgroup_reporting: [period, source, grapheme_class]
+    parameters:
+      allowed_k: [1, 5, 10]
+
+  - id: RET_MRR
+    layer: palaeographic_retrieval
+    name: "Mean reciprocal rank"
+    unit: reciprocal_rank
+    direction: higher
+    primary: true
+    required_gold_fields: [relevant_exemplar_ids, relevance_definition]
+    normalization_profile: raw_identity
+    aggregation: query_macro
+    uncertainty_support: multiple_relevant
+    subgroup_reporting: [period, source]
+
+  - id: HTR_GER
+    layer: sequence_recognition
+    name: "Grapheme error rate"
+    unit: edit_error_rate
+    direction: lower
+    primary: true
+    required_gold_fields: [grapheme_reference]
+    normalization_profile: grapheme_v1
+    aggregation: document_macro
+    also_report: [global_micro]
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document, source, period, scribe_if_known, material, genre, damage]
+
+  - id: HTR_EXACT
+    layer: sequence_recognition
+    name: "Exact acceptable grapheme sequence accuracy"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [grapheme_reference]
+    normalization_profile: grapheme_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document, source]
+
+  - id: HGR_SER
+    layer: hieroglyphic_rendering
+    name: "Standardized hieroglyphic sign error rate"
+    unit: edit_error_rate
+    direction: lower
+    primary: true
+    required_gold_fields: [hieroglyphic_reference]
+    normalization_profile: hieroglyphic_v1
+    aggregation: document_macro
+    also_report: [global_micro]
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document, source, period]
+
+  - id: HGR_EXACT
+    layer: hieroglyphic_rendering
+    name: "Exact standardized hieroglyphic sequence accuracy"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [hieroglyphic_reference]
+    normalization_profile: hieroglyphic_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document]
+
+  - id: TR_CER
+    layer: transliteration
+    name: "Egyptological transliteration character/symbol error rate"
+    unit: edit_error_rate
+    direction: lower
+    primary: true
+    required_gold_fields: [transliteration_reference]
+    normalization_profile: translit_compare_v1
+    aggregation: document_macro
+    also_report: [global_micro]
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document, source, period, scribe_if_known, material, genre]
+
+  - id: TR_TER
+    layer: transliteration
+    name: "Egyptological transliteration token error rate"
+    unit: edit_error_rate
+    direction: lower
+    primary: false
+    required_gold_fields: [transliteration_reference, tokenization_profile]
+    normalization_profile: tokenized_egyptian_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document, source]
+
+  - id: TR_EXACT
+    layer: transliteration
+    name: "Exact acceptable transliteration accuracy"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [transliteration_reference]
+    normalization_profile: translit_compare_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set_or_lattice
+    subgroup_reporting: [document]
+
+  - id: NORM_TOKEN_ACC
+    layer: normalization
+    name: "Normalized token accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [normalized_tokens]
+    normalization_profile: tokenized_egyptian_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set
+    subgroup_reporting: [document, period]
+
+  - id: NORM_TER
+    layer: normalization
+    name: "Normalized token error rate"
+    unit: edit_error_rate
+    direction: lower
+    primary: true
+    required_gold_fields: [normalized_tokens]
+    normalization_profile: tokenized_egyptian_v1
+    aggregation: document_macro
+    uncertainty_support: reference_set
+    subgroup_reporting: [document, period]
+
+  - id: LEMMA_ACC
+    layer: lexical_analysis
+    name: "Lemma accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [acceptable_lemmas]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [document, period, genre]
+
+  - id: LEMMA_MACRO_F1
+    layer: lexical_analysis
+    name: "Lemma macro F1"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [acceptable_lemmas]
+    normalization_profile: raw_identity
+    aggregation: class_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [period, genre]
+
+  - id: MORPH_BUNDLE_ACC
+    layer: morphological_analysis
+    name: "Exact morphology bundle accuracy"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [acceptable_morphology_bundles]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: alternatives
+    subgroup_reporting: [document, period, genre]
+
+  - id: MORPH_FEATURE_F1
+    layer: morphological_analysis
+    name: "Morphological feature F1"
+    unit: proportion
+    direction: higher
+    primary: false
+    required_gold_fields: [morphology_features]
+    normalization_profile: raw_identity
+    aggregation: feature_micro_and_macro
+    uncertainty_support: partial_gold
+    subgroup_reporting: [period, genre]
+
+  - id: TRANS_HUMAN_FAITH
+    layer: translation
+    name: "Blind human source-faithfulness rubric"
+    unit: ordinal_0_4
+    direction: higher
+    primary: true
+    required_gold_fields: [source_reading_for_review]
+    normalization_profile: translation_reference_v1
+    aggregation: document_macro
+    uncertainty_support: explicit_uncertainty
+    subgroup_reporting: [document, source, genre]
+
+  - id: TRANS_HUMAN_ADEQ
+    layer: translation
+    name: "Blind human semantic-adequacy rubric"
+    unit: ordinal_0_4
+    direction: higher
+    primary: true
+    required_gold_fields: [translation_reference_or_expert_meaning]
+    normalization_profile: translation_reference_v1
+    aggregation: document_macro
+    uncertainty_support: multiple_references
+    subgroup_reporting: [document, source, genre]
+
+  - id: TRANS_CHRF
+    layer: translation
+    name: "chrF/chrF++ reference metric"
+    unit: score
+    direction: higher
+    primary: false
+    required_gold_fields: [translation_references]
+    normalization_profile: translation_reference_v1
+    aggregation: corpus_and_document
+    uncertainty_support: multiple_references
+    subgroup_reporting: [source, genre]
+
+  - id: TRANS_SEMANTIC
+    layer: translation
+    name: "Versioned semantic MT/text-generation metric"
+    unit: score
+    direction: higher
+    primary: false
+    required_gold_fields: [translation_references]
+    normalization_profile: translation_reference_v1
+    aggregation: corpus_and_document
+    uncertainty_support: multiple_references
+    subgroup_reporting: [source, genre]
+    constraints:
+      - "metric model/version/config must be logged"
+      - "must be validated as appropriate for the language setup"
+      - "must not be sole scientific evidence"
+
+  - id: CAL_BRIER
+    layer: calibration
+    name: "Brier score"
+    unit: probability_score
+    direction: lower
+    primary: true
+    required_gold_fields: [categorical_gold]
+    normalization_profile: raw_identity
+    aggregation: item_micro_and_document_macro
+    uncertainty_support: required
+    subgroup_reporting: [source, period]
+
+  - id: CAL_NLL
+    layer: calibration
+    name: "Negative log-likelihood"
+    unit: nats_or_declared_log_base
+    direction: lower
+    primary: true
+    required_gold_fields: [categorical_gold]
+    normalization_profile: raw_identity
+    aggregation: item_micro_and_document_macro
+    uncertainty_support: required
+    subgroup_reporting: [source, period]
+
+  - id: CAL_ECE
+    layer: calibration
+    name: "Expected calibration error"
+    unit: proportion
+    direction: lower
+    primary: false
+    required_gold_fields: [categorical_gold]
+    normalization_profile: raw_identity
+    aggregation: corpus
+    uncertainty_support: required
+    subgroup_reporting: [source]
+    parameters:
+      binning_scheme_must_be_reported: true
+
+  - id: SEL_AURC
+    layer: calibration
+    name: "Area under risk-coverage curve"
+    unit: area
+    direction: lower
+    primary: true
+    required_gold_fields: [task_gold, confidence_or_abstention]
+    normalization_profile: raw_identity
+    aggregation: corpus
+    uncertainty_support: required
+    subgroup_reporting: [source, period]
+
+  - id: ALT_COVERAGE
+    layer: uncertainty
+    name: "Alternative-set gold coverage"
+    unit: proportion
+    direction: higher
+    primary: true
+    required_gold_fields: [acceptable_answer_set]
+    normalization_profile: raw_identity
+    aggregation: item_micro_and_document_macro
+    uncertainty_support: required
+    subgroup_reporting: [source]
+    paired_report_required: ALT_SIZE
+
+  - id: ALT_SIZE
+    layer: uncertainty
+    name: "Alternative prediction-set size"
+    unit: count
+    direction: lower_conditional_on_coverage
+    primary: true
+    required_gold_fields: [acceptable_answer_set]
+    normalization_profile: raw_identity
+    aggregation: mean_median_distribution
+    uncertainty_support: required
+    subgroup_reporting: [source]
+    paired_report_required: ALT_COVERAGE
+
+  - id: GEN_WORST_GROUP
+    layer: generalization
+    name: "Worst-group primary metric"
+    unit: inherited
+    direction: inherited
+    primary: true
+    required_gold_fields: [group_metadata, base_metric_gold]
+    normalization_profile: inherited
+    aggregation: worst_group
+    uncertainty_support: inherited
+    subgroup_reporting: [document, scribe_if_known, period, material, genre, source, damage]
+
+  - id: GEN_REL_DROP
+    layer: generalization
+    name: "Relative degradation from matched/in-domain reference"
+    unit: proportion
+    direction: lower
+    primary: false
+    required_gold_fields: [group_metadata, matched_reference_score]
+    normalization_profile: inherited
+    aggregation: subgroup
+    uncertainty_support: inherited
+    subgroup_reporting: [scribe_if_known, period, material, genre, damage]
+
+  - id: EXPERT_VISUAL_FIDELITY
+    layer: expert_evaluation
+    name: "Blind expert visual-reading fidelity rubric"
+    unit: ordinal_0_4
+    direction: higher
+    primary: true
+    required_gold_fields: [expert_review_packet]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: explicit_uncertainty
+    subgroup_reporting: [source, period, material]
+
+  - id: EXPERT_UNCERTAINTY_HONESTY
+    layer: expert_evaluation
+    name: "Blind expert uncertainty-honesty rubric"
+    unit: ordinal_0_4
+    direction: higher
+    primary: true
+    required_gold_fields: [expert_review_packet]
+    normalization_profile: raw_identity
+    aggregation: document_macro
+    uncertainty_support: required
+    subgroup_reporting: [source, period, damage]
+
+reporting_requirements:
+  exclusions:
+    must_report_total_candidates: true
+    must_report_scored_items: true
+    must_report_reason_counts: true
+    forbidden_reason_examples:
+      - "hard example"
+      - "model could not parse"
+      - "output format inconvenient"
+      - "low confidence"
+  model_comparison:
+    paired_unit: document
+    bootstrap_resamples_default: 2000
+    confidence_interval_default: 0.95
+    best_seed_only_forbidden: true
+  generalization:
+    required_when_metadata_available:
+      - unseen_document
+      - unseen_scribe
+      - period
+      - material
+      - genre
+      - source
+      - damage
+    worst_group_required: true
+  translation:
+    automated_metric_alone_is_insufficient: true
+    llm_judge_primary_evidence_forbidden: true
+    source_faithfulness_required_for_end_to_end_claim: true

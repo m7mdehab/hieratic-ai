@@ -26,6 +26,8 @@ The overseer owns:
 - review of code, data, claims, and evidence;
 - project-state updates;
 - dispatch of newly unblocked work;
+- selection of a substantive overseer-owned task for every safe parallel work wave;
+- execution of that overseer task in parallel with external agents after Mohammed approves the wave plan;
 - a complete user-facing status report after every returned agent task/revision is reviewed.
 
 ### Execution agents
@@ -34,7 +36,7 @@ Execution agents implement bounded tasks from explicit briefs. They do not redef
 
 The intended cycle is:
 
-`research/reason -> brief -> parallel execution -> evidence -> overseer review -> status report -> accept/revise -> state update -> next wave`
+`research/reason -> wave plan -> user approval -> parallel execution by agents + overseer -> evidence -> overseer review -> status report -> accept/revise -> state update -> next wave`
 
 ## 3. Current state
 
@@ -91,6 +93,8 @@ Avoid loading the entire repository into context unless necessary.
 - Every returned execution-agent result must receive an overseer review before acceptance.
 - Every overseer review must end with the standardized status report defined in `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
 - Parallel work is preferred when dependencies and file ownership make it safe.
+- Every dispatch wave should include meaningful overseer work when a dependency-safe, high-value task exists; the overseer must not sit idle merely because execution agents are running.
+- Before a wave starts, the overseer must tell Mohammed what Luna, Sonnet, Gemini/other agents, and the overseer will each do, then wait for Mohammed's approval before starting the overseer-owned task.
 - One task/branch should have a bounded write scope.
 - The implementation may change; the capability goal and scientific integrity do not.
 

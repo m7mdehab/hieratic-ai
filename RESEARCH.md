@@ -143,3 +143,17 @@ A versioned, fail-closed untuned frontier VLM evaluation protocol has been imple
 Read-only tooling validates planned capture completeness, hashes and provider/prompt consistency using synthetic offline tests. No API calls, new model predictions, official new scores, or trained models have been produced. This is **not** a verified EVAL-003 baseline and does **not** change research coverage.
 
 See `docs/evaluation/FRONTIER_BASELINES.md`, `eval/baselines/` and PR #31.
+
+
+### R-010 — W1 acquisition, annotation and evaluation-split infrastructure (validated)
+
+**Status:** REVIEWED TOOLING / NO CLAIM OF CORPUS ADMISSION OR GENERALIZATION.
+
+The corrected W1 package passed live GitHub CI and was merged in independent PRs:
+- **DATA-002 (#20):** acquisition-manifest rights/provenance planner, with item-level reviewer and licence evidence, benchmark-overlap review, SHA-256 lineage and fail-closed synthetic/placeholder checks. A conditional plan is not asset acquisition or admission.
+- **DATA-004 (#23):** layered Hieratic annotation schema with strict certain-gold anchoring, acceptable alternatives, document/line/region/sign relations, coordinates, reviewer provenance, unique reading order and parent-region cycle checks.
+- **EVAL-004 (#24):** deterministic document/scribe/period/source split planning and quarantine of unreviewed high-risk benchmark overlaps. Upstream benchmark public item roster is aggregate-only and production image overlap must receive independent item-level review.
+
+Observed CI: DATA-002 final 34 governance/51 data/78 evaluation tests; DATA-004 34/32/57; EVAL-004 34/13/78, all passed with approved task-branch scopes. **No rights-controlled images, trained models, model experiments or unseen-scribe performance were produced.**
+
+Capability points **+7.0** (11.5 -> 18.5), phase P2 **6.5/10**, phase P3 **7/20**. Research coverage remains **14%** pending its separate operational denominator.

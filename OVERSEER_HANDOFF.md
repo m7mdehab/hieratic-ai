@@ -4,15 +4,15 @@ Updated: 2026-10-07
 
 ## Current verified state
 
-- Goal progress: **4.0 / 100**
-- Goal remaining: **96.0**
+- Goal progress: **4.5 / 100**
+- Goal remaining: **95.5**
 - Research coverage: **~14%**
 - Current capability phase: **P1 — Research Foundation**
-- Phase 1 progress: **4.0 / 5 (80%)**
+- Phase 1 progress: **4.5 / 5 (90%)**
 - Control-plane wave: **W0**
 - Validated experiments: **0**
 - Trained models: **0**
-- Last accepted task: **FND-004**
+- Last accepted task: **FND-005**
 
 ## Work currently happening in parallel
 
@@ -21,66 +21,56 @@ Updated: 2026-10-07
 - **CTRL-002 — active**: project-state validator + context generator.
 - **CTRL-003 — active**: live dashboard/control-plane shell.
 
-### Overseer work completed during that execution
+### Overseer work completed while they run
 
-- **FND-003 — validated**: Hieratic writing-system/task-decomposition problem map.
-- **FND-004 — validated**: primary-source prior-art and data registry.
+- **FND-003 — validated**: writing-system/task-decomposition problem map.
+- **FND-004 — validated**: verified prior-art/data registry.
+- **FND-005 — validated**: licensing/provenance policy.
 
 Evidence:
 - `docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`
 - `docs/research/PRIOR_ART_AND_DATA_REGISTRY.md`
+- `docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md`
 
-## Material FND-004 findings
+## Data-rights policy now active
 
-The verified prior-art record shows that Hieratic-specific computational work predates HieraticBench. Public project language must not claim that no AI/OCR attempt existed before 2026.
+Third-party data is deny-by-default.
 
-The registry verifies:
-- 2021 CNN isolated-character OCR work;
-- Tabin/PaPYrus 13,134-sign OCR corpus/tool;
-- Isut segmentation/annotation/OCR work;
-- 2025 HieraticAI Faster R-CNN Westcar prototype;
-- 2026 HieraticBench with 268 repository items;
-- DDD 2026 with 159 images, 50 papyri and 504 categories/groups;
-- HPDB, AKU-PAL and TLA as high-value supporting resources.
+Key rules:
+- code/publication licenses do not automatically license bundled data/images;
+- training, redistribution, and model-weight release are separate decisions;
+- unknown rights mean metadata-only / no ingestion;
+- HieraticBench is evaluation-only;
+- exact and near-duplicate benchmark overlap must be blocked;
+- TLA live-site bulk scraping is prohibited by project policy;
+- DDD is non-commercial/restricted track pending item-level handling;
+- AKU-PAL is per-item rights;
+- manifests and hashes are mandatory before data admission.
 
-Rights are deliberately not overgeneralized. Software licenses do not automatically clear source facsimiles or datasets.
+Automated enforcement will be added by DATA-001/DATA-002/CTRL-004; the governance rule is already mandatory.
 
-## Newly unblocked
+## Ready work
 
-- **FND-005 — ready**: licensing and provenance policy.
+- **DATA-001 — ready**: machine-readable training-data source registry.
 - **EVAL-001 — ready**: evaluation metrics.
 - **EVAL-002 — ready**: reproduce external benchmark.
 - **EVAL-004 — ready**: leakage-resistant splits.
 
+## Phase 1 remaining
+
+Only **FND-006 (0.5 points)** remains in Phase 1. It depends on CTRL-004, which in turn depends on the active CTRL-002 task.
+
 ## Research coverage note
 
-Research coverage remains **14%**. The numerator has advanced, but the project has not yet defined a defensible denominator for the experimental/research search space. Do not invent percentage changes.
-
-## Mandatory review-response rule
-
-After every execution-agent result, report:
-- verdict;
-- completed/pending checklist;
-- task evidence completion;
-- verified goal progress and remaining;
-- research coverage;
-- phase/gate progress;
-- next dependency-aware checklist;
-- exact percentage changes.
+Research coverage remains **14%** until its denominator is explicitly formalized. Do not infer a higher number from the completed foundation tasks.
 
 ## Next overseer action
 
-1. Execute FND-005 licensing/provenance policy while CTRL-002/CTRL-003 run.
-2. Review either active agent immediately when its PR/evidence arrives.
-3. Prepare EVAL-001/EVAL-002/EVAL-004 briefs after the licensing policy constrains data/benchmark handling.
-4. Never train on HieraticBench or benchmark near-duplicates.
+1. Review CTRL-002/CTRL-003 immediately when their results arrive.
+2. Once CTRL-002 is accepted, dispatch/complete CTRL-004.
+3. After CTRL-004, validate FND-006 and close Phase 1.
+4. In parallel, prepare/dispatch DATA-001 and evaluation tasks under the new rights policy.
 
-## Resume instructions for a new chat
+## Mandatory review-response rule
 
-Read:
-1. `START_HERE.md`
-2. this file
-3. `docs/governance/REVIEW_REPORTING_PROTOCOL.md`
-4. `PROJECT_STATE.yaml`
-5. ready/active/review entries in `TASKS.yaml`
-6. the two completed foundation research documents when research context is needed.
+Every returned agent task gets a full verdict, checked/unchecked evidence list, current project percentages, phase/gate status, and next dependency-aware checklist.

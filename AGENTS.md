@@ -84,3 +84,21 @@ The overseer decides whether the task is accepted, revision-required, or rejecte
 Execution agents must not award themselves capability points or edit `PROJECT_STATE.yaml` progress numbers unless the task explicitly authorizes that exact state transition.
 
 "Code written", "training completed", and "looks correct" are not equivalent to validated capability.
+
+
+## Data rights and provenance
+
+Before downloading, committing, transforming, or training on any third-party image, annotation, text corpus, edition, dataset, or model artifact, follow `docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md`.
+
+Hard requirements:
+
+- no asset with unknown/unclear rights may enter a training corpus;
+- software licenses do not automatically license bundled source images/data;
+- publication licenses do not automatically license the underlying dataset;
+- benchmark/evaluation material must remain quarantined from training;
+- per-item licenses must be recorded per item;
+- non-commercial/restricted material must not silently contaminate a release intended for unrestricted reuse;
+- provenance manifests and hashes are required before an asset is admitted;
+- when rights are uncertain, record metadata only and escalate rather than copying the asset.
+
+Execution agents may not downgrade a restriction or infer permission from public accessibility.

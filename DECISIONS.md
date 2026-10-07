@@ -80,3 +80,21 @@ The report must include:
 Operational/task percentages must remain distinct from the 0–100 verified capability score.
 
 The canonical format is `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
+
+
+## ADR-0009 — Third-party data is deny-by-default
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+Public availability is not permission to train, redistribute, or relicense.
+
+Every third-party asset must pass the repository's data-admission gate before it enters a training/dev corpus. The project records provenance, license/rightsholder, allowed uses, redistribution status, attribution, source identity, cryptographic hash, transformation history, and benchmark-overlap status.
+
+Unknown or ambiguous rights default to **metadata-only / do not ingest**.
+
+Training permission, dataset redistribution permission, and model-weight release permission are treated as separate questions.
+
+HieraticBench is quarantined for external evaluation even when an individual public benchmark image would otherwise have a permissive source license.
+
+The canonical policy is `docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md`.

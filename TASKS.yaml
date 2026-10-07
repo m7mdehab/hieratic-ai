@@ -99,7 +99,7 @@ tasks:
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Establish licensing and provenance policy"
     weight: 0.50
-    status: "ready"
+    status: "validated"
     owner_role: "overseer"
     depends_on: ["FND-004"]
     acceptance_summary: "Redistribution rules and provenance fields are enforceable; code licensing is separated from external assets."
@@ -171,7 +171,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Create training-data source registry"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["FND-004", "FND-005"]
     acceptance_summary: "Candidate training sources have machine-readable provenance, access, license, granularity, and usage status."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 4.0
+    validated_weighted_tasks_expected: 4.5
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

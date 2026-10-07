@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 4.0
+  goal_progress: 4.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,9 +29,9 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "FND-004"
+  last_accepted_task: "FND-005"
   ready_tasks:
-    - "FND-005"
+    - "DATA-001"
     - "EVAL-001"
     - "EVAL-002"
     - "EVAL-004"
@@ -66,8 +66,11 @@ critical_gates:
     status: "not_started"
   - id: "GATE-LICENSE"
     name: "Data provenance and redistribution policy enforced"
-    status: "ready"
-    next_task: "FND-005"
+    status: "policy_active"
+    policy: "docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md"
+    enforcement_note: >-
+      Policy is mandatory now; automated manifest/CI enforcement will be added
+      as DATA-001/CTRL-004 mature.
   - id: "GATE-GENERALIZATION"
     name: "Unseen-document/scribe generalization demonstrated"
     status: "not_started"
@@ -76,6 +79,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Execute FND-005 licensing/provenance policy while CTRL-002 and CTRL-003 are
-  active, and prepare dependency-safe EVAL-001/EVAL-002/EVAL-004 dispatches
-  without starting benchmark/data acquisition before the licensing gate is defined.
+  Review CTRL-002/CTRL-003 as they return. DATA-001 and EVAL-001/EVAL-002/EVAL-004
+  are dependency-ready; any data or benchmark task must comply with the active
+  licensing/provenance policy and HieraticBench evaluation quarantine.

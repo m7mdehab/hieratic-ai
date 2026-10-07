@@ -1,0 +1,44 @@
+name: Error Analysis Integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "eval/analysis/**"
+      - "eval/metric_contract.yaml"
+      - "tests/evaluation/**"
+      - "docs/evaluation/ERROR_TAXONOMY_AND_ANALYSIS.md"
+      - ".github/workflows/error-analysis.yml"
+  push:
+    branches: [main]
+    paths:
+      - "eval/analysis/**"
+      - "eval/metric_contract.yaml"
+      - "tests/evaluation/**"
+      - ".github/workflows/error-analysis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  error-analysis:
+    name: Validate taxonomy and test error analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install existing project dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Validate canonical project state
+        run: python -m tools.projectctl validate
+      - name: Validate synthetic error-review records
+        run: python -m eval.analysis.review validate --input eval/analysis/examples/synthetic_reviews.jsonl
+      - name: Run all evaluation regression tests
+        run: python -m unittest discover -s tests/evaluation -v
+      - name: Generate non-sensitive public diagnostic summary
+        run: python -m eval.analysis.review summarize --input eval/analysis/examples/synthetic_reviews.jsonl --publication public

@@ -90,7 +90,7 @@ tasks:
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Build verified primary-source prior-art and data registry"
     weight: 0.75
-    status: "ready"
+    status: "validated"
     owner_role: "overseer"
     depends_on: ["FND-002"]
     acceptance_summary: "Material prior-art/data claims are source-verified with license, granularity, provenance, accessibility, and ML usefulness where knowable."
@@ -99,7 +99,7 @@ tasks:
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Establish licensing and provenance policy"
     weight: 0.50
-    status: "blocked"
+    status: "ready"
     owner_role: "overseer"
     depends_on: ["FND-004"]
     acceptance_summary: "Redistribution rules and provenance fields are enforceable; code licensing is separated from external assets."
@@ -126,7 +126,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Reproduce an external Hieratic benchmark"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["FND-004"]
     acceptance_summary: "External benchmark inputs, methodology, licensing, and published baselines are reproduced or discrepancies are documented."
@@ -144,7 +144,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Construct leakage-resistant development and test splits"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["FND-003", "FND-004"]
     acceptance_summary: "Splits isolate appropriate document/scribe/source variation and pass overlap/leakage checks."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 3.25
+    validated_weighted_tasks_expected: 4.0
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

@@ -4,14 +4,15 @@ Updated: 2026-10-07
 
 ## Current verified state
 
-- Goal progress: **3.25 / 100**
+- Goal progress: **4.0 / 100**
+- Goal remaining: **96.0**
 - Research coverage: **~14%**
 - Current capability phase: **P1 — Research Foundation**
-- Phase 1 progress: **3.25 / 5**
+- Phase 1 progress: **4.0 / 5 (80%)**
 - Control-plane wave: **W0**
 - Validated experiments: **0**
 - Trained models: **0**
-- Last accepted task: **FND-003**
+- Last accepted task: **FND-004**
 
 ## Work currently happening in parallel
 
@@ -20,62 +21,59 @@ Updated: 2026-10-07
 - **CTRL-002 — active**: project-state validator + context generator.
 - **CTRL-003 — active**: live dashboard/control-plane shell.
 
-These were dispatched by Mohammed to separate execution agents and remain isolated by write scope.
+### Overseer work completed during that execution
 
-### Overseer
-
-- **FND-003 — completed and validated**: writing-system and task-decomposition problem map.
-- **FND-004 — ready**: primary-source prior-art/data verification is the next overseer-owned research task.
-
-## What FND-003 established
-
-The research-backed problem map now explicitly covers:
-- diachronic variation;
-- literary vs administrative register variation;
-- scribe-specific and within-scribe variation;
-- materials/supports and layout;
-- right-to-left reading order and historical layout change;
-- allography;
-- ligatures and abbreviation;
-- visually ambiguous forms requiring sequence/context;
-- phonograms, logograms, and classifiers;
-- the distinction between visual recognition, standardized hieroglyphic rendering, Egyptological transliteration, linguistic analysis, and translation;
-- uncertainty propagation from image to translation.
+- **FND-003 — validated**: Hieratic writing-system/task-decomposition problem map.
+- **FND-004 — validated**: primary-source prior-art and data registry.
 
 Evidence:
-`docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`
+- `docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`
+- `docs/research/PRIOR_ART_AND_DATA_REGISTRY.md`
 
-FND-003's 0.75 capability points are now earned.
+## Material FND-004 findings
+
+The verified prior-art record shows that Hieratic-specific computational work predates HieraticBench. Public project language must not claim that no AI/OCR attempt existed before 2026.
+
+The registry verifies:
+- 2021 CNN isolated-character OCR work;
+- Tabin/PaPYrus 13,134-sign OCR corpus/tool;
+- Isut segmentation/annotation/OCR work;
+- 2025 HieraticAI Faster R-CNN Westcar prototype;
+- 2026 HieraticBench with 268 repository items;
+- DDD 2026 with 159 images, 50 papyri and 504 categories/groups;
+- HPDB, AKU-PAL and TLA as high-value supporting resources.
+
+Rights are deliberately not overgeneralized. Software licenses do not automatically clear source facsimiles or datasets.
 
 ## Newly unblocked
 
-- **EVAL-001 — ready**: Specify evaluation metrics across the reading stack.
-
-It is ready by dependency but is not automatically assigned; the overseer should deliberately allocate an execution slot.
+- **FND-005 — ready**: licensing and provenance policy.
+- **EVAL-001 — ready**: evaluation metrics.
+- **EVAL-002 — ready**: reproduce external benchmark.
+- **EVAL-004 — ready**: leakage-resistant splits.
 
 ## Research coverage note
 
-Research coverage remains **14%** for now. FND-003 unquestionably completed planned research, but the research-coverage denominator has not yet been formalized enough to justify inventing a new percentage. Verified capability progress did change because FND-003 has an explicit roadmap weight.
+Research coverage remains **14%**. The numerator has advanced, but the project has not yet defined a defensible denominator for the experimental/research search space. Do not invent percentage changes.
 
 ## Mandatory review-response rule
 
 After every execution-agent result, report:
 - verdict;
-- completed and pending items;
-- checked/unchecked acceptance checklist;
+- completed/pending checklist;
 - task evidence completion;
 - verified goal progress and remaining;
 - research coverage;
 - phase/gate progress;
 - next dependency-aware checklist;
-- exact percentage change.
+- exact percentage changes.
 
 ## Next overseer action
 
-1. Continue FND-004.
-2. Review CTRL-002 and CTRL-003 immediately when their evidence packages return.
-3. Decide whether to assign EVAL-001 while FND-004 proceeds.
-4. Do not merge agent work without overseer review.
+1. Execute FND-005 licensing/provenance policy while CTRL-002/CTRL-003 run.
+2. Review either active agent immediately when its PR/evidence arrives.
+3. Prepare EVAL-001/EVAL-002/EVAL-004 briefs after the licensing policy constrains data/benchmark handling.
+4. Never train on HieraticBench or benchmark near-duplicates.
 
 ## Resume instructions for a new chat
 
@@ -85,4 +83,4 @@ Read:
 3. `docs/governance/REVIEW_REPORTING_PROTOCOL.md`
 4. `PROJECT_STATE.yaml`
 5. ready/active/review entries in `TASKS.yaml`
-6. relevant task briefs/evidence only.
+6. the two completed foundation research documents when research context is needed.

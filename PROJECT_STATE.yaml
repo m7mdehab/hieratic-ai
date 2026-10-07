@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 3.25
+  goal_progress: 4.0
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,10 +29,12 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "FND-003"
+  last_accepted_task: "FND-004"
   ready_tasks:
-    - "FND-004"
+    - "FND-005"
     - "EVAL-001"
+    - "EVAL-002"
+    - "EVAL-004"
   active_tasks:
     - "CTRL-002"
     - "CTRL-003"
@@ -64,7 +66,8 @@ critical_gates:
     status: "not_started"
   - id: "GATE-LICENSE"
     name: "Data provenance and redistribution policy enforced"
-    status: "not_started"
+    status: "ready"
+    next_task: "FND-005"
   - id: "GATE-GENERALIZATION"
     name: "Unseen-document/scribe generalization demonstrated"
     status: "not_started"
@@ -73,6 +76,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Continue FND-004 primary-source prior-art/data verification while CTRL-002
-  and CTRL-003 execute in parallel. EVAL-001 is now dependency-unblocked but
-  should only be dispatched when an execution slot is intentionally assigned.
+  Execute FND-005 licensing/provenance policy while CTRL-002 and CTRL-003 are
+  active, and prepare dependency-safe EVAL-001/EVAL-002/EVAL-004 dispatches
+  without starting benchmark/data acquisition before the licensing gate is defined.

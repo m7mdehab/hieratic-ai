@@ -46,6 +46,22 @@ Key validated implications:
 
 FND-003 is validated. It unblocks EVAL-001.
 
+### R-005 — Verified prior art and data registry
+
+**Status:** VERIFIED-PRIMARY / completed as FND-004.
+
+The project now has a source-verified registry at `docs/research/PRIOR_ART_AND_DATA_REGISTRY.md`.
+
+Key findings:
+- Hieratic-specific computational/OCR work predates HieraticBench, including a 2021 CNN experiment, Tabin's 13,134-sign OCR corpus/tool, Isut, and the 2025 HieraticAI prototype.
+- HieraticBench contains 268 repository item records and is now formally reserved for external evaluation rather than training.
+- DDD (June 2026) is a high-value modern dataset candidate: 159 images, 50 papyri, 504 character/group categories, polygon annotations, and supplied closed/open-set split families.
+- HPDB and AKU-PAL are strong palaeographic/sign-retrieval resources.
+- TLA is strategically valuable for transliteration/linguistic modeling, but its live website terms do not allow bulk corpus extraction.
+- Several resources require rights clarification at the data/image level even when their software repository is open source.
+
+FND-004 is validated. It unblocks FND-005, EVAL-002, and (together with FND-003) EVAL-004.
+
 ## Active research questions
 
 1. What are the strongest primary-source prior-art examples specifically involving Hieratic, distinct from hieroglyphic/Demotic/Coptic OCR?
@@ -62,7 +78,7 @@ FND-003:
 - **completed** — see `docs/research/HIERATIC_WRITING_SYSTEM_PROBLEM_MAP.md`.
 
 FND-004:
-- primary-source prior-art/data registry including license and ML usefulness.
+- **completed** — see `docs/research/PRIOR_ART_AND_DATA_REGISTRY.md`.
 
 FND-005:
 - enforceable licensing/provenance policy.

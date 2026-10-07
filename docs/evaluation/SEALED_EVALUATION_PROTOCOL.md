@@ -126,3 +126,25 @@ Not allowed:
 ## 9. Task acceptance
 
 EVAL-006 acceptance validates that the **sealed protocol and its audit software** are frozen and testable. It earns 2.0 roadmap points when the overseer independently reviews and accepts the implementation CI, test fixtures, rights conditions, and published policy. It does **not** imply a sealed run has occurred or that EVAL-003's 1.5 baseline points have been earned. Future data/model benchmarks must separately pass real scientific validation.
+
+
+## 10. Cross-layer reporting and claim-integrity contract
+
+The independent `eval/sealed/report_audit.py` validates *redacted metric summaries* against accepted EVAL-001 metric IDs, layers, unit definitions, and normalization profiles. It uses `eval/sealed/metric_report.schema.json` and intentionally never reads raw gold or provider responses.
+
+Run a synthetic draft:
+```bash
+python -m eval.sealed.report_audit --report eval/sealed/examples/metric-report.synthetic.json
+```
+
+**Each reported metric must have a complete, disjoint denominator**: `scheduled = scored + failed + abstained + excluded_unscorable`. A scored metric with zero scorable gold is forbidden; an unmeasured layer cannot acquire a claim by inheriting a fluent downstream narrative. A sign result does not license a transliteration or decipherment claim.
+
+Every score must use the versioned metric contract's exact metric ID, layer, unit, and normalization profile. Bounded proportions/reciprocal ranks cannot exceed 1; edit rates may legally exceed 1. Uncertainty intervals must bracket the point estimate and use the prespecified 2,000-resample 95% *document-clustered* bootstrap, with at least two scored documents; a one-document report must declare insufficient statistical support rather than inventing an interval.
+
+Cross-model comparative claims require an immutable paired-item manifest, measured common item count and document-group uncertainty. Observations from different test denominators cannot support an apples-to-apples leaderboard claim.
+
+A full end-to-end decipherment/reading claim additionally needs measured script/sign/sequence/transliteration/translation stages, independently reviewable source-linked prediction traces, blinded expert evidence and more than one held-out document. Mere success at identifying Egyptian writing is strictly insufficient.
+
+`report_state: proposed_public` is blocked unless accompanied by the independent, publishable EVAL-006 release record, byte-matching release-record hash, and preregistered metric set. That release record itself must pass the EVAL-006 validator; no synthetic example is a real accepted research result.
+
+The checks cannot establish scientific truth from fabricated metadata. Independent reviewer inspection of actual scored archives, licensed corpus eligibility, proof of blind custody, and grouped uncertainty remains a **separate human acceptance gate**.

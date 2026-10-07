@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/project_state.schema.json",
+  "title": "Hieratic AI project state",
+  "type": "object",
+  "required": ["schema_version", "roadmap_version", "updated_at", "project", "progress", "state", "canonical_files", "critical_gates", "next_overseer_action"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "roadmap_version": {"type": "string"},
+    "updated_at": {"type": "string"},
+    "project": {
+      "type": "object",
+      "required": ["name", "repository", "visibility", "ultimate_goal"],
+      "properties": {
+        "name": {"type": "string"},
+        "repository": {"type": "string"},
+        "visibility": {"type": "string"},
+        "ultimate_goal": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "progress": {
+      "type": "object",
+      "required": ["goal_progress", "goal_total", "research_coverage", "semantics"],
+      "properties": {
+        "goal_progress": {"type": "number", "minimum": 0},
+        "goal_total": {"type": "number", "exclusiveMinimum": 0},
+        "research_coverage": {"type": "number", "minimum": 0, "maximum": 100},
+        "semantics": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
+    "state": {
+      "type": "object",
+      "required": ["current_phase", "current_wave", "control_plane_gate", "validated_experiments", "trained_models", "best_verified_result", "last_accepted_task", "ready_tasks", "active_tasks", "review_tasks", "blockers"],
+      "properties": {
+        "current_phase": {"type": "string"},
+        "current_wave": {"type": "string"},
+        "control_plane_gate": {"type": "string"},
+        "validated_experiments": {"type": "integer", "minimum": 0},
+        "trained_models": {"type": "integer", "minimum": 0},
+        "best_verified_result": {},
+        "last_accepted_task": {"type": "string"},
+        "ready_tasks": {"type": "array", "items": {"type": "string"}},
+        "active_tasks": {"type": "array", "items": {"type": "string"}},
+        "review_tasks": {"type": "array", "items": {"type": "string"}},
+        "blockers": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "canonical_files": {"type": "object"},
+    "critical_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "status"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "status": {"type": "string"},
+          "remaining": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "next_overseer_action": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}

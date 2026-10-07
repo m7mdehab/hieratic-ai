@@ -126,7 +126,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Reproduce an external Hieratic benchmark"
     weight: 2.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["FND-004"]
     acceptance_summary: "External benchmark inputs, methodology, licensing, and published baselines are reproduced or discrepancies are documented."
@@ -135,7 +135,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Establish untuned frontier-model baselines"
     weight: 1.50
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["EVAL-001", "EVAL-002"]
     acceptance_summary: "Selected untuned multimodal models are evaluated reproducibly with preserved prompts and raw outputs."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 8.0
+    validated_weighted_tasks_expected: 10.0
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

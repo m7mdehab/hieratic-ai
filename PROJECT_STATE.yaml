@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 8.0
+  goal_progress: 10.0
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,12 +29,12 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "DATA-001"
+  last_accepted_task: "EVAL-002"
   ready_tasks:
     - "FND-006"
     - "DATA-002"
     - "DATA-004"
-    - "EVAL-002"
+    - "EVAL-003"
     - "EVAL-004"
     - "EVAL-005"
   active_tasks:
@@ -79,7 +79,8 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review CTRL-003 when Sonnet returns. DATA-001 is validated, so DATA-002 and
-  DATA-004 are ready. Prepare a larger Luna work package from multiple
-  independent ready tasks, while assigning the overseer a substantial
-  reasoning-heavy task in the same approved wave.
+  Review Luna's three independently scoped W1 package PRs (DATA-002, DATA-004,
+  EVAL-004) and Sonnet's CTRL-003 dashboard result when returned. EVAL-002 is
+  validated; EVAL-003 is newly ready. After reviewing agent evidence, propose
+  the next three-lane wave with another substantive overseer-owned task.
+  FND-006 remains ready, not self-validated.

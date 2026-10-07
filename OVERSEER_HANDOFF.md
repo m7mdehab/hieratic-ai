@@ -1,198 +1,82 @@
-# Overseer Handoff
+# Overseer Handoff — Hieratic AI
 
-Updated: 2026-10-08
+Updated: 2026-10-08. This file is a compact current handoff. Historical evidence remains in accepted PRs, DECISIONS.md and RESEARCH.md.
 
-## Current verified state
+## Canonical status
 
-- Goal progress: **8.0 / 100**
-- Goal remaining: **92.0**
-- Research coverage: **~14%**
-- Current capability phase: **P1 — Research Foundation**
-- Phase 1 progress: **4.5 / 5 (90%)**
-- Control-plane wave: **W0**
-- Validated experiments: **0**
-- Trained models: **0**
-- Last accepted task: **CTRL-002**
+- **Verified goal progress:** 10.0 / 100; remaining 90.0.
+- **Research coverage:** ~14%, unchanged pending a defined denominator.
+- **Phase 1 foundation:** 4.5 / 5 = 90%.
+- **Phase 2 evaluation:** 3.5 / 10 = 35%.
+- **Phase 3 data engine:** 2.0 / 20 = 10%.
+- **Control-plane:** 3/5 accepted = 60%.
+- **Validated experiments:** 0.
+- **Trained models:** 0.
+- **Last accepted task:** EVAL-002.
+- **Currently active (last confirmed):** CTRL-003 in the Anti-Gravity/Sonnet lane.
 
-## Latest accepted execution work
+See `PROJECT_STATE.yaml` for the current authoritative progress and `TASKS.yaml` for task dependencies/status.
 
-**CTRL-002 — validated and merged via PR #5.**
+## Current three-lane operating model
 
-Verified capabilities:
-- JSON Schema-backed canonical-state validation;
-- duplicate/status/dependency/cycle checks;
-- phase/task weight and goal-progress reconciliation;
-- state-array consistency checks;
-- compact overseer context packet generation;
-- task-specific context packet generation;
-- provider-neutral Python CLI;
-- 15 governance tests reported passing after remediation;
-- progress/coverage assertions derive from canonical state rather than historical literals.
+1. Luna: execution lane, normally 2–3 **independent ready** tasks in a larger package.
+2. Anti-Gravity: **one** shared execution lane, Sonnet or Gemini 3.8 Flash (user chooses based on limits). It is not two simultaneous lanes.
+3. Overseer: research, scientific methodology, architecture, review/integration.
 
-CTRL-002 is unweighted infrastructure, so verified Hieratic capability remains 4.5/100.
+User approves the full wave before overseer-owned work begins. Each accepted PR must have actual evidence inspected. Only accepted weighted tasks earn capability points.
 
-## Work currently happening in parallel
+## Latest completed wave: EVAL-002
 
-- **CTRL-003 — active with Sonnet**: live dashboard/control-plane shell.
-- **CTRL-004 — validated and merged via PR #10**: CI governance checks and PR guardrails.
-- **DATA-001 — ready**: machine-readable training-data source registry.
-- **EVAL-001 — ready**: evaluation metric specification.
-- **EVAL-002 — ready**: external benchmark reproduction.
-- **EVAL-004 — ready**: leakage-resistant split design.
+**EVAL-002 — ACCEPTED**, merged in PR #21 (implementation) and the follow-up canonical state PR.
 
-## Foundation work already validated
+Verified external HieraticBench:
+- pinned official SHA `d587dc990013f18007f1e7a8f56f96ff2f7127e2` / harness `0.1.0`;
+- 268 items = 266 public + 2 sealed, 150 public single-sign examples, 118 identify-eligible images;
+- 13 model rows in published snapshot;
+- no public answer key/scored transliteration or translation for the single secret sentence in two hands;
+- original scoring rules are **not** to be replaced by our project EVAL-001 normalization;
+- external benchmark and near-duplicates remain quarantined from training/dev.
 
-- FND-003 — writing-system/task-decomposition problem map.
-- FND-004 — verified prior-art/data registry.
-- FND-005 — licensing/provenance policy.
+Read-only CI proof: [HieraticBench audit run 37693626552](https://github.com/m7mdehab/hieratic-ai/actions/runs/37693626552), successful.
+- 13 synthetic adapter tests passed;
+- 8 upstream TypeScript scorer tests passed;
+- 1,892 public scored/unscored run records checked;
+- 1,738 per-item/model/rung means reproduced;
+- 17 model/rung numeric aggregates matched;
+- no benchmark images or secret answers checked out/committed.
 
-Only **FND-006 (0.5 points)** remains in Phase 1. Its dependency CTRL-004 is now validated, so FND-006 is ready but has not been started.
+Files:
+- `docs/evaluation/HIERATICBENCH_REPRODUCTION.md`
+- `eval/benchmarks/hieraticbench/manifest.yaml`
+- `eval/benchmarks/hieraticbench/adapter.py`
+- `eval/benchmarks/hieraticbench/README.md`
+- `tests/evaluation/test_hieraticbench_adapter.py`
+- `.github/workflows/hieraticbench-audit.yml`
 
-## Control-plane gate
+EVAL-002 earned +2.0 points: 8.0 → 10.0. EVAL-003 is now **ready**.
 
-Validated:
-- CTRL-001
-- CTRL-002
-- CTRL-004
+## Other completed foundation work
 
-Remaining:
-- CTRL-003
-- FND-006
+- CTRL-001, CTRL-002, CTRL-004: canonical operating system, state validator/context CLI, CI governance.
+- FND-001 to FND-005: mission/scope, feasibility, Hieratic problem map, prior-art/data research, deny-by-default licensing/provenance policy.
+- EVAL-001: versioned layered metrics/normalization/uncertainty evaluation contract; no primary composite score in v1.
+- DATA-001: machine-readable 8-source registry, policy validator and tests.
 
-Operational gate completion: **3/5 = 60%**.
+## Pending work and dependencies
 
-## Next overseer action
+- **Luna approved W1 large package:** DATA-002 (2 points), DATA-004 (3), EVAL-004 (2). Brief `tasks/batches/LUNA-W1-LARGE.md`. Each task must have its own PR and reviewed acceptance.
+- **Anti-Gravity/Sonnet:** CTRL-003 dashboard/control plane. No accepted return yet.
+- **FND-006** (0.5) remains ready: close reproducibility/governance foundation after deliberate review; not automatic.
+- **EVAL-003** (1.5) newly ready because EVAL-001 + EVAL-002 are validated.
+- **EVAL-005** (1.0) ready.
+- DATA-003, DATA-005, DATA-006, DATA-007 and EVAL-006 have additional dependency gates and must not start merely because an unreviewed Luna task appears locally complete.
 
-1. Review CTRL-003 as soon as Sonnet returns.
-2. Present the next three-lane wave for approval: Luna -> DATA-001; Anti-Gravity (Sonnet) -> continue CTRL-003; Overseer -> EVAL-001.
-3. Keep FND-006 ready but unstarted until an overseer-wave approval covers it or the overseer deliberately schedules it.
-4. Continue DATA/EVAL work without violating benchmark quarantine or data-rights policy.
+## Required next overseer behavior
 
-## Mandatory review-response rule
+1. Review each Luna W1 PR from source code, tests, CI, scientific methodology, provenance, and branch scopes.
+2. Review Sonnet CTRL-003 when returned; audit against canonical state and responsiveness.
+3. Give the user a **full checked/unchecked report**, task evidence %, earned/remaining goal %, research coverage, phase and control-plane gate status, blockers, and exact point changes.
+4. Update canonical state and merge accepted PRs; issue precise revision briefs otherwise.
+5. Prepare the next approved parallel wave with a substantial overseer-owned task; avoid assigning a task that collides with unresolved branches.
 
-Every returned agent task receives:
-- verdict;
-- checked/unchecked completed and pending items;
-- task evidence completion;
-- verified goal progress and remaining;
-- research coverage;
-- phase/gate progress;
-- next dependency-aware checklist;
-- exact percentage changes.
-
-
-## Parallel-wave rule
-
-Future waves must include an overseer assignment whenever a high-value dependency-ready task is safe to run alongside the execution agents.
-
-The overseer presents the whole wave first, including its own task, and waits for Mohammed's approval before starting that task.
-
-The preferred overseer work is scientific evaluation design, architecture, source-grounded research, synthesis, or another reasoning-heavy task.
-
-For the next wave, the proposed overseer assignment is EVAL-001: specify evaluation metrics across the reading stack.
-
-
-## Execution-lane topology
-
-Default parallel work uses three lanes:
-
-- **Luna** — persistent execution lane.
-- **Anti-Gravity** — one shared lane using Sonnet or Gemini 3.8 Flash, as Mohammed directs based on limits/availability.
-- **Overseer** — heavy-lifting research, architecture, evaluation, synthesis, and review.
-
-Do not schedule Sonnet and Gemini as separate simultaneous lanes unless Mohammed explicitly changes this rule.
-
-A Sonnet ↔ Gemini switch should resume from repository state and the task brief, not from provider memory.
-
-
-## CTRL-004 acceptance evidence
-
-PR #10 was reviewed against the actual diff and GitHub Actions run 37687240616.
-
-Verified:
-- PR and main-push governance workflow;
-- read-only contents permission;
-- Python 3.12;
-- canonical projectctl validation;
-- 18 governance tests;
-- nonzero failure behavior on invalid fixture;
-- evidence-oriented PR template;
-- successful GitHub Actions job.
-
-CTRL-004 is unweighted infrastructure, so capability remains 4.5/100.
-
-
-## Latest accepted overseer work
-
-**EVAL-001 — validated and merged via PR #16.**
-
-The project now has a canonical evaluation contract spanning:
-- script/domain ID;
-- layout and reading order;
-- sign detection/classification and palaeographic retrieval;
-- line/sequence HTR;
-- standardized hieroglyphic rendering;
-- Egyptological transliteration;
-- normalization/tokenization;
-- lemma and morphology;
-- translation/source faithfulness;
-- calibration, abstention, and alternative sets;
-- generalization strata;
-- blind expert evaluation.
-
-Important decisions:
-- no primary composite score in v1;
-- translation cannot compensate for failed visual reading;
-- multiple scholarly readings and illegible spans are first-class;
-- document-macro reporting is required for heterogeneous sequence tasks;
-- benchmark-specific scores remain separate from project success.
-
-Evidence:
-- `docs/evaluation/METRICS_SPEC.md`
-- `docs/evaluation/NORMALIZATION_PROFILES.md`
-- `docs/evaluation/SCORING_EXAMPLES.md`
-- `eval/metric_contract.yaml`
-
-EVAL-001 earns **1.5 capability points**, moving verified goal progress from 4.5 to 6.0.
-
-EVAL-005 is newly ready.
-
-
-## DATA-001 acceptance
-
-**DATA-001 — validated and merged via PR #15.**
-
-Verified:
-- 8-source machine-readable registry;
-- canonical rights classes and project review markers;
-- explicit training/development/evaluation/redistribution decisions;
-- HieraticBench evaluation quarantine;
-- DDD non-commercial and per-item constraints;
-- AKU-PAL per-item and benchmark-overlap controls;
-- TLA no-bulk-scraping restriction;
-- unresolved PaPYrus/Isut/HieraticAI image/data rights remain non-approved;
-- JSON Schema plus deterministic validator;
-- 13 data tests and 18 governance tests reported passing;
-- no third-party raw assets were added.
-
-DATA-001 earns **2.0 capability points**, moving verified progress from 6.0 to 8.0.
-
-Newly ready:
-- DATA-002
-- DATA-004
-
-A minor post-review metadata correction aligns TLA `accessed_at` with the registry's own 2026-10-08 spot-check note.
-
-## Luna work-package sizing
-
-Luna is substantially faster than the overseer lane on bounded engineering tasks. Future Luna dispatches should therefore be **multi-task work packages** when several independent tasks are simultaneously ready.
-
-Rules:
-- batch only tasks whose dependencies are already validated at dispatch time;
-- preserve one task ID, branch, PR, and evidence package per canonical task unless the overseer explicitly approves another structure;
-- Luna may complete all independent tasks in the package before returning;
-- no task may start merely because another task in the same package finished if it depends on overseer acceptance of that earlier task;
-- avoid overlapping write scopes across the package;
-- quality/acceptance criteria remain unchanged.
-
-This is intended to reduce idle time, not relax review.
+Do not treat source repository code, scientific claims, or leaderboard results as model training data. Do not pretend the public HieraticBench sealed reading can be scored automatically.

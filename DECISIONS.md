@@ -178,3 +178,23 @@ Constraints:
 - no dependent task may start solely because its prerequisite was locally completed inside the package; overseer validation is still required.
 
 This changes throughput, not scientific or quality standards.
+
+
+## ADR-0014 — Pin external HieraticBench; preserve its official scoring and quarantine
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+HieraticBench reproduction is pinned to upstream commit
+`d587dc990013f18007f1e7a8f56f96ff2f7127e2`
+and harness `0.1.0`.
+
+- Reproduce item inventory and public numeric score aggregation with a read-only external adapter.
+- Use the benchmark's own TypeScript scoring implementation/tests as the authoritative raw-answer scorer.
+- Never silently substitute Hieratic AI's different normalization or metrics for official benchmark scores.
+- Do not claim fresh model-inference reproduction merely because historical numeric aggregates were reproduced.
+- Never fabricate gold labels/scores for the undisclosed sentence.
+- Keep images, crops, exact/near-duplicate source items, benchmark answer gold, and model outputs out of the training/development pipeline.
+- Any future upstream benchmark version requires a new reviewed manifest, scorer comparison and benchmark-integrity decision.
+
+References: `docs/evaluation/HIERATICBENCH_REPRODUCTION.md` and `eval/benchmarks/hieraticbench/manifest.yaml`.

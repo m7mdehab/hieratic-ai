@@ -259,3 +259,15 @@ EVAL-006's versioned sealed evaluation protocol, custody separation, machine-rea
 - EVAL-003 public benchmark manifest/prompt-source freeze is separate from execution authority; upstream historical scores cannot be laundered into newly run baseline claims.
 
 Evidence: `docs/evaluation/SEALED_EVALUATION_PROTOCOL.md`, PRs #35/#40; `docs/evaluation/FRONTIER_BASELINES.md`, PR #38.
+
+
+## ADR-0019 — Accept build-time canonical dashboard with independently verified CI
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+CTRL-003's Next.js public control-plane shell is accepted only after independent `npm ci`, production-security, lint/typecheck/Vitest, build and Playwright QA on the updated canonical state. The dashboard is derived from `PROJECT_STATE.yaml` and `TASKS.yaml` during build/server rendering, without an independent status database. New canonical commits require rebuild/redeployment to refresh a static deployment. Dashboard CI was introduced via PR #43; implementation PR #27 and its scope were independently reviewed.
+
+The dependency `braces@3.0.3` is still vulnerable under **GHSA-vfj7-8cjw-p6xm** (all versions through 3.0.3 affected; no patched release as of this decision). Five high alerts remain in a development-only ESLint transitive chain. Acceptance is conditioned on zero production high alerts and not processing untrusted glob/brace expressions in that tooling; the risk is documented, **not represented as remediated**.
+
+CTRL-003's zero-point status remains unchanged; the control-plane gate becomes **5/5 complete**. No deployment, model experiment or Hieratic reading performance is inferred from dashboard acceptance.

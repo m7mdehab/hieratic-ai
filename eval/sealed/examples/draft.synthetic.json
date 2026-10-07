@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation_id": "SEAL-SYNTHETIC-NO-RUN",
+  "state": "draft",
+  "protocol_version": "1.0.0",
+  "protocol_sha256": null,
+  "freeze_sha256": null,
+  "freeze_created_at": null,
+  "first_sealed_access_at": null,
+  "roles": {
+    "training_operator": null,
+    "sealed_custodian": null,
+    "blind_scorer": null,
+    "adjudicator": null,
+    "release_authorities": []
+  },
+  "frozen_inputs": {
+    "dataset_manifest_sha256": null,
+    "split_manifest_sha256": null,
+    "overlap_review_sha256": null,
+    "rights_review_sha256": null,
+    "accepted_gold_manifest_sha256": null,
+    "model_checkpoint_sha256": null,
+    "model_config_sha256": null,
+    "inference_code_commit": null,
+    "prompt_bundle_sha256": null,
+    "metric_contract_sha256": null,
+    "normalization_profiles_sha256": null,
+    "scorer_sha256": null,
+    "analysis_plan_sha256": null,
+    "attempt_manifest_sha256": null,
+    "environment_lock_sha256": null
+  },
+  "metric_ids": [],
+  "rights": {
+    "status": "unreviewed",
+    "reviewer_id": null,
+    "evidence_ref": null
+  },
+  "overlap": {
+    "status": "unreviewed",
+    "roster_sha256": null,
+    "reviewer_id": null,
+    "evidence_ref": null,
+    "unresolved_candidates": 0
+  },
+  "attempts": {
+    "expected": 0,
+    "received": 0,
+    "failed": 0,
+    "abstained": 0,
+    "excluded_unscorable": 0
+  },
+  "scoring": {
+    "status": "not_run",
+    "scorer_sha256": null,
+    "prediction_archive_sha256": null,
+    "score_archive_sha256": null,
+    "document_macro_report_sha256": null,
+    "bootstrap_report_sha256": null,
+    "official_external_metric_separate": true,
+    "attempted_metric_ids": []
+  },
+  "adjudication": {
+    "status": "not_started",
+    "blinded_to_model": false,
+    "reviewer_id": null,
+    "evidence_ref": null,
+    "unresolved_gold_count": 0
+  },
+  "contamination": {
+    "status": "unreviewed",
+    "incidents": []
+  },
+  "approvals": [],
+  "release_artifacts": []
+}

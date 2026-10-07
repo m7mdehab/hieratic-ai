@@ -1,0 +1,61 @@
+schema_version: "1.0.0"
+suite_id: "HIERATIC-FRONTIER-UNTUNED-V1"
+status: "planning"
+objective: "Measure cold, untuned image-based script identification and isolated-sign recognition independently of prior published model scores."
+canonical_metric_contract: "eval/metric_contract.yaml"
+official_benchmark:
+  source_registry_id: "SRC-HIERATICBENCH"
+  repository: "https://github.com/alymoursy/hieraticbench"
+  commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+  public_items_only: true
+  item_manifest_sha256: null
+  permitted_rungs: ["identify", "signs"]
+  sealed_items_excluded: true
+official_prompts:
+  source_file: "bench/src/prompts.ts"
+  commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+  exact_prompt_bundle_sha256: null
+  no_examples: true
+  no_system_prompt: true
+  no_tools: true
+  no_prompt_selection_using_test: true
+protocol:
+  samples_per_item: 3
+  seed_policy: "record_if_supported; otherwise log provider_non_determinism"
+  temperature_policy: "provider_default_unless_upstream_official_protocol_requires_setting"
+  skip_on_error: false
+  preserve_all_attempts: true
+  score_with: "pinned_upstream_official_scorer"
+  reported_scores: "per_rung_no_primary_composite"
+models:
+  - key: "openai-frontier"
+    label: "OpenAI frontier multimodal candidate"
+    provider: "openai"
+    provider_model_id: null
+    effort: "verify_provider_support"
+    api_route: null
+  - key: "anthropic-frontier"
+    label: "Anthropic frontier multimodal candidate"
+    provider: "anthropic"
+    provider_model_id: null
+    effort: "verify_provider_support"
+    api_route: null
+  - key: "google-frontier"
+    label: "Google frontier multimodal candidate"
+    provider: "google"
+    provider_model_id: null
+    effort: "verify_provider_support"
+    api_route: null
+execution_gate:
+  provider_ids_confirmed: false
+  credentials_available: false
+  provider_terms_reviewed: false
+  budget_approved: false
+  max_total_spend_usd: null
+  immutable_public_item_manifest_created: false
+  offline_scorer_parity_confirmed: true
+  external_private_artifact_store_ready: false
+  explicit_user_permission_for_paid_inference: false
+evidence:
+  prior_upstream_baseline: "docs/evaluation/HIERATICBENCH_REPRODUCTION.md"
+  note: "Published upstream scores are context only; zero project-run model baselines exist."

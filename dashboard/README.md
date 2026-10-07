@@ -74,8 +74,10 @@ All direct dependencies use permissive, commercial-friendly open source licenses
               └── @next/eslint-plugin-next (>=14.3.0-canary.0)
                    └── eslint-config-next (>=14.3.0-canary.0) [devDependency]
   ```
-  - **Impact:** Strictly development/build-time (`eslint .`). Does not execute in production runtime or client browsers.
-  - **Remediation:** The package on disk is `braces@3.0.3` (the latest release addressing stack exhaustion), reinforced via `"overrides": { "braces": "^3.0.3" }` in `package.json`. npm's automated suggestion (`npm audit fix --force`) proposes downgrading to `eslint-config-next@14.2.35`, which is incompatible with Next.js 16 and React 19.
+  - **Impact:** This is currently a development/build-time lint dependency (`eslint .`), not imported by the dashboard's production application or client bundles. It can nevertheless exhaust the Node.js stack if attacker-controlled deeply nested brace patterns reach the vulnerable parser during tooling execution. Treat the 5 high alerts as **unresolved**, not patched.
+  - **Advisory status (2026-10-08):** [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) explicitly marks **all versions through 3.0.3 as affected** and lists **no patched release**. The existing `"braces": "^3.0.3"` override **does not remediate this advisory**; it only avoids older versions and must not be represented as a security fix.
+  - **Interim mitigation:** Keep untrusted user-supplied glob/brace patterns out of lint/build inputs, run tooling on isolated CI runners, preserve the production-only audit gate, and re-evaluate the full dev audit when upstream publishes a genuinely fixed release. The automated `npm audit fix --force` downgrade to `eslint-config-next@14.2.35` is not an acceptable untested Next.js 16 migration.
+  - **Acceptance boundary:** The dashboard may be approved as an internal/static control plane with this **documented dev-tooling exception** only if independent CI confirms zero production high findings. Before handling untrusted glob input or accepting external project builds, remediate or remove the vulnerable transitive path and review licensing/security again.
 
 ## Accessibility and responsive QA
 

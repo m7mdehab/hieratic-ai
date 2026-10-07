@@ -212,6 +212,14 @@ python -m eval.baselines.run_freeze verify-locked \
   --upstream-checkout /private/hieraticbench
 ```
 
+### Preserve per-attempt prompt and response identity
+
+The older `baselinectl.audit-capture` checks a single suite-level prompt-bundle digest and is **not sufficient for an original run with item-specific rendered prompts**. It can remain as a preliminary legacy integrity check, but it cannot certify W3 model runs.
+
+The new `run_freeze.audit_original_capture(...)` pairs every private raw-response record with its unique frozen item/rung/sample prompt SHA-256 and its actual input image bytes. It separately checks the capture archive hash, exact model identity and complete attempt universe. Successful answers must retain original provider response IDs; failures, abstentions, timeouts and refusals must all remain in the denominator. It emits only status tallies, never model outputs or hidden answer keys.
+
+This audit must still be accompanied by authenticated provider request logs, independently verified permission receipts, source rights and replay of the pinned upstream official scorer before EVAL-003 can earn capability points. The code deliberately makes `scoring_reproduced=False` and `scientific_experiment_validated=False` for any metadata audit result.
+
 **Authorization control:** No automation, chat response or Boolean in the record substitutes for explicit user budget approval. A qualified operator can invoke `validate_locked(... actual_approval_confirmed=True)` programmatically only after checking the genuine human authorization and item rights outside the repo. This intentionally avoids any runnable paid inference in GitHub CI.
 
 **A synthetic "passing locked record" in unit tests is not actual authorized execution or rights clearance**. The tests mock an upstream audit and use harmless fake bytes outside the checkout to verify fail-closed logic. Do not cite their success as evidence of real model coverage or official scores.

@@ -1,0 +1,73 @@
+schema_version: "1.0.0"
+annotation_id: SYNTH-ANNOTATION-MINIMAL
+provenance:
+  source_registry_id: SRC-HPDB
+  source_object_id: SYNTHETIC-OBJECT-001
+  source_url: https://example.invalid/synthetic-object-001
+  asset_refs: []
+  rights_provenance_ref: "Synthetic fixture: source metadata link only; no source content included."
+  collection: null
+  institution: null
+document:
+  period: null
+  date_range: null
+  geographic_provenance: null
+  material_support: null
+  genre_register: null
+  scribe_group: null
+  metadata: {}
+script_label:
+  gold_status: certain
+  values:
+    - value_id: script-value-1
+      value: synthetic_hieratic_label
+      confidence: null
+      equivalent_to_selected: false
+      evidence_ref: null
+  selected_value_id: script-value-1
+  explanation: null
+pages:
+  - page_id: page-1
+    coordinate_system: normalized_0_1
+    dimensions: null
+    orientation: unknown
+    regions:
+      - region_id: region-1
+        region_type: text
+        geometry: null
+        parent_region_id: null
+        child_region_ids: []
+    reading_order: [region-1]
+lines:
+  - line_id: line-1
+    page_id: page-1
+    region_id: region-1
+    parent_line_id: null
+    reading_order: 0
+    reading_direction: right_to_left
+    geometry: null
+    sequence_id: sequence-1
+    grapheme_sequence:
+      gold_status: certain
+      values:
+        - value_id: grapheme-sequence-value-1
+          value: [SYNTH-GRAPHEME-A, SYNTH-GRAPHEME-B]
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+      selected_value_id: grapheme-sequence-value-1
+      explanation: null
+signs: []
+sign_groups: []
+reviews:
+  - review_id: review-1
+    annotator_id: synthetic-annotator
+    annotated_at: "2026-10-08T10:00:00Z"
+    annotation_version: "1"
+    reviewer_id: null
+    adjudicator_id: null
+    review_status: draft
+    comments: []
+    evidence_urls: []
+    supersedes_review_id: null
+    status_history: []

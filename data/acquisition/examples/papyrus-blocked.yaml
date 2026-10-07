@@ -1,0 +1,33 @@
+manifest_version: "1.0.0"
+manifest_id: example-papyrus-rights-blocked
+operator_tool_version: "acquisition-planner/1.0.0"
+items:
+  - source_id: SRC-PAPYRUS
+    source_object_id: SYNTHETIC-PAPYRUS-REQUEST
+    canonical_object_url: https://github.com/jtabin/PaPYrus
+    exact_access_url: null
+    acquisition_mode: metadata_only
+    intended_use: training
+    source_rights_snapshot: {rights_class: UNKNOWN, use_decision: not_approved}
+    required_attribution: "Record source-facsimile provenance and item attribution when identified; repository software license is not data clearance"
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    expected_path: raw/train/papyrus/SYNTHETIC-PAPYRUS-REQUEST
+    expected_mime_type: null
+    expected_size_bytes: null
+    expected_sha256: null
+    actual_sha256: null
+    retrieval_timestamp: null
+    http_etag: null
+    http_last_modified: null
+    transformation_status: not_acquired
+    redistribution_requested: false
+    provenance_urls: [https://github.com/jtabin/PaPYrus]
+    evidence_urls: [https://github.com/jtabin/PaPYrus]
+    review_conditions: []
+    is_synthetic_fixture: false
+    item_rights_review: {item_url: null, license_identifier: null, rightsholder: null, reviewer_id: null, approval_status: not_started, evidence_ref: null, reviewed_at: null}
+    benchmark_overlap_review: {status: not_assessed, reviewer_id: null, evidence_ref: null, overlap_check_version: null, reviewed_at: null}
+    acquisition_status: planned
+    status_reason: "Synthetic negative fixture: unresolved data rights block training acquisition."
+    retrieval_events: []

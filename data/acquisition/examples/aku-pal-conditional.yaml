@@ -1,0 +1,33 @@
+manifest_version: "1.0.0"
+manifest_id: example-aku-pal-item-review-required
+operator_tool_version: "acquisition-planner/1.0.0"
+items:
+  - source_id: SRC-AKU-PAL
+    source_object_id: SYNTHETIC-AKU-PAL-ITEM
+    canonical_object_url: https://aku-pal.uni-mainz.de/
+    exact_access_url: null
+    acquisition_mode: direct_download
+    intended_use: training
+    source_rights_snapshot: {rights_class: PER-ITEM, use_decision: conditional}
+    required_attribution: "Record stable hieratogram ID, item URL, displayed license, rightsholder, and required attribution for every acquired image"
+    benchmark_quarantine: false
+    benchmark_overlap_risk: high
+    expected_path: raw/train/aku-pal/SYNTHETIC-AKU-PAL-ITEM
+    expected_mime_type: image/png
+    expected_size_bytes: null
+    expected_sha256: null
+    actual_sha256: null
+    retrieval_timestamp: null
+    http_etag: null
+    http_last_modified: null
+    transformation_status: not_acquired
+    redistribution_requested: false
+    provenance_urls: [https://aku-pal.uni-mainz.de/]
+    evidence_urls: [https://aku-pal.uni-mainz.de/faq]
+    review_conditions: []
+    is_synthetic_fixture: false
+    item_rights_review: {item_url: null, license_identifier: null, rightsholder: null, reviewer_id: null, approval_status: not_started, evidence_ref: null, reviewed_at: null}
+    benchmark_overlap_review: {status: not_assessed, reviewer_id: null, evidence_ref: null, overlap_check_version: null, reviewed_at: null}
+    acquisition_status: planned
+    status_reason: "Synthetic request intentionally lacks item-license and overlap evidence, so it must be refused."
+    retrieval_events: []

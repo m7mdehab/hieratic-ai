@@ -1,0 +1,33 @@
+manifest_version: "1.0.0"
+manifest_id: example-hpdb-metadata-reference
+operator_tool_version: "acquisition-planner/1.0.0"
+items:
+  - source_id: SRC-HPDB
+    source_object_id: SYNTHETIC-HPDB-METADATA-REFERENCE
+    canonical_object_url: https://moeller.jinsha.tsukuba.ac.jp/en/datasets/
+    exact_access_url: null
+    acquisition_mode: metadata_only
+    intended_use: reference
+    source_rights_snapshot: {rights_class: OPEN-BY, use_decision: metadata_only}
+    required_attribution: "Cite the Hieratische Paläographie DB project and preserve attribution and source provenance for image/IIIF derivatives"
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    expected_path: metadata/hpdb/SYNTHETIC-HPDB-METADATA-REFERENCE
+    expected_mime_type: null
+    expected_size_bytes: null
+    expected_sha256: null
+    actual_sha256: null
+    retrieval_timestamp: null
+    http_etag: null
+    http_last_modified: null
+    transformation_status: not_acquired
+    redistribution_requested: false
+    provenance_urls: [https://moeller.jinsha.tsukuba.ac.jp/en/datasets/]
+    evidence_urls: [https://moeller.jinsha.tsukuba.ac.jp/en/datasets/]
+    review_conditions: []
+    is_synthetic_fixture: false
+    item_rights_review: {item_url: null, license_identifier: null, rightsholder: null, reviewer_id: null, approval_status: not_started, evidence_ref: null, reviewed_at: null}
+    benchmark_overlap_review: {status: not_assessed, reviewer_id: null, evidence_ref: null, overlap_check_version: null, reviewed_at: null}
+    acquisition_status: planned
+    status_reason: "Synthetic metadata-only reference showing required attribution and source linkage; no dataset item is acquired."
+    retrieval_events: []

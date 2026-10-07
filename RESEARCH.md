@@ -123,3 +123,12 @@ Evidence: `docs/evaluation/HIERATICBENCH_REPRODUCTION.md`,
 [Actions audit run 37693626552](https://github.com/m7mdehab/hieratic-ai/actions/runs/37693626552).
 
 Methodological constraint: external item content, source near-duplicates, and benchmark gold stay out of training/dev, regardless of source-license permissiveness.
+
+
+### R-008 — Error taxonomy and reproducible review workflow (EVAL-005)
+
+**Status:** ACCEPTED methodology and software contract, not a reported model result.
+
+Defines 48 failure codes across 16 visual, linguistic, uncertainty, generalization and evaluation-integrity layers. Review events are typed, evidence-linked, may express upstream causal relationships, and track adjudication, gold missingness, contamination, stratum metadata and publication scope. Public summary logic suppresses sealed-record aggregates. Error counts are not performance rates without frozen scored denominators.
+
+Evidence: `docs/evaluation/ERROR_TAXONOMY_AND_ANALYSIS.md`, `eval/analysis/`, dedicated passing GitHub Actions error-analysis workflow, 23 new synthetic tests.

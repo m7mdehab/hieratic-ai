@@ -4,15 +4,15 @@ Updated: 2026-10-08. This file is a compact current handoff. Historical evidence
 
 ## Canonical status
 
-- **Verified goal progress:** 11.0 / 100; remaining 89.0.
+- **Verified goal progress:** 11.5 / 100; remaining 88.5.
 - **Research coverage:** ~14%, unchanged pending a defined denominator.
-- **Phase 1 foundation:** 4.5 / 5 = 90%.
+- **Phase 1 foundation:** 5.0 / 5 = 100%.
 - **Phase 2 evaluation:** 4.5 / 10 = 45%.
 - **Phase 3 data engine:** 2.0 / 20 = 10%.
 - **Control-plane:** 3/5 accepted = 60%.
 - **Validated experiments:** 0.
 - **Trained models:** 0.
-- **Last accepted task:** EVAL-005.
+- **Last accepted task:** FND-006.
 - **Currently active (last confirmed):** CTRL-003 in the Anti-Gravity/Sonnet lane.
 
 See `PROJECT_STATE.yaml` for the current authoritative progress and `TASKS.yaml` for task dependencies/status.
@@ -66,8 +66,8 @@ EVAL-002 earned +2.0 points: 8.0 → 10.0. EVAL-003 is now **ready**.
 
 - **Luna approved W1 large package:** DATA-002 (2 points), DATA-004 (3), EVAL-004 (2). Brief `tasks/batches/LUNA-W1-LARGE.md`. Each task must have its own PR and reviewed acceptance.
 - **Anti-Gravity/Sonnet:** CTRL-003 dashboard/control plane. No accepted return yet.
-- **FND-006** (0.5) remains ready: close reproducibility/governance foundation after deliberate review; not automatic.
-- **EVAL-003** (1.5) ready because EVAL-001 + EVAL-002 are validated.
+- **FND-006** (0.5) validated via PR #29 and follow-up state acceptance; Phase 1 closed.
+- **EVAL-003** (1.5) active in overseer lane because EVAL-001 + EVAL-002 are validated.
 - **EVAL-005** (1.0) validated (PR #25/#26).
 - DATA-003, DATA-005, DATA-006, DATA-007 and EVAL-006 have additional dependency gates and must not start merely because an unreviewed Luna task appears locally complete.
 
@@ -106,3 +106,11 @@ Statuses are `revision_required`. Goal progress **11/100**; research coverage **
 Sonnet has pushed draft PR #27 (the earlier no-branch checkpoint is superseded); reviewer posted stale-state tests, mobile layout bugs, accessibility, audit and final QA requirements. Not accepted.
 
 Next: Luna fixes the three existing PR branches, Sonnet fixes #27, overseer proposes independent EVAL-003 scientific-baseline task for the next approved wave.
+
+## FND-006 completed and EVAL-003 commenced
+
+FND-006 merged via PR #29: evidence/experiment JSON Schemas, approved PR branch scopes, CI diff-scope enforcement, 16 new synthetic contract tests, and complete governance/data/evaluation CI coverage. Proof: [Actions run 37697693576](https://github.com/m7mdehab/hieratic-ai/actions/runs/37697693576): 34 governance + 13 data + 36 evaluation = **83 tests passed**; eight changed task files matched the approved scope. No third-party assets/experiments were added.
+
+Award +0.5: **11.0 -> 11.5/100**, Phase 1 **5/5**. Current capability phase now **P2_EVALUATION**; P2 remains **4.5/10**. GATE-CONTROL still incomplete because CTRL-003 dashboard remains in revision/draft.
+
+EVAL-003 is **active** in overseer lane. Distinguish protocol/tooling completion from verified untuned model runs: no API credentials/budget or fresh runs have been approved; no EVAL-003 points are yet available. Existing upstream HieraticBench leaderboard belongs to EVAL-002 and cannot be passed off as new local inference.

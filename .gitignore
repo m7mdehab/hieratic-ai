@@ -1,0 +1,4 @@
+# Generated context packets are caches, never canonical state.
+.projectctl/
+__pycache__/
+*.py[cod]

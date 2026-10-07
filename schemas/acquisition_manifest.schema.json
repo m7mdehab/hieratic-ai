@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/acquisition_manifest.schema.json",
+  "title": "Hieratic AI acquisition manifest",
+  "type": "object",
+  "required": ["manifest_version", "manifest_id", "operator_tool_version", "items"],
+  "properties": {
+    "manifest_version": {"type": "string", "minLength": 1},
+    "manifest_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "operator_tool_version": {"type": "string", "minLength": 1},
+    "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/item"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nullableString": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+    "nullableUri": {"oneOf": [{"type": "string", "format": "uri"}, {"type": "null"}]},
+    "nullableSha256": {"oneOf": [{"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"}, {"type": "null"}]},
+    "nullableDateTime": {"oneOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]},
+    "condition": {
+      "type": "object",
+      "required": ["condition_id", "satisfied", "evidence_urls", "notes"],
+      "properties": {
+        "condition_id": {"type": "string", "minLength": 1},
+        "satisfied": {"type": "boolean"},
+        "evidence_urls": {"type": "array", "items": {"type": "string", "format": "uri"}, "uniqueItems": true},
+        "notes": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "retrievalEvent": {
+      "type": "object",
+      "required": ["retrieved_at", "actual_sha256", "http_etag", "http_last_modified"],
+      "properties": {
+        "retrieved_at": {"type": "string", "format": "date-time"},
+        "actual_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "http_etag": {"$ref": "#/$defs/nullableString"},
+        "http_last_modified": {"$ref": "#/$defs/nullableString"}
+      },
+      "additionalProperties": false
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "source_id", "source_object_id", "canonical_object_url", "exact_access_url", "acquisition_mode", "intended_use",
+        "source_rights_snapshot", "required_attribution", "benchmark_quarantine", "benchmark_overlap_risk", "expected_path",
+        "expected_mime_type", "expected_size_bytes", "expected_sha256", "actual_sha256", "retrieval_timestamp", "http_etag",
+        "http_last_modified", "transformation_status", "redistribution_requested", "provenance_urls", "evidence_urls",
+        "review_conditions", "is_synthetic_fixture", "item_rights_review", "benchmark_overlap_review",
+        "acquisition_status", "status_reason", "retrieval_events"
+      ],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"},
+        "source_object_id": {"type": "string", "minLength": 1},
+        "canonical_object_url": {"type": "string", "format": "uri"},
+        "exact_access_url": {"$ref": "#/$defs/nullableUri"},
+        "acquisition_mode": {"type": "string", "enum": ["direct_download", "iiif", "api", "manual_reference", "metadata_only"]},
+        "intended_use": {"type": "string", "enum": ["training", "development", "evaluation", "reference"]},
+        "source_rights_snapshot": {
+          "type": "object",
+          "required": ["rights_class", "use_decision"],
+          "properties": {
+            "rights_class": {"type": "string", "enum": ["OPEN-PD", "OPEN-BY", "OPEN-SA", "NONCOMMERCIAL", "PER-ITEM", "EVALUATION-ONLY", "RESTRICTED", "UNKNOWN"]},
+            "use_decision": {"type": "string", "enum": ["allowed", "prohibited", "conditional", "not_approved", "metadata_only"]}
+          },
+          "additionalProperties": false
+        },
+        "required_attribution": {"type": "string"},
+        "benchmark_quarantine": {"type": "boolean"},
+        "benchmark_overlap_risk": {"type": "string", "enum": ["high", "medium", "low", "unknown", "not_applicable"]},
+        "expected_path": {"type": "string", "minLength": 1},
+        "expected_mime_type": {"$ref": "#/$defs/nullableString"},
+        "expected_size_bytes": {"oneOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]},
+        "expected_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "actual_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "retrieval_timestamp": {"$ref": "#/$defs/nullableDateTime"},
+        "http_etag": {"$ref": "#/$defs/nullableString"},
+        "http_last_modified": {"$ref": "#/$defs/nullableString"},
+        "transformation_status": {"type": "string", "enum": ["original_bytes_only", "not_acquired"]},
+        "redistribution_requested": {"type": "boolean"},
+        "provenance_urls": {"type": "array", "items": {"type": "string", "format": "uri"}, "minItems": 1, "uniqueItems": true},
+        "evidence_urls": {"type": "array", "items": {"type": "string", "format": "uri"}, "minItems": 1, "uniqueItems": true},
+        "review_conditions": {"type": "array", "items": {"$ref": "#/$defs/condition"}, "uniqueItems": true},
+        "is_synthetic_fixture": {"type": "boolean"},
+        "item_rights_review": {"$ref": "#/$defs/itemRightsReview"},
+        "benchmark_overlap_review": {"$ref": "#/$defs/benchmarkOverlapReview"},
+        "acquisition_status": {"type": "string", "enum": ["planned", "complete", "blocked", "failed"]},
+        "status_reason": {"type": "string", "minLength": 1},
+        "retrieval_events": {"type": "array", "items": {"$ref": "#/$defs/retrievalEvent"}}
+      },
+      "additionalProperties": false
+    },
+    "itemRightsReview": {
+      "type": "object",
+      "required": ["item_url", "license_identifier", "rightsholder", "reviewer_id", "approval_status", "evidence_ref", "reviewed_at"],
+      "properties": {
+        "item_url": {"$ref": "#/$defs/nullableUri"},
+        "license_identifier": {"$ref": "#/$defs/nullableString"},
+        "rightsholder": {"$ref": "#/$defs/nullableString"},
+        "reviewer_id": {"$ref": "#/$defs/nullableString"},
+        "approval_status": {"type": "string", "enum": ["not_started", "pending", "approved", "rejected"]},
+        "evidence_ref": {"$ref": "#/$defs/nullableString"},
+        "reviewed_at": {"$ref": "#/$defs/nullableDateTime"}
+      },
+      "additionalProperties": false
+    },
+    "benchmarkOverlapReview": {
+      "type": "object",
+      "required": ["status", "reviewer_id", "evidence_ref", "overlap_check_version", "reviewed_at"],
+      "properties": {
+        "status": {"type": "string", "enum": ["not_assessed", "pending", "clear", "match"]},
+        "reviewer_id": {"$ref": "#/$defs/nullableString"},
+        "evidence_ref": {"$ref": "#/$defs/nullableString"},
+        "overlap_check_version": {"$ref": "#/$defs/nullableString"},
+        "reviewed_at": {"$ref": "#/$defs/nullableDateTime"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,33 @@
+manifest_version: "1.0.0"
+manifest_id: example-hieraticbench-training-blocked
+operator_tool_version: "acquisition-planner/1.0.0"
+items:
+  - source_id: SRC-HIERATICBENCH
+    source_object_id: SYNTHETIC-TRAINING-REQUEST
+    canonical_object_url: https://github.com/alymoursy/hieraticbench
+    exact_access_url: null
+    acquisition_mode: manual_reference
+    intended_use: training
+    source_rights_snapshot: {rights_class: EVALUATION-ONLY, use_decision: allowed}
+    required_attribution: "Preserve each public item's source attribution; commissioned items retain Aly Moursy's copyright and evaluation-only permission"
+    benchmark_quarantine: true
+    benchmark_overlap_risk: high
+    expected_path: raw/train/hieraticbench/SYNTHETIC-TRAINING-REQUEST
+    expected_mime_type: null
+    expected_size_bytes: null
+    expected_sha256: null
+    actual_sha256: null
+    retrieval_timestamp: null
+    http_etag: null
+    http_last_modified: null
+    transformation_status: not_acquired
+    redistribution_requested: false
+    provenance_urls: [https://github.com/alymoursy/hieraticbench]
+    evidence_urls: [https://github.com/alymoursy/hieraticbench]
+    review_conditions: []
+    is_synthetic_fixture: false
+    item_rights_review: {item_url: null, license_identifier: null, rightsholder: null, reviewer_id: null, approval_status: not_started, evidence_ref: null, reviewed_at: null}
+    benchmark_overlap_review: {status: not_assessed, reviewer_id: null, evidence_ref: null, overlap_check_version: null, reviewed_at: null}
+    acquisition_status: planned
+    status_reason: "Synthetic negative fixture: benchmark quarantine must reject training."
+    retrieval_events: []

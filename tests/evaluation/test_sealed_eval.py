@@ -222,5 +222,126 @@ class SealedEvaluationTests(unittest.TestCase):
         self.assertNotIn("secret_gold_text",serialized)
 
 
+
+class CrossLayerReportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from eval.sealed import report_audit as a
+        cls.audit=a
+        cls.schema=s.load(a.SCHEMA)
+        cls.metrics=s.load(s.METRICS_PATH)
+        cls.example=s.load(s.ROOT/"eval/sealed/examples/metric-report.synthetic.json")
+
+    def sample_row(self):
+        return {
+          "metric_id":"SIGN_TOP1","layer":"sign_recognition","unit":"proportion",
+          "normalization_profile":"grapheme_v1",
+          "scheduled":10,"scored":7,"failed":1,"abstained":1,
+          "excluded_unscorable":1,"documents_scored":4,
+          "value":0.7,
+          "interval":{"method":"document_bootstrap","lower":0.5,"upper":0.9,"resamples":2000,"confidence":0.95}
+        }
+
+    def report(self):
+        r=copy.deepcopy(self.example)
+        r["metric_rows"]=[self.sample_row()]
+        r["metric_contract_sha256"]=s.sha256(s.METRICS_PATH)
+        r["sealed_protocol_sha256"]=s.sha256(s.PROTOCOL_PATH)
+        return r
+
+    def check(self,r):
+        return self.audit.check_report(r,self.schema,self.metrics)
+
+    def needs_failure(self,r,fragment):
+        actual=self.check(r)
+        self.assertTrue(any(fragment in e for e in actual),actual)
+
+    def test_draft_empty_fixture_passes(self):
+        self.assertEqual([],self.check(self.example))
+
+    def test_synthetic_per_stage_report_passes(self):
+        self.assertEqual([],self.check(self.report()))
+
+    def test_denominator_dropping_refusals_fails(self):
+        r=self.report();r["metric_rows"][0]["scheduled"]=8
+        self.needs_failure(r,"do not partition")
+
+    def test_layer_drift_fails(self):
+        r=self.report();r["metric_rows"][0]["layer"]="transliteration"
+        self.needs_failure(r,"layer mismatches")
+
+    def test_wrong_normalization_profile_fails(self):
+        r=self.report();r["metric_rows"][0]["normalization_profile"]="raw_identity"
+        self.needs_failure(r,"normalization_profile mismatches")
+
+    def test_metric_above_one_fails_for_proportion(self):
+        r=self.report();r["metric_rows"][0]["value"]=1.1
+        self.needs_failure(r,"above one")
+
+    def test_no_scored_gold_cannot_report_value(self):
+        r=self.report();row=r["metric_rows"][0]
+        row.update({"scheduled":3,"scored":0,"failed":1,"abstained":1,"excluded_unscorable":1,"documents_scored":0})
+        self.needs_failure(r,"no scored gold")
+
+    def test_doc_groups_cannot_exceed_scored_items(self):
+        r=self.report();r["metric_rows"][0]["documents_scored"]=8
+        self.needs_failure(r,"cannot exceed scored")
+
+    def test_bootstrap_requires_more_than_one_document(self):
+        r=self.report();r["metric_rows"][0]["documents_scored"]=1
+        self.needs_failure(r,"fewer than two documents")
+
+    def test_posthoc_bootstrap_config_rejected(self):
+        r=self.report();r["metric_rows"][0]["interval"]["resamples"]=500
+        self.needs_failure(r,"document bootstrap")
+
+    def test_interval_must_cover_point_estimate(self):
+        r=self.report();r["metric_rows"][0]["interval"]["upper"]=0.6
+        self.needs_failure(r,"outside declared confidence interval")
+
+    def test_unsupported_translation_claim_rejected(self):
+        r=self.report();r["public_claim_layers"]=["translation"]
+        self.needs_failure(r,"lacks independently measured")
+
+    def test_script_only_cannot_claim_full_decipherment(self):
+        r=self.report();r["public_claim_layers"]=["full_pipeline"]
+        self.needs_failure(r,"full-pipeline reading claim lacks")
+
+    def test_valid_sign_level_claim_with_measured_metric(self):
+        r=self.report();r["public_claim_layers"]=["sign_recognition"]
+        self.assertEqual([],self.check(r))
+
+    def test_unpaired_model_comparison_rejected(self):
+        r=self.report();r["comparisons"]=[{
+            "comparison_id":"SYNTH-COMPARE","paired_items_sha256":None,
+            "pair_count":10,"doc_groups":4,"claim":"synthetic no winner",
+            "uncertainty_ref":None
+        }]
+        self.needs_failure(r,"no verified paired-item")
+
+    def test_unknown_metric_rejected(self):
+        r=self.report();r["metric_rows"][0]["metric_id"]="UNKNOWN"
+        self.needs_failure(r,"unknown EVAL-001")
+
+    def test_duplicate_metric_row_rejected(self):
+        r=self.report();r["metric_rows"].append(copy.deepcopy(r["metric_rows"][0]))
+        self.needs_failure(r,"duplicated metric identifier")
+
+    def test_publication_needs_separate_release_record(self):
+        r=self.report();r["report_state"]="proposed_public"
+        self.needs_failure(r,"independently accepted publishable")
+
+    def test_metric_contract_hash_drift_rejected(self):
+        r=self.report();r["metric_contract_sha256"]="f"*64
+        self.needs_failure(r,"metric contract snapshot")
+
+    def test_unknown_raw_gold_field_rejected(self):
+        r=self.report();r["gold_transliteration_text"]="invented"
+        self.needs_failure(r,"Additional properties")
+
+    def test_cli_validates_redacted_draft_example(self):
+        self.assertEqual(0,self.audit.main(["--report",str(s.ROOT/"eval/sealed/examples/metric-report.synthetic.json")]))
+
+
 if __name__=="__main__":
     unittest.main()

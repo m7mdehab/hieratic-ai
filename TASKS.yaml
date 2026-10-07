@@ -189,7 +189,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Implement preprocessing and dataset versioning"
     weight: 3.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["DATA-002"]
     acceptance_summary: "Image/text preprocessing is deterministic, versioned, and traceable to source records."
@@ -207,7 +207,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Build sign and palaeography mappings"
     weight: 2.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["DATA-001", "DATA-004"]
     acceptance_summary: "Sign identities and known variants map consistently to supported scholarly/palaeographic references."
@@ -216,7 +216,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Align images with transliteration targets"
     weight: 3.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["DATA-002", "DATA-004"]
     acceptance_summary: "Training examples expose image regions and defensible transliteration targets with alignment confidence."
@@ -225,7 +225,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Represent ambiguity and expert QA"
     weight: 2.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["DATA-004"]
     acceptance_summary: "Ambiguous/multiple readings and expert-review state are first-class data, not forced into false certainty."
@@ -234,7 +234,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Release ML-ready corpus v1"
     weight: 3.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-003", "DATA-005", "DATA-006", "DATA-007", "EVAL-004"]
     acceptance_summary: "Versioned train/dev/test corpus passes integrity, provenance, licensing, and split checks."
@@ -315,7 +315,7 @@ tasks:
     phase: "P5_VLM"
     title: "Establish zero/few-shot VLM baseline suite"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["EVAL-002", "EVAL-006"]
     acceptance_summary: "Selected base VLMs are evaluated reproducibly on the agreed tasks before adaptation."
@@ -378,7 +378,7 @@ tasks:
     phase: "P6_INTERPRETATION"
     title: "Normalize recognized/transliterated output"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-006", "EVAL-001"]
     acceptance_summary: "Normalization rules are explicit, reversible where needed, and separately scored from visual recognition."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 20.5
+    validated_weighted_tasks_expected: 30.5
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

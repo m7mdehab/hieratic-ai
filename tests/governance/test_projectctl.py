@@ -6,6 +6,7 @@ import io
 import shutil
 import tempfile
 import unittest
+from decimal import Decimal
 from pathlib import Path
 
 import yaml
@@ -31,9 +32,15 @@ class ProjectCtlTests(unittest.TestCase):
     def test_current_repository_state_passes(self) -> None:
         errors, state, tasks = projectctl.validate_repository(ROOT)
         self.assertEqual([], errors)
-        validated_weight = sum(task["weight"] for task in tasks["tasks"] if task["status"] == "validated")
-        self.assertEqual(validated_weight, state["progress"]["goal_progress"])
-        self.assertEqual(validated_weight, tasks["rules"]["progress"]["validated_weighted_tasks_expected"])
+        validated_weight = sum(
+            (Decimal(str(task["weight"])) for task in tasks["tasks"] if task["status"] == "validated"),
+            Decimal("0"),
+        )
+        self.assertEqual(validated_weight, Decimal(str(state["progress"]["goal_progress"])))
+        self.assertEqual(
+            validated_weight,
+            Decimal(str(tasks["rules"]["progress"]["validated_weighted_tasks_expected"])),
+        )
 
     def test_dependency_cycle_fails(self) -> None:
         tasks = copy.deepcopy(self.tasks)

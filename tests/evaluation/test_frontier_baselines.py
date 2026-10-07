@@ -501,6 +501,97 @@ class OriginalRunFreezeTests(unittest.TestCase):
         self.suite["official_benchmark"]["item_manifest_sha256"]=self.f.sha256_file(self.items)
         self.expect_refused("Public item/rung IDs differ")
 
+    def private_capture(self, raw=None, receipt_override=None):
+        raw=raw if raw is not None else [
+            {
+                "item_id":row["item_id"],"rung":row["rung"],
+                "sample_index":row["sample_index"],"provider_model_id":self.freeze["provider_model_id"],
+                "prompt_sha256":row["prompt_sha256"],"status":"ok",
+                "response_text":"SYNTHETIC NOT A REAL MODEL ANSWER",
+                "provider_response_id":f"synthetic-{i}","timestamp":"2026-10-08T13:00:00Z"
+            }
+            for i,row in enumerate(self.rows)
+        ]
+        output=self.ext/"raw-private.jsonl"
+        output.write_text("".join(json.dumps(v,sort_keys=True)+"\n" for v in raw),encoding="utf-8")
+        receipt={
+            "schema_version":"1.0.0","state":"captured","run_id":self.freeze["run_id"],
+            "model_key":self.freeze["model_key"],"provider_model_id":self.freeze["provider_model_id"],
+            "capture_sha256":self.f.sha256_file(output),
+            "rendered_attempts_sha256":self.f.sha256_file(self.attempts),
+            "records_expected":4,
+        }
+        receipt.update(receipt_override or {})
+        with (
+            self.patch.object(self.f.adapter,"load_manifest",return_value={"benchmark":{"pinned_commit":self.f.PINNED}}),
+            self.patch.object(self.f.adapter,"assert_pinned_checkout"),
+            self.patch.object(self.f.adapter,"inspect_items",return_value={}),
+            self.patch.object(self.f.public_freeze,"safe_public_pairs",return_value=self.public),
+            self.patch.object(self.f.public_freeze,"manifest_bytes",return_value=self.public_bytes),
+        ):
+            return self.f.audit_original_capture(
+                self.freeze,self.suite,items_path=self.items,attempts_path=self.attempts,
+                vault_path=self.vault,upstream_checkout=self.upstream,
+                capture_path=output,receipt=receipt,actual_approval_confirmed=True
+            )
+
+    def test_original_raw_capture_checks_actual_different_per_item_prompts(self):
+        result=self.private_capture()
+        self.assertEqual(4,result["attempts_planned"])
+        self.assertEqual(4,result["preserved_by_status"]["ok"])
+        self.assertFalse(result["scientific_experiment_validated"])
+        self.assertNotIn("response_text",json.dumps(result))
+
+    def test_original_raw_capture_detects_unfrozen_prompt(self):
+        raw=[{"item_id":row["item_id"],"rung":row["rung"],
+              "sample_index":row["sample_index"],"provider_model_id":self.freeze["provider_model_id"],
+              "prompt_sha256":row["prompt_sha256"],"status":"ok",
+              "response_text":"SYNTHETIC","provider_response_id":"synthetic-r",
+              "timestamp":"2026-10-08T13:00:00Z"} for row in self.rows]
+        raw[0]["prompt_sha256"]="f"*64
+        with self.assertRaisesRegex(self.f.FreezeError,"prompt digest differs"):
+            self.private_capture(raw)
+
+    def test_original_capture_cannot_silently_drop_refusal(self):
+        raw=[{"item_id":row["item_id"],"rung":row["rung"],
+              "sample_index":row["sample_index"],"provider_model_id":self.freeze["provider_model_id"],
+              "prompt_sha256":row["prompt_sha256"],"status":"ok",
+              "response_text":"SYNTHETIC","provider_response_id":"synthetic-r",
+              "timestamp":"2026-10-08T13:00:00Z"} for row in self.rows]
+        raw.pop()
+        with self.assertRaisesRegex(self.f.FreezeError,"Incomplete original model capture"):
+            self.private_capture(raw)
+
+    def test_original_capture_preserves_failed_abstained_timeout_and_refusal(self):
+        raw=[{"item_id":row["item_id"],"rung":row["rung"],
+              "sample_index":row["sample_index"],"provider_model_id":self.freeze["provider_model_id"],
+              "prompt_sha256":row["prompt_sha256"],"status":status,
+              "response_text":"","provider_response_id":None,
+              "timestamp":"2026-10-08T13:00:00Z"} for row,status in zip(
+                  self.rows,("failed","abstained","timeout","refused")
+              )]
+        result=self.private_capture(raw)
+        self.assertEqual({"failed":1,"abstained":1,"timeout":1,"refused":1},
+                         result["preserved_by_status"])
+
+    def test_raw_capture_cannot_claim_completed_scoring(self):
+        with self.assertRaisesRegex(self.f.FreezeError,"cannot masquerade"):
+            self.private_capture(receipt_override={"state":"scored"})
+
+    def test_raw_capture_wrong_provider_identity_fails(self):
+        with self.assertRaisesRegex(self.f.FreezeError,"identity mismatch"):
+            self.private_capture(receipt_override={"provider_model_id":"fake-other-model"})
+
+    def test_raw_capture_requires_timezone_aware_timestamp(self):
+        raw=[{"item_id":row["item_id"],"rung":row["rung"],
+              "sample_index":row["sample_index"],"provider_model_id":self.freeze["provider_model_id"],
+              "prompt_sha256":row["prompt_sha256"],"status":"ok",
+              "response_text":"SYNTHETIC","provider_response_id":"synthetic-r",
+              "timestamp":"2026-10-08T13:00:00Z"} for row in self.rows]
+        raw[0]["timestamp"]="2026-10-08T13:00:00"
+        with self.assertRaisesRegex(self.f.FreezeError,"invalid timestamp"):
+            self.private_capture(raw)
+
     def test_locked_cli_fails_even_with_metadata_because_no_human_consent_in_ci(self):
         record=self.ext/"run.json"
         record.write_text(json.dumps(self.freeze),encoding="utf-8")

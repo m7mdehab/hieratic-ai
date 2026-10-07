@@ -1,0 +1,47 @@
+name: Untuned Frontier Baseline Preflight
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "eval/baselines/**"
+      - "tests/evaluation/test_frontier_baselines.py"
+      - "docs/evaluation/FRONTIER_BASELINES.md"
+      - ".github/workflows/frontier-baselines.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline-preflight:
+    name: Verify no baseline inference without approval
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install existing validation dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+
+      - name: Confirm canonical project state
+        run: python -m tools.projectctl validate
+
+      - name: Validate baseline suite structure
+        run: python -m eval.baselines.baselinectl validate-suite
+
+      - name: Assert unapproved paid inference remains blocked
+        run: |
+          if python -m eval.baselines.baselinectl preflight; then
+            echo "FAIL: planning-only suite must not pass execution preflight"
+            exit 1
+          fi
+          echo "PASS: planning suite fails closed before model API calls"
+
+      - name: Run entire evaluation test suite
+        run: python -m unittest discover -s tests/evaluation -v

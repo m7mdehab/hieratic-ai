@@ -1,63 +1,49 @@
 # Overseer Handoff — Hieratic AI
 
-**Latest authoritative review:** 2026-10-08, Luna W1 corrected submissions accepted. Check `PROJECT_STATE.yaml` and `TASKS.yaml` on current `main` for authoritative live status; earlier archived handoffs and task briefs are historical evidence.
+**Last reconciled:** 2026-10-08, approved W2 overseer batch complete. `PROJECT_STATE.yaml` and `TASKS.yaml` on `main` are authoritative; this document is a compact, derived handoff.
 
-## Live project snapshot
+## Verified project progress
 
-- **Verified goal progress:** 18.5 / 100 (81.5 remaining).
-- **Research coverage:** 14%, unchanged; do not conflate with capability.
-- **Current capability phase:** P2 Evaluation.
-- **P1 Foundation:** 5 / 5, 100%.
-- **P2 Evaluation:** 6.5 / 10, 65%.
-- **P3 Data Engine:** 7 / 20, 35%.
-- **P4–P8:** 0 earned.
-- **Control-plane gate:** 4 / 5 = 80%; CTRL-003 still requires reviewer approval.
-- **Validated experiments:** 0. **Trained models:** 0. **Demonstrated HTR/generalization:** none.
-- **Last accepted task:** DATA-002 (last merged within W1).
+- **20.5 / 100 earned; 79.5 remaining.** Research coverage **14%** (unchanged).
+- Current capability phase P2 Evaluation: **8.5 / 10 (85%)**; P1 Foundation **5 / 5 (100%)**; P3 Data Engine **7 / 20 (35%)**; P4–P8 no earned points.
+- Control-plane acceptance **4/5 (80%)**; CTRL-003 still active/revision-required, awaiting Anti-Gravity response.
+- **Validated experiments:** 0; **trained models:** 0; **demonstrated unseen Hieratic reading:** not yet established.
+- Last accepted weighted task: **EVAL-006 (+2)**.
+- EVAL-003 remains **active** but earns **0/1.5** until actual authorized frontier inference and independent official scoring.
 
-## Accepted W1 execution artifacts
+## W2 overseer results — completed
 
-All three were independently source-reviewed and corrected; final PR branches passed GitHub governance CI and exact file-scope checks before merge.
+1. **EVAL-006 sealed evaluation and contamination-release protocol:** implementation PR [#35](https://github.com/m7mdehab/hieratic-ai/pull/35) + cross-layer integrity PR [#40](https://github.com/m7mdehab/hieratic-ai/pull/40), independently checked, merged. Frozen policy is `eval/sealed/protocol.yaml`, task acceptance `tasks/EVAL-006.md`; validator `eval/sealed/protocolctl.py` and redacted diagnostic validator `eval/sealed/report_audit.py`. Machine gates cover prerun hashes, custodian/scorer/developer separation, item rights and benchmark overlap, failures/abstentions/denominator reconciliation, document-level uncertainty, multiple experts, contamination response and staged release.
+2. **EVAL-003 benchmark preflight hardening:** PR [#38](https://github.com/m7mdehab/hieratic-ai/pull/38) merged. `eval/baselines/public_freeze.py` externally freezes/reverifies 116 public script-ID and 150 public sign item-rung records and upstream prompt-source SHA against the exact EVAL-002 pinned checkout. Provider inference remains **unapproved and unexecuted**; exact rendered prompts must still be frozen before paid runs.
+3. **Cross-layer evidence gates:** PR #40 adds 21 new synthetic tests and structure for EVAL-001 metric ID/unit/profile consistency, scorable-gold denominators including refusals/abstentions, stage-specific claims, document-clustered intervals and paired comparison integrity.
 
-| Task | PR | Points | Accepted deliverables |
-|---|---|---:|---|
-| DATA-002 | #20 | 2.0 | Rights/provenance-aware metadata acquisition planner with reviewer + item-license + benchmark-overlap clearance gates, no actual ingestion |
-| DATA-004 | #23 | 3.0 | Hieratic reading/annotation schema with certain/alternative gold, reviewer, layout, token and sign relations; rejects unselected certain readings, repeated reading-order entries, cycles and invalid cross-line refs |
-| EVAL-004 | #24 | 2.0 | Deterministic document/scribe/source/period split planning, near-duplicate audit queue, high-risk benchmark item exclusion pending recorded independent clearance |
+Latest GitHub CI for PR #40: **34 governance + 51 data + 145 evaluation tests passed**, approved six-file task scope. PR #38 dedicated baseline CI reproduced the pinned public metadata+prompt-source freeze and verified it. No new source images, benchmark gold, trained models, provider credentials, or actual model calls.
 
-**W1 verified capability delta +7.0:** 11.5 → 18.5 points. Research coverage still 14%. The source-registry and rights policy are **deny-by-default**. An accepted *planner* is not a human-approved, licensed source asset. EVAL-004 benchmark roster is **aggregate-only** and a recorded clearance attestation is not automatic proof that an image is novel. No production training/dev corpus or sealed evaluation split has been certified.
+## W2 Luna package — user copy-ready dispatch issued
 
-CI for DATA-002 final rebased branch: [run 37699384109](https://github.com/m7mdehab/hieratic-ai/actions/runs/37699384109); 34 governance, 51 data, 78 evaluation tests and nine-file scope passed.
-CI for DATA-004: [run 37698566109](https://github.com/m7mdehab/hieratic-ai/actions/runs/37698566109); 34 governance, 32 data, 57 evaluation tests and six-file scope passed.
-CI for EVAL-004: [run 37698578242](https://github.com/m7mdehab/hieratic-ai/actions/runs/37698578242); 34 governance, 13 data, 78 evaluation tests and seven-file scope passed.
+Four **dependency-ready but not yet validated** independent tasks:
 
-## Ready, active and blocked work
+- DATA-003 — deterministic preprocessing and dataset versioning (3 points)
+- DATA-005 — sign identity and palaeography mappings (2 points)
+- DATA-006 — image-to-transliteration alignment with ambiguities (3 points)
+- DATA-007 — expert QA/adjudication and uncertainty (2 points)
 
-**Newly ready but not dispatched:**
-- `EVAL-006` — freeze sealed evaluation protocol; prerequisites EVAL-004 and EVAL-005 validated (2.0 points).
-- `DATA-003` — reproducible preprocessing and dataset versioning; DATA-002 validated (3.0).
-- `DATA-005` — sign/palaeographic mapping; DATA-001 and DATA-004 validated (2.0).
-- `DATA-006` — image–transliteration target alignment; DATA-002 and DATA-004 validated (3.0).
-- `DATA-007` — ambiguity and expert QA; DATA-004 validated (2.0).
+Write scopes for Luna's four branches, and EVAL-006, were preregistered in governance PR [#34](https://github.com/m7mdehab/hieratic-ai/pull/34) and merged before start. Luna work is 10 potential points, but only after independent PR tests/review. Prevent DATA-006 from building on locally completed unvalidated DATA-003; both must use *accepted* DATA-002/DATA-004 interfaces. Real manuscript use requires independent licenses and image/benchmark clearance.
 
-**Still active:** `CTRL-003` Anti-Gravity dashboard (draft PR #27, reviewer found current-main stale-state tests, 320px readability/overflow shortcomings, and unresolved npm audit/licensing evidence); `EVAL-003` overseer baseline design/tooling staged via PR #31 but no approved actual model runs, so **0/1.5 earned**.
+The Anti-Gravity lane (Sonnet **or** Gemini 3.8 Flash, not both) continues CTRL-003 PR #27. Earlier review found stale canonical-state snapshots, 320px layout defects and missing final npm audit/accessibility evidence. Do not self-accept any revisions without checking the actual new head and CI.
 
-**Downstream remains blocked:** DATA-008, specialist recognition, VLM learning, linguistic interpretation, generalization and public release. Sealed-test methodology is not the same as submitting to the sealed benchmark.
+## Core scientific guardrails
 
-## Operating rules
+- Script ID, sign recognition, Hieratic grapheme sequences, hieroglyphic rendering, transliteration, normalization and translation have separate metrics; no composite-primary or fluent hallucination claims.
+- EVAL-002 reproduces a *historical upstream* HieraticBench run and uses pinned SHA `d587dc990013f18007f1e7a8f56f96ff2f7127e2`; 268 items (266 public + 2 sealed) remain evaluation-only. Public benchmark near-duplicates cannot train/dev.
+- A machine-valid `review.status: clear` does not independently prove data rights or exhaustive overlap comparison; human evidence is mandatory.
+- EVAL-006 **policy freeze** is not the same as an actual frozen sealed corpus, scored blind evaluation or generalization result.
+- Agents cannot alter canonical progress/weights or self-validate; overseer reviews CI/code/rights and merges separate acceptance state PRs.
 
-1. **Three lanes at most:** Luna execution lane; one shared Anti-Gravity slot (Sonnet *or* Gemini 3.8 Flash); and overseer (scientific research/evaluation/architecture/review). Switching model does not create another lane.
-2. Before a new wave, propose concrete substantial overseer-owned work and agent scopes/dependencies; **obtain user approval before starting the overseer's task**.
-3. Luna can receive a larger bundle (multiple independent tasks) provided they are dependency-ready and have disjoint PR scopes. Never dispatch downstream tasks before required prior PRs are *validated*.
-4. Execution-agent tasks may not self-mark validated, self-award points, or change weights. Review actual source/diffs, test logs, rights and artifacts. Use the full checklist/progress report of `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
-5. Every accepted weighted PR needs a **separate state acceptance PR** and passing `projectctl`/governance CI; no claimed score until merged.
-6. EVAL-001 distinguishes script ID, signs, hieroglyphic rendering, transliteration and translation; EVAL-002 pins HieraticBench to `d587dc990013f18007f1e7a8f56f96ff2f7127e2` and its native scorer. Published upstream results are **not fresh experiment results**.
-7. FND-005 denies unknown rights or benchmark overlaps. HieraticBench and near-duplicates must stay out of train/dev, and commissioned answer gold is not publicly reproducible.
+## Exact next steps
 
-## Exact next overseer action
-
-1. Finish W1 canonical state acceptance PR CI and merge (this snapshot should then be live).
-2. Wait for and review CTRL-003's corrected PR #27 evidence; do not rush production deployment.
-3. Propose the next dependency-safe larger Luna package from DATA-003, DATA-005, DATA-006, DATA-007; consider EVAL-006 for overseer scientific heavy lifting, avoiding scope collisions with EVAL-003 until provider/budget approval.
-4. Obtain user approval for the next wave, including overseer's own substantial task, before starting it.
-5. Keep capability at 18.5 until further tasks have independent acceptance and true run evidence. No synthetic or external scores are model capabilities.
+1. Finalize/merge EVAL-006 acceptance state PR after independent green governance CI.
+2. Review Luna DATA-003/005/006/007 PRs as they arrive, task by task; do not mark ready tasks validated early.
+3. Independently review Anti-Gravity CTRL-003 final state integration, 320px screenshots, npm security/license audit and evidence; control gate only closes on verified acceptance.
+4. Keep EVAL-003 active and do not authorize paid calls without the user's separate budget/credential approval; require actual raw response archive and official score reproduction for baseline credit.
+5. Present next multi-lane wave with a substantive overseer task, and **obtain user approval before beginning it**.

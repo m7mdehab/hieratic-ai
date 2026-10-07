@@ -114,3 +114,24 @@ FND-006 merged via PR #29: evidence/experiment JSON Schemas, approved PR branch 
 Award +0.5: **11.0 -> 11.5/100**, Phase 1 **5/5**. Current capability phase now **P2_EVALUATION**; P2 remains **4.5/10**. GATE-CONTROL still incomplete because CTRL-003 dashboard remains in revision/draft.
 
 EVAL-003 is **active** in overseer lane. Distinguish protocol/tooling completion from verified untuned model runs: no API credentials/budget or fresh runs have been approved; no EVAL-003 points are yet available. Existing upstream HieraticBench leaderboard belongs to EVAL-002 and cannot be passed off as new local inference.
+
+
+## EVAL-003 pre-registered baseline system — staged, not validated
+
+Merged [PR #31](https://github.com/m7mdehab/hieratic-ai/pull/31) on 2026-10-08. Dedicated and existing CI passed: **34 governance, 13 data, 57 evaluation tests**, including 21 new offline frontier-baseline tests. The baseline preflight intentionally fails without authorizing real provider execution.
+
+Files:
+- `tasks/EVAL-003.md`
+- `eval/baselines/suite.yaml` and `suite.schema.json`
+- `eval/baselines/baselinectl.py`
+- `docs/evaluation/FRONTIER_BASELINES.md`
+- `tests/evaluation/test_frontier_baselines.py`
+- `.github/workflows/frontier-baselines.yml`
+
+**Do not claim EVAL-003 completed.** It remains `active`, earns **0/1.5 points**, and has no model runs/validated experiments. The complete scientific baseline still needs immutable public item/prompt snapshots, verified actual model IDs/configs, credential/terms review, explicitly approved spending cap, private artifact storage, actual untuned inference, upstream official scoring and independent acceptance. Published EVAL-002 scores are not fresh runs.
+
+Current project numbers: **11.5/100** verified, **88.5 remaining**, research coverage **14%**, P1 **5/5 complete**, P2 **4.5/10**, P3 **2/20**, 0 experiments, 0 models. Control gate **4/5 core constituents complete?** The five-item tracker includes CTRL-001 to CTRL-004 plus FND-006, so **4/5** (CTRL-003 alone remaining). Three CTRL core tasks + FND-006 verified.
+
+Agent PRs were still open at last checkpoint; #20 and #23 received new commits after remediation comments, #27 had a new commit and was no longer a draft; #24 remained at its earlier SHA. These updates **have not yet been overseer-reviewed or accepted**.
+
+Next: when Mohammed brings the combined Luna/Sonnet feedback, inspect actual post-review diffs, CI, rights/overlap test evidence; then decide acceptance task by task. Do not auto-advance DATA-003/EVAL-006 until validated prerequisites.

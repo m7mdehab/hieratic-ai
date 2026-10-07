@@ -317,7 +317,7 @@ class OriginalRunFreezeTests(unittest.TestCase):
            {"item_id":"SYNTH-ID","rung":"identify","split":"public"},
            {"item_id":"SYNTH-SIGN","rung":"signs","split":"public"}
         ]
-        self.public_bytes="".join(json.dumps(x,sort_keys=True,separators=(",",":"))+"\\n" for x in self.public).encode()
+        self.public_bytes="".join(json.dumps(x,sort_keys=True,separators=(",",":"))+"\n" for x in self.public).encode()
         self.items.write_bytes(self.public_bytes)
         self.attempts=self.ext/"prompt-attempts.jsonl"
         self.rows=[]
@@ -372,7 +372,7 @@ class OriginalRunFreezeTests(unittest.TestCase):
         })
 
     def write_attempts(self):
-        self.attempts.write_text("".join(json.dumps(r,sort_keys=True)+"\\n" for r in self.rows),encoding="utf-8")
+        self.attempts.write_text("".join(json.dumps(r,sort_keys=True)+"\n" for r in self.rows),encoding="utf-8")
 
     def verify(self,*,human=True):
         with (
@@ -496,7 +496,7 @@ class OriginalRunFreezeTests(unittest.TestCase):
         self.expect_refused("Metric contract differs")
 
     def test_pinned_public_item_file_cannot_be_modified(self):
-        self.items.write_bytes(self.public_bytes+b'{"item_id":"SYNTH-SEALED","rung":"translate","split":"sealed"}\\n')
+        self.items.write_bytes(self.public_bytes+b'{"item_id":"SYNTH-SEALED","rung":"translate","split":"sealed"}\n')
         self.freeze["public_item_manifest_sha256"]=self.f.sha256_file(self.items)
         self.suite["official_benchmark"]["item_manifest_sha256"]=self.f.sha256_file(self.items)
         self.expect_refused("Public item/rung IDs differ")

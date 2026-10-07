@@ -56,3 +56,27 @@ The public website/control plane must consume canonical repository state. It mus
 **Date:** 2026-10-07
 
 Apache-2.0 covers repository-authored software/documentation unless otherwise stated. External images, datasets, editions, fonts, and model artifacts retain their own terms. Provenance and redistribution rights must be recorded separately.
+
+## ADR-0008 — Every agent review ends with a complete status report
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+Whenever Mohammed brings back execution-agent feedback or implementation evidence, the overseer must review the actual work and then provide a standardized project status report.
+
+The report must include:
+- review verdict;
+- verified completed items;
+- pending/revision items;
+- checked/unchecked acceptance checklist;
+- task evidence completion;
+- verified goal progress and remaining percentage;
+- research coverage;
+- current phase progress;
+- relevant operational gate progress;
+- next dependency-aware checklist;
+- explicit statement of which percentages changed.
+
+Operational/task percentages must remain distinct from the 0–100 verified capability score.
+
+The canonical format is `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.

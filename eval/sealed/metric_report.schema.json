@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hieratic AI cross-layer redacted evaluation report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "evaluation_id",
+    "report_state",
+    "metric_contract_sha256",
+    "sealed_protocol_sha256",
+    "release_record_sha256",
+    "model_id",
+    "metric_rows",
+    "public_claim_layers",
+    "comparisons",
+    "report_note",
+    "end_to_end_evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "report_id": {
+      "type": "string",
+      "pattern": "^REPORT-[A-Z0-9-]+$"
+    },
+    "evaluation_id": {
+      "type": "string",
+      "pattern": "^SEAL-[A-Z0-9-]+$"
+    },
+    "report_state": {
+      "enum": [
+        "draft",
+        "proposed_public"
+      ]
+    },
+    "metric_contract_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sealed_protocol_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "release_record_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric_rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metric_id",
+          "layer",
+          "unit",
+          "normalization_profile",
+          "scheduled",
+          "scored",
+          "failed",
+          "abstained",
+          "excluded_unscorable",
+          "documents_scored",
+          "value",
+          "interval"
+        ],
+        "properties": {
+          "metric_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "layer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "normalization_profile": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scheduled": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scored": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "abstained": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "excluded_unscorable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "documents_scored": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "interval": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "lower",
+              "upper",
+              "resamples",
+              "confidence"
+            ],
+            "properties": {
+              "method": {
+                "enum": [
+                  "document_bootstrap",
+                  "exact_binomial"
+                ]
+              },
+              "lower": {
+                "type": "number"
+              },
+              "upper": {
+                "type": "number"
+              },
+              "resamples": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "confidence": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "public_claim_layers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "script_identification",
+          "layout",
+          "sign_recognition",
+          "sequence_recognition",
+          "hieroglyphic_rendering",
+          "transliteration",
+          "normalization",
+          "lexical_analysis",
+          "morphological_analysis",
+          "translation",
+          "full_pipeline"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "comparison_id",
+          "paired_items_sha256",
+          "pair_count",
+          "doc_groups",
+          "claim",
+          "uncertainty_ref"
+        ],
+        "properties": {
+          "comparison_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "paired_items_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "pair_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "doc_groups": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uncertainty_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "report_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "end_to_end_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_sha256",
+        "expert_review_sha256",
+        "heldout_document_count"
+      ],
+      "properties": {
+        "trace_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expert_review_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "heldout_document_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

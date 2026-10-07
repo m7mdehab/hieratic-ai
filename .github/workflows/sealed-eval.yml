@@ -35,4 +35,6 @@ jobs:
         run: python -m eval.sealed.protocolctl validate-release --input eval/sealed/examples/draft.synthetic.json
       - name: Run evaluation integrity and sealed-release regressions
         run: python -m unittest discover -s tests/evaluation -v
+      - name: Validate redacted synthetic metric-report structure
+        run: python -m eval.sealed.report_audit --report eval/sealed/examples/metric-report.synthetic.json
       # No external assets, sealed images, hidden gold, model calls or score artifacts.

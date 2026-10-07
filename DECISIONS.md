@@ -158,3 +158,23 @@ Reason:
 A future public composite may be introduced only through a versioned decision with fixed predeclared weights, visible component metrics, and hard capability floors.
 
 The canonical metric contract is `docs/evaluation/METRICS_SPEC.md` plus `eval/metric_contract.yaml`.
+
+
+## ADR-0013 — Luna receives larger independent-task work packages
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+Luna completes bounded engineering tasks faster than the overseer lane, so one-small-task-per-wave creates avoidable idle time.
+
+When several tasks are independently ready, the default Luna assignment is therefore a **2–3 task work package**.
+
+Constraints:
+- all package tasks must already have validated dependencies at dispatch;
+- each task keeps separate acceptance criteria, evidence, and progress accounting;
+- preferably one branch/PR per canonical task;
+- write scopes must be disjoint or explicitly partitioned;
+- Luna may return only after completing the full package;
+- no dependent task may start solely because its prerequisite was locally completed inside the package; overseer validation is still required.
+
+This changes throughput, not scientific or quality standards.

@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -32,3 +34,41 @@ jobs:
 
       - name: Run governance tests
         run: python -m unittest discover -s tests/governance -v
+
+      - name: Validate source registry
+        run: python -m tools.source_registry validate
+
+      - name: Run all data tests
+        run: python -m unittest discover -s tests/data -v
+
+      - name: Run all evaluation tests
+        run: python -m unittest discover -s tests/evaluation -v
+
+      - name: Enforce actual changed-file write scope on task PRs
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
+        env:
+          TASK_BRANCH: ${{ github.head_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import subprocess
+          from tools.governance_contract import SCOPES, check_scope, read_payload
+
+          branch = os.environ["TASK_BRANCH"]
+          match = re.match(r"^task/([A-Z]+-[0-9]{3})-[a-z0-9-]+$", branch)
+          if not match:
+              raise SystemExit(f"FAIL: malformed task branch: {branch}")
+          base_sha = os.environ["BASE_SHA"]
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only", base_sha, "HEAD"],
+              text=True,
+          ).splitlines()
+          errors = check_scope(match.group(1), changed, read_payload(SCOPES))
+          if errors:
+              for error in errors:
+                  print("FAIL:", error)
+              raise SystemExit(1)
+          print(f"PASS: {match.group(1)} write scope matches {len(changed)} actual changed files")
+          PY

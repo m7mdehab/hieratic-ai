@@ -34,7 +34,7 @@ CTRL-002 is unweighted infrastructure, so verified Hieratic capability remains 4
 ## Work currently happening in parallel
 
 - **CTRL-003 — active with Sonnet**: live dashboard/control-plane shell.
-- **CTRL-004 — ready**: CI governance checks and PR guardrails.
+- **CTRL-004 — validated and merged via PR #10**: CI governance checks and PR guardrails.
 - **DATA-001 — ready**: machine-readable training-data source registry.
 - **EVAL-001 — ready**: evaluation metric specification.
 - **EVAL-002 — ready**: external benchmark reproduction.
@@ -46,27 +46,27 @@ CTRL-002 is unweighted infrastructure, so verified Hieratic capability remains 4
 - FND-004 — verified prior-art/data registry.
 - FND-005 — licensing/provenance policy.
 
-Only **FND-006 (0.5 points)** remains in Phase 1; it depends on CTRL-004.
+Only **FND-006 (0.5 points)** remains in Phase 1. Its dependency CTRL-004 is now validated, so FND-006 is ready but has not been started.
 
 ## Control-plane gate
 
 Validated:
 - CTRL-001
 - CTRL-002
+- CTRL-004
 
 Remaining:
 - CTRL-003
-- CTRL-004
 - FND-006
 
-Operational gate completion: **2/5 = 40%**.
+Operational gate completion: **3/5 = 60%**.
 
 ## Next overseer action
 
-1. Dispatch CTRL-004 using `tasks/CTRL-004.md`.
-2. Review CTRL-003 as soon as Sonnet returns.
-3. After CTRL-004 is accepted, validate FND-006 and close Phase 1.
-4. Continue DATA/EVAL work in parallel without violating benchmark quarantine or data-rights policy.
+1. Review CTRL-003 as soon as Sonnet returns.
+2. Present the next three-lane wave for approval: Luna -> DATA-001; Anti-Gravity (Sonnet) -> continue CTRL-003; Overseer -> EVAL-001.
+3. Keep FND-006 ready but unstarted until an overseer-wave approval covers it or the overseer deliberately schedules it.
+4. Continue DATA/EVAL work without violating benchmark quarantine or data-rights policy.
 
 ## Mandatory review-response rule
 
@@ -103,3 +103,20 @@ Default parallel work uses three lanes:
 Do not schedule Sonnet and Gemini as separate simultaneous lanes unless Mohammed explicitly changes this rule.
 
 A Sonnet ↔ Gemini switch should resume from repository state and the task brief, not from provider memory.
+
+
+## CTRL-004 acceptance evidence
+
+PR #10 was reviewed against the actual diff and GitHub Actions run 37687240616.
+
+Verified:
+- PR and main-push governance workflow;
+- read-only contents permission;
+- Python 3.12;
+- canonical projectctl validation;
+- 18 governance tests;
+- nonzero failure behavior on invalid fixture;
+- evidence-oriented PR template;
+- successful GitHub Actions job.
+
+CTRL-004 is unweighted infrastructure, so capability remains 4.5/100.

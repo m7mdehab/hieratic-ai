@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/data_sources.schema.json",
+  "title": "Hieratic AI external source registry",
+  "type": "object",
+  "required": ["schema_version", "policy_version", "sources"],
+  "properties": {
+    "schema_version": {"type": "string", "minLength": 1},
+    "policy_version": {"type": "string", "minLength": 1},
+    "sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nullableUri": {
+      "oneOf": [
+        {"type": "string", "format": "uri"},
+        {"type": "null"}
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "source_id", "name", "source_type", "responsible_party", "canonical_url", "accessed_at", "granularity",
+        "verified_status", "rights_text_verbatim", "rights_class", "project_review_markers", "license_url", "rightsholder",
+        "attribution_requirements", "training_use", "development_use", "evaluation_use", "redistribution_use",
+        "commercial_use", "model_release_review", "automated_access_constraints", "benchmark_quarantine",
+        "benchmark_overlap_risk", "evidence_urls", "rights_evidence_urls", "provenance_notes", "open_questions",
+        "recommended_project_role"
+      ],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"},
+        "name": {"type": "string", "minLength": 1},
+        "source_type": {
+          "type": "string",
+          "enum": ["benchmark", "dataset", "software_and_dataset", "annotation_software_and_corpus", "palaeography_database", "per_item_reference_database", "linguistic_corpus"]
+        },
+        "responsible_party": {"type": "string", "minLength": 1},
+        "canonical_url": {"type": "string", "format": "uri"},
+        "access_url": {"type": "string", "format": "uri"},
+        "accessed_at": {"type": "string", "format": "date"},
+        "granularity": {"type": "string", "minLength": 1},
+        "verified_status": {"type": "string", "enum": ["VERIFIED-PRIMARY", "VERIFIED-SECONDARY", "CANDIDATE", "REJECTED"]},
+        "rights_text_verbatim": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+        "rights_class": {
+          "type": "string",
+          "enum": ["OPEN-PD", "OPEN-BY", "OPEN-SA", "NONCOMMERCIAL", "PER-ITEM", "EVALUATION-ONLY", "RESTRICTED", "UNKNOWN"]
+        },
+        "project_review_markers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "enum": ["RIGHTS-REVIEW", "PER-ITEM", "SHARE-ALIKE-REVIEW", "IMAGE-LAYER-REVIEW", "PROVENANCE-REVIEW", "BENCHMARK-OVERLAP-REVIEW", "AUTOMATED-ACCESS-REVIEW"]}
+        },
+        "license_url": {"$ref": "#/$defs/nullableUri"},
+        "rightsholder": {"type": "string", "minLength": 1},
+        "attribution_requirements": {"type": "string", "minLength": 1},
+        "training_use": {"$ref": "#/$defs/useDecision"},
+        "development_use": {"$ref": "#/$defs/useDecision"},
+        "evaluation_use": {"$ref": "#/$defs/useDecision"},
+        "redistribution_use": {"$ref": "#/$defs/useDecision"},
+        "commercial_use": {"$ref": "#/$defs/useDecision"},
+        "model_release_review": {"type": "string", "enum": ["required", "blocked_pending_rights", "required_if_used", "not_assessed", "not_applicable"]},
+        "automated_access_constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "enum": ["preserve_benchmark_quarantine", "preserve_sealed_item_answers", "retain_per_item_source_rights", "noncommercial_track_only", "item_level_rights_review", "item_provenance_review_before_acquisition", "preserve_dataset_attribution", "preserve_image_layer_provenance", "verify_item_license", "no_blanket_database_license", "check_benchmark_overlap", "no_bulk_scraping", "no_bulk_corpus_construction", "separate_release_or_permission_required"]}
+        },
+        "benchmark_quarantine": {"type": "boolean"},
+        "benchmark_overlap_risk": {"type": "string", "enum": ["high", "medium", "low", "unknown", "not_applicable"]},
+        "evidence_urls": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "format": "uri"}},
+        "rights_evidence_urls": {"type": "array", "uniqueItems": true, "items": {"type": "string", "format": "uri"}},
+        "provenance_notes": {"type": "string", "minLength": 1},
+        "open_questions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "recommended_project_role": {"type": "string", "enum": ["external_evaluation_only", "research_training_candidate_rights_gated", "sign_corpus_baseline_rights_gated", "annotation_workflow_reference_only", "detector_baseline_reference_only", "palaeographic_retrieval_and_concordance", "per_item_palaeographic_exemplar_retrieval", "linguistic_reference_no_bulk_extraction"]}
+      },
+      "additionalProperties": false
+    },
+    "useDecision": {
+      "type": "string",
+      "enum": ["allowed", "prohibited", "conditional", "not_approved", "metadata_only"]
+    }
+  }
+}

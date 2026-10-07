@@ -1,0 +1,272 @@
+schema_version: "1.0.0"
+policy_version: "1.0"
+sources:
+  - source_id: SRC-HIERATICBENCH
+    name: HieraticBench
+    source_type: benchmark
+    responsible_party: "Aly Moursy; public items retain their individual source records"
+    canonical_url: https://github.com/alymoursy/hieraticbench
+    access_url: https://hieraticbench.vercel.app/
+    accessed_at: "2026-10-08"
+    granularity: "Benchmark items, public source images, and two commissioned sealed items"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: null
+    rights_class: EVALUATION-ONLY
+    project_review_markers: [PER-ITEM]
+    license_url: null
+    rightsholder: "Mixed: public items retain source-specific rights; commissioned items hb-0001 and hb-0002 are © Aly Moursy"
+    attribution_requirements: "Preserve each public item's source attribution; commissioned items retain Aly Moursy's copyright and evaluation-only permission"
+    training_use: prohibited
+    development_use: prohibited
+    evaluation_use: allowed
+    redistribution_use: conditional
+    commercial_use: not_approved
+    model_release_review: required
+    automated_access_constraints: [preserve_benchmark_quarantine, preserve_sealed_item_answers, retain_per_item_source_rights]
+    benchmark_quarantine: true
+    benchmark_overlap_risk: high
+    evidence_urls:
+      - https://github.com/alymoursy/hieraticbench
+    rights_evidence_urls:
+      - https://github.com/alymoursy/hieraticbench
+    provenance_notes: "Project quarantine applies independently of public items' source licenses. The benchmark repository reports item-level rights and restricts the two commissioned items to model evaluation."
+    open_questions:
+      - "Per-item source terms govern public images; check an item's record before any use beyond evaluation."
+      - "Keep sealed readings and answer-bearing outputs private under the benchmark protocol."
+    recommended_project_role: external_evaluation_only
+
+  - source_id: SRC-DDD
+    name: Diagnostic Deir el-Medina Dataset (DDD)
+    source_type: dataset
+    responsible_party: "Crossing Boundaries project; work-package leader Stephan M. Unter; contributors listed on the Zenodo record"
+    canonical_url: https://zenodo.org/records/20553713
+    accessed_at: "2026-10-08"
+    granularity: "159 images across 50 papyrus documents; selective character and character-group polygons; per-image copyright details in papyri.json"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: "CC 4.0 BY-SA-NC"
+    rights_class: NONCOMMERCIAL
+    project_review_markers: [PER-ITEM, SHARE-ALIKE-REVIEW]
+    license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+    rightsholder: "Per-image copyright holders are identified in papyri.json; full papyrus images are courtesy of Museo Egizio"
+    attribution_requirements: "Check papyri.json and preserve per-image attribution and copyright information"
+    training_use: conditional
+    development_use: conditional
+    evaluation_use: conditional
+    redistribution_use: conditional
+    commercial_use: prohibited
+    model_release_review: required
+    automated_access_constraints: [noncommercial_track_only, item_level_rights_review]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://zenodo.org/records/20553713
+    rights_evidence_urls:
+      - https://zenodo.org/records/20553713
+    provenance_notes: "High-value research candidate, not cleared for the default commercial-compatible track. Dataset license is CC BY-NC-SA 4.0; item-level copyright information and share-alike obligations remain relevant. No assets were acquired for this registry."
+    open_questions:
+      - "Resolve item-level rights and permitted acquisition method before any use."
+      - "Obtain a separate model-release decision before releasing weights trained on this source."
+    recommended_project_role: research_training_candidate_rights_gated
+
+  - source_id: SRC-PAPYRUS
+    name: Tabin / PaPYrus sign corpus
+    source_type: software_and_dataset
+    responsible_party: "Julius A. Tabin; repository and publication records are linked below"
+    canonical_url: https://github.com/jtabin/PaPYrus
+    accessed_at: "2026-10-08"
+    granularity: "13,134 isolated sign images with sign metadata and metrics; facsimile-derived material"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: null
+    rights_class: UNKNOWN
+    project_review_markers: [RIGHTS-REVIEW, PROVENANCE-REVIEW]
+    license_url: null
+    rightsholder: "Underlying source-facsimile and image rightsholders have not been established for every item"
+    attribution_requirements: "Record source-facsimile provenance and item attribution when identified; repository software license is not data clearance"
+    training_use: not_approved
+    development_use: not_approved
+    evaluation_use: not_approved
+    redistribution_use: not_approved
+    commercial_use: not_approved
+    model_release_review: blocked_pending_rights
+    automated_access_constraints: [item_provenance_review_before_acquisition]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://github.com/jtabin/PaPYrus
+      - https://openscience.ub.uni-mainz.de/items/7aef8525-734c-4ab5-a5c3-4fbf312e1397
+    rights_evidence_urls:
+      - https://github.com/jtabin/PaPYrus
+      - https://openscience.ub.uni-mainz.de/items/7aef8525-734c-4ab5-a5c3-4fbf312e1397
+    provenance_notes: "The repository is GPL-3.0 and the publication is CC BY 4.0; neither establishes rights for every underlying image or sign record. Treat this record as metadata and a prior-art pointer until item/source manifests resolve rights."
+    open_questions:
+      - "Determine item-level image/facsimile rights and whether any sign data may be used or redistributed."
+    recommended_project_role: sign_corpus_baseline_rights_gated
+
+  - source_id: SRC-ISUT
+    name: Isut annotated Hieratic texts
+    source_type: annotation_software_and_corpus
+    responsible_party: "University of Liège-hosted Isut project"
+    canonical_url: https://isut.uliege.be/admin/about
+    access_url: https://github.com/nederhof/isut
+    accessed_at: "2026-10-08"
+    granularity: "Annotation software, text backups, sign-shape annotations, and facsimile-backed records"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: null
+    rights_class: UNKNOWN
+    project_review_markers: [RIGHTS-REVIEW, PROVENANCE-REVIEW]
+    license_url: null
+    rightsholder: "Underlying facsimile and text-backup rightsholders have not been established for every record"
+    attribution_requirements: "Keep item-level source and attribution; GPL-3.0 software licensing does not clear bundled or referenced images"
+    training_use: not_approved
+    development_use: not_approved
+    evaluation_use: not_approved
+    redistribution_use: not_approved
+    commercial_use: not_approved
+    model_release_review: blocked_pending_rights
+    automated_access_constraints: [item_provenance_review_before_acquisition]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://isut.uliege.be/admin/about
+      - https://github.com/nederhof/isut
+    rights_evidence_urls:
+      - https://isut.uliege.be/admin/about
+      - https://github.com/nederhof/isut
+    provenance_notes: "Use as prior art and an annotation-workflow reference. Rights for annotated backups and underlying facsimiles are not inferred from the software license."
+    open_questions:
+      - "Identify rights, source URLs, and permitted use for each facsimile or text backup before acquisition."
+    recommended_project_role: annotation_workflow_reference_only
+
+  - source_id: SRC-HIERATICAI
+    name: HieraticAI Westcar annotations and model
+    source_type: software_and_dataset
+    responsible_party: "Repository authors Margot Belot and Dominique Colyer; source-image rightsholders remain item-specific"
+    canonical_url: https://github.com/MargotBelot/HieraticAI
+    accessed_at: "2026-10-08"
+    granularity: "605 annotated signs, 1,269 patch instances, 95 active classes, and a trained detector checkpoint"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: null
+    rights_class: UNKNOWN
+    project_review_markers: [RIGHTS-REVIEW, PROVENANCE-REVIEW]
+    license_url: null
+    rightsholder: "Westcar facsimile and imported reference-data rightsholders have not been established by the repository's MIT code license"
+    attribution_requirements: "Credit the software authors when discussing the baseline; clear underlying images and annotations independently before data use"
+    training_use: not_approved
+    development_use: not_approved
+    evaluation_use: not_approved
+    redistribution_use: not_approved
+    commercial_use: not_approved
+    model_release_review: blocked_pending_rights
+    automated_access_constraints: [item_provenance_review_before_acquisition]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://github.com/MargotBelot/HieraticAI
+    rights_evidence_urls:
+      - https://github.com/MargotBelot/HieraticAI
+    provenance_notes: "The repository's MIT license applies to repository software. It does not establish rights for Westcar facsimile images, derived patches, or imported reference data."
+    open_questions:
+      - "Establish separate rights and provenance for each source image and derived annotation before data reuse."
+    recommended_project_role: detector_baseline_reference_only
+
+  - source_id: SRC-HPDB
+    name: Hieratische Paläographie Database (HPDB) datasets
+    source_type: palaeography_database
+    responsible_party: "Hieratische Paläographie DB Project (University of Tsukuba / The University of Tokyo)"
+    canonical_url: https://moeller.jinsha.tsukuba.ac.jp/en/datasets/
+    accessed_at: "2026-10-08"
+    granularity: "2,065 sign-item records, 937-record concordance table, IIIF curation, and volume manifests"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: "All datasets are published under the Creative Commons Attribution 4.0 International license (CC BY 4.0)."
+    rights_class: OPEN-BY
+    project_review_markers: [IMAGE-LAYER-REVIEW, PROVENANCE-REVIEW]
+    license_url: https://creativecommons.org/licenses/by/4.0/
+    rightsholder: "Hieratische Paläographie DB Project for its datasets; underlying facsimile/image layers retain their source rights"
+    attribution_requirements: "Cite the Hieratische Paläographie DB project and preserve attribution and source provenance for image/IIIF derivatives"
+    training_use: conditional
+    development_use: conditional
+    evaluation_use: conditional
+    redistribution_use: conditional
+    commercial_use: conditional
+    model_release_review: required
+    automated_access_constraints: [preserve_dataset_attribution, preserve_image_layer_provenance]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://moeller.jinsha.tsukuba.ac.jp/en/datasets/
+    rights_evidence_urls:
+      - https://moeller.jinsha.tsukuba.ac.jp/en/datasets/
+    provenance_notes: "The official metadata datasets are CC BY 4.0. Keep image/IIIF source provenance and attribution; this record does not treat the underlying historical facsimiles as newly licensed by HPDB."
+    open_questions:
+      - "Preserve per-image source provenance and attribution when selecting or transforming IIIF-linked material."
+    recommended_project_role: palaeographic_retrieval_and_concordance
+
+  - source_id: SRC-AKU-PAL
+    name: AKU-PAL
+    source_type: per_item_reference_database
+    responsible_party: "Academy of Sciences and Literature Mainz / Altägyptische Kursivschriften project"
+    canonical_url: https://aku-pal.uni-mainz.de/
+    access_url: https://aku-pal.uni-mainz.de/faq
+    accessed_at: "2026-10-08"
+    granularity: "Individual hieratograms, sometimes facsimiles or image crops, with per-record palaeographic metadata"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: "Einzelne Bilder aus der Datenbank dürfen unter der jeweils angegebenen Lizenz genutzt und verbreitet werden"
+    rights_class: PER-ITEM
+    project_review_markers: [PER-ITEM, BENCHMARK-OVERLAP-REVIEW]
+    license_url: null
+    rightsholder: "Per-item rightsholders and contributing researchers; follow the license attached to each image"
+    attribution_requirements: "Record stable hieratogram ID, item URL, displayed license, rightsholder, and required attribution for every acquired image"
+    training_use: conditional
+    development_use: conditional
+    evaluation_use: conditional
+    redistribution_use: conditional
+    commercial_use: conditional
+    model_release_review: required
+    automated_access_constraints: [verify_item_license, no_blanket_database_license, check_benchmark_overlap]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: high
+    evidence_urls:
+      - https://aku-pal.uni-mainz.de/
+      - https://aku-pal.uni-mainz.de/faq
+    rights_evidence_urls:
+      - https://aku-pal.uni-mainz.de/faq
+    provenance_notes: "There is no database-wide blanket image license. HieraticBench includes AKU-PAL sign items, so any independently selected material needs stable-ID/source/hash overlap checks before training or development use."
+    open_questions:
+      - "Check the exact license and attribution on every item page before acquisition."
+      - "Prove non-overlap with HieraticBench items and derived crops before training or development use."
+    recommended_project_role: per_item_palaeographic_exemplar_retrieval
+
+  - source_id: SRC-TLA
+    name: Thesaurus Linguae Aegyptiae (TLA) live website
+    source_type: linguistic_corpus
+    responsible_party: "Berlin-Brandenburg Academy of Sciences and Humanities and Saxon Academy of Sciences and Humanities projects"
+    canonical_url: https://thesaurus-linguae-aegyptiae.de/info/text-corpus?lang=en
+    access_url: https://thesaurus-linguae-aegyptiae.de/home
+    accessed_at: "2026-10-07"
+    granularity: "Corpus texts, lemma lists, transliteration, linguistic annotations, translations, and lexicon data"
+    verified_status: VERIFIED-PRIMARY
+    rights_text_verbatim: null
+    rights_class: RESTRICTED
+    project_review_markers: [RIGHTS-REVIEW, AUTOMATED-ACCESS-REVIEW]
+    license_url: https://thesaurus-linguae-aegyptiae.de/info/licenses
+    rightsholder: "TLA project institutions and the relevant text/data rightsholders"
+    attribution_requirements: "Follow the official license page and source-specific attribution for any individually permitted academic quotation"
+    training_use: prohibited
+    development_use: prohibited
+    evaluation_use: conditional
+    redistribution_use: conditional
+    commercial_use: prohibited
+    model_release_review: blocked_pending_rights
+    automated_access_constraints: [no_bulk_scraping, no_bulk_corpus_construction, separate_release_or_permission_required]
+    benchmark_quarantine: false
+    benchmark_overlap_risk: unknown
+    evidence_urls:
+      - https://thesaurus-linguae-aegyptiae.de/info/text-corpus?lang=en
+      - https://thesaurus-linguae-aegyptiae.de/info/lemma-lists?lang=en
+      - https://thesaurus-linguae-aegyptiae.de/info/licenses
+    rights_evidence_urls:
+      - https://thesaurus-linguae-aegyptiae.de/info/licenses
+    provenance_notes: "FND-004 records the live website restriction on copying larger sets and more than 10 pages. The official license page presented an automated verification gate during the 2026-10-08 spot check; refresh terms before any acquisition. No bulk scraping or training corpus construction is authorized."
+    open_questions:
+      - "Confirm current license wording and access terms before any non-individual use; seek a separately licensed raw release or explicit permission for bulk use."
+    recommended_project_role: linguistic_reference_no_bulk_extraction

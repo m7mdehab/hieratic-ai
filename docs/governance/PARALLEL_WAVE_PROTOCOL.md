@@ -85,3 +85,24 @@ Wave plans should therefore name the lane first and the currently selected model
 `Anti-Gravity lane (Sonnet) -> CTRL-003`
 or
 `Anti-Gravity lane (Gemini 3.8 Flash) -> CTRL-003 continuation`.
+
+
+## Luna work-package sizing
+
+Luna may receive a **multi-task work package** rather than one small task when several independent tasks are simultaneously dependency-ready.
+
+The goal is to keep the fast execution lane productive for approximately the same review cycle as the overseer lane without weakening task boundaries.
+
+Requirements:
+- every task in the package must already have all dependencies validated at dispatch time;
+- each canonical task keeps its own task ID, acceptance criteria, evidence package, and preferably its own branch/PR;
+- tasks in the same package should have disjoint or deliberately partitioned write scopes;
+- Luna may finish the whole package before returning to the overseer;
+- a task may **not** begin based on another package task merely being locally complete if the dependency requires overseer validation;
+- no acceptance threshold is reduced because tasks are batched;
+- the overseer reviews and awards points task-by-task.
+
+Default sizing heuristic:
+- target 2–3 independent Luna tasks per wave when that many suitable tasks are ready;
+- prefer a mixed package of implementation/data/evaluation tooling rather than artificially splitting one tiny task;
+- reduce the package if tasks share volatile interfaces or would cause merge conflicts.

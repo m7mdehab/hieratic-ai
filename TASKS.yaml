@@ -171,7 +171,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Create training-data source registry"
     weight: 2.00
-    status: "ready"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["FND-004", "FND-005"]
     acceptance_summary: "Candidate training sources have machine-readable provenance, access, license, granularity, and usage status."
@@ -180,7 +180,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Implement reproducible data acquisition manifests"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["DATA-001"]
     acceptance_summary: "Permitted sources can be fetched or referenced deterministically without silently redistributing restricted assets."
@@ -198,7 +198,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Define canonical annotation schema"
     weight: 3.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["FND-003", "DATA-001"]
     acceptance_summary: "Schema represents document/line/sign/text relations, uncertainty, alternatives, provenance, and reviewer state."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 6.0
+    validated_weighted_tasks_expected: 8.0
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

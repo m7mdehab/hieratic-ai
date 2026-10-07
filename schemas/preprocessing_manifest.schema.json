@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/preprocessing_manifest.schema.json",
+  "title": "Preprocessing request and dataset artifact manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "acquisition_manifest_id",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acquisition_manifest_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "acquisition_record_id",
+        "source_id",
+        "source_object_id",
+        "asset_path",
+        "input_sha256",
+        "rights_class",
+        "training_use",
+        "benchmark_quarantine",
+        "benchmark_overlap_review",
+        "operations",
+        "intended_use"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "acquisition_record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_id": {
+          "type": "string",
+          "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "source_object_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intended_use": {
+          "enum": [
+            "training",
+            "development"
+          ]
+        },
+        "asset_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text_input": {
+          "type": "string"
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "rights_class": {
+          "enum": [
+            "OPEN-PD",
+            "OPEN-BY",
+            "OPEN-SA",
+            "NONCOMMERCIAL",
+            "PER-ITEM"
+          ]
+        },
+        "training_use": {
+          "const": "allowed"
+        },
+        "benchmark_quarantine": {
+          "const": false
+        },
+        "benchmark_overlap_review": {
+          "enum": [
+            "clear",
+            "suspected",
+            "unreviewed"
+          ]
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/operation"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "operation": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "orient",
+            "convert_mode",
+            "resize",
+            "crop",
+            "text_normalize"
+          ]
+        },
+        "orientation": {
+          "enum": [
+            "identity",
+            "rotate_90_clockwise",
+            "rotate_180",
+            "rotate_270_clockwise"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "L",
+            "RGB",
+            "RGBA"
+          ]
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fit": {
+          "enum": [
+            "contain",
+            "cover",
+            "exact"
+          ]
+        },
+        "resampling": {
+          "enum": [
+            "nearest",
+            "bilinear"
+          ]
+        },
+        "box": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "coordinate_system": {
+          "enum": [
+            "pixel_origin_top_left"
+          ]
+        },
+        "text_profile": {
+          "type": "string"
+        },
+        "text_profile_version": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "orient"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "orientation"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "convert_mode"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "resize"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "width",
+              "height",
+              "fit",
+              "resampling"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "crop"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "box",
+              "coordinate_system"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "text_normalize"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "text_profile",
+              "text_profile_version"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

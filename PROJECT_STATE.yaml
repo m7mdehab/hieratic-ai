@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 20.5
+  goal_progress: 30.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,12 +29,11 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "CTRL-003"
+  last_accepted_task: "DATA-003"
   ready_tasks:
-    - "DATA-003"
-    - "DATA-005"
-    - "DATA-006"
-    - "DATA-007"
+    - "DATA-008"
+    - "VLM-001"
+    - "LING-001"
   active_tasks:
     - "EVAL-003"
   review_tasks: []
@@ -76,13 +75,14 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  CTRL-003 dashboard accepted after independent Next.js TypeScript, lint,
-  Vitest, production build, production-only audit and mobile/desktop Playwright
-  checks; control-plane gate complete. Documented unresolved high-severity
-  braces dev-only advisory remains a monitored dependency-security exception.
-  Review Luna W2 DATA-003/005/006/007 PRs and adversarial CI independently;
-  no capability points awarded for unreviewed work. EVAL-003 remains active
-  without model baseline points pending separate approved spend, provider
-  inference, preserved raw outputs and official score replication. Dashboard
-  renders canonical state at build time and requires rebuild/redeployment
-  after later state transitions.
+  W2 DATA-003/005/006/007 engineering artifacts were independently reviewed,
+  patched for rights/eligibility/provenance/citation/adjudication safeguards,
+  rerun under strict GitHub CI and accepted (+10 verified points). DATA-008,
+  VLM-001 and LING-001 are now dependency-ready but must await the user's
+  explicit W3 approval before overseer starts any new scientific task.
+  Coordinate a dependency-safe three-lane portfolio with a larger Luna package,
+  an independent Anti-Gravity VLM-001 lane and substantial overseer EVAL-003
+  preparatory science; no paid provider inference without separate budget
+  authorization. EVAL-003 remains active/zero credited points. No real rights-
+  cleared manuscript corpus, actual trained model, benchmark run or expert gold
+  is yet accepted. The static dashboard requires rebuild/redeploy for 30.5.

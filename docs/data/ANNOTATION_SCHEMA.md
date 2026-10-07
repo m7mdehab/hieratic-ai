@@ -10,13 +10,13 @@ Document metadata carries period/date range, geographic provenance, material/sup
 
 ## Layout and graphemes
 
-Every page declares `pixel_origin_top_left` or `normalized_0_1` coordinates. Dimensions can be null if unknown. Region hierarchy and page reading order are explicit; line geometry is optional. `rectangle`, `polyline`, and `polygon` geometries retain non-rectilinear shapes.
+Every page declares `pixel_origin_top_left` or `normalized_0_1` coordinates. Dimensions can be null if unknown. Region hierarchy and page reading order are explicit; reading-order entries are unique and parent-region cycles are rejected. Line geometry is optional. `rectangle`, `polyline`, and `polygon` geometries retain non-rectilinear shapes.
 
 Lines have a sequence ID and required `grapheme_sequence` layer, which permits a line-level sequence with no sign segmentation. Optional sign records support identity alternatives, allograph references, group membership, abbreviation, visual confidence, and damage state. `sign_groups` represent ligatures and other multi-sign units through constituent sign IDs.
 
 ## Distinct reading layers and uncertainty
 
-The schema keeps separate fields for Hieratic grapheme sequence, standardized hieroglyphic rendering, Egyptological transliteration, normalized representation/tokenization, lemma analysis, morphology, syntax, and translations. Each layer uses EVAL-001 gold status values. A layer can retain multiple candidate values, confidence, a selected value, and an explanation. `certain` with multiple candidates requires them to be explicitly equivalent; `uncertain_with_alternatives` retains at least two candidates; illegible and missing values remain explicit rather than becoming guessed text. Tokens link to a stable line/sequence ID.
+The schema keeps separate fields for Hieratic grapheme sequence, standardized hieroglyphic rendering, Egyptological transliteration, normalized representation/tokenization, lemma analysis, morphology, syntax, and translations. Each layer uses EVAL-001 gold status values. A layer can retain multiple candidate values, confidence, a selected value, and an explanation. `certain` requires an existing selected value; if it has multiple candidates, the selected value anchors the layer and every other candidate must be explicitly equivalent to it. `uncertain_with_alternatives` retains at least two candidates; illegible and missing values remain explicit rather than becoming guessed text. A token's `sequence_ref` must identify its owning line or that line's sequence, so tokens cannot borrow a reference from another line.
 
 ## Review
 

@@ -56,8 +56,18 @@ def _validate_layer(layer: dict[str, Any], path: str, errors: list[str]) -> None
     if status == "certain":
         if not values:
             errors.append(f"{path}: certain layer requires a value")
-        if len(values) > 1 and not all(value["equivalent_to_selected"] for value in values if value["value_id"] != selected):
-            errors.append(f"{path}: certain layer has unresolved alternative values")
+        if selected is None or selected not in value_ids:
+            errors.append(f"{path}: certain layer requires a selected value that exists in this layer")
+        else:
+            selected_value = next(value for value in values if value["value_id"] == selected)
+            if selected_value["equivalent_to_selected"]:
+                errors.append(f"{path}: selected certain value cannot be marked equivalent to itself")
+            if len(values) > 1 and not all(
+                value["equivalent_to_selected"]
+                for value in values
+                if value["value_id"] != selected
+            ):
+                errors.append(f"{path}: certain layer has unresolved alternative values")
     elif status == "uncertain_with_alternatives" and len(values) < 2:
         errors.append(f"{path}: uncertain_with_alternatives requires at least two values")
     elif status == "illegible_unscorable":
@@ -174,6 +184,20 @@ def validate_data(annotation: Any, schema: dict[str, Any], registry: Any | None 
             if region_id not in local_regions:
                 errors.append(f"page {page_id}: reading_order references nonexistent region {region_id}")
 
+        reported_cycles: set[tuple[str, ...]] = set()
+        for start_region_id in local_regions:
+            trail: list[str] = []
+            current_region_id: str | None = start_region_id
+            while current_region_id is not None and current_region_id in local_regions:
+                if current_region_id in trail:
+                    cycle = tuple(sorted(trail[trail.index(current_region_id):]))
+                    if cycle not in reported_cycles:
+                        errors.append(f"page {page_id}: parent-region cycle detected: {', '.join(cycle)}")
+                        reported_cycles.add(cycle)
+                    break
+                trail.append(current_region_id)
+                current_region_id = local_regions[current_region_id]["parent_region_id"]
+
     for line in annotation["lines"]:
         line_id = line["line_id"]
         page = pages.get(line["page_id"])
@@ -199,8 +223,11 @@ def validate_data(annotation: Any, schema: dict[str, Any], registry: Any | None 
         normalized = line.get("normalized_representation")
         if normalized:
             for token in normalized["tokens"]:
-                if token["sequence_ref"] not in set(sequence_ids) | set(line_ids):
-                    errors.append(f"token {token['token_id']}: sequence_ref {token['sequence_ref']} does not exist")
+                if token["sequence_ref"] not in {line_id, line["sequence_id"]}:
+                    if token["sequence_ref"] in set(sequence_ids) | set(line_ids):
+                        errors.append(f"token {token['token_id']}: sequence_ref {token['sequence_ref']} belongs to a different line")
+                    else:
+                        errors.append(f"token {token['token_id']}: sequence_ref {token['sequence_ref']} does not exist")
                 if token["gold_status"] != token["value"]["gold_status"]:
                     errors.append(f"token {token['token_id']}: gold_status does not match value layer status")
 

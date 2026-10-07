@@ -48,6 +48,20 @@ class AnnotationSchemaTests(unittest.TestCase):
         errors = self.errors(annotation)
         self.assertTrue(any("parent region missing-parent does not exist" in error for error in errors), errors)
 
+    def test_parent_region_cycle_fails_even_when_edges_are_reciprocal(self) -> None:
+        annotation = copy.deepcopy(self.ambiguous)
+        regions = annotation["pages"][0]["regions"]
+        regions[0]["parent_region_id"] = regions[1]["region_id"]
+        regions[1]["child_region_ids"] = [regions[0]["region_id"]]
+        errors = self.errors(annotation)
+        self.assertTrue(any("parent-region cycle detected" in error for error in errors), errors)
+
+    def test_duplicate_page_reading_order_entry_fails_schema(self) -> None:
+        annotation = copy.deepcopy(self.ambiguous)
+        annotation["pages"][0]["reading_order"] = ["region-2", "region-2"]
+        errors = self.errors(annotation)
+        self.assertTrue(any("reading_order" in error and "unique" in error for error in errors), errors)
+
     def test_invalid_coordinate_geometry_fails(self) -> None:
         annotation = copy.deepcopy(self.ambiguous)
         annotation["pages"][0]["regions"][0]["geometry"]["vertices"] = [[0.1, 0.1], [1.1, 0.1]]
@@ -71,6 +85,26 @@ class AnnotationSchemaTests(unittest.TestCase):
         })
         errors = self.errors(annotation)
         self.assertTrue(any("certain layer has unresolved alternative values" in error for error in errors), errors)
+
+    def test_certain_layer_requires_an_existing_selected_value(self) -> None:
+        annotation = copy.deepcopy(self.minimal)
+        annotation["lines"][0]["grapheme_sequence"]["selected_value_id"] = None
+        errors = self.errors(annotation)
+        self.assertTrue(any("certain layer requires a selected value" in error for error in errors), errors)
+
+    def test_certain_equivalent_alternatives_require_selected_anchor(self) -> None:
+        annotation = copy.deepcopy(self.minimal)
+        layer = annotation["lines"][0]["grapheme_sequence"]
+        layer["values"].append({
+            "value_id": "grapheme-sequence-equivalent-2",
+            "value": ["SYNTH-GRAPHEME-A-ALIAS"],
+            "confidence": None,
+            "equivalent_to_selected": True,
+            "evidence_ref": None,
+        })
+        layer["selected_value_id"] = None
+        errors = self.errors(annotation)
+        self.assertTrue(any("certain layer requires a selected value" in error for error in errors), errors)
 
     def test_certain_equivalent_alternatives_are_representable(self) -> None:
         annotation = copy.deepcopy(self.minimal)
@@ -112,6 +146,47 @@ class AnnotationSchemaTests(unittest.TestCase):
         }]
         errors = self.errors(annotation)
         self.assertTrue(any("sequence_ref absent-sequence does not exist" in error for error in errors), errors)
+
+    def test_normalized_token_cannot_reference_an_unrelated_existing_line(self) -> None:
+        annotation = copy.deepcopy(self.ambiguous)
+        line = annotation["lines"][0]
+        other_line = copy.deepcopy(line)
+        other_line["line_id"] = "line-other"
+        other_line["sequence_id"] = "sequence-other"
+        other_line["reading_order"] = 1
+        other_line["region_id"] = None
+
+        def rewrite_ids(value: object) -> None:
+            if isinstance(value, dict):
+                if "value_id" in value:
+                    value["value_id"] = f"other-{value['value_id']}"
+                if "token_id" in value:
+                    value["token_id"] = f"other-{value['token_id']}"
+                if value.get("sequence_ref") in {line["line_id"], line["sequence_id"]}:
+                    value["sequence_ref"] = "sequence-other"
+                for nested in value.values():
+                    rewrite_ids(nested)
+            elif isinstance(value, list):
+                for nested in value:
+                    rewrite_ids(nested)
+
+        rewrite_ids(other_line)
+        annotation["lines"].append(other_line)
+        line["normalized_representation"]["tokens"] = [{
+            "token_id": "token-foreign-sequence",
+            "value": {
+                "gold_status": "certain",
+                "values": [{"value_id": "token-value-foreign-sequence", "value": "SYNTH-TOKEN", "confidence": None, "equivalent_to_selected": False, "evidence_ref": None}],
+                "selected_value_id": "token-value-foreign-sequence",
+                "explanation": None,
+            },
+            "sequence_ref": "sequence-other",
+            "gold_status": "certain",
+            "acceptable_lemmas": [],
+            "morphology_bundles": [],
+        }]
+        errors = self.errors(annotation)
+        self.assertTrue(any("sequence_ref sequence-other belongs to a different line" in error for error in errors), errors)
 
     def test_invalid_reviewer_state_transition_fails(self) -> None:
         annotation = copy.deepcopy(self.minimal)

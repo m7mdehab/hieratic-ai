@@ -1,0 +1,3 @@
+# DATA-007 — Ambiguity Representation and Expert QA
+
+Build independent, blinded-capable review packets over DATA-004 annotation IDs. Record reviewer assignments, conflict separation, distinct decisions and evidence, disagreements, adjudication, and append-only audit/state history. Preserve alternatives, uncertain/damaged readings, missing gold and editorial restoration. Enforce deterministic state transitions and compute agreement with transparent pairwise denominators and exclusions. Add schema, CLI, synthetic examples and adversarial tests. Document EVAL-001 and EVAL-005 interfaces without modifying their files. No real expert review is claimed. Do not alter accepted schemas or canonical state.

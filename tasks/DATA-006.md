@@ -1,0 +1,3 @@
+# DATA-006 — Image-to-Transliteration Alignment
+
+Implement an executable, versioned contract aligning acquired page/region identities to DATA-004 line/sign/token targets. Validate against DATA-002 acquisition manifest and DATA-004 annotation identities. Support one-to-one/many-to-one/one-to-many, ligature, omission, gap, damage, restoration and unresolved states; preserve ordering, coordinates, hypotheses, provenance, confidence and human review. Compute gold-scoring eligibility conservatively and reject benchmark-contaminated inputs. Use contract-defined synthetic inputs only; do not depend on DATA-003. Do not change other task interfaces, accepted schemas, or canonical state.

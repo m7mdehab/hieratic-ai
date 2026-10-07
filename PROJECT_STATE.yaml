@@ -36,10 +36,10 @@ state:
     - "EVAL-002"
     - "EVAL-004"
   active_tasks:
-    - "CTRL-002"
     - "CTRL-003"
   review_tasks: []
-  blockers: []
+  blockers:
+    - "CTRL-002 revision required: PR #5 tests hard-code historical 2.5 progress and must be rebased/made state-dynamic."
 
 canonical_files:
   start: "START_HERE.md"
@@ -79,6 +79,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review CTRL-002/CTRL-003 as they return. DATA-001 and EVAL-001/EVAL-002/EVAL-004
-  are dependency-ready; any data or benchmark task must comply with the active
-  licensing/provenance policy and HieraticBench evaluation quarantine.
+  Await/remediate CTRL-002 PR #5, review CTRL-003 when it returns, and continue
+  dependency-ready DATA/EVAL work under the active licensing/provenance policy.
+  Do not advance CTRL-004 until CTRL-002 is validated.

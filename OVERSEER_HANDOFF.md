@@ -18,7 +18,7 @@ Updated: 2026-10-07
 
 ### Execution agents
 
-- **CTRL-002 — active**: project-state validator + context generator.
+- **CTRL-002 — revision required**: PR #5 is structurally strong, but tests hard-code the historical 2.5 progress state. Overseer remediation was posted on the PR; branch must be updated to current main and tests made state-dynamic.
 - **CTRL-003 — active**: live dashboard/control-plane shell.
 
 ### Overseer work completed while they run
@@ -66,10 +66,11 @@ Research coverage remains **14%** until its denominator is explicitly formalized
 
 ## Next overseer action
 
-1. Review CTRL-002/CTRL-003 immediately when their results arrive.
-2. Once CTRL-002 is accepted, dispatch/complete CTRL-004.
-3. After CTRL-004, validate FND-006 and close Phase 1.
-4. In parallel, prepare/dispatch DATA-001 and evaluation tasks under the new rights policy.
+1. Re-review CTRL-002 PR #5 after the requested remediation.
+2. Review CTRL-003 immediately when its result arrives.
+3. Once CTRL-002 is accepted, dispatch/complete CTRL-004.
+4. After CTRL-004, validate FND-006 and close Phase 1.
+5. In parallel, prepare/dispatch DATA-001 and evaluation tasks under the new rights policy.
 
 ## Mandatory review-response rule
 

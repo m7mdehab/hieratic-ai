@@ -68,7 +68,7 @@ EVAL-002 earned +2.0 points: 8.0 → 10.0. EVAL-003 is now **ready**.
 - **Anti-Gravity/Sonnet:** CTRL-003 dashboard/control plane. No accepted return yet.
 - **FND-006** (0.5) remains ready: close reproducibility/governance foundation after deliberate review; not automatic.
 - **EVAL-003** (1.5) ready because EVAL-001 + EVAL-002 are validated.
-- **EVAL-005** (1.0) ready.
+- **EVAL-005** (1.0) validated (PR #25/#26).
 - DATA-003, DATA-005, DATA-006, DATA-007 and EVAL-006 have additional dependency gates and must not start merely because an unreviewed Luna task appears locally complete.
 
 ## Required next overseer behavior
@@ -92,3 +92,17 @@ Goal progress +1.0: 10.0 → 11.0. EVAL-006 still depends on Luna's EVAL-004.
 ## Latest execution-lane visibility
 
 Luna PRs #20 (DATA-002) and #23 (DATA-004) were visible open at the latest check; EVAL-004 return still pending. No GitHub branch or PR for Sonnet's CTRL-003 was visible; work may be local/unpushed. The overseer cannot inspect Anti-Gravity's active internal session and should ask Mohammed to request a pushed WIP checkpoint, test/build status, blockers, and remaining checklist.
+
+## W1 Luna package — overseer revision review (2026-10-08)
+
+All three tasks have substantive implementations, separate open PRs and passing governance CI, but **all remain unaccepted pending targeted scientific/control-plane corrections**:
+
+- DATA-002 / PR #20: conditional PER-ITEM acquisition allows self-declared evidence and reviewerless `ALLOWED WITH RECORDED CONDITIONS`. Require explicit item license/rightsholder, reviewer signoff, benchmark-overlap assessment, adversarial tests. Comment 6048205649.
+- DATA-004 / PR #23: a `certain` gold value may have no `selected_value_id` and page reading_order permits duplicate region references, corrupting evaluation gold. Comment 6048206126.
+- EVAL-004 / PR #24: configured benchmark roster lists only two sealed items while HieraticBench also has 266 public items including 150 AKU-PAL sign crops; high-risk unreviewed items can enter train/dev. Require evidenced overlap clearance or fail closed. Comment 6048206647.
+
+Statuses are `revision_required`. Goal progress **11/100**; research coverage **14%**; Phase 1 **4.5/5**; Phase 2 **4.5/10**; Phase 3 **2/20**; control plane **3/5**; trained models and verified experiments **0**. No downstream tasks unblocked.
+
+Sonnet has pushed draft PR #27 (the earlier no-branch checkpoint is superseded); reviewer posted stale-state tests, mobile layout bugs, accessibility, audit and final QA requirements. Not accepted.
+
+Next: Luna fixes the three existing PR branches, Sonnet fixes #27, overseer proposes independent EVAL-003 scientific-baseline task for the next approved wave.

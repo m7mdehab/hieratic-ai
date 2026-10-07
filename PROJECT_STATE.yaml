@@ -32,14 +32,15 @@ state:
   last_accepted_task: "EVAL-005"
   ready_tasks:
     - "FND-006"
-    - "DATA-002"
-    - "DATA-004"
     - "EVAL-003"
-    - "EVAL-004"
   active_tasks:
     - "CTRL-003"
   review_tasks: []
-  blockers: []
+  blockers:
+    - "DATA-002 revision required (PR #20): conditional item-rights approval lacks verified item-level reviewer and overlap clearance."
+    - "DATA-004 revision required (PR #23): certain gold values can be unselected and reading_order allows repeated IDs."
+    - "EVAL-004 revision required (PR #24): benchmark overlap roster/clearance fails open for public AKU-PAL benchmark items."
+    - "CTRL-003 draft PR #27 needs current-main compatibility, 320px responsive fixes and security/accessibility QA."
 
 canonical_files:
   start: "START_HERE.md"
@@ -78,8 +79,8 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review Luna W1 DATA-002 and DATA-004 PRs and the remaining EVAL-004 work
-  when returned. Check in with Anti-Gravity/Sonnet: no CTRL-003 branch or PR
-  was visible during the latest GitHub review; request a pushed progress
-  checkpoint and blockers. EVAL-005 is validated, so EVAL-006 remains blocked
-  only by EVAL-004. FND-006 and EVAL-003 remain ready.
+  Luna to remediate PRs #20, #23, and #24 on their existing branches and return
+  refreshed task-specific tests/CI evidence. Anti-Gravity/Sonnet to remediate
+  CTRL-003 draft PR #27. No capability points awarded to unaccepted work.
+  After remediation, review the next wave including independent overseer-owned
+  EVAL-003, while preserving sealed benchmark and data-rights integrity.

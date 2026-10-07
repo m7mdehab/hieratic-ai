@@ -1,0 +1,82 @@
+schema_version: "1.0.0"
+adapter_version: "0.1.0"
+benchmark:
+  name: "HieraticBench"
+  source_registry_id: "SRC-HIERATICBENCH"
+  repository: "https://github.com/alymoursy/hieraticbench"
+  pinned_commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+  upstream_harness_version: "0.1.0"
+  leaderboard_generated_at: "2026-10-05T21:11:18.620Z"
+  item_schema: "data/SCHEMA.md"
+  scoring_source: "bench/src/score.ts"
+  prompt_source: "bench/src/prompts.ts"
+  aggregation_source: "bench/src/leaderboard.ts"
+  run_record_source: "bench/src/runs.ts"
+  item_inventory_source: "data/items/*.json"
+  published_results_source: "results/leaderboard.json"
+  pinned_status: "verified_from_upstream"
+rights:
+  code: "MIT (only bench/ and site/)"
+  public_results: "CC BY 4.0"
+  public_images: "Source-specific licenses in item records"
+  commissioned: "Copyright Aly Moursy; benchmark evaluation only"
+  allowed_project_role: "external_evaluation_only"
+  training_or_development_use: false
+  raw_assets_tracked_in_this_repository: false
+  sealed_answers_available: false
+inventory:
+  items: 268
+  public: 266
+  sealed: 2
+  by_source:
+    aku: 150
+    cbl: 16
+    hb: 2
+    met: 37
+    wm: 61
+    ypm: 2
+  by_rung:
+    identify: 118
+    signs: 152
+    transliterate: 2
+    translate: 2
+  by_script:
+    hieratic: 238
+    hieroglyphic: 5
+    demotic: 17
+    abnormal-hieratic: 1
+    cursive-hieroglyphic: 7
+reproduction:
+  public_inventory: "reproducible_at_pinned_commit"
+  open_record_aggregation: "reproducible_at_pinned_commit"
+  official_scoring_rules: "inspectable_and_upstream_unit_testable"
+  upstream_provider_calls: "not_rerun_in_EVAL-002"
+  sealed_sentence_sign_transliteration_translation: "unscored_no_public_answer_key"
+  sealed_identify: "public_scores_without_full_response_text"
+  all_model_runs_complete: false
+metric_mapping:
+  identify:
+    official: "1 exact/equivalent script; 0.5 wrong Egyptian script; 0 otherwise"
+    project: ["SCRIPT_ACC", "SCRIPT_MACRO_F1"]
+    semantic_note: "Project metrics not numerically identical: official partial credit must remain separate."
+  signs_single:
+    official: "First parsed Gardiner code matches an allowed reference code, 1 or 0."
+    project: ["SIGN_TOP1"]
+    semantic_note: "Closest project analogue, but only compare after confirming token/gold conventions."
+  signs_sentence:
+    official: "max(0, 1 - min Levenshtein sign-distance divided by reference length)"
+    project: ["HTR_GER", "HGR_SER"]
+    semantic_note: "Upstream has no public sentence gold, so comparison currently cannot be made."
+  transliterate:
+    official: "max(0, 1 - canonicalized character edit distance/reference length)"
+    project: ["TR_CER"]
+    semantic_note: "Upstream canonicalization collapses some linguistically meaningful distinctions; keep official score separate."
+  translate:
+    official: "Maximum whitespace-insensitive, case-insensitive chrF (1-6 grams, beta=2)"
+    project: ["TRANS_CHRF"]
+    semantic_note: "Automated metric only, not proof of translation faithfulness."
+citations:
+  - "https://github.com/alymoursy/hieraticbench/tree/d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+  - "https://github.com/alymoursy/hieraticbench/blob/d587dc990013f18007f1e7a8f56f96ff2f7127e2/README.md"
+  - "https://github.com/alymoursy/hieraticbench/blob/d587dc990013f18007f1e7a8f56f96ff2f7127e2/bench/src/score.ts"
+  - "https://github.com/alymoursy/hieraticbench/blob/d587dc990013f18007f1e7a8f56f96ff2f7127e2/bench/src/leaderboard.ts"

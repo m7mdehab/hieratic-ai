@@ -1,0 +1,3 @@
+# DATA-005 — Hieratic Sign Identity and Palaeographic Mappings
+
+Provide versioned records separating observed Hieratic sign identity, hieroglyphic correspondence and transliteration. Support candidate variants, contextual/historical qualifiers, many-to-many mappings, confidence, uncertainty, disputes, provenance citations and source references. Validate identity/references, duplicate edges and cycles in hierarchical relations. Offer deterministic validate/lookup/export commands. Fixtures must be synthetic and explicitly make no historical sign-mapping claims. No unverified scholarly reference or mapping may be presented as fact. Do not alter canonical progress/status or accepted schemas.

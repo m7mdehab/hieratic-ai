@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://m7mdehab.github.io/hieratic-ai/schemas/sign_mappings.schema.json",
+  "title":"Versioned Hieratic sign identity and mapping registry",
+  "type":"object",
+  "required":["schema_version","mapping_set_id","records","relations"],
+  "properties":{
+    "schema_version":{"const":"1.0.0"},"mapping_set_id":{"type":"string","minLength":1},
+    "records":{"type":"array","items":{"$ref":"#/$defs/record"}},
+    "relations":{"type":"array","items":{"$ref":"#/$defs/relation"}}
+  },"additionalProperties":false,
+  "$defs":{
+    "ref":{"type":"object","required":["value","status"],"properties":{"value":{"type":["string","null"]},"status":{"enum":["proposed","supported","disputed","unresolved","not_applicable"]},"confidence":{"type":["number","null"],"minimum":0,"maximum":1},"qualifiers":{"type":"array","items":{"type":"string"}},"citations":{"type":"array","items":{"$ref":"#/$defs/citation"}}},"additionalProperties":false},
+    "citation":{"type":"object","required":["citation_id","reference","claim_scope"],"properties":{"citation_id":{"type":"string","minLength":1},"reference":{"type":"string","minLength":1},"claim_scope":{"type":"string","minLength":1},"locator":{"type":["string","null"]},"verified_metadata":{"type":"boolean"}},"additionalProperties":false},
+    "record":{"type":"object","required":["identity_id","identity_status","observed_hieratic","hieroglyphic_correspondence","transliteration_value","variants","provenance"],"properties":{"identity_id":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9._:-]*$"},"identity_status":{"enum":["candidate","attested_identity","disputed","unresolved"]},"observed_hieratic":{"$ref":"#/$defs/ref"},"hieroglyphic_correspondence":{"$ref":"#/$defs/ref"},"transliteration_value":{"$ref":"#/$defs/ref"},"historical_context":{"type":"array","items":{"type":"string"}},"variants":{"type":"array","items":{"type":"object","required":["variant_id","variant_status","description","provenance"],"properties":{"variant_id":{"type":"string"},"variant_status":{"enum":["candidate","accepted_variant","disputed","unresolved"]},"description":{"type":"string"},"qualifiers":{"type":"array","items":{"type":"string"}},"provenance":{"type":"array","items":{"$ref":"#/$defs/citation"}}},"additionalProperties":false}},"provenance":{"type":"array","items":{"$ref":"#/$defs/citation"}}},"additionalProperties":false},
+    "relation":{"type":"object","required":["relation_id","from_identity_id","to_identity_id","relation_type","status","provenance"],"properties":{"relation_id":{"type":"string"},"from_identity_id":{"type":"string"},"to_identity_id":{"type":"string"},"relation_type":{"enum":["variant_of","subclass_of","contextual_correspondence","allograph_of","candidate_equivalence"]},"status":{"enum":["proposed","supported","disputed","unresolved"]},"confidence":{"type":["number","null"],"minimum":0,"maximum":1},"provenance":{"type":"array","items":{"$ref":"#/$defs/citation"}}},"additionalProperties":false}
+  }
+}

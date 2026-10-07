@@ -6,7 +6,7 @@
 
 - **20.5 / 100 earned; 79.5 remaining.** Research coverage **14%** (unchanged).
 - Current capability phase P2 Evaluation: **8.5 / 10 (85%)**; P1 Foundation **5 / 5 (100%)**; P3 Data Engine **7 / 20 (35%)**; P4–P8 no earned points.
-- Control-plane acceptance **4/5 (80%)**; CTRL-003 still active/revision-required, awaiting Anti-Gravity response.
+- Control-plane acceptance **5/5 (100%)**; CTRL-003 validated and Next.js dashboard merged with independent CI.
 - **Validated experiments:** 0; **trained models:** 0; **demonstrated unseen Hieratic reading:** not yet established.
 - Last accepted weighted task: **EVAL-006 (+2)**.
 - EVAL-003 remains **active** but earns **0/1.5** until actual authorized frontier inference and independent official scoring.
@@ -47,3 +47,15 @@ The Anti-Gravity lane (Sonnet **or** Gemini 3.8 Flash, not both) continues CTRL-
 3. Independently review Anti-Gravity CTRL-003 final state integration, 320px screenshots, npm security/license audit and evidence; control gate only closes on verified acceptance.
 4. Keep EVAL-003 active and do not authorize paid calls without the user's separate budget/credential approval; require actual raw response archive and official score reproduction for baseline credit.
 5. Present next multi-lane wave with a substantive overseer task, and **obtain user approval before beginning it**.
+
+## CTRL-003 independently accepted — complete operational control plane
+
+On 2026-10-08 the overseer reviewed Gemini/Sonnet's revised dashboard PR #27, corrected the FALSE claim that `braces@3.0.3` is patched, refreshed the dashboard against latest main at 20.5/100, corrected an over-broad state-test assumption about transient `npm-audit.json`, and verified independent GitHub Actions on exact final branch SHA `9a55c7ede014574c649f24c4813c770d7682b067`.
+
+- [Dashboard TypeScript and Responsive QA](https://github.com/m7mdehab/hieratic-ai/actions/runs/37702332218) success: npm ci, zero high production vulnerabilities, typecheck, lint, 20/20 Vitest tests, production build, 1440/390/320 Playwright document/body overflow=0 and element clipping=0. QA artifact includes screenshots and npm audit JSON.
+- [Project Governance](https://github.com/m7mdehab/hieratic-ai/actions/runs/37702332234) passed.
+- [Dashboard CI workflow](https://github.com/m7mdehab/hieratic-ai/pull/43) independently added to default branch; [CTRL-003 PR #27](https://github.com/m7mdehab/hieratic-ai/pull/27) accepted and merged.
+- **Known risk, not patched:** GitHub advisory GHSA-vfj7-8cjw-p6xm affects `braces<=3.0.3` with no fixed version; 5 high alerts in dev tooling, 0 in production. Avoid untrusted brace/glob inputs and re-review after vendor fix.
+- Static build-time canonical reader, not runtime polling, auto-deployment or a real model evaluation.
+
+CTRL-003 weighted points +0; **control-plane gate 4/5 → 5/5**. Verified capability stays **20.5/100**, coverage **14%**, trained models and validated experiments **0**. Last accepted operational task CTRL-003 (last accepted weighted task EVAL-006).

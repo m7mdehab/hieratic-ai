@@ -1,4 +1,4 @@
-schema_version: "0.1.0"
+schema_version: "0.2.0"
 roadmap_version: "0.1.0"
 updated_at: "2026-10-07"
 
@@ -25,11 +25,18 @@ progress:
 state:
   current_phase: "P1_RESEARCH_FOUNDATION"
   current_wave: "W0_CONTROL_PLANE"
-  control_plane_gate: "bootstrap_in_progress"
+  control_plane_gate: "bootstrap_complete_wave_ready"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "FND-002"
+  last_accepted_task: "CTRL-001"
+  ready_tasks:
+    - "CTRL-002"
+    - "CTRL-003"
+    - "FND-003"
+    - "FND-004"
+  active_tasks: []
+  review_tasks: []
   blockers: []
 
 canonical_files:
@@ -47,6 +54,11 @@ critical_gates:
   - id: "GATE-CONTROL"
     name: "Canonical control plane operational"
     status: "in_progress"
+    remaining:
+      - "CTRL-002"
+      - "CTRL-003"
+      - "CTRL-004"
+      - "FND-006"
   - id: "GATE-EVAL"
     name: "Leakage-resistant evaluation protocol"
     status: "not_started"
@@ -61,5 +73,6 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Complete and review the v0.1 repository operating system, then dispatch the
-  first dependency-safe parallel implementation wave.
+  Dispatch CTRL-002 and CTRL-003 in parallel while continuing overseer-owned
+  FND-003 and FND-004 research. Review returned artifacts before any state
+  transition or progress award.

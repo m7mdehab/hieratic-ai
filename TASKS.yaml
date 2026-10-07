@@ -1,4 +1,4 @@
-schema_version: "0.1.0"
+schema_version: "0.2.0"
 roadmap_version: "0.1.0"
 
 status_values:
@@ -11,168 +11,515 @@ status_values:
   - blocked
   - superseded
 
+phases:
+  P0_CONTROL_PLANE: { weight: 0.0, mandatory_gate: true }
+  P1_RESEARCH_FOUNDATION: { weight: 5.0 }
+  P2_EVALUATION: { weight: 10.0 }
+  P3_DATA_ENGINE: { weight: 20.0 }
+  P4_SPECIALIST_READING: { weight: 20.0 }
+  P5_VLM: { weight: 20.0 }
+  P6_INTERPRETATION: { weight: 10.0 }
+  P7_GENERALIZATION: { weight: 10.0 }
+  P8_RELEASE: { weight: 5.0 }
+
 tasks:
-  - id: "FND-001"
-    phase: "P1_RESEARCH_FOUNDATION"
-    title: "Define ultimate capability goal and scope"
-    weight: 1.0
+  - id: "CTRL-001"
+    phase: "P0_CONTROL_PLANE"
+    title: "Bootstrap canonical project operating system"
+    weight: 0.00
     status: "validated"
     owner_role: "overseer"
     depends_on: []
-    acceptance:
-      - "Ultimate goal explicitly requires unseen Hieratic, reading, transliteration/normalization, interpretation/translation, uncertainty, and generalization."
-      - "Script identification alone is explicitly insufficient."
-    evidence:
-      - "ROADMAP.md"
-      - "START_HERE.md"
+    acceptance_summary: "Canonical files agree on mission, progress semantics, authority, task lifecycle, and fresh-chat navigation."
+
+  - id: "CTRL-002"
+    phase: "P0_CONTROL_PLANE"
+    title: "Implement project-state validator and context generator"
+    weight: 0.00
+    status: "ready"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-001"]
+    acceptance_summary: "Validator catches malformed/inconsistent state; generator emits compact overseer and task-specific context packets."
+
+  - id: "CTRL-003"
+    phase: "P0_CONTROL_PLANE"
+    title: "Build live dashboard/control-plane shell"
+    weight: 0.00
+    status: "ready"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-001"]
+    acceptance_summary: "Responsive public interface reads canonical repo state and exposes project progress/tasks without a second manual status database."
+
+  - id: "CTRL-004"
+    phase: "P0_CONTROL_PLANE"
+    title: "Add CI governance checks and branch/PR guardrails"
+    weight: 0.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-002"]
+    acceptance_summary: "PR CI runs governance validation and requires evidence-oriented PR metadata."
+
+  - id: "FND-001"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Define ultimate capability goal and scope"
+    weight: 1.00
+    status: "validated"
+    owner_role: "overseer"
+    depends_on: []
+    acceptance_summary: "Goal explicitly requires unseen Hieratic reading through interpretation with uncertainty and generalization."
 
   - id: "FND-002"
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Preliminary feasibility, prior-art, and data reconnaissance"
-    weight: 1.5
+    weight: 1.50
     status: "validated"
     owner_role: "overseer"
     depends_on: ["FND-001"]
-    acceptance:
-      - "Initial feasibility established: partial computational work exists, but robust general-purpose Hieratic reading remains research-hard."
-      - "Candidate benchmark, dataset, and prior-art directions identified for primary-source verification."
-      - "Project decomposition into evaluation, data, specialist recognition, VLM learning, interpretation, and validation is justified."
-    evidence:
-      - "RESEARCH.md"
-      - "ROADMAP.md"
+    acceptance_summary: "Initial feasibility and candidate prior-art/data directions justify the research program; unverified claims remain marked."
 
   - id: "FND-003"
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Validate writing-system and task-decomposition problem map"
     weight: 0.75
-    status: "planned"
+    status: "ready"
     owner_role: "overseer"
     depends_on: ["FND-002"]
-    acceptance:
-      - "Hieratic variation, allography, ligatures, media/period/scribe variation, layout, ambiguity, and linguistic roles are documented from reliable sources."
-      - "Task boundaries from image through translation are explicit."
+    acceptance_summary: "Reliable sources document Hieratic variation and the image-to-translation task boundaries."
 
   - id: "FND-004"
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Build verified primary-source prior-art and data registry"
     weight: 0.75
-    status: "planned"
+    status: "ready"
     owner_role: "overseer"
     depends_on: ["FND-002"]
-    acceptance:
-      - "Every material prior-art/dataset claim has a primary or high-authority source."
-      - "License, size, granularity, labels, provenance, accessibility, and ML usefulness are recorded where knowable."
-      - "Unverified claims remain visibly marked as such."
+    acceptance_summary: "Material prior-art/data claims are source-verified with license, granularity, provenance, accessibility, and ML usefulness where knowable."
 
   - id: "FND-005"
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Establish licensing and provenance policy"
     weight: 0.50
-    status: "planned"
+    status: "blocked"
     owner_role: "overseer"
     depends_on: ["FND-004"]
-    acceptance:
-      - "Code license is distinguished from dataset/image/edition/model licenses."
-      - "Redistribution rules and provenance fields are enforceable."
-      - "No ambiguous third-party assets are silently committed."
+    acceptance_summary: "Redistribution rules and provenance fields are enforceable; code licensing is separated from external assets."
 
   - id: "FND-006"
     phase: "P1_RESEARCH_FOUNDATION"
     title: "Make reproducibility and agent-governance contract operational"
     weight: 0.50
-    status: "planned"
+    status: "blocked"
     owner_role: "overseer"
-    depends_on: []
-    acceptance:
-      - "Agent rules, evidence requirements, task lifecycle, branch discipline, and state validation are implemented and tested."
+    depends_on: ["CTRL-004"]
+    acceptance_summary: "Agent rules, evidence requirements, state validation, CI, and branch discipline are tested and operational."
 
-  - id: "CTRL-001"
-    phase: "P0_CONTROL_PLANE"
-    title: "Bootstrap canonical project operating system"
-    weight: 0.0
-    status: "active"
-    owner_role: "overseer"
-    depends_on: []
-    write_scope:
-      - "root governance files"
-      - "docs/governance/"
-    acceptance:
-      - "Canonical files exist and agree on goal, progress semantics, authority, and task lifecycle."
-      - "Repository can be understood by a fresh chat from START_HERE.md."
-      - "Initial task graph is parseable."
-    evidence_required:
-      - "PR diff"
-      - "manual consistency review"
-
-  - id: "CTRL-002"
-    phase: "P0_CONTROL_PLANE"
-    title: "Implement project-state validator and context generator"
-    weight: 0.0
+  - id: "EVAL-001"
+    phase: "P2_EVALUATION"
+    title: "Specify evaluation metrics across the reading stack"
+    weight: 1.50
     status: "blocked"
     owner_role: "execution_agent"
-    depends_on: ["CTRL-001"]
-    write_scope:
-      - "tools/"
-      - "schemas/"
-      - "tests/governance/"
-      - "pyproject.toml or equivalent governance-tool dependency manifest"
-    acceptance:
-      - "CLI validates canonical YAML structure and task dependencies."
-      - "CLI detects duplicate IDs, missing dependencies, dependency cycles, invalid statuses, and capability-weight inconsistencies."
-      - "CLI verifies validated weighted tasks reconcile with PROJECT_STATE goal_progress."
-      - "CLI generates a compact overseer context packet and task-specific agent context packet."
-      - "Automated tests cover failure and success cases."
-    evidence_required:
-      - "test output"
-      - "example generated context packet"
-      - "changed-file list"
+    depends_on: ["FND-003"]
+    acceptance_summary: "Metrics and scoring rules cover script ID, recognition, transliteration, uncertainty, and translation without conflating tasks."
 
-  - id: "CTRL-003"
-    phase: "P0_CONTROL_PLANE"
-    title: "Build live dashboard/control-plane shell"
-    weight: 0.0
+  - id: "EVAL-002"
+    phase: "P2_EVALUATION"
+    title: "Reproduce an external Hieratic benchmark"
+    weight: 2.00
     status: "blocked"
     owner_role: "execution_agent"
-    depends_on: ["CTRL-001"]
-    write_scope:
-      - "dashboard/"
-    acceptance:
-      - "Dashboard reads canonical project data rather than maintaining a second project-state database."
-      - "Homepage exposes verified goal progress, research coverage, phase progress, task status, and latest state."
-      - "Architecture allows later interactive DAG, experiment registry, research view, and decision log."
-      - "Responsive and accessible baseline."
-      - "No hard-coded progress values outside fixtures/tests."
-    evidence_required:
-      - "build/test output"
-      - "screenshots or preview URL"
-      - "data-flow explanation"
+    depends_on: ["FND-004"]
+    acceptance_summary: "External benchmark inputs, methodology, licensing, and published baselines are reproduced or discrepancies are documented."
 
-  - id: "CTRL-004"
-    phase: "P0_CONTROL_PLANE"
-    title: "Add CI governance checks and branch/PR guardrails"
-    weight: 0.0
+  - id: "EVAL-003"
+    phase: "P2_EVALUATION"
+    title: "Establish untuned frontier-model baselines"
+    weight: 1.50
     status: "blocked"
     owner_role: "execution_agent"
-    depends_on: ["CTRL-002"]
-    write_scope:
-      - ".github/"
-      - "tests/governance/"
-      - "tools/"
-    acceptance:
-      - "Pull requests run project-state validation and governance tests."
-      - "Malformed task graphs and progress mismatches fail CI."
-      - "PR template requires task ID, evidence, tests, deviations, and licensing impact."
-    evidence_required:
-      - "successful CI run"
-      - "deliberate failing-case proof in tests"
+    depends_on: ["EVAL-001", "EVAL-002"]
+    acceptance_summary: "Selected untuned multimodal models are evaluated reproducibly with preserved prompts and raw outputs."
+
+  - id: "EVAL-004"
+    phase: "P2_EVALUATION"
+    title: "Construct leakage-resistant development and test splits"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["FND-003", "FND-004"]
+    acceptance_summary: "Splits isolate appropriate document/scribe/source variation and pass overlap/leakage checks."
+
+  - id: "EVAL-005"
+    phase: "P2_EVALUATION"
+    title: "Define error taxonomy and analysis workflow"
+    weight: 1.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["EVAL-001"]
+    acceptance_summary: "Recognition and linguistic failure modes can be labeled consistently and summarized reproducibly."
+
+  - id: "EVAL-006"
+    phase: "P2_EVALUATION"
+    title: "Freeze sealed evaluation protocol"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["EVAL-004", "EVAL-005"]
+    acceptance_summary: "Final evaluation rules prevent adaptive test-set tuning and define contamination handling and release conditions."
+
+  - id: "DATA-001"
+    phase: "P3_DATA_ENGINE"
+    title: "Create training-data source registry"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["FND-004", "FND-005"]
+    acceptance_summary: "Candidate training sources have machine-readable provenance, access, license, granularity, and usage status."
+
+  - id: "DATA-002"
+    phase: "P3_DATA_ENGINE"
+    title: "Implement reproducible data acquisition manifests"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-001"]
+    acceptance_summary: "Permitted sources can be fetched or referenced deterministically without silently redistributing restricted assets."
+
+  - id: "DATA-003"
+    phase: "P3_DATA_ENGINE"
+    title: "Implement preprocessing and dataset versioning"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-002"]
+    acceptance_summary: "Image/text preprocessing is deterministic, versioned, and traceable to source records."
+
+  - id: "DATA-004"
+    phase: "P3_DATA_ENGINE"
+    title: "Define canonical annotation schema"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["FND-003", "DATA-001"]
+    acceptance_summary: "Schema represents document/line/sign/text relations, uncertainty, alternatives, provenance, and reviewer state."
+
+  - id: "DATA-005"
+    phase: "P3_DATA_ENGINE"
+    title: "Build sign and palaeography mappings"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-001", "DATA-004"]
+    acceptance_summary: "Sign identities and known variants map consistently to supported scholarly/palaeographic references."
+
+  - id: "DATA-006"
+    phase: "P3_DATA_ENGINE"
+    title: "Align images with transliteration targets"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-002", "DATA-004"]
+    acceptance_summary: "Training examples expose image regions and defensible transliteration targets with alignment confidence."
+
+  - id: "DATA-007"
+    phase: "P3_DATA_ENGINE"
+    title: "Represent ambiguity and expert QA"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-004"]
+    acceptance_summary: "Ambiguous/multiple readings and expert-review state are first-class data, not forced into false certainty."
+
+  - id: "DATA-008"
+    phase: "P3_DATA_ENGINE"
+    title: "Release ML-ready corpus v1"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-003", "DATA-005", "DATA-006", "DATA-007", "EVAL-004"]
+    acceptance_summary: "Versioned train/dev/test corpus passes integrity, provenance, licensing, and split checks."
+
+  - id: "SPEC-001"
+    phase: "P4_SPECIALIST_READING"
+    title: "Establish script-identification sanity control"
+    weight: 1.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-008", "EVAL-006"]
+    acceptance_summary: "A reproducible script-ID control quantifies the easy end of the task without being mistaken for reading."
+
+  - id: "SPEC-002"
+    phase: "P4_SPECIALIST_READING"
+    title: "Establish visual embedding and retrieval capability"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-008", "EVAL-006"]
+    acceptance_summary: "Held-out Hieratic samples retrieve useful palaeographic/sign exemplars above defined baselines."
+
+  - id: "SPEC-003"
+    phase: "P4_SPECIALIST_READING"
+    title: "Establish sign-level recognition/localization capability"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-008", "EVAL-006"]
+    acceptance_summary: "Sign recognition/localization is evaluated on held-out material with predefined metrics."
+
+  - id: "SPEC-004"
+    phase: "P4_SPECIALIST_READING"
+    title: "Establish line/sequence recognition capability"
+    weight: 5.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-008", "EVAL-006"]
+    acceptance_summary: "Segmentation-free or equivalent sequence recognition produces reproducible held-out transcription/transliteration metrics."
+
+  - id: "SPEC-005"
+    phase: "P4_SPECIALIST_READING"
+    title: "Add linguistically constrained decoding"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-004"]
+    acceptance_summary: "Constraints improve or clarify sequence decoding without contaminating evaluation or hiding uncertainty."
+
+  - id: "SPEC-006"
+    phase: "P4_SPECIALIST_READING"
+    title: "Run controlled specialist-model ablations"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-002", "SPEC-003", "SPEC-004"]
+    acceptance_summary: "Ablations isolate which data/model/retrieval choices materially contribute to performance."
+
+  - id: "SPEC-007"
+    phase: "P4_SPECIALIST_READING"
+    title: "Integrate specialist reading system"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-002", "SPEC-003", "SPEC-004", "SPEC-005"]
+    acceptance_summary: "A single reproducible specialist pipeline exposes recognized output, alternatives, and confidence."
+
+  - id: "SPEC-008"
+    phase: "P4_SPECIALIST_READING"
+    title: "Pass specialist held-out generalization gate"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-006", "SPEC-007"]
+    acceptance_summary: "Integrated specialist system meets predefined unseen-material criteria without test adaptation."
+
+  - id: "VLM-001"
+    phase: "P5_VLM"
+    title: "Establish zero/few-shot VLM baseline suite"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["EVAL-002", "EVAL-006"]
+    acceptance_summary: "Selected base VLMs are evaluated reproducibly on the agreed tasks before adaptation."
+
+  - id: "VLM-002"
+    phase: "P5_VLM"
+    title: "Create structured image-to-language supervision pipeline"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-008"]
+    acceptance_summary: "Training examples and prompts/targets are versioned and preserve uncertainty/provenance."
+
+  - id: "VLM-003"
+    phase: "P5_VLM"
+    title: "Demonstrate successful VLM capability adaptation"
+    weight: 5.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["VLM-001", "VLM-002"]
+    acceptance_summary: "An adapted VLM materially improves predefined unseen-Hieratic reading metrics over its base checkpoint."
+
+  - id: "VLM-004"
+    phase: "P5_VLM"
+    title: "Demonstrate retrieval-augmented VLM capability"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["VLM-001", "VLM-002", "SPEC-002"]
+    acceptance_summary: "Retrieved palaeographic/context evidence yields measurable, reproducible benefit or a well-supported negative result leading to roadmap revision."
+
+  - id: "VLM-005"
+    phase: "P5_VLM"
+    title: "Demonstrate specialist-tool/encoder augmented VLM"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["VLM-002", "SPEC-007"]
+    acceptance_summary: "VLM can use specialist visual outputs/tools through an auditable interface and is evaluated against non-tool baselines."
+
+  - id: "VLM-006"
+    phase: "P5_VLM"
+    title: "Run controlled VLM ablations"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["VLM-003", "VLM-004", "VLM-005"]
+    acceptance_summary: "Ablations quantify adaptation, retrieval, specialist-tool, and data contributions."
+
+  - id: "VLM-007"
+    phase: "P5_VLM"
+    title: "Pass unseen-Hieratic VLM gate"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["VLM-006"]
+    acceptance_summary: "Final candidate VLM demonstrates predefined reading gains on genuinely held-out Hieratic material."
+
+  - id: "LING-001"
+    phase: "P6_INTERPRETATION"
+    title: "Normalize recognized/transliterated output"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["DATA-006", "EVAL-001"]
+    acceptance_summary: "Normalization rules are explicit, reversible where needed, and separately scored from visual recognition."
+
+  - id: "LING-002"
+    phase: "P6_INTERPRETATION"
+    title: "Add lexical and morphological interpretation"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["LING-001"]
+    acceptance_summary: "Recognized text is linked to defensible lexical/morphological analyses with alternatives where ambiguous."
+
+  - id: "LING-003"
+    phase: "P6_INTERPRETATION"
+    title: "Add translation layer"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["LING-002"]
+    acceptance_summary: "System produces meaning/translation evaluated separately from recognition/transliteration accuracy."
+
+  - id: "LING-004"
+    phase: "P6_INTERPRETATION"
+    title: "Calibrate confidence, uncertainty, and alternatives"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["LING-003", "SPEC-007", "VLM-007"]
+    acceptance_summary: "Outputs expose calibrated confidence/alternatives rather than unsupported single-answer certainty."
+
+  - id: "LING-005"
+    phase: "P6_INTERPRETATION"
+    title: "Compare end-to-end, modular, and hybrid systems"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["LING-003", "SPEC-008", "VLM-007"]
+    acceptance_summary: "Architectures are compared under the same held-out evaluation with failure propagation analyzed."
+
+  - id: "GEN-001"
+    phase: "P7_GENERALIZATION"
+    title: "Validate cross-document and cross-scribe generalization"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-008", "VLM-007"]
+    acceptance_summary: "Systems are tested on document/scribe groups excluded according to the sealed protocol."
+
+  - id: "GEN-002"
+    phase: "P7_GENERALIZATION"
+    title: "Validate cross-period, medium, and damage robustness"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["SPEC-008", "VLM-007"]
+    acceptance_summary: "Performance across supported periods/media/degradation conditions is quantified with known limits."
+
+  - id: "GEN-003"
+    phase: "P7_GENERALIZATION"
+    title: "Complete contamination and leakage audit"
+    weight: 2.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["EVAL-006", "VLM-007"]
+    acceptance_summary: "Training/evaluation provenance and likely foundation-model exposure risks are audited and reported."
+
+  - id: "GEN-004"
+    phase: "P7_GENERALIZATION"
+    title: "Complete blind expert evaluation"
+    weight: 3.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["GEN-001", "GEN-002", "GEN-003", "LING-005"]
+    acceptance_summary: "Qualified expert review is conducted blind to system identity where practical using a predefined rubric."
+
+  - id: "GEN-005"
+    phase: "P7_GENERALIZATION"
+    title: "Publish explicit failure boundary"
+    weight: 1.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["GEN-004"]
+    acceptance_summary: "Supported and unsupported cases, uncertainty, and known failure modes are stated without capability inflation."
+
+  - id: "REL-001"
+    phase: "P8_RELEASE"
+    title: "Assemble reproducibility package"
+    weight: 1.25
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["GEN-005"]
+    acceptance_summary: "A third party can reproduce key evaluations from documented code, configs, manifests, and checkpoints/artifact references."
+
+  - id: "REL-002"
+    phase: "P8_RELEASE"
+    title: "Publish model/data cards and licensing documentation"
+    weight: 0.75
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["GEN-003", "GEN-005"]
+    acceptance_summary: "Released artifacts document provenance, intended use, limitations, licenses, and risks."
+
+  - id: "REL-003"
+    phase: "P8_RELEASE"
+    title: "Publish interactive public demo"
+    weight: 1.00
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["LING-004", "GEN-005", "CTRL-003"]
+    acceptance_summary: "Public demo exposes actual model capability and uncertainty without misleading canned-only behavior."
+
+  - id: "REL-004"
+    phase: "P8_RELEASE"
+    title: "Publish technical report / paper-quality write-up"
+    weight: 1.25
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["GEN-005"]
+    acceptance_summary: "Methods, data, evaluations, ablations, limitations, and negative findings are documented at research-report quality."
+
+  - id: "REL-005"
+    phase: "P8_RELEASE"
+    title: "Publish release and external benchmark submission where applicable"
+    weight: 0.75
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["REL-001", "REL-002", "REL-003", "REL-004"]
+    acceptance_summary: "Versioned public release is complete and external benchmark submission is made when legitimate and useful."
 
 rules:
   progress:
     capability_total: 100.0
     validated_weighted_tasks_expected: 2.5
     control_plane_tasks_are_unweighted: true
+    only_validated_tasks_earn_points: true
   concurrency:
     default: "parallel_when_dependency_safe"
     branch_pattern: "task/<TASK-ID>-<slug>"
     one_primary_task_per_branch: true
     conflicting_write_scopes_require_serialization: true
+  authority:
+    execution_agents_may_self_validate: false
+    execution_agents_may_change_weights: false

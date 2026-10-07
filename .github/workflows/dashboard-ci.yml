@@ -1,0 +1,67 @@
+name: Dashboard TypeScript and Responsive QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "dashboard/**"
+      - "PROJECT_STATE.yaml"
+      - "TASKS.yaml"
+      - "ROADMAP.md"
+      - ".github/workflows/dashboard-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "dashboard/**"
+      - "PROJECT_STATE.yaml"
+      - "TASKS.yaml"
+      - ".github/workflows/dashboard-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dashboard:
+    name: Verify dashboard against checked-out canonical state
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - name: Checkout complete repository state
+        uses: actions/checkout@v7
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Enforce production dependency security
+        run: npm audit --omit=dev --audit-level=high
+      - name: Report all dependency audit findings
+        run: npm audit --json > npm-audit.json || true
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Run canonical state and fixture tests
+        run: npm test
+      - name: Build static dashboard from canonical checkout
+        run: npm run build
+      - name: Install Playwright Chromium with OS dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Test 320px, 390px and 1440px and capture full-page screenshots
+        run: npm run screenshots
+      - name: Upload QA screenshots and security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-qa-${{ github.sha }}
+          path: |
+            dashboard/screenshots/*.png
+            dashboard/npm-audit.json
+          retention-days: 14
+          if-no-files-found: warn

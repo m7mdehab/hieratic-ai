@@ -1,0 +1,213 @@
+taxonomy_version: "1.0.0"
+updated_at: "2026-10-08"
+metric_contract: "eval/metric_contract.yaml"
+metadata:
+  purpose: "Consistent, evidence-linked failure attribution; no automatic replacement for layer-specific metrics."
+  primary_code_rule: "Earliest demonstrably supported failure in the reading chain; do not infer hidden upstream errors from downstream symptoms."
+  severity:
+    critical: "Invalidates a stated research claim or fabricates core source content."
+    major: "Materially alters source reading or interpretation."
+    minor: "Localized, non-material error under the frozen evaluation rubric."
+  attribution_status:
+    observed: "Output behavior observed; causal failure not yet independently adjudicated."
+    adjudicated: "Evidence reviewed and primary failure assigned."
+    disputed: "Multiple reviewers disagree; not part of final confirmed-rate claims."
+  gold_status:
+    - certain
+    - uncertain_with_alternatives
+    - illegible_unscorable
+    - missing_annotation
+    - adjudication_pending
+error_codes:
+  - code: "SCRIPT_WRONG_FAMILY"
+    layer: "script_identification"
+    definition: "Wrong non-Egyptian script family"
+    requires_evidence: true
+  - code: "SCRIPT_NEIGHBOR"
+    layer: "script_identification"
+    definition: "Confuses Hieratic with a related Egyptian script"
+    requires_evidence: true
+  - code: "SCRIPT_FORMAT"
+    layer: "script_identification"
+    definition: "Unparseable or malformed script label"
+    requires_evidence: true
+  - code: "LAYOUT_MISS"
+    layer: "layout"
+    definition: "Text region or line omitted"
+    requires_evidence: true
+  - code: "LAYOUT_EXTRA"
+    layer: "layout"
+    definition: "Spurious text region"
+    requires_evidence: true
+  - code: "LAYOUT_ORDER"
+    layer: "layout"
+    definition: "Reading-order inversion"
+    requires_evidence: true
+  - code: "LAYOUT_BOUNDARY"
+    layer: "layout"
+    definition: "Incorrect region or line boundary"
+    requires_evidence: true
+  - code: "SIGN_SUBSTITUTE"
+    layer: "sign_recognition"
+    definition: "Wrong sign identity"
+    requires_evidence: true
+  - code: "SIGN_OMIT"
+    layer: "sign_recognition"
+    definition: "Visible sign omitted"
+    requires_evidence: true
+  - code: "SIGN_INSERT"
+    layer: "sign_recognition"
+    definition: "Unsubstantiated sign inserted"
+    requires_evidence: true
+  - code: "SIGN_LIGATURE"
+    layer: "sign_recognition"
+    definition: "Ligature/group segmentation or identity incorrect"
+    requires_evidence: true
+  - code: "SIGN_ALLOGRAPH"
+    layer: "sign_recognition"
+    definition: "Allograph mistaken for different grapheme"
+    requires_evidence: true
+  - code: "RETRIEVAL_WRONG"
+    layer: "palaeographic_retrieval"
+    definition: "Wrong palaeographic exemplar retrieved"
+    requires_evidence: true
+  - code: "RETRIEVAL_MISSING"
+    layer: "palaeographic_retrieval"
+    definition: "Relevant exemplars not found in declared retrieval budget"
+    requires_evidence: true
+  - code: "SEQ_SUBSTITUTE"
+    layer: "sequence_recognition"
+    definition: "Wrong grapheme in recognized sequence"
+    requires_evidence: true
+  - code: "SEQ_DELETE"
+    layer: "sequence_recognition"
+    definition: "Recognized sequence missing a grapheme"
+    requires_evidence: true
+  - code: "SEQ_INSERT"
+    layer: "sequence_recognition"
+    definition: "Recognized sequence contains extra grapheme"
+    requires_evidence: true
+  - code: "SEQ_DIRECTION"
+    layer: "sequence_recognition"
+    definition: "Sequence read in wrong direction/order"
+    requires_evidence: true
+  - code: "HGR_SIGN"
+    layer: "hieroglyphic_rendering"
+    definition: "Incorrect normalized hieroglyphic sign"
+    requires_evidence: true
+  - code: "HGR_GROUP"
+    layer: "hieroglyphic_rendering"
+    definition: "Incorrect hieroglyphic grouping/order"
+    requires_evidence: true
+  - code: "TRANS_CONSONANT"
+    layer: "transliteration"
+    definition: "Incorrect linguistically meaningful symbol"
+    requires_evidence: true
+  - code: "TRANS_SEGMENT"
+    layer: "transliteration"
+    definition: "Incorrect transliteration segmentation"
+    requires_evidence: true
+  - code: "TRANS_RESTORATION"
+    layer: "transliteration"
+    definition: "Restoration presented as visually attested text"
+    requires_evidence: true
+  - code: "NORM_FORM"
+    layer: "normalization"
+    definition: "Incorrect canonical linguistic form"
+    requires_evidence: true
+  - code: "NORM_TOKEN"
+    layer: "normalization"
+    definition: "Incorrect token or morpheme boundary"
+    requires_evidence: true
+  - code: "LEX_LEMMA"
+    layer: "lexical_analysis"
+    definition: "Incorrect lemma assignment"
+    requires_evidence: true
+  - code: "LEX_CONTEXT"
+    layer: "lexical_analysis"
+    definition: "Lexical disambiguation unsupported by context"
+    requires_evidence: true
+  - code: "MORPH_FEATURE"
+    layer: "morphological_analysis"
+    definition: "Incorrect morphological feature"
+    requires_evidence: true
+  - code: "MORPH_BUNDLE"
+    layer: "morphological_analysis"
+    definition: "Invalid or incomplete feature bundle"
+    requires_evidence: true
+  - code: "TRAD_OMISSION"
+    layer: "translation"
+    definition: "Meaning-bearing source content omitted"
+    requires_evidence: true
+  - code: "TRAD_ADDITION"
+    layer: "translation"
+    definition: "Unsupported meaning-bearing detail introduced"
+    requires_evidence: true
+  - code: "TRAD_CONTRADICTION"
+    layer: "translation"
+    definition: "Translation contradicts recoverable source"
+    requires_evidence: true
+  - code: "TRAD_ENTITY"
+    layer: "translation"
+    definition: "Incorrect name, number, quantity, or entity"
+    requires_evidence: true
+  - code: "TRAD_FLUENCY_MASK"
+    layer: "translation"
+    definition: "Fluent interpretation masks known source-reading error"
+    requires_evidence: true
+  - code: "CAL_OVERCONFIDENT"
+    layer: "calibration"
+    definition: "High confidence on empirically unsupported answer"
+    requires_evidence: true
+  - code: "CAL_UNDERCONFIDENT"
+    layer: "calibration"
+    definition: "Systematic underconfidence on supported reading"
+    requires_evidence: true
+  - code: "CAL_ABSTAIN"
+    layer: "calibration"
+    definition: "Abstains on legible, scorable evidence"
+    requires_evidence: true
+  - code: "UNC_FALSE_CERTAINTY"
+    layer: "uncertainty"
+    definition: "Uncertain or restored span presented as certain"
+    requires_evidence: true
+  - code: "UNC_ALTERNATIVES"
+    layer: "uncertainty"
+    definition: "Acceptable alternative readings omitted or unjustifiably pruned"
+    requires_evidence: true
+  - code: "UNC_GOLD_LIMIT"
+    layer: "uncertainty"
+    definition: "Gold ambiguity/missingness prevents definitive error attribution"
+    requires_evidence: true
+  - code: "GEN_SCRIBE_DROP"
+    layer: "generalization"
+    definition: "Performance degradation on held-out scribes"
+    requires_evidence: true
+  - code: "GEN_DOCUMENT_LEAK"
+    layer: "generalization"
+    definition: "Document/page/near-duplicate leakage detected"
+    requires_evidence: true
+  - code: "GEN_DOMAIN_DROP"
+    layer: "generalization"
+    definition: "Period/material/genre/source shift failure"
+    requires_evidence: true
+  - code: "EXPERT_DISAGREE"
+    layer: "expert_evaluation"
+    definition: "Expert adjudicators disagree materially"
+    requires_evidence: true
+  - code: "EXPERT_PROVENANCE"
+    layer: "expert_evaluation"
+    definition: "Expert source/evidence/reviewer provenance insufficient"
+    requires_evidence: true
+  - code: "EVAL_CONTAMINATION"
+    layer: "evaluation_integrity"
+    definition: "Test exposure or benchmark overlap compromises claim"
+    requires_evidence: true
+  - code: "EVAL_GOLD_UNAVAILABLE"
+    layer: "evaluation_integrity"
+    definition: "Gold unavailable for a proposed metric"
+    requires_evidence: true
+  - code: "EVAL_PARSE_FAILURE"
+    layer: "evaluation_integrity"
+    definition: "Output parse/format failure prevents expected scoring"
+    requires_evidence: true

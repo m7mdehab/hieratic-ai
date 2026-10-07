@@ -4,15 +4,15 @@ Updated: 2026-10-08. This file is a compact current handoff. Historical evidence
 
 ## Canonical status
 
-- **Verified goal progress:** 10.0 / 100; remaining 90.0.
+- **Verified goal progress:** 11.0 / 100; remaining 89.0.
 - **Research coverage:** ~14%, unchanged pending a defined denominator.
 - **Phase 1 foundation:** 4.5 / 5 = 90%.
-- **Phase 2 evaluation:** 3.5 / 10 = 35%.
+- **Phase 2 evaluation:** 4.5 / 10 = 45%.
 - **Phase 3 data engine:** 2.0 / 20 = 10%.
 - **Control-plane:** 3/5 accepted = 60%.
 - **Validated experiments:** 0.
 - **Trained models:** 0.
-- **Last accepted task:** EVAL-002.
+- **Last accepted task:** EVAL-005.
 - **Currently active (last confirmed):** CTRL-003 in the Anti-Gravity/Sonnet lane.
 
 See `PROJECT_STATE.yaml` for the current authoritative progress and `TASKS.yaml` for task dependencies/status.
@@ -67,7 +67,7 @@ EVAL-002 earned +2.0 points: 8.0 → 10.0. EVAL-003 is now **ready**.
 - **Luna approved W1 large package:** DATA-002 (2 points), DATA-004 (3), EVAL-004 (2). Brief `tasks/batches/LUNA-W1-LARGE.md`. Each task must have its own PR and reviewed acceptance.
 - **Anti-Gravity/Sonnet:** CTRL-003 dashboard/control plane. No accepted return yet.
 - **FND-006** (0.5) remains ready: close reproducibility/governance foundation after deliberate review; not automatic.
-- **EVAL-003** (1.5) newly ready because EVAL-001 + EVAL-002 are validated.
+- **EVAL-003** (1.5) ready because EVAL-001 + EVAL-002 are validated.
 - **EVAL-005** (1.0) ready.
 - DATA-003, DATA-005, DATA-006, DATA-007 and EVAL-006 have additional dependency gates and must not start merely because an unreviewed Luna task appears locally complete.
 
@@ -80,3 +80,15 @@ EVAL-002 earned +2.0 points: 8.0 → 10.0. EVAL-003 is now **ready**.
 5. Prepare the next approved parallel wave with a substantial overseer-owned task; avoid assigning a task that collides with unresolved branches.
 
 Do not treat source repository code, scientific claims, or leaderboard results as model training data. Do not pretend the public HieraticBench sealed reading can be scored automatically.
+
+## Latest overseer parallel task — EVAL-005
+
+**Accepted and merged via PR #25**, with canonical acceptance recorded in a follow-up PR. Adds 48 coded failure categories spanning 16 layers; an evidence-linked review JSON Schema; a deterministic CLI with causal/reference/gold/contamination checks; synthetic examples; 23 new tests; and a dedicated CI workflow. The evaluation suite ran 36 tests and governance/analysis CI passed.
+
+Research: errors are observations requiring adjudication, not model accuracy rates. Sealed record details do not appear in public summaries. Gold ambiguity and contamination prevent spurious confirmed reading claims.
+
+Goal progress +1.0: 10.0 → 11.0. EVAL-006 still depends on Luna's EVAL-004.
+
+## Latest execution-lane visibility
+
+Luna PRs #20 (DATA-002) and #23 (DATA-004) were visible open at the latest check; EVAL-004 return still pending. No GitHub branch or PR for Sonnet's CTRL-003 was visible; work may be local/unpushed. The overseer cannot inspect Anti-Gravity's active internal session and should ask Mohammed to request a pushed WIP checkpoint, test/build status, blockers, and remaining checklist.

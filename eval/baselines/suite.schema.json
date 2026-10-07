@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hieratic AI untuned frontier baseline suite proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "suite_id",
+    "status",
+    "objective",
+    "canonical_metric_contract",
+    "official_benchmark",
+    "official_prompts",
+    "protocol",
+    "models",
+    "execution_gate",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "suite_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "planning",
+        "execution_ready",
+        "completed"
+      ]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_metric_contract": {
+      "const": "eval/metric_contract.yaml"
+    },
+    "official_benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_registry_id",
+        "repository",
+        "commit",
+        "public_items_only",
+        "item_manifest_sha256",
+        "permitted_rungs",
+        "sealed_items_excluded"
+      ],
+      "properties": {
+        "source_registry_id": {
+          "const": "SRC-HIERATICBENCH"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "public_items_only": {
+          "const": true
+        },
+        "item_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "permitted_rungs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "identify",
+              "signs"
+            ]
+          }
+        },
+        "sealed_items_excluded": {
+          "const": true
+        }
+      }
+    },
+    "official_prompts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_file",
+        "commit",
+        "exact_prompt_bundle_sha256",
+        "no_examples",
+        "no_system_prompt",
+        "no_tools",
+        "no_prompt_selection_using_test"
+      ],
+      "properties": {
+        "source_file": {
+          "const": "bench/src/prompts.ts"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "exact_prompt_bundle_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "no_examples": {
+          "const": true
+        },
+        "no_system_prompt": {
+          "const": true
+        },
+        "no_tools": {
+          "const": true
+        },
+        "no_prompt_selection_using_test": {
+          "const": true
+        }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "samples_per_item",
+        "seed_policy",
+        "temperature_policy",
+        "skip_on_error",
+        "preserve_all_attempts",
+        "score_with",
+        "reported_scores"
+      ],
+      "properties": {
+        "samples_per_item": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "seed_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "temperature_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skip_on_error": {
+          "const": false
+        },
+        "preserve_all_attempts": {
+          "const": true
+        },
+        "score_with": {
+          "const": "pinned_upstream_official_scorer"
+        },
+        "reported_scores": {
+          "const": "per_rung_no_primary_composite"
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "label",
+          "provider",
+          "provider_model_id",
+          "effort",
+          "api_route"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider": {
+            "enum": [
+              "openai",
+              "anthropic",
+              "google",
+              "other"
+            ]
+          },
+          "provider_model_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "effort": {
+            "type": "string",
+            "minLength": 1
+          },
+          "api_route": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "execution_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_ids_confirmed",
+        "credentials_available",
+        "provider_terms_reviewed",
+        "budget_approved",
+        "max_total_spend_usd",
+        "immutable_public_item_manifest_created",
+        "offline_scorer_parity_confirmed",
+        "external_private_artifact_store_ready",
+        "explicit_user_permission_for_paid_inference"
+      ],
+      "properties": {
+        "provider_ids_confirmed": {
+          "type": "boolean"
+        },
+        "credentials_available": {
+          "type": "boolean"
+        },
+        "provider_terms_reviewed": {
+          "type": "boolean"
+        },
+        "budget_approved": {
+          "type": "boolean"
+        },
+        "max_total_spend_usd": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "immutable_public_item_manifest_created": {
+          "type": "boolean"
+        },
+        "offline_scorer_parity_confirmed": {
+          "type": "boolean"
+        },
+        "external_private_artifact_store_ready": {
+          "type": "boolean"
+        },
+        "explicit_user_permission_for_paid_inference": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prior_upstream_baseline",
+        "note"
+      ],
+      "properties": {
+        "prior_upstream_baseline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

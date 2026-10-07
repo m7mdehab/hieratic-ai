@@ -98,7 +98,7 @@ At minimum demonstrate:
 - progress mismatch fails;
 - phase/task weight mismatch fails;
 - invalid ready state with blocked dependency fails;
-- overseer context output includes current 2.5 / 14 state;
+- overseer context output reflects the **current canonical** goal progress and research coverage from `PROJECT_STATE.yaml` (do not freeze a historical value in tests);
 - task context for CTRL-003 excludes unrelated deep research content.
 
 Tests must use fixtures/copies; do not corrupt canonical files to test failure modes.
@@ -119,7 +119,7 @@ All criteria in `TASKS.yaml` plus the detailed requirements above.
 
 ## Prohibited shortcuts
 
-- hard-coding "2.5" as the validator's expected progress;
+- hard-coding any mutable progress/coverage value (including historical values such as "2.5") as the validator's or repository-state test's expected canonical state;
 - parsing roadmap weights from presentation text when machine-readable task/phase fields already exist;
 - silently repairing invalid state;
 - ignoring cycles because current graph happens to be acyclic;

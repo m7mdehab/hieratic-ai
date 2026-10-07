@@ -2,7 +2,7 @@
 
 **Task:** FND-006  
 **Version:** 1.0.0  
-**Status:** Proposed until CI and overseer acceptance  
+**Status:** Accepted / operational v1.0  
 **Date:** 2026-10-08
 
 ## Scope and scientific boundary
@@ -79,12 +79,12 @@ Actual model experiment validity also requires independent comparison to the acc
 
 ## FND-006 acceptance checklist
 
-- [ ] Canonical validation/weight reconciliation operational and passing on current `main`.
-- [ ] Evidence + experiment schemas, validators, and fail-closed scope policy created.
-- [ ] Cross-domain governance/data/eval negative test suites pass under CI.
-- [ ] CI checks actual task-branch diff scope.
-- [ ] Agent/handoff/reproducibility constraints documented with clear human-verification limits.
-- [ ] No third-party data or fictitious model results introduced.
-- [ ] Separate overseer acceptance with verified CI, then award +0.5 points.
+- [x] Canonical validation/weight reconciliation operational and passing on current `main`.
+- [x] Evidence + experiment schemas, validators, and fail-closed scope policy created.
+- [x] Cross-domain governance/data/eval negative test suites pass under CI.
+- [x] CI checks actual task-branch diff scope.
+- [x] Agent/handoff/reproducibility constraints documented with clear human-verification limits.
+- [x] No third-party data or fictitious model results introduced.
+- [x] Separate overseer acceptance with verified CI, then award +0.5 points.
 
 FND-006 completing does not close `GATE-CONTROL` while CTRL-003 is still unaccepted; it completes the remaining research-foundation item.

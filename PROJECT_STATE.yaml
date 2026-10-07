@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 10.0
+  goal_progress: 11.0
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,14 +29,13 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "EVAL-002"
+  last_accepted_task: "EVAL-005"
   ready_tasks:
     - "FND-006"
     - "DATA-002"
     - "DATA-004"
     - "EVAL-003"
     - "EVAL-004"
-    - "EVAL-005"
   active_tasks:
     - "CTRL-003"
   review_tasks: []
@@ -79,8 +78,8 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Review Luna's three independently scoped W1 package PRs (DATA-002, DATA-004,
-  EVAL-004) and Sonnet's CTRL-003 dashboard result when returned. EVAL-002 is
-  validated; EVAL-003 is newly ready. After reviewing agent evidence, propose
-  the next three-lane wave with another substantive overseer-owned task.
-  FND-006 remains ready, not self-validated.
+  Review Luna W1 DATA-002 and DATA-004 PRs and the remaining EVAL-004 work
+  when returned. Check in with Anti-Gravity/Sonnet: no CTRL-003 branch or PR
+  was visible during the latest GitHub review; request a pushed progress
+  checkpoint and blockers. EVAL-005 is validated, so EVAL-006 remains blocked
+  only by EVAL-004. FND-006 and EVAL-003 remain ready.

@@ -1,0 +1,190 @@
+schema_version: "1.0.0"
+annotation_id: SYNTH-ANNOTATION-AMBIGUOUS
+provenance:
+  source_registry_id: SRC-HPDB
+  source_object_id: SYNTHETIC-OBJECT-002
+  source_url: https://example.invalid/synthetic-object-002
+  asset_refs: []
+  rights_provenance_ref: "Synthetic fixture; geometries and readings are fabricated placeholders."
+  collection: null
+  institution: null
+document:
+  period: "synthetic-period"
+  date_range: {start: null, end: null, certainty: unknown}
+  geographic_provenance: null
+  material_support: "synthetic-support"
+  genre_register: null
+  scribe_group: null
+  metadata: {}
+script_label:
+  gold_status: certain
+  values:
+    - value_id: script-value-2
+      value: synthetic_hieratic_label
+      confidence: 1.0
+      equivalent_to_selected: false
+      evidence_ref: null
+  selected_value_id: script-value-2
+  explanation: null
+pages:
+  - page_id: page-2
+    coordinate_system: normalized_0_1
+    dimensions: {width: 1, height: 1}
+    orientation: upright
+    regions:
+      - region_id: region-2
+        region_type: text
+        geometry:
+          kind: polygon
+          vertices: [[0.1, 0.1], [0.9, 0.1], [0.9, 0.4], [0.1, 0.4]]
+        parent_region_id: null
+        child_region_ids: [region-2-line-block]
+      - region_id: region-2-line-block
+        region_type: line_block
+        geometry:
+          kind: polygon
+          vertices: [[0.15, 0.18], [0.8, 0.18], [0.8, 0.32], [0.15, 0.32]]
+        parent_region_id: region-2
+        child_region_ids: []
+    reading_order: [region-2, region-2-line-block]
+lines:
+  - line_id: line-2
+    page_id: page-2
+    region_id: region-2-line-block
+    parent_line_id: null
+    reading_order: 0
+    reading_direction: right_to_left
+    geometry:
+      kind: polyline
+      vertices: [[0.8, 0.25], [0.15, 0.25]]
+    sequence_id: sequence-2
+    grapheme_sequence:
+      gold_status: uncertain_with_alternatives
+      values:
+        - value_id: grapheme-reading-a
+          value: [SYNTH-GRAPHEME-A]
+          confidence: 0.55
+          equivalent_to_selected: false
+          evidence_ref: visual-review-a
+        - value_id: grapheme-reading-b
+          value: [SYNTH-GRAPHEME-B]
+          confidence: 0.45
+          equivalent_to_selected: false
+          evidence_ref: visual-review-b
+      selected_value_id: null
+      explanation: "Synthetic uncertain span; both candidate sequences remain acceptable."
+    hieroglyphic_rendering:
+      gold_status: missing_annotation
+      values: []
+      selected_value_id: null
+      explanation: null
+    transliteration:
+      gold_status: uncertain_with_alternatives
+      values:
+        - value_id: transliteration-a
+          value: SYNTHETIC-READING-A
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+        - value_id: transliteration-b
+          value: SYNTHETIC-READING-B
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+      selected_value_id: null
+      explanation: "Placeholder alternatives only; not an Egyptological reading."
+    normalized_representation:
+      layer:
+        gold_status: missing_annotation
+        values: []
+        selected_value_id: null
+        explanation: null
+      tokenization_profile: null
+      tokens: []
+    translations:
+      - language: en
+        references:
+          gold_status: adjudication_pending
+          values: []
+          selected_value_id: null
+          explanation: "No translation supplied in this synthetic fixture."
+signs:
+  - sign_id: sign-2a
+    line_id: line-2
+    geometry:
+      kind: polygon
+      vertices: [[0.6, 0.2], [0.7, 0.2], [0.7, 0.3], [0.6, 0.3]]
+    grapheme_identity:
+      gold_status: uncertain_with_alternatives
+      values:
+        - value_id: sign-identity-a
+          value: SYNTH-GRAPHEME-A
+          confidence: 0.55
+          equivalent_to_selected: false
+          evidence_ref: null
+        - value_id: sign-identity-b
+          value: SYNTH-GRAPHEME-B
+          confidence: 0.45
+          equivalent_to_selected: false
+          evidence_ref: null
+      selected_value_id: null
+      explanation: "Synthetic ambiguous sign."
+    alternative_identities: []
+    allograph_ref: null
+    group_ids: [ligature-2]
+    abbreviation: false
+    visual_confidence: 0.5
+    damage_state: none_observed
+  - sign_id: sign-2b
+    line_id: line-2
+    geometry: null
+    grapheme_identity:
+      gold_status: certain
+      values:
+        - value_id: sign-identity-c
+          value: SYNTH-GRAPHEME-C
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+      selected_value_id: sign-identity-c
+      explanation: null
+    alternative_identities: []
+    allograph_ref: null
+    group_ids: [ligature-2]
+    abbreviation: false
+    visual_confidence: null
+    damage_state: unknown
+sign_groups:
+  - group_id: ligature-2
+    line_id: line-2
+    group_type: ligature
+    constituent_sign_ids: [sign-2a, sign-2b]
+    geometry: null
+    grapheme_identity:
+      gold_status: uncertain_with_alternatives
+      values:
+        - value_id: group-reading-a
+          value: SYNTH-GROUP-A
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+        - value_id: group-reading-b
+          value: SYNTH-GROUP-B
+          confidence: null
+          equivalent_to_selected: false
+          evidence_ref: null
+      selected_value_id: null
+      explanation: "Fabricated alternatives demonstrate grouped identity uncertainty."
+    abbreviation: false
+reviews:
+  - review_id: review-2
+    annotator_id: synthetic-annotator
+    annotated_at: "2026-10-08T10:00:00Z"
+    annotation_version: "1"
+    reviewer_id: null
+    adjudicator_id: null
+    review_status: draft
+    comments: ["Synthetic fixture; no external source content."]
+    evidence_urls: []
+    supersedes_review_id: null
+    status_history: []

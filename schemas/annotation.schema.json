@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/annotation.schema.json",
+  "title": "Hieratic AI layered annotation",
+  "type": "object",
+  "required": ["schema_version", "annotation_id", "provenance", "document", "pages", "lines", "signs", "sign_groups", "reviews"],
+  "properties": {
+    "schema_version": {"type": "string", "minLength": 1},
+    "annotation_id": {"$ref": "#/$defs/id"},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "document": {"$ref": "#/$defs/document"},
+    "script_label": {"$ref": "#/$defs/layer"},
+    "pages": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/page"}},
+    "lines": {"type": "array", "items": {"$ref": "#/$defs/line"}},
+    "signs": {"type": "array", "items": {"$ref": "#/$defs/sign"}},
+    "sign_groups": {"type": "array", "items": {"$ref": "#/$defs/signGroup"}},
+    "reviews": {"type": "array", "items": {"$ref": "#/$defs/review"}},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "nullableId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+    "nullableString": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+    "provenance": {
+      "type": "object",
+      "required": ["source_registry_id", "source_object_id", "source_url", "asset_refs", "rights_provenance_ref"],
+      "properties": {
+        "source_registry_id": {"type": "string", "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"},
+        "source_object_id": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string", "format": "uri"},
+        "asset_refs": {"type": "array", "items": {"$ref": "#/$defs/assetRef"}},
+        "rights_provenance_ref": {"type": "string", "minLength": 1},
+        "collection": {"type": ["string", "null"]},
+        "institution": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "assetRef": {
+      "type": "object",
+      "required": ["asset_id", "canonical_url", "sha256"],
+      "properties": {
+        "asset_id": {"$ref": "#/$defs/id"},
+        "canonical_url": {"type": "string", "format": "uri"},
+        "sha256": {"type": ["string", "null"], "pattern": "^[A-Fa-f0-9]{64}$"},
+        "provenance_manifest_ref": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "document": {
+      "type": "object",
+      "required": ["period", "geographic_provenance", "material_support", "genre_register", "scribe_group"],
+      "properties": {
+        "period": {"$ref": "#/$defs/nullableString"},
+        "date_range": {"type": ["object", "null"], "properties": {"start": {"type": ["integer", "null"]}, "end": {"type": ["integer", "null"]}, "certainty": {"type": "string", "enum": ["known", "approximate", "unknown"]}}, "required": ["start", "end", "certainty"], "additionalProperties": false},
+        "geographic_provenance": {"$ref": "#/$defs/nullableString"},
+        "material_support": {"$ref": "#/$defs/nullableString"},
+        "genre_register": {"$ref": "#/$defs/nullableString"},
+        "scribe_group": {"$ref": "#/$defs/nullableString"},
+        "metadata": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "coordinateSystem": {"type": "string", "enum": ["pixel_origin_top_left", "normalized_0_1"]},
+    "point": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "minItems": 2, "maxItems": 2},
+    "geometry": {
+      "type": "object",
+      "required": ["kind", "vertices"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["rectangle", "polyline", "polygon"]},
+        "vertices": {"type": "array", "items": {"$ref": "#/$defs/point"}}
+      },
+      "additionalProperties": false
+    },
+    "page": {
+      "type": "object",
+      "required": ["page_id", "coordinate_system", "dimensions", "orientation", "regions", "reading_order"],
+      "properties": {
+        "page_id": {"$ref": "#/$defs/id"},
+        "coordinate_system": {"$ref": "#/$defs/coordinateSystem"},
+        "dimensions": {"type": ["object", "null"], "properties": {"width": {"type": "number", "exclusiveMinimum": 0}, "height": {"type": "number", "exclusiveMinimum": 0}}, "required": ["width", "height"], "additionalProperties": false},
+        "orientation": {"type": "string", "enum": ["upright", "rotated_90", "rotated_180", "rotated_270", "unknown"]},
+        "regions": {"type": "array", "items": {"$ref": "#/$defs/region"}},
+        "reading_order": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "required": ["region_id", "region_type", "geometry", "parent_region_id", "child_region_ids"],
+      "properties": {
+        "region_id": {"$ref": "#/$defs/id"},
+        "region_type": {"type": "string", "enum": ["text", "column", "line_block", "heading", "table", "marginalia", "other"]},
+        "geometry": {"oneOf": [{"$ref": "#/$defs/geometry"}, {"type": "null"}]},
+        "parent_region_id": {"$ref": "#/$defs/nullableId"},
+        "child_region_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
+    "layerValue": {
+      "type": "object",
+      "required": ["value_id", "value", "confidence", "equivalent_to_selected"],
+      "properties": {
+        "value_id": {"$ref": "#/$defs/id"},
+        "value": {},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "equivalent_to_selected": {"type": "boolean"},
+        "evidence_ref": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "required": ["gold_status", "values", "selected_value_id", "explanation"],
+      "properties": {
+        "gold_status": {"type": "string", "enum": ["certain", "uncertain_with_alternatives", "illegible_unscorable", "missing_annotation", "adjudication_pending"]},
+        "values": {"type": "array", "items": {"$ref": "#/$defs/layerValue"}},
+        "selected_value_id": {"$ref": "#/$defs/nullableId"},
+        "explanation": {"$ref": "#/$defs/nullableString"}
+      },
+      "additionalProperties": false
+    },
+    "line": {
+      "type": "object",
+      "required": ["line_id", "page_id", "region_id", "parent_line_id", "reading_order", "reading_direction", "geometry", "sequence_id", "grapheme_sequence"],
+      "properties": {
+        "line_id": {"$ref": "#/$defs/id"},
+        "page_id": {"$ref": "#/$defs/id"},
+        "region_id": {"$ref": "#/$defs/nullableId"},
+        "parent_line_id": {"$ref": "#/$defs/nullableId"},
+        "reading_order": {"type": "integer", "minimum": 0},
+        "reading_direction": {"type": "string", "enum": ["right_to_left", "left_to_right", "top_to_bottom", "bottom_to_top", "unknown"]},
+        "geometry": {"oneOf": [{"$ref": "#/$defs/geometry"}, {"type": "null"}]},
+        "sequence_id": {"$ref": "#/$defs/id"},
+        "grapheme_sequence": {"$ref": "#/$defs/layer"},
+        "hieroglyphic_rendering": {"$ref": "#/$defs/layer"},
+        "transliteration": {"$ref": "#/$defs/layer"},
+        "normalized_representation": {"$ref": "#/$defs/normalizedLayer"},
+        "lemma_analysis": {"$ref": "#/$defs/layer"},
+        "morphology": {"$ref": "#/$defs/layer"},
+        "syntax": {"$ref": "#/$defs/layer"},
+        "translations": {"type": "array", "items": {"$ref": "#/$defs/translation"}}
+      },
+      "additionalProperties": false
+    },
+    "normalizedLayer": {
+      "type": "object",
+      "required": ["layer", "tokenization_profile", "tokens"],
+      "properties": {
+        "layer": {"$ref": "#/$defs/layer"},
+        "tokenization_profile": {"$ref": "#/$defs/nullableString"},
+        "tokens": {"type": "array", "items": {"$ref": "#/$defs/token"}}
+      },
+      "additionalProperties": false
+    },
+    "token": {
+      "type": "object",
+      "required": ["token_id", "value", "sequence_ref", "gold_status", "acceptable_lemmas", "morphology_bundles"],
+      "properties": {
+        "token_id": {"$ref": "#/$defs/id"},
+        "value": {"$ref": "#/$defs/layer"},
+        "sequence_ref": {"$ref": "#/$defs/id"},
+        "gold_status": {"type": "string", "enum": ["certain", "uncertain_with_alternatives", "illegible_unscorable", "missing_annotation", "adjudication_pending"]},
+        "acceptable_lemmas": {"type": "array", "items": {"$ref": "#/$defs/layerValue"}},
+        "morphology_bundles": {"type": "array", "items": {"$ref": "#/$defs/layerValue"}}
+      },
+      "additionalProperties": false
+    },
+    "translation": {
+      "type": "object",
+      "required": ["language", "references"],
+      "properties": {"language": {"type": "string", "minLength": 2}, "references": {"$ref": "#/$defs/layer"}},
+      "additionalProperties": false
+    },
+    "sign": {
+      "type": "object",
+      "required": ["sign_id", "line_id", "geometry", "grapheme_identity", "alternative_identities", "allograph_ref", "group_ids", "abbreviation", "visual_confidence", "damage_state"],
+      "properties": {
+        "sign_id": {"$ref": "#/$defs/id"},
+        "line_id": {"$ref": "#/$defs/id"},
+        "geometry": {"oneOf": [{"$ref": "#/$defs/geometry"}, {"type": "null"}]},
+        "grapheme_identity": {"$ref": "#/$defs/layer"},
+        "alternative_identities": {"type": "array", "items": {"$ref": "#/$defs/layerValue"}},
+        "allograph_ref": {"$ref": "#/$defs/nullableString"},
+        "group_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true},
+        "abbreviation": {"type": "boolean"},
+        "visual_confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "damage_state": {"type": "string", "enum": ["none_observed", "damaged", "partly_illegible", "illegible", "unknown"]}
+      },
+      "additionalProperties": false
+    },
+    "signGroup": {
+      "type": "object",
+      "required": ["group_id", "line_id", "group_type", "constituent_sign_ids", "geometry", "grapheme_identity", "abbreviation"],
+      "properties": {
+        "group_id": {"$ref": "#/$defs/id"},
+        "line_id": {"$ref": "#/$defs/id"},
+        "group_type": {"type": "string", "enum": ["ligature", "multi_sign_expression", "abbreviation", "other"]},
+        "constituent_sign_ids": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1, "uniqueItems": true},
+        "geometry": {"oneOf": [{"$ref": "#/$defs/geometry"}, {"type": "null"}]},
+        "grapheme_identity": {"$ref": "#/$defs/layer"},
+        "abbreviation": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["review_id", "annotator_id", "annotated_at", "annotation_version", "reviewer_id", "adjudicator_id", "review_status", "comments", "evidence_urls", "supersedes_review_id", "status_history"],
+      "properties": {
+        "review_id": {"$ref": "#/$defs/id"},
+        "annotator_id": {"type": "string", "minLength": 1},
+        "annotated_at": {"type": "string", "format": "date-time"},
+        "annotation_version": {"type": "string", "minLength": 1},
+        "reviewer_id": {"$ref": "#/$defs/nullableString"},
+        "adjudicator_id": {"$ref": "#/$defs/nullableString"},
+        "review_status": {"type": "string", "enum": ["draft", "in_review", "reviewed", "adjudicated", "revision_requested"]},
+        "comments": {"type": "array", "items": {"type": "string"}},
+        "evidence_urls": {"type": "array", "items": {"type": "string", "format": "uri"}},
+        "supersedes_review_id": {"$ref": "#/$defs/nullableId"},
+        "status_history": {"type": "array", "items": {"$ref": "#/$defs/statusTransition"}}
+      },
+      "additionalProperties": false
+    },
+    "statusTransition": {
+      "type": "object",
+      "required": ["from", "to", "changed_at", "actor_id"],
+      "properties": {
+        "from": {"type": "string", "enum": ["draft", "in_review", "reviewed", "adjudicated", "revision_requested"]},
+        "to": {"type": "string", "enum": ["draft", "in_review", "reviewed", "adjudicated", "revision_requested"]},
+        "changed_at": {"type": "string", "format": "date-time"},
+        "actor_id": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

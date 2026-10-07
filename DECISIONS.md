@@ -1,0 +1,58 @@
+# Decision Log
+
+Accepted decisions are append-only in substance. Later decisions may supersede earlier ones, but the historical decision remains visible.
+
+## ADR-0001 — Repository is the canonical project memory
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+Long-running continuity must not depend on a single AI conversation or provider. Canonical state lives in the public repository. Chats and agent memories are transient views.
+
+## ADR-0002 — Measure capability, not elapsed time
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+The primary roadmap is a 100-point capability program. Elapsed time may be logged retrospectively but does not define progress.
+
+Only accepted weighted milestones earn goal-progress points. Research coverage is tracked separately.
+
+## ADR-0003 — Overseer/executor separation
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+The overseer owns research, architecture, decomposition, acceptance criteria, review, and state transitions. Heterogeneous AI agents are primarily execution workers operating from bounded briefs.
+
+This separation is intended to reduce duplicated reasoning, drift, and inconsistent project assumptions.
+
+## ADR-0004 — Parallelism is default when dependency-safe
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+Independent tasks should run in parallel. Concurrency is restricted when tasks share mutable files, benchmark/test material, canonical schemas, or incompatible interfaces.
+
+Branch/write-scope isolation is preferred over ad-hoc coordination.
+
+## ADR-0005 — Control plane is mandatory but unweighted
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+The dashboard, context tooling, task graph, and governance automation are essential infrastructure but do not themselves improve Hieratic-reading capability. They are a mandatory Phase-0 gate worth 0 goal-progress points.
+
+## ADR-0006 — Dashboard derives from repository state
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+The public website/control plane must consume canonical repository state. It must not maintain an independent manually edited project-status database.
+
+## ADR-0007 — Code license does not relicense external research assets
+
+**Status:** Accepted  
+**Date:** 2026-10-07
+
+Apache-2.0 covers repository-authored software/documentation unless otherwise stated. External images, datasets, editions, fonts, and model artifacts retain their own terms. Provenance and redistribution rights must be recorded separately.

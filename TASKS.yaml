@@ -1,0 +1,178 @@
+schema_version: "0.1.0"
+roadmap_version: "0.1.0"
+
+status_values:
+  - planned
+  - ready
+  - active
+  - under_review
+  - revision_required
+  - validated
+  - blocked
+  - superseded
+
+tasks:
+  - id: "FND-001"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Define ultimate capability goal and scope"
+    weight: 1.0
+    status: "validated"
+    owner_role: "overseer"
+    depends_on: []
+    acceptance:
+      - "Ultimate goal explicitly requires unseen Hieratic, reading, transliteration/normalization, interpretation/translation, uncertainty, and generalization."
+      - "Script identification alone is explicitly insufficient."
+    evidence:
+      - "ROADMAP.md"
+      - "START_HERE.md"
+
+  - id: "FND-002"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Preliminary feasibility, prior-art, and data reconnaissance"
+    weight: 1.5
+    status: "validated"
+    owner_role: "overseer"
+    depends_on: ["FND-001"]
+    acceptance:
+      - "Initial feasibility established: partial computational work exists, but robust general-purpose Hieratic reading remains research-hard."
+      - "Candidate benchmark, dataset, and prior-art directions identified for primary-source verification."
+      - "Project decomposition into evaluation, data, specialist recognition, VLM learning, interpretation, and validation is justified."
+    evidence:
+      - "RESEARCH.md"
+      - "ROADMAP.md"
+
+  - id: "FND-003"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Validate writing-system and task-decomposition problem map"
+    weight: 0.75
+    status: "planned"
+    owner_role: "overseer"
+    depends_on: ["FND-002"]
+    acceptance:
+      - "Hieratic variation, allography, ligatures, media/period/scribe variation, layout, ambiguity, and linguistic roles are documented from reliable sources."
+      - "Task boundaries from image through translation are explicit."
+
+  - id: "FND-004"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Build verified primary-source prior-art and data registry"
+    weight: 0.75
+    status: "planned"
+    owner_role: "overseer"
+    depends_on: ["FND-002"]
+    acceptance:
+      - "Every material prior-art/dataset claim has a primary or high-authority source."
+      - "License, size, granularity, labels, provenance, accessibility, and ML usefulness are recorded where knowable."
+      - "Unverified claims remain visibly marked as such."
+
+  - id: "FND-005"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Establish licensing and provenance policy"
+    weight: 0.50
+    status: "planned"
+    owner_role: "overseer"
+    depends_on: ["FND-004"]
+    acceptance:
+      - "Code license is distinguished from dataset/image/edition/model licenses."
+      - "Redistribution rules and provenance fields are enforceable."
+      - "No ambiguous third-party assets are silently committed."
+
+  - id: "FND-006"
+    phase: "P1_RESEARCH_FOUNDATION"
+    title: "Make reproducibility and agent-governance contract operational"
+    weight: 0.50
+    status: "planned"
+    owner_role: "overseer"
+    depends_on: []
+    acceptance:
+      - "Agent rules, evidence requirements, task lifecycle, branch discipline, and state validation are implemented and tested."
+
+  - id: "CTRL-001"
+    phase: "P0_CONTROL_PLANE"
+    title: "Bootstrap canonical project operating system"
+    weight: 0.0
+    status: "active"
+    owner_role: "overseer"
+    depends_on: []
+    write_scope:
+      - "root governance files"
+      - "docs/governance/"
+    acceptance:
+      - "Canonical files exist and agree on goal, progress semantics, authority, and task lifecycle."
+      - "Repository can be understood by a fresh chat from START_HERE.md."
+      - "Initial task graph is parseable."
+    evidence_required:
+      - "PR diff"
+      - "manual consistency review"
+
+  - id: "CTRL-002"
+    phase: "P0_CONTROL_PLANE"
+    title: "Implement project-state validator and context generator"
+    weight: 0.0
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-001"]
+    write_scope:
+      - "tools/"
+      - "schemas/"
+      - "tests/governance/"
+      - "pyproject.toml or equivalent governance-tool dependency manifest"
+    acceptance:
+      - "CLI validates canonical YAML structure and task dependencies."
+      - "CLI detects duplicate IDs, missing dependencies, dependency cycles, invalid statuses, and capability-weight inconsistencies."
+      - "CLI verifies validated weighted tasks reconcile with PROJECT_STATE goal_progress."
+      - "CLI generates a compact overseer context packet and task-specific agent context packet."
+      - "Automated tests cover failure and success cases."
+    evidence_required:
+      - "test output"
+      - "example generated context packet"
+      - "changed-file list"
+
+  - id: "CTRL-003"
+    phase: "P0_CONTROL_PLANE"
+    title: "Build live dashboard/control-plane shell"
+    weight: 0.0
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-001"]
+    write_scope:
+      - "dashboard/"
+    acceptance:
+      - "Dashboard reads canonical project data rather than maintaining a second project-state database."
+      - "Homepage exposes verified goal progress, research coverage, phase progress, task status, and latest state."
+      - "Architecture allows later interactive DAG, experiment registry, research view, and decision log."
+      - "Responsive and accessible baseline."
+      - "No hard-coded progress values outside fixtures/tests."
+    evidence_required:
+      - "build/test output"
+      - "screenshots or preview URL"
+      - "data-flow explanation"
+
+  - id: "CTRL-004"
+    phase: "P0_CONTROL_PLANE"
+    title: "Add CI governance checks and branch/PR guardrails"
+    weight: 0.0
+    status: "blocked"
+    owner_role: "execution_agent"
+    depends_on: ["CTRL-002"]
+    write_scope:
+      - ".github/"
+      - "tests/governance/"
+      - "tools/"
+    acceptance:
+      - "Pull requests run project-state validation and governance tests."
+      - "Malformed task graphs and progress mismatches fail CI."
+      - "PR template requires task ID, evidence, tests, deviations, and licensing impact."
+    evidence_required:
+      - "successful CI run"
+      - "deliberate failing-case proof in tests"
+
+rules:
+  progress:
+    capability_total: 100.0
+    validated_weighted_tasks_expected: 2.5
+    control_plane_tasks_are_unweighted: true
+  concurrency:
+    default: "parallel_when_dependency_safe"
+    branch_pattern: "task/<TASK-ID>-<slug>"
+    one_primary_task_per_branch: true
+    conflicting_write_scopes_require_serialization: true

@@ -1,7 +1,7 @@
 # Hieratic AI Evaluation Metrics Specification v1.0
 
 **Task:** EVAL-001  
-**Status:** Proposed for overseer acceptance  
+**Status:** Accepted / canonical v1.0  
 **Date:** 2026-10-08  
 **Scope:** Canonical metric definitions for the complete Hieratic-reading stack.
 

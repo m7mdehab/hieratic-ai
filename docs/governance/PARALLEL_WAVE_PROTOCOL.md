@@ -14,11 +14,10 @@ A dispatch is not complete when only execution agents receive work. When a subst
 Before the overseer begins its own task, present Mohammed with a compact assignment table covering:
 
 - Luna
-- Sonnet
-- Gemini or another execution agent
+- the Anti-Gravity execution lane (Sonnet **or** Gemini 3.8 Flash, whichever Mohammed says is currently available)
 - the overseer
 
-For each worker, state the assigned task, why that worker is appropriate, dependency status, collision risk, and expected project effect.
+For each lane, state the assigned task, why that lane is appropriate, dependency status, collision risk, and expected project effect.
 
 Also state:
 - expected capability points if the task is weighted;
@@ -63,3 +62,26 @@ When Mohammed returns agent feedback, the overseer combines:
 - unresolved blockers.
 
 The next response should end with the next proposed parallel wave and the overseer assignment awaiting approval.
+
+
+## Execution-lane topology
+
+The default operating topology is **three concurrent lanes**, not four:
+
+1. **Luna lane** — persistent execution lane for coding/tooling/implementation work.
+2. **Anti-Gravity lane** — one shared execution lane using either **Sonnet** or **Gemini 3.8 Flash** at a time.
+3. **Overseer lane** — research, architecture, evaluation, synthesis, and review-heavy work.
+
+Sonnet and Gemini are not assumed to run concurrently. Mohammed decides which model occupies the Anti-Gravity lane based on current usage limits and availability.
+
+When the Anti-Gravity model changes:
+- the task identity does not automatically change;
+- the replacement model must read the canonical repo state, task brief, and any task-specific handoff before continuing;
+- prior model summaries are non-authoritative unless reconciled into the repository;
+- the switch itself does not reset progress or create a new task;
+- if the outgoing model leaves uncommitted/unreviewed work, the overseer decides whether the incoming model continues it or starts from the last accepted commit.
+
+Wave plans should therefore name the lane first and the currently selected model second, for example:
+`Anti-Gravity lane (Sonnet) -> CTRL-003`
+or
+`Anti-Gravity lane (Gemini 3.8 Flash) -> CTRL-003 continuation`.

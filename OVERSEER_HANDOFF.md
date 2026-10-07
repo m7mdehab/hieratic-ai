@@ -90,3 +90,16 @@ The overseer presents the whole wave first, including its own task, and waits fo
 The preferred overseer work is scientific evaluation design, architecture, source-grounded research, synthesis, or another reasoning-heavy task.
 
 For the next wave, the proposed overseer assignment is EVAL-001: specify evaluation metrics across the reading stack.
+
+
+## Execution-lane topology
+
+Default parallel work uses three lanes:
+
+- **Luna** — persistent execution lane.
+- **Anti-Gravity** — one shared lane using Sonnet or Gemini 3.8 Flash, as Mohammed directs based on limits/availability.
+- **Overseer** — heavy-lifting research, architecture, evaluation, synthesis, and review.
+
+Do not schedule Sonnet and Gemini as separate simultaneous lanes unless Mohammed explicitly changes this rule.
+
+A Sonnet ↔ Gemini switch should resume from repository state and the task brief, not from provider memory.

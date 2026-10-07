@@ -4,11 +4,11 @@
 
 ## Verified project progress
 
-- **20.5 / 100 earned; 79.5 remaining.** Research coverage **14%** (unchanged).
-- Current capability phase P2 Evaluation: **8.5 / 10 (85%)**; P1 Foundation **5 / 5 (100%)**; P3 Data Engine **7 / 20 (35%)**; P4–P8 no earned points.
+- **30.5 / 100 earned; 69.5 remaining.** Research coverage **14%** (unchanged).
+- Current capability phase P2 Evaluation: **8.5 / 10 (85%)**; P1 Foundation **5 / 5 (100%)**; P3 Data Engine **17 / 20 (85%)**; P4–P8 no earned points.
 - Control-plane acceptance **5/5 (100%)**; CTRL-003 validated and Next.js dashboard merged with independent CI.
 - **Validated experiments:** 0; **trained models:** 0; **demonstrated unseen Hieratic reading:** not yet established.
-- Last accepted weighted task: **EVAL-006 (+2)**.
+- Last accepted weighted task: **DATA-003 (+3, in the accepted W2 package)**.
 - EVAL-003 remains **active** but earns **0/1.5** until actual authorized frontier inference and independent official scoring.
 
 ## W2 overseer results — completed
@@ -19,16 +19,16 @@
 
 Latest GitHub CI for PR #40: **34 governance + 51 data + 145 evaluation tests passed**, approved six-file task scope. PR #38 dedicated baseline CI reproduced the pinned public metadata+prompt-source freeze and verified it. No new source images, benchmark gold, trained models, provider credentials, or actual model calls.
 
-## W2 Luna package — user copy-ready dispatch issued
+## W2 Luna package — completed and accepted
 
-Four **dependency-ready but not yet validated** independent tasks:
+Four **validated and merged** engineering tasks:
 
 - DATA-003 — deterministic preprocessing and dataset versioning (3 points)
 - DATA-005 — sign identity and palaeography mappings (2 points)
 - DATA-006 — image-to-transliteration alignment with ambiguities (3 points)
 - DATA-007 — expert QA/adjudication and uncertainty (2 points)
 
-Write scopes for Luna's four branches, and EVAL-006, were preregistered in governance PR [#34](https://github.com/m7mdehab/hieratic-ai/pull/34) and merged before start. Luna work is 10 potential points, but only after independent PR tests/review. Prevent DATA-006 from building on locally completed unvalidated DATA-003; both must use *accepted* DATA-002/DATA-004 interfaces. Real manuscript use requires independent licenses and image/benchmark clearance.
+Write scopes for Luna's four branches, and EVAL-006, were preregistered in governance PR [#34](https://github.com/m7mdehab/hieratic-ai/pull/34) and merged before start. Luna earned **+10.0 verified points** after independent PR review, hotfixes and clean CI. No real manuscript images or expert gold were added. Prevent DATA-006 from building on locally completed unvalidated DATA-003; both must use *accepted* DATA-002/DATA-004 interfaces. Real manuscript use requires independent licenses and image/benchmark clearance.
 
 The Anti-Gravity lane (Sonnet **or** Gemini 3.8 Flash, not both) continues CTRL-003 PR #27. Earlier review found stale canonical-state snapshots, 320px layout defects and missing final npm audit/accessibility evidence. Do not self-accept any revisions without checking the actual new head and CI.
 
@@ -59,3 +59,19 @@ On 2026-10-08 the overseer reviewed Gemini/Sonnet's revised dashboard PR #27, co
 - Static build-time canonical reader, not runtime polling, auto-deployment or a real model evaluation.
 
 CTRL-003 weighted points +0; **control-plane gate 4/5 → 5/5**. Verified capability stays **20.5/100**, coverage **14%**, trained models and validated experiments **0**. Last accepted operational task CTRL-003 (last accepted weighted task EVAL-006).
+
+
+## W2 Luna accepted — 2026-10-08
+
+- **DATA-005 #37 (+2)**: sign mapping/variant assertions patched to require verified citation metadata; CI 34 governance, 57 data, 145 evaluation, seven-file scope.
+- **DATA-007 #41 (+2)**: blind review/independent consensus timing patched; CI 34 governance, 64 data, 145 evaluation, seven-file scope.
+- **DATA-006 #39 (+3)**: DATA-002 rights policy checks, synthetic scoring exclusion and mapping-conflict protections added; CI 34 governance, 74 data, 145 evaluation, eight-file scope.
+- **DATA-003 #36 (+3)**: deterministic raster preprocessing, provenance/path containment and required intended-use schema hardened; CI 34 governance, 80 data, 145 evaluation, eight-file scope.
+
+All passed final GitHub Actions runs with strict write scopes after rebasing onto progressively merged main. No restricted source assets, real sign corpora, accepted expert reviews or model inference was added.
+
+**Known boundaries:** Preprocessing supports 8-bit PNG (non-interlaced grayscale/RGB/RGBA) and P3/P6 PPM, not JPEG/TIFF/EXIF. Sign relations and reviewer examples are synthetic, not historic claims. Synthetic reviewed alignments must remain ineligible for gold scoring, even when they show structurally valid resolved metadata. A valid real acquisition manifest does not itself prove rights clearance or exhaustive benchmark overlap inspection.
+
+**Current status:** 30.5/100 (69.5 remaining); P1 5/5, P2 8.5/10, P3 17/20; P4–P8 0, research coverage 14%, control-plane gate 5/5, validated experiments and models 0. Last accepted task DATA-003.
+
+**Next dependency-ready, not dispatched:** DATA-008 (+3), VLM-001 (+2), LING-001 (+2). EVAL-003 remains active (+0/1.5) with provider calls/budget/outputs pending. Propose next three-lane wave and obtain user authorization before starting overseer-owned work. Real provider spending requires separate explicit approval.

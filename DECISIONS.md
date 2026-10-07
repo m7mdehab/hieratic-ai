@@ -271,3 +271,15 @@ CTRL-003's Next.js public control-plane shell is accepted only after independent
 The dependency `braces@3.0.3` is still vulnerable under **GHSA-vfj7-8cjw-p6xm** (all versions through 3.0.3 affected; no patched release as of this decision). Five high alerts remain in a development-only ESLint transitive chain. Acceptance is conditioned on zero production high alerts and not processing untrusted glob/brace expressions in that tooling; the risk is documented, **not represented as remediated**.
 
 CTRL-003's zero-point status remains unchanged; the control-plane gate becomes **5/5 complete**. No deployment, model experiment or Hieratic reading performance is inferred from dashboard acceptance.
+
+
+## ADR-0020 — Accepted synthetic-only data engine contracts do not license assets or prove reading competence
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+After independent source inspection, CI and critical hardening, DATA-003/005/006/007 were accepted as deterministic preprocessing, sign/palaeography schema, image-to-text alignment, and expert-review *infrastructure*. They earn +10 verified engineering roadmap points but no real inference or expert gold.
+
+Required boundaries: input usage and manifest-local asset containment; verified scholarly citation metadata for supported sign assertions; no gold-score eligibility for synthetic even if superficially resolved/reviewed; real source item rights/admission and benchmark novelty independently validated; reviewer consensus only after two independent decisions with dated evidence. The source registry and admission rules remain conservative: a declared approval is not independent rights proof.
+
+Remaining real-world limitations include missing JPEG/TIFF/EXIF support, absent licensed manuscript datasets and real scholarly sign mappings, and absent external expert adjudication. W3 candidates DATA-008, VLM-001 and LING-001 are dependency-ready only.

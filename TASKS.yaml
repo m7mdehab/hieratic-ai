@@ -45,7 +45,7 @@ tasks:
     phase: "P0_CONTROL_PLANE"
     title: "Build live dashboard/control-plane shell"
     weight: 0.00
-    status: "active"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["CTRL-001"]
     acceptance_summary: "Responsive public interface reads canonical repo state and exposes project progress/tasks without a second manual status database."

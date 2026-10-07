@@ -1,4 +1,5 @@
-metadata_version: "synthetic-split-fixture/1.0.0"
+metadata_version: "synthetic-split-fixture/1.1.0"
+synthetic_fixture: true
 quarantined_source_ids: []
 quarantined_object_ids: []
 defaults: &defaults
@@ -12,6 +13,13 @@ defaults: &defaults
   normalized_sha256: null
   perceptual_hash: null
   benchmark_quarantine: false
+  benchmark_overlap_review: &unreviewed_overlap
+    status: not_assessed
+    reviewer_id: null
+    evidence_ref: null
+    overlap_check_version: null
+    roster_version: null
+    reviewed_at: null
 items:
   - <<: *defaults
     item_id: item-a1-page1
@@ -145,6 +153,13 @@ items:
     period: early
     material_support: papyrus
     genre_register: administrative
+    benchmark_overlap_review: &synthetic_clearance
+      status: synthetic_cleared
+      reviewer_id: synthetic-reviewer-001
+      evidence_ref: synthetic:aku-pal-item-c1-vs-hieraticbench
+      overlap_check_version: synthetic-overlap-scan/1
+      roster_version: synthetic:hieraticbench-fixture-roster/1
+      reviewed_at: "2026-10-08T10:00:00Z"
   - <<: *defaults
     item_id: item-c2
     source_id: SRC-AKU-PAL
@@ -156,6 +171,7 @@ items:
     period: early
     material_support: ostracon
     genre_register: literary
+    benchmark_overlap_review: {status: synthetic_cleared, reviewer_id: synthetic-reviewer-001, evidence_ref: "synthetic:aku-pal-item-c2-vs-hieraticbench", overlap_check_version: "synthetic-overlap-scan/1", roster_version: "synthetic:hieraticbench-fixture-roster/1", reviewed_at: "2026-10-08T10:00:00Z"}
   - <<: *defaults
     item_id: item-c3
     source_id: SRC-AKU-PAL
@@ -167,6 +183,7 @@ items:
     period: late
     material_support: papyrus
     genre_register: administrative
+    benchmark_overlap_review: {status: synthetic_cleared, reviewer_id: synthetic-reviewer-001, evidence_ref: "synthetic:aku-pal-item-c3-vs-hieraticbench", overlap_check_version: "synthetic-overlap-scan/1", roster_version: "synthetic:hieraticbench-fixture-roster/1", reviewed_at: "2026-10-08T10:00:00Z"}
   - <<: *defaults
     item_id: item-c4
     source_id: SRC-AKU-PAL
@@ -178,6 +195,7 @@ items:
     period: late
     material_support: ostracon
     genre_register: literary
+    benchmark_overlap_review: {status: synthetic_cleared, reviewer_id: synthetic-reviewer-001, evidence_ref: "synthetic:aku-pal-item-c4-vs-hieraticbench", overlap_check_version: "synthetic-overlap-scan/1", roster_version: "synthetic:hieraticbench-fixture-roster/1", reviewed_at: "2026-10-08T10:00:00Z"}
   - <<: *defaults
     item_id: item-c5
     source_id: SRC-AKU-PAL
@@ -189,6 +207,7 @@ items:
     period: null
     material_support: papyrus
     genre_register: administrative
+    benchmark_overlap_review: {status: synthetic_cleared, reviewer_id: synthetic-reviewer-001, evidence_ref: "synthetic:aku-pal-item-c5-vs-hieraticbench", overlap_check_version: "synthetic-overlap-scan/1", roster_version: "synthetic:hieraticbench-fixture-roster/1", reviewed_at: "2026-10-08T10:00:00Z"}
   - <<: *defaults
     item_id: hb-0001
     source_id: SRC-HIERATICBENCH

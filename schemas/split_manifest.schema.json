@@ -3,7 +3,7 @@
   "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/split_manifest.schema.json",
   "title": "Hieratic AI evaluation split manifest",
   "type": "object",
-  "required": ["split_version", "generator_version", "seed", "profile_id", "source_metadata_version", "source_metadata_sha256", "generation_timestamp", "grouping_keys_used", "holdout_values", "assignments", "near_duplicate_review_queue", "statistics", "warnings"],
+  "required": ["split_version", "generator_version", "seed", "profile_id", "source_metadata_version", "source_metadata_sha256", "benchmark_overlap_policy", "generation_timestamp", "grouping_keys_used", "holdout_values", "assignments", "near_duplicate_review_queue", "statistics", "warnings"],
   "properties": {
     "split_version": {"type": "string", "minLength": 1},
     "generator_version": {"type": "string", "minLength": 1},
@@ -11,6 +11,31 @@
     "profile_id": {"type": "string", "enum": ["PROFILE-DOC-HOLDOUT", "PROFILE-SCRIBE-HOLDOUT", "PROFILE-SOURCE-HOLDOUT", "PROFILE-PERIOD-HOLDOUT", "PROFILE-SEALED-TEST"]},
     "source_metadata_version": {"type": "string", "minLength": 1},
     "source_metadata_sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "benchmark_overlap_policy": {
+      "type": "object",
+      "required": ["policy_version", "risk_authority", "high_risk_action", "roster"],
+      "properties": {
+        "policy_version": {"type": "string", "minLength": 1},
+        "risk_authority": {"type": "string", "minLength": 1},
+        "high_risk_action": {"type": "string", "enum": ["exclude_unreviewed_or_overlapping"]},
+        "roster": {
+          "type": "object",
+          "required": ["version", "manifest_path", "pinned_commit", "total_items", "public_items", "sealed_items", "item_ids_embedded", "coverage"],
+          "properties": {
+            "version": {"type": "string", "minLength": 1},
+            "manifest_path": {"type": "string", "minLength": 1},
+            "pinned_commit": {"type": "string", "pattern": "^[A-Fa-f0-9]{40}$"},
+            "total_items": {"type": "integer", "minimum": 1},
+            "public_items": {"type": "integer", "minimum": 0},
+            "sealed_items": {"type": "integer", "minimum": 0},
+            "item_ids_embedded": {"type": "boolean", "const": false},
+            "coverage": {"type": "string", "enum": ["aggregate_counts_only"]}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "generation_timestamp": {"type": "string", "format": "date-time"},
     "grouping_keys_used": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
     "holdout_values": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
@@ -49,7 +74,7 @@
     "nullableSha": {"type": ["string", "null"], "pattern": "^[A-Fa-f0-9]{64}$"},
     "assignment": {
       "type": "object",
-      "required": ["item_id", "partition", "document_id", "page_id", "source_id", "source_object_id", "institution", "scribe_group", "period", "material_support", "genre_register", "image_sha256", "normalized_sha256", "perceptual_hash", "benchmark_quarantine", "exclusion_reason", "atomic_group_id"],
+      "required": ["item_id", "partition", "document_id", "page_id", "source_id", "source_object_id", "institution", "scribe_group", "period", "material_support", "genre_register", "image_sha256", "normalized_sha256", "perceptual_hash", "benchmark_quarantine", "benchmark_overlap_review", "exclusion_reason", "atomic_group_id"],
       "properties": {
         "item_id": {"type": "string", "minLength": 1},
         "partition": {"type": "string", "enum": ["train", "dev", "test", "excluded"]},
@@ -66,6 +91,19 @@
         "normalized_sha256": {"$ref": "#/$defs/nullableSha"},
         "perceptual_hash": {"$ref": "#/$defs/nullableString"},
         "benchmark_quarantine": {"type": "boolean"},
+        "benchmark_overlap_review": {
+          "type": "object",
+          "required": ["status", "reviewer_id", "evidence_ref", "overlap_check_version", "roster_version", "reviewed_at"],
+          "properties": {
+            "status": {"type": "string", "enum": ["not_assessed", "pending", "clear", "confirmed_match", "synthetic_cleared", "synthetic_match"]},
+            "reviewer_id": {"$ref": "#/$defs/nullableString"},
+            "evidence_ref": {"$ref": "#/$defs/nullableString"},
+            "overlap_check_version": {"$ref": "#/$defs/nullableString"},
+            "roster_version": {"$ref": "#/$defs/nullableString"},
+            "reviewed_at": {"$ref": "#/$defs/nullableString"}
+          },
+          "additionalProperties": false
+        },
         "exclusion_reason": {"$ref": "#/$defs/nullableString"},
         "atomic_group_id": {"type": "string", "minLength": 1}
       },

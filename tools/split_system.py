@@ -18,11 +18,13 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES_PATH = ROOT / "eval" / "splits" / "profiles.yaml"
 MANIFEST_SCHEMA_PATH = ROOT / "schemas" / "split_manifest.schema.json"
-GENERATOR_VERSION = "split-system/1.0.0"
+REGISTRY_PATH = ROOT / "data" / "sources" / "registry.yaml"
+GENERATOR_VERSION = "split-system/1.1.0"
 HASH_FIELDS = ("image_sha256", "normalized_sha256")
 COPIED_FIELDS = (
     "document_id", "page_id", "source_id", "source_object_id", "institution", "scribe_group", "period",
     "material_support", "genre_register", "image_sha256", "normalized_sha256", "perceptual_hash", "benchmark_quarantine",
+    "benchmark_overlap_review",
 )
 
 
@@ -60,14 +62,28 @@ def metadata_digest(metadata: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _validate_metadata(metadata: Any) -> list[str]:
+def _is_placeholder_evidence(value: str) -> bool:
+    lowered = value.lower()
+    return any(marker in lowered for marker in (".invalid", ".example", ".test", "example.com", "example.org", "example.net"))
+
+
+def _validate_metadata(metadata: Any, registry: Any, profile_set: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if not isinstance(metadata, dict) or not isinstance(metadata.get("metadata_version"), str) or not metadata["metadata_version"]:
         return ["source metadata requires a non-empty metadata_version"]
     if not isinstance(metadata.get("items"), list) or not metadata["items"]:
         return ["source metadata requires a non-empty items list"]
+    if not isinstance(metadata.get("synthetic_fixture"), bool):
+        errors.append("source metadata requires a boolean synthetic_fixture declaration")
+    policy = profile_set.get("benchmark_overlap_policy")
+    if not isinstance(policy, dict) or not isinstance(policy.get("roster"), dict):
+        errors.append("profiles require a versioned benchmark_overlap_policy roster contract")
+        roster_version = None
+    else:
+        roster_version = policy["roster"].get("version")
+    registry_sources = {source["source_id"]: source for source in registry.get("sources", [])} if isinstance(registry, dict) else {}
     seen: set[str] = set()
-    required = {"item_id", "source_id", "source_object_id", "document_id", "page_id", "institution", "scribe_group", "period", "material_support", "genre_register", "image_sha256", "normalized_sha256", "perceptual_hash", "benchmark_quarantine"}
+    required = {"item_id", "source_id", "source_object_id", "document_id", "page_id", "institution", "scribe_group", "period", "material_support", "genre_register", "image_sha256", "normalized_sha256", "perceptual_hash", "benchmark_quarantine", "benchmark_overlap_review"}
     for index, item in enumerate(metadata["items"]):
         if not isinstance(item, dict):
             errors.append(f"items[{index}] must be an object")
@@ -95,6 +111,41 @@ def _validate_metadata(metadata: Any) -> list[str]:
                 errors.append(f"items[{index}].{field} must be a 64-character SHA-256 or null")
         if not isinstance(item["benchmark_quarantine"], bool):
             errors.append(f"items[{index}].benchmark_quarantine must be boolean")
+        source = registry_sources.get(item["source_id"])
+        if registry_sources and source is None:
+            errors.append(f"items[{index}].source_id is unknown to DATA-001: {item['source_id']}")
+        review = item["benchmark_overlap_review"]
+        review_fields = {"status", "reviewer_id", "evidence_ref", "overlap_check_version", "roster_version", "reviewed_at"}
+        if not isinstance(review, dict) or review_fields - review.keys():
+            errors.append(f"items[{index}].benchmark_overlap_review must include status, reviewer, evidence, check version, and roster version")
+            continue
+        status = review["status"]
+        if status not in {"not_assessed", "pending", "clear", "confirmed_match", "synthetic_cleared", "synthetic_match"}:
+            errors.append(f"items[{index}].benchmark_overlap_review.status is invalid")
+            continue
+        if status in {"clear", "confirmed_match", "synthetic_cleared", "synthetic_match"}:
+            required_review_values = ("reviewer_id", "evidence_ref", "overlap_check_version", "roster_version", "reviewed_at")
+            if any(not isinstance(review[field], str) or not review[field].strip() for field in required_review_values):
+                errors.append(f"items[{index}] resolved benchmark-overlap review requires reviewer, evidence, check version, and roster version")
+            try:
+                datetime.fromisoformat(str(review["reviewed_at"]).replace("Z", "+00:00"))
+            except ValueError:
+                errors.append(f"items[{index}] resolved benchmark-overlap review requires an ISO-8601 review date")
+            if status in {"synthetic_cleared", "synthetic_match"}:
+                if metadata.get("synthetic_fixture") is not True:
+                    errors.append(f"items[{index}] synthetic clearance is allowed only in a declared synthetic fixture")
+                if not str(review["evidence_ref"]).startswith("synthetic:") or not str(review["roster_version"]).startswith("synthetic:") or not str(review["overlap_check_version"]).startswith("synthetic-"):
+                    errors.append(f"items[{index}] synthetic clearance requires synthetic evidence and version references")
+            else:
+                if metadata.get("synthetic_fixture") is True:
+                    errors.append(f"items[{index}] synthetic fixtures must use explicit synthetic overlap status")
+                if review["roster_version"] != roster_version:
+                    errors.append(f"items[{index}] benchmark review roster_version does not match the pinned roster contract")
+                if _is_placeholder_evidence(str(review["evidence_ref"])):
+                    errors.append(f"items[{index}] benchmark review evidence cannot use a placeholder reference")
+        if source is not None and source.get("benchmark_overlap_risk") == "high" and status == "not_assessed":
+            # Kept as input metadata; generation excludes this item with a deterministic reason.
+            pass
     item_ids = {item.get("item_id") for item in metadata["items"] if isinstance(item, dict)}
     candidate_pairs: set[tuple[str, str]] = set()
     for index, pair in enumerate(metadata.get("near_duplicate_candidates", [])):
@@ -249,8 +300,32 @@ def _stats(assignments: list[dict[str, Any]], warnings: list[str]) -> dict[str, 
     return stats
 
 
-def generate_manifest(metadata: dict[str, Any], profile_set: dict[str, Any], profile_id: str, seed: int, holdout_values: list[str] | None = None, generated_at: str | None = None) -> dict[str, Any]:
-    metadata_errors = _validate_metadata(metadata)
+def _overlap_exclusion_reason(item: dict[str, Any], registry_sources: dict[str, dict[str, Any]], synthetic_fixture: bool) -> str | None:
+    source = registry_sources[item["source_id"]]
+    if source.get("benchmark_overlap_risk") != "high":
+        return None
+    review = item["benchmark_overlap_review"]
+    status = review["status"]
+    if status == "clear":
+        return None
+    if status == "synthetic_cleared" and synthetic_fixture:
+        return None
+    if status in {"confirmed_match", "synthetic_match"}:
+        return f"benchmark_overlap_confirmed_match:{item['source_id']}"
+    return f"high_risk_benchmark_overlap_unreviewed:{item['source_id']}"
+
+
+def generate_manifest(
+    metadata: dict[str, Any],
+    profile_set: dict[str, Any],
+    profile_id: str,
+    seed: int,
+    holdout_values: list[str] | None = None,
+    generated_at: str | None = None,
+    registry: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    registry = registry or load_yaml(REGISTRY_PATH)
+    metadata_errors = _validate_metadata(metadata, registry, profile_set)
     if metadata_errors:
         raise SplitInputError("; ".join(metadata_errors))
     profile = _profile_config(profile_id, profile_set)
@@ -266,6 +341,7 @@ def generate_manifest(metadata: dict[str, Any], profile_set: dict[str, Any], pro
 
     items = metadata["items"]
     by_id = {item["item_id"]: item for item in items}
+    registry_sources = {source["source_id"]: source for source in registry["sources"]}
     components = _atomic_components(metadata)
     quarantine_sources = set(profile_set.get("benchmark_quarantine_source_ids", [])) | set(metadata.get("quarantined_source_ids", []))
     quarantine_objects = set(profile_set.get("known_benchmark_item_ids", [])) | set(metadata.get("quarantined_object_ids", []))
@@ -274,9 +350,17 @@ def generate_manifest(metadata: dict[str, Any], profile_set: dict[str, Any], pro
     eligible_components: list[list[dict[str, Any]]] = []
     for component in components:
         quarantined = any(item["benchmark_quarantine"] or item["source_id"] in quarantine_sources or item["item_id"] in quarantine_objects or item["source_object_id"] in quarantine_objects for item in component)
-        if quarantined:
-            bench_ids = sorted(item["item_id"] for item in component if item["benchmark_quarantine"] or item["source_id"] in quarantine_sources or item["item_id"] in quarantine_objects or item["source_object_id"] in quarantine_objects)
-            reason = "benchmark_quarantine" if len(bench_ids) == len(component) else f"linked_to_quarantined_benchmark:{','.join(bench_ids)}"
+        overlap_blocks = [
+            (item, _overlap_exclusion_reason(item, registry_sources, metadata["synthetic_fixture"]))
+            for item in component
+        ]
+        overlap_blocks = [(item, reason) for item, reason in overlap_blocks if reason is not None]
+        if quarantined or overlap_blocks:
+            if quarantined:
+                bench_ids = sorted(item["item_id"] for item in component if item["benchmark_quarantine"] or item["source_id"] in quarantine_sources or item["item_id"] in quarantine_objects or item["source_object_id"] in quarantine_objects)
+                reason = "benchmark_quarantine" if len(bench_ids) == len(component) else f"linked_to_quarantined_benchmark:{','.join(bench_ids)}"
+            else:
+                reason = ";".join(sorted({f"{item['item_id']}:{overlap_reason}" for item, overlap_reason in overlap_blocks}))
             for item in component:
                 assigned[item["item_id"]] = "excluded"
                 reasons[item["item_id"]] = reason
@@ -342,10 +426,11 @@ def generate_manifest(metadata: dict[str, Any], profile_set: dict[str, Any], pro
     if any(item["perceptual_hash"] for item in items) or metadata.get("near_duplicate_candidates"):
         grouping_keys.append("perceptual_hash_review_hook")
     return {
-        "split_version": "1.0.0",
+        "split_version": "1.1.0",
         "generator_version": GENERATOR_VERSION,
         "seed": seed,
         "profile_id": profile_id,
+        "benchmark_overlap_policy": profile_set["benchmark_overlap_policy"],
         "source_metadata_version": metadata["metadata_version"],
         "source_metadata_sha256": metadata_digest(metadata),
         "generation_timestamp": generated_at or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -359,13 +444,20 @@ def generate_manifest(metadata: dict[str, Any], profile_set: dict[str, Any], pro
     }
 
 
-def validate_manifest(manifest: Any, metadata: dict[str, Any], profile_set: dict[str, Any], schema: dict[str, Any]) -> list[str]:
+def validate_manifest(
+    manifest: Any,
+    metadata: dict[str, Any],
+    profile_set: dict[str, Any],
+    schema: dict[str, Any],
+    registry: dict[str, Any] | None = None,
+) -> list[str]:
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
     schema_errors = sorted(validator.iter_errors(manifest), key=lambda error: list(map(str, error.absolute_path)))
     errors = [f"manifest{''.join(f'[{part!r}]' for part in error.absolute_path)}: {error.message}" for error in schema_errors]
     if errors:
         return errors
-    errors.extend(_validate_metadata(metadata))
+    registry = registry or load_yaml(REGISTRY_PATH)
+    errors.extend(_validate_metadata(metadata, registry, profile_set))
     if errors:
         return errors
     try:
@@ -376,7 +468,10 @@ def validate_manifest(manifest: Any, metadata: dict[str, Any], profile_set: dict
         errors.append("source_metadata_version does not match input metadata")
     if manifest["source_metadata_sha256"] != metadata_digest(metadata):
         errors.append("source_metadata_sha256 does not match input metadata")
+    if manifest["benchmark_overlap_policy"] != profile_set.get("benchmark_overlap_policy"):
+        errors.append("benchmark_overlap_policy does not match the versioned profile contract")
     items = {item["item_id"]: item for item in metadata["items"]}
+    registry_sources = {source["source_id"]: source for source in registry["sources"]}
     rows = manifest["assignments"]
     ids = [row["item_id"] for row in rows]
     if len(ids) != len(set(ids)):
@@ -394,6 +489,9 @@ def validate_manifest(manifest: Any, metadata: dict[str, Any], profile_set: dict
         is_quarantined = source_item["benchmark_quarantine"] or source_item["source_id"] in set(profile_set.get("benchmark_quarantine_source_ids", [])) | set(metadata.get("quarantined_source_ids", [])) or item_id in set(profile_set.get("known_benchmark_item_ids", [])) | set(metadata.get("quarantined_object_ids", [])) or source_item["source_object_id"] in set(profile_set.get("known_benchmark_item_ids", [])) | set(metadata.get("quarantined_object_ids", []))
         if is_quarantined and (row["partition"] in {"train", "dev"} or row["partition"] != "excluded"):
             errors.append(f"{item_id}: benchmark-quarantined item must be excluded with a reason")
+        overlap_reason = _overlap_exclusion_reason(source_item, registry_sources, metadata["synthetic_fixture"])
+        if overlap_reason and row["partition"] != "excluded":
+            errors.append(f"{item_id}: high-risk benchmark-overlap item must be excluded ({overlap_reason})")
 
     active = [row for row in rows if row["partition"] != "excluded"]
     dimensions = ("document_id", "source_object_id", "image_sha256", "normalized_sha256")
@@ -459,7 +557,15 @@ def validate_manifest(manifest: Any, metadata: dict[str, Any], profile_set: dict
     if manifest["grouping_keys_used"] != expected_keys:
         errors.append("grouping_keys_used does not match the selected profile and available overlap hooks")
     try:
-        reproducible = generate_manifest(metadata, profile_set, manifest["profile_id"], manifest["seed"], manifest["holdout_values"], manifest["generation_timestamp"])
+        reproducible = generate_manifest(
+            metadata,
+            profile_set,
+            manifest["profile_id"],
+            manifest["seed"],
+            manifest["holdout_values"],
+            manifest["generation_timestamp"],
+            registry,
+        )
     except SplitInputError as exc:
         errors.append(f"split cannot be reproduced: {exc}")
     else:
@@ -486,19 +592,23 @@ def main(argv: list[str] | None = None) -> int:
     generate.add_argument("--seed", type=int, required=True)
     generate.add_argument("--holdout-value", action="append", default=[])
     generate.add_argument("--output", type=Path, required=True)
+    generate.add_argument("--profiles", type=Path, default=PROFILES_PATH)
+    generate.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     validate = subparsers.add_parser("validate")
     validate.add_argument("--metadata", type=Path, required=True)
     validate.add_argument("--manifest", type=Path, required=True)
     validate.add_argument("--profiles", type=Path, default=PROFILES_PATH)
+    validate.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     validate.add_argument("--schema", type=Path, default=MANIFEST_SCHEMA_PATH)
     args = parser.parse_args(argv)
     try:
-        profile_set = load_yaml(args.profiles) if hasattr(args, "profiles") else load_yaml(PROFILES_PATH)
+        profile_set = load_yaml(args.profiles)
+        registry = load_yaml(args.registry)
         metadata = load_yaml(args.metadata)
         if args.command == "generate":
-            manifest = generate_manifest(metadata, profile_set, args.profile, args.seed, args.holdout_value)
+            manifest = generate_manifest(metadata, profile_set, args.profile, args.seed, args.holdout_value, registry=registry)
             schema = json.loads(MANIFEST_SCHEMA_PATH.read_text(encoding="utf-8"))
-            errors = validate_manifest(manifest, metadata, profile_set, schema)
+            errors = validate_manifest(manifest, metadata, profile_set, schema, registry)
             if errors:
                 print("Split generation refused:", file=sys.stderr)
                 for error in errors:
@@ -512,7 +622,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         manifest = load_yaml(args.manifest)
         schema = json.loads(args.schema.read_text(encoding="utf-8"))
-        errors = validate_manifest(manifest, metadata, profile_set, schema)
+        errors = validate_manifest(manifest, metadata, profile_set, schema, registry)
     except (SplitInputError, OSError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

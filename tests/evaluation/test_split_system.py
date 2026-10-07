@@ -19,8 +19,9 @@ class SplitSystemTests(unittest.TestCase):
         self.metadata = yaml.safe_load((EXAMPLES / "synthetic_metadata.yaml").read_text(encoding="utf-8"))
         self.profiles = yaml.safe_load((ROOT / "eval/splits/profiles.yaml").read_text(encoding="utf-8"))
         self.schema = json.loads((ROOT / "schemas/split_manifest.schema.json").read_text(encoding="utf-8"))
+        self.registry = yaml.safe_load((ROOT / "data/sources/registry.yaml").read_text(encoding="utf-8"))
 
-    def generate(self, profile_id="PROFILE-DOC-HOLDOUT", holdout_values=None, metadata=None):
+    def generate(self, profile_id="PROFILE-DOC-HOLDOUT", holdout_values=None, metadata=None, registry=None):
         return split_system.generate_manifest(
             copy.deepcopy(self.metadata if metadata is None else metadata),
             self.profiles,
@@ -28,14 +29,16 @@ class SplitSystemTests(unittest.TestCase):
             seed=41,
             holdout_values=holdout_values,
             generated_at="2026-10-08T12:00:00Z",
+            registry=copy.deepcopy(self.registry if registry is None else registry),
         )
 
-    def validate(self, manifest, metadata=None):
+    def validate(self, manifest, metadata=None, registry=None):
         return split_system.validate_manifest(
             copy.deepcopy(manifest),
             copy.deepcopy(self.metadata if metadata is None else metadata),
             self.profiles,
             self.schema,
+            copy.deepcopy(self.registry if registry is None else registry),
         )
 
     def row(self, manifest, item_id):
@@ -92,6 +95,85 @@ class SplitSystemTests(unittest.TestCase):
         self.assertEqual("excluded", row["partition"])
         self.assertTrue(row["exclusion_reason"])
         self.assertEqual([], self.validate(manifest))
+
+    def test_unflagged_high_risk_aku_item_without_clearance_is_excluded(self) -> None:
+        metadata = copy.deepcopy(self.metadata)
+        item = next(item for item in metadata["items"] if item["item_id"] == "item-c2")
+        item["benchmark_quarantine"] = False
+        item["benchmark_overlap_review"] = {
+            "status": "not_assessed",
+            "reviewer_id": None,
+            "evidence_ref": None,
+            "overlap_check_version": None,
+            "roster_version": None,
+            "reviewed_at": None,
+        }
+        manifest = self.generate(metadata=metadata)
+        row = self.row(manifest, "item-c2")
+        self.assertEqual("excluded", row["partition"])
+        self.assertIn("high_risk_benchmark_overlap_unreviewed:SRC-AKU-PAL", row["exclusion_reason"])
+        self.assertEqual([], self.validate(manifest, metadata))
+        forged = copy.deepcopy(manifest)
+        self.row(forged, "item-c2")["partition"] = "train"
+        errors = self.validate(forged, metadata)
+        self.assertTrue(any("high-risk benchmark-overlap item must be excluded" in error for error in errors), errors)
+
+    def test_confirmed_benchmark_match_and_near_duplicate_are_excluded(self) -> None:
+        metadata = copy.deepcopy(self.metadata)
+        matched_item = next(item for item in metadata["items"] if item["item_id"] == "item-c2")
+        matched_item["benchmark_overlap_review"] = {
+            "status": "synthetic_match",
+            "reviewer_id": "synthetic-reviewer-002",
+            "evidence_ref": "synthetic:confirmed-match-c2",
+            "overlap_check_version": "synthetic-overlap-scan/1",
+            "roster_version": "synthetic:hieraticbench-fixture-roster/1",
+            "reviewed_at": "2026-10-08T10:00:00Z",
+        }
+        metadata["near_duplicate_candidates"].append({
+            "left_item_id": "item-c3",
+            "right_item_id": "hb-0001",
+            "method": "manual",
+            "similarity": None,
+            "review_status": "same_content",
+            "reviewer_id": "synthetic-reviewer-003",
+            "evidence_ref": "synthetic:confirmed-near-duplicate-c3-hb1",
+        })
+        manifest = self.generate(metadata=metadata)
+        self.assertEqual("excluded", self.row(manifest, "item-c2")["partition"])
+        self.assertIn("benchmark_overlap_confirmed_match", self.row(manifest, "item-c2")["exclusion_reason"])
+        self.assertEqual("excluded", self.row(manifest, "item-c3")["partition"])
+        self.assertIn("linked_to_quarantined_benchmark", self.row(manifest, "item-c3")["exclusion_reason"])
+        self.assertEqual([], self.validate(manifest, metadata))
+
+    def test_versioned_synthetic_clearance_keeps_distinct_candidate_eligible(self) -> None:
+        manifest = self.generate()
+        row = self.row(manifest, "item-c2")
+        self.assertIn(row["partition"], {"train", "dev", "test"})
+        review = row["benchmark_overlap_review"]
+        self.assertEqual("synthetic_cleared", review["status"])
+        self.assertEqual("synthetic-reviewer-001", review["reviewer_id"])
+        self.assertTrue(review["evidence_ref"].startswith("synthetic:"))
+        self.assertTrue(review["overlap_check_version"])
+        self.assertEqual([], self.validate(manifest))
+
+    def test_overlap_clearance_requires_reviewer_evidence_and_versions(self) -> None:
+        for field in ("reviewer_id", "evidence_ref", "overlap_check_version", "roster_version", "reviewed_at"):
+            with self.subTest(field=field):
+                metadata = copy.deepcopy(self.metadata)
+                review = next(item for item in metadata["items"] if item["item_id"] == "item-c2")["benchmark_overlap_review"]
+                review[field] = None
+                with self.assertRaisesRegex(split_system.SplitInputError, "resolved benchmark-overlap review requires reviewer, evidence, check version, and roster version"):
+                    self.generate(metadata=metadata)
+
+    def test_high_risk_source_classification_is_derived_from_data001(self) -> None:
+        registry = copy.deepcopy(self.registry)
+        hpdb = next(source for source in registry["sources"] if source["source_id"] == "SRC-HPDB")
+        hpdb["benchmark_overlap_risk"] = "high"
+        manifest = self.generate(registry=registry)
+        row = self.row(manifest, "item-a2")
+        self.assertEqual("excluded", row["partition"])
+        self.assertIn("high_risk_benchmark_overlap_unreviewed:SRC-HPDB", row["exclusion_reason"])
+        self.assertEqual([], self.validate(manifest, registry=registry))
 
     def test_exact_hash_overlap_is_detected(self) -> None:
         metadata = copy.deepcopy(self.metadata)

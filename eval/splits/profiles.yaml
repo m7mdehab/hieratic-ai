@@ -1,6 +1,19 @@
-profiles_version: "1.0.0"
+profiles_version: "1.1.0"
 benchmark_quarantine_source_ids: [SRC-HIERATICBENCH]
 known_benchmark_item_ids: [hb-0001, hb-0002]
+benchmark_overlap_policy:
+  policy_version: "1.0.0"
+  risk_authority: "data/sources/registry.yaml:benchmark_overlap_risk"
+  high_risk_action: exclude_unreviewed_or_overlapping
+  roster:
+    version: "hieraticbench-d587dc9-inventory-268-v1"
+    manifest_path: "eval/benchmarks/hieraticbench/manifest.yaml"
+    pinned_commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+    total_items: 268
+    public_items: 266
+    sealed_items: 2
+    item_ids_embedded: false
+    coverage: aggregate_counts_only
 profiles:
   PROFILE-DOC-HOLDOUT:
     kind: group_holdout

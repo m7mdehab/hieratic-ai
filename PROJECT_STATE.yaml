@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 18.5
+  goal_progress: 20.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -24,18 +24,17 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W0_CONTROL_PLANE"
+  current_wave: "W2_DATA_AND_SEALED_POLICY"
   control_plane_gate: "ctrl_003_active_fnd_006_validated"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "DATA-002"
+  last_accepted_task: "EVAL-006"
   ready_tasks:
     - "DATA-003"
     - "DATA-005"
     - "DATA-006"
     - "DATA-007"
-    - "EVAL-006"
   active_tasks:
     - "CTRL-003"
     - "EVAL-003"
@@ -80,13 +79,11 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W1 DATA-002, DATA-004 and EVAL-004 were accepted after source review, targeted
-  remediation and passing CI. Queue now includes EVAL-006, DATA-003, DATA-005,
-  DATA-006 and DATA-007, which are dependency-ready but not yet dispatched.
-  Agree the next parallel wave with the user first and assign a meaningful
-  overseer-owned scientific task. Review CTRL-003 PR #27 after Anti-Gravity
-  resolves current-main, mobile and npm dependency QA issues. EVAL-003 has
-  accepted offline methodology/tooling only: actual provider calls, an approved
-  budget, private outputs and reproduced scores are still required for its
-  1.5 points. Real dataset admission and benchmark overlap verification remain
-  externally reviewed, never inferred from synthetic fixtures.
+  EVAL-006 scientific blind-release protocol and redacted stage-report audit
+  accepted in PRs #35/#40. Review Luna W2 DATA-003/005/006/007 when agents
+  return; all remain dependency-ready and unvalidated until independent PR CI
+  acceptance. Continue CTRL-003 Anti-Gravity QA/review. EVAL-003 has versioned
+  public benchmark freeze tooling (PR #38) but no actual model inference,
+  approved budget or verified baseline results. Do not award EVAL-003 points.
+  Do not claim that EVAL-006 protocol acceptance establishes a real sealed
+  benchmark run, expert-validated Hieratic reading, or licensed training data.

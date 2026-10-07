@@ -157,3 +157,16 @@ The corrected W1 package passed live GitHub CI and was merged in independent PRs
 Observed CI: DATA-002 final 34 governance/51 data/78 evaluation tests; DATA-004 34/32/57; EVAL-004 34/13/78, all passed with approved task-branch scopes. **No rights-controlled images, trained models, model experiments or unseen-scribe performance were produced.**
 
 Capability points **+7.0** (11.5 -> 18.5), phase P2 **6.5/10**, phase P3 **7/20**. Research coverage remains **14%** pending its separate operational denominator.
+
+
+### R-011 — Sealed evaluation policy, metric-claim auditing and public-freeze preregistration
+
+**Status:** VERIFIED METHODOLOGY/TOOLING — NO REPORTED MODEL PERFORMANCE.
+
+EVAL-006 created a versioned frozen **policy** for independent blind Hieratic evaluation, contamination response and release authority. It does not certify a real sealed corpus or evaluate a real checkpoint. Its linked redacted-report contract forbids missing/altered attempts, post-hoc metrics, composite scores, unsubstantiated stage/generalization claims and confidence intervals without document groups. Scientific release must also meet item-specific rights and benchmark-overlap evidence and independent review.
+
+PRs #35 and #40 passed CI and were accepted (+2.0 points). A total of 145 evaluation tests passed in the final audit; this includes synthetic cases, **not** model runs.
+
+Separately, EVAL-003's pinned public metadata freeze was implemented in PR #38. Ephemeral CI examined only permitted metadata/prompt source in the EVAL-002 upstream checkout at commit `d587dc990013f18007f1e7a8f56f96ff2f7127e2` and verified 116 public script-ID + 150 sign item/rung records (2 sealed items excluded). It creates no inference results or spending authorization; EVAL-003 retains 0/1.5 points.
+
+New goal progress: **20.5/100**, P2 evaluation **8.5/10**, research coverage 14%, 0 validated experiments and 0 trained models.

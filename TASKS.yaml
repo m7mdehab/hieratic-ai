@@ -162,8 +162,8 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Freeze sealed evaluation protocol"
     weight: 2.00
-    status: "ready"
-    owner_role: "execution_agent"
+    status: "validated"
+    owner_role: "overseer"
     depends_on: ["EVAL-004", "EVAL-005"]
     acceptance_summary: "Final evaluation rules prevent adaptive test-set tuning and define contamination handling and release conditions."
 
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 18.5
+    validated_weighted_tasks_expected: 20.5
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

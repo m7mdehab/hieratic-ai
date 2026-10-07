@@ -242,3 +242,20 @@ DATA-002, DATA-004 and EVAL-004 infrastructure was accepted after code, CI and n
 - Downstream tasks `EVAL-006`, `DATA-003`, `DATA-005`, `DATA-006`, `DATA-007` become **dependency-ready only**; ready is not automatically active or validated.
 
 The accepted implementation PRs are #20, #23 and #24, with W1 acceptance recorded in canonical state. The limitation protects the difference between validated engineering guardrails and scientific or licensing evidence.
+
+
+## ADR-0018 — A frozen evaluation policy is not a scored blind experiment
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+EVAL-006's versioned sealed evaluation protocol, custody separation, machine-readable pre-registration, contamination-response rules and staged publication gates are accepted research infrastructure. A human-verified, hash-frozen real dataset/model run remains a separate future scientific milestone.
+
+- Freeze item/split/model/config/prompts/metric identities and planned attempts **before** developer exposure to sealed item gold/scores; revisions after exposure require a genuinely fresh independent holdout.
+- Keep training operator, sealed custodian, blind scorer/adjudicator and release authorities separated and evidence-linked; no unilateral scoring/publication.
+- Test asset rights, source/near-duplicate overlap and original document lineage; a submitted `clear` boolean is not independent rights/novelty proof.
+- Score EVAL-001 layers individually, preserve all failures/abstentions/unscorable gold counts, and use document-clustered confidence limits. A fluent translation or script label is insufficient evidence of genuine Hieratic reading.
+- Suspected/confirmed contamination blocks affected public claims until recorded independent review and, as necessary, withdrawal or genuinely new blind test.
+- EVAL-003 public benchmark manifest/prompt-source freeze is separate from execution authority; upstream historical scores cannot be laundered into newly run baseline claims.
+
+Evidence: `docs/evaluation/SEALED_EVALUATION_PROTOCOL.md`, PRs #35/#40; `docs/evaluation/FRONTIER_BASELINES.md`, PR #38.

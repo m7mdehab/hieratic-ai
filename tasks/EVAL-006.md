@@ -3,7 +3,7 @@
 **Owner:** Overseer (approved W2)  
 **Dependency status:** EVAL-004 and EVAL-005 validated  
 **Weight:** 2.0 capability points upon independent acceptance  
-**Status:** Implementation candidate; never self-validate  
+**Status:** Accepted by overseer after independently passing governance, sealed and evaluation CI (PRs #35/#40; canonical state acceptance separate).  
 
 ## Objective
 

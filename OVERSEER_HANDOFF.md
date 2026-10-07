@@ -4,8 +4,8 @@ Updated: 2026-10-08
 
 ## Current verified state
 
-- Goal progress: **6.0 / 100**
-- Goal remaining: **94.0**
+- Goal progress: **8.0 / 100**
+- Goal remaining: **92.0**
 - Research coverage: **~14%**
 - Current capability phase: **P1 — Research Foundation**
 - Phase 1 progress: **4.5 / 5 (90%)**
@@ -156,3 +156,43 @@ Evidence:
 EVAL-001 earns **1.5 capability points**, moving verified goal progress from 4.5 to 6.0.
 
 EVAL-005 is newly ready.
+
+
+## DATA-001 acceptance
+
+**DATA-001 — validated and merged via PR #15.**
+
+Verified:
+- 8-source machine-readable registry;
+- canonical rights classes and project review markers;
+- explicit training/development/evaluation/redistribution decisions;
+- HieraticBench evaluation quarantine;
+- DDD non-commercial and per-item constraints;
+- AKU-PAL per-item and benchmark-overlap controls;
+- TLA no-bulk-scraping restriction;
+- unresolved PaPYrus/Isut/HieraticAI image/data rights remain non-approved;
+- JSON Schema plus deterministic validator;
+- 13 data tests and 18 governance tests reported passing;
+- no third-party raw assets were added.
+
+DATA-001 earns **2.0 capability points**, moving verified progress from 6.0 to 8.0.
+
+Newly ready:
+- DATA-002
+- DATA-004
+
+A minor post-review metadata correction aligns TLA `accessed_at` with the registry's own 2026-10-08 spot-check note.
+
+## Luna work-package sizing
+
+Luna is substantially faster than the overseer lane on bounded engineering tasks. Future Luna dispatches should therefore be **multi-task work packages** when several independent tasks are simultaneously ready.
+
+Rules:
+- batch only tasks whose dependencies are already validated at dispatch time;
+- preserve one task ID, branch, PR, and evidence package per canonical task unless the overseer explicitly approves another structure;
+- Luna may complete all independent tasks in the package before returning;
+- no task may start merely because another task in the same package finished if it depends on overseer acceptance of that earlier task;
+- avoid overlapping write scopes across the package;
+- quality/acceptance criteria remain unchanged.
+
+This is intended to reduce idle time, not relax review.

@@ -117,8 +117,8 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Specify evaluation metrics across the reading stack"
     weight: 1.50
-    status: "ready"
-    owner_role: "execution_agent"
+    status: "validated"
+    owner_role: "overseer"
     depends_on: ["FND-003"]
     acceptance_summary: "Metrics and scoring rules cover script ID, recognition, transliteration, uncertainty, and translation without conflating tasks."
 
@@ -153,7 +153,7 @@ tasks:
     phase: "P2_EVALUATION"
     title: "Define error taxonomy and analysis workflow"
     weight: 1.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["EVAL-001"]
     acceptance_summary: "Recognition and linguistic failure modes can be labeled consistently and summarized reproducibly."
@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 4.5
+    validated_weighted_tasks_expected: 6.0
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

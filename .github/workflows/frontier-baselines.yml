@@ -43,6 +43,22 @@ jobs:
           fi
           echo "PASS: planning suite fails closed before model API calls"
 
+      - name: Validate explicitly non-executable synthetic per-model run draft
+        run: python -m eval.baselines.run_freeze validate-draft
+
+      - name: Reject synthetic draft as an inference authorization
+        run: |
+          if python -m eval.baselines.run_freeze verify-locked \
+            --record eval/baselines/examples/run-freeze.draft.synthetic.json \
+            --suite eval/baselines/suite.yaml \
+            --items eval/baselines/examples/run-freeze.draft.synthetic.json \
+            --attempts eval/baselines/examples/run-freeze.draft.synthetic.json \
+            --vault eval/baselines --upstream-checkout eval/benchmarks; then
+            echo "FAIL: synthetic draft must not permit inference"
+            exit 1
+          fi
+          echo "PASS: run-level authorization remains blocked"
+
       - name: Run entire evaluation test suite
         run: python -m unittest discover -s tests/evaluation -v
 

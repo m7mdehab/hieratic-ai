@@ -15,7 +15,8 @@
     "metric_rows",
     "public_claim_layers",
     "comparisons",
-    "report_note"
+    "report_note",
+    "end_to_end_evidence"
   ],
   "properties": {
     "schema_version": {
@@ -234,6 +235,35 @@
     "report_note": {
       "type": "string",
       "minLength": 1
+    },
+    "end_to_end_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_sha256",
+        "expert_review_sha256",
+        "heldout_document_count"
+      ],
+      "properties": {
+        "trace_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expert_review_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "heldout_document_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   }
 }

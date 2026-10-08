@@ -31,13 +31,16 @@ state:
   best_verified_result: null
   last_accepted_task: "LING-001"
   ready_tasks:
-    - "DATA-008"
-    - "VLM-001"
     - "LING-002"
   active_tasks:
+    - "DATA-008"
+    - "VLM-001"
     - "EVAL-003"
   review_tasks: []
-  blockers: []
+  blockers:
+    - "DATA-008: no item-rights-cleared real corpus with independently reviewed gold and clean real train/dev/test partitions."
+    - "VLM-001: incomplete authentic-image few-shot and pinned correct official/native evaluation integration; no verified actual open-weight inference."
+    - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
 
 canonical_files:
   start: "START_HERE.md"
@@ -75,18 +78,19 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  LING-001 independently accepted and merged in PR #51 after reviewer-patched
-  immutable file publishing and exact DATA-004 annotation-hash provenance;
-  independent CI now requires the 8/8 linguistic tests (governance PR #53).
-  Verified goal 32.5/100, P6 2/10, other phases unchanged, 0 models/real
-  inference. LING-002 becomes ready but must not start without next approved
-  wave and verified scholarly lexical/morphological source rights. DATA-008 PR
-  #49 has a correct blocked production corpus release assessment: do not award
-  its 3 points absent real licensed, independently reviewed train/dev/test
-  material. Anti-Gravity VLM-001 PR #52 requires revisions: fake demonstration
-  rights/hash evidence, unavailable model execution, and nonofficial
-  statistics prevent baseline validation. EVAL-003 PR #50 native official
-  TypeScript score-replay infrastructure merged with 180 evaluation tests but
-  no authentic paid provider calls or official new scores; remain active/0
-  EVAL-003 credit. Continue review of DATA-008 and revised VLM-001 without
-  inflating task progression or confusing synthetic tests with experiments.
+  W3 re-review on 2026-10-08: Luna DATA-008 PR #49 independently accepted
+  and merged as tested release infrastructure at commit
+  fabf52a511d4339ecf137113c60acea3932ee6fa, without awarding its
+  3 points: an actual independently rights-cleared expert-reviewed ML-ready
+  train/dev/test corpus is not available. Gemini VLM-001 PR #52 exact head
+  998aa11f5c0a51cf7d175f97a19d18871b0ce273 remains open and
+  revision_required: reviewer comment #6062558336 identifies incorrect
+  EVAL-001 metric IDs and CER direction, nonfunctional official-score channel,
+  invalid frozen-denominator proofs, nonvisual few-shot exemplars, and real
+  model/universe execution limitations. Continue existing VLM remediation,
+  safely dispatch dependency-ready LING-002 with strict lexical/source-rights
+  boundary (no invented Egyptian meanings), and have overseer work on a
+  separate research/architecture task only after user dispatches prompts and
+  returns (ADR-0023). Current accepted weighted sum 32.5/100 (67.5 left),
+  research coverage 14%, P6 2/10, EVAL-003 active 0/1.5, real experiments
+  0, trained models 0. Do not confuse CI with actual model reading.

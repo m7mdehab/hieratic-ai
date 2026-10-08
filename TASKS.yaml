@@ -234,7 +234,7 @@ tasks:
     phase: "P3_DATA_ENGINE"
     title: "Release ML-ready corpus v1"
     weight: 3.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["DATA-003", "DATA-005", "DATA-006", "DATA-007", "EVAL-004"]
     acceptance_summary: "Versioned train/dev/test corpus passes integrity, provenance, licensing, and split checks."
@@ -315,7 +315,7 @@ tasks:
     phase: "P5_VLM"
     title: "Establish zero/few-shot VLM baseline suite"
     weight: 2.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["EVAL-002", "EVAL-006"]
     acceptance_summary: "Selected base VLMs are evaluated reproducibly on the agreed tasks before adaptation."

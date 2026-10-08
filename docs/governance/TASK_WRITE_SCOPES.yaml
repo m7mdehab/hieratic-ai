@@ -89,3 +89,10 @@ task_scopes:
     - "tests/evaluation/test_vlm_baselines.py"
     - "docs/evaluation/VLM_BASELINES.md"
     - ".github/workflows/vlm-baselines.yml"
+  LING-002:
+    - "tasks/LING-002.md"
+    - "ling/lexical/**"
+    - "schemas/lexical_interpretation.schema.json"
+    - "tools/lexical_interpretation.py"
+    - "tests/linguistics/test_lexical_interpretation.py"
+    - "docs/linguistics/LEXICAL_MORPHOLOGICAL_PROTOCOL.md"

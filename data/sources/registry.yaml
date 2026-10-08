@@ -273,7 +273,7 @@ sources:
 
   - source_id: SRC-AED-TEI
     name: Ancient Egyptian Dictionary AED-TEI published lexicon
-    source_type: scholarly_lexical_dataset
+    source_type: linguistic_corpus
     responsible_party: "TLA/AED contributors and Simon D. Schweitzer (TEI conversion)"
     canonical_url: https://github.com/simondschweitzer/aed-tei
     access_url: https://github.com/simondschweitzer/aed-tei/blob/462c722e0323e05641aea2eee8cdf1e27303d939/files/dictionary.xml
@@ -282,7 +282,7 @@ sources:
     verified_status: VERIFIED-PRIMARY
     rights_text_verbatim: "All files: CC-BY-SA 4.0"
     rights_class: OPEN-SA
-    project_review_markers: [SHARE-ALIKE-REVIEW, TEXT-LAYER-ONLY, PROVENANCE-REVIEW]
+    project_review_markers: [SHARE-ALIKE-REVIEW, PROVENANCE-REVIEW]
     license_url: https://creativecommons.org/licenses/by-sa/4.0/
     rightsholder: "AED/TLA scholarly contributors for the 2018 dataset; conversion by Simon D. Schweitzer"
     attribution_requirements: "Credit AED/TLA project, original 2018 scholarly contributors and Simon D. Schweitzer; preserve CC BY-SA 4.0 and modifications in derived text/lexicon"
@@ -292,7 +292,7 @@ sources:
     redistribution_use: conditional
     commercial_use: conditional
     model_release_review: required
-    automated_access_constraints: [only_publisher_licensed_lexical_files, retain_attribution_and_share_alike, do_not_infer_underlying_manuscript_image_rights, preserve_snapshot_sha]
+    automated_access_constraints: [preserve_dataset_attribution, preserve_image_layer_provenance]
     benchmark_quarantine: false
     benchmark_overlap_risk: unknown
     evidence_urls:
@@ -306,11 +306,11 @@ sources:
     open_questions:
       - "Review share-alike implications for any derived dataset, checkpoint or public release."
       - "Lexical source publication/pretraining contamination prevents independent blind OCR certification."
-    recommended_project_role: licensed_lexical_and_morphological_reference
+    recommended_project_role: research_training_candidate_rights_gated
 
   - source_id: SRC-AES-OPEN
     name: Ancient Egyptian Sentences AES published annotated text corpus
-    source_type: scholarly_annotated_text_corpus
+    source_type: linguistic_corpus
     responsible_party: "Simon D. Schweitzer (conversion) and scholarly editors of the TLA/AED project"
     canonical_url: https://github.com/simondschweitzer/aes
     access_url: https://github.com/simondschweitzer/aes/blob/35276d2527cca1a055e31ed5f6683e777717170f/files/aes/_aes_bbawfelsinschriften.json
@@ -319,7 +319,7 @@ sources:
     verified_status: VERIFIED-PRIMARY
     rights_text_verbatim: "All files: CC-BY-SA 4.0"
     rights_class: OPEN-SA
-    project_review_markers: [SHARE-ALIKE-REVIEW, TEXT-LAYER-ONLY, BENCHMARK-OVERLAP-REVIEW]
+    project_review_markers: [SHARE-ALIKE-REVIEW, BENCHMARK-OVERLAP-REVIEW]
     license_url: https://creativecommons.org/licenses/by-sa/4.0/
     rightsholder: "TLA/AED research and text editors; JSON transformation by Simon D. Schweitzer"
     attribution_requirements: "Credit AES and named text editors; retain CC BY-SA 4.0 and citation, original token/text IDs and modification history"
@@ -329,7 +329,7 @@ sources:
     redistribution_use: conditional
     commercial_use: conditional
     model_release_review: required
-    automated_access_constraints: [preserve_per_text_editor_provenance, split_by_underlying_text_id, no_photograph_rights_grant, forbid_training_on_holdout_annotations]
+    automated_access_constraints: [preserve_dataset_attribution, check_benchmark_overlap]
     benchmark_quarantine: false
     benchmark_overlap_risk: unknown
     evidence_urls:
@@ -342,4 +342,4 @@ sources:
     open_questions:
       - "Published editors' annotation may be in language-model pretraining; diagnostic not sealed performance."
       - "Do not infer image/physical witness independence from corpus sentence IDs alone."
-    recommended_project_role: development_grade_scholarly_lexical_and_morphological_diagnostic
+    recommended_project_role: research_training_candidate_rights_gated

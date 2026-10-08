@@ -765,5 +765,100 @@ class W6DocumentaryEvidenceTests(unittest.TestCase):
 
 
 
+class W7FirstRealRunDecisionTests(unittest.TestCase):
+    """No actual provider calls: negative authorization and source-linkage tests."""
+
+    @classmethod
+    def setUpClass(cls):
+        from eval.baselines import w7_decision
+        cls.validator = w7_decision
+        cls.snapshot = w7_decision.load()
+
+    def clone(self):
+        return copy.deepcopy(self.snapshot)
+
+    def assert_refused(self, records, substring):
+        errors = self.validator.audit(*records)
+        self.assertTrue(any(substring in x for x in errors), errors)
+
+    def test_w7_documentary_decision_passes_but_cannot_run(self):
+        decision, source, suite, catalog = self.clone()
+        self.assertEqual([], self.validator.audit(decision, source, suite, catalog))
+        self.assertFalse(decision["execution_authorized"])
+        self.assertFalse(decision["payment_authorized"])
+        self.assertEqual(0, decision["actual_provider_calls"])
+        self.assertEqual([561345, 561369], source["linked_group"]["object_ids"])
+        self.assertEqual(561392, source["primary_candidate"]["object_id"])
+
+    def test_self_granted_paid_permission_refused(self):
+        d = list(self.clone())
+        d[0]["payment_authorized"] = True
+        self.assert_refused(d, "payment_authorized")
+
+    def test_fake_provider_account_approval_refused(self):
+        d = list(self.clone())
+        d[0]["api_credentials_verified"] = True
+        self.assert_refused(d, "api_credentials_verified")
+
+    def test_forged_private_output_custody_refused(self):
+        d = list(self.clone())
+        d[0]["private_capture_vault_verified"] = True
+        self.assert_refused(d, "private_capture_vault_verified")
+
+    def test_false_source_image_and_line_gold_refused(self):
+        d = list(self.clone())
+        d[0]["source_image_bytes_verified"] = True
+        d[0]["source_gold_licence_verified"] = True
+        self.assert_refused(d, "source_image_bytes_verified")
+        self.assert_refused(d, "source_gold_licence_verified")
+
+    def test_pre_registered_public_image_cannot_be_fabricated(self):
+        d = list(self.clone())
+        d[0]["phases"][1]["source_item_id"] = "aku-0001"
+        self.assert_refused(d, "identity supplied before verified")
+
+    def test_self_issued_scholarly_gold_and_outreach_refused(self):
+        d = list(self.clone())
+        d[1]["newly_validated_image_line_pairs"] = 1
+        d[1]["institution_contacted"] = True
+        self.assert_refused(d, "false specialist engagement")
+
+    def test_met_companion_561369_cannot_be_erased_from_leakage_group(self):
+        d = list(self.clone())
+        d[0]["source_guard"]["met_associated_companion_ids"] = [561345]
+        self.assert_refused(d, "linked Met object contamination group absent")
+
+    def test_met_primary_not_swappable_with_ambiguous_pair(self):
+        d = list(self.clone())
+        d[0]["source_guard"]["first_original_pilot_met_id"] = 561345
+        self.assert_refused(d, "linked Met object contamination group absent")
+
+    def test_provider_rate_drift_refused(self):
+        d = list(self.clone())
+        d[0]["candidate_providers"][2]["input_usd_per_million_tokens"] = 0.01
+        self.assert_refused(d, "quoted published default model rate drift")
+
+    def test_unapproved_image_derived_cost_quote_refused(self):
+        d = list(self.clone())
+        d[0]["cost_policy"]["max_total_spend_usd"] = 10.0
+        self.assert_refused(d, "cost/usage budget field")
+
+    def test_fake_test_score_from_transport_prohibited(self):
+        d = list(self.clone())
+        d[0]["phases"][0]["metrics_allowed"] = True
+        self.assert_refused(d, "transport pilots cannot generate Hieratic accuracy")
+
+    def test_benchmark_sample_size_inflation_rejected(self):
+        d = list(self.clone())
+        d[0]["phases"][1]["max_attempts"] = 266
+        self.assert_refused(d, "unapproved expansion beyond")
+
+    def test_preflight_does_not_import_api_sdk_or_send_http(self):
+        source_text = Path(self.validator.__file__).read_text(encoding="utf-8")
+        for network_call in ("requests.get(", "urllib.request.urlopen(", "httpx.", "client.responses.create(", "client.messages.create("):
+            self.assertNotIn(network_call, source_text)
+
+
+
 if __name__=="__main__":
     unittest.main()

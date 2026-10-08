@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "research_id": "R-022",
+  "as_of": "2026-10-09",
+  "purpose": "First core-Ramesside image and independent Egyptologist single-line pilot source selection",
+  "decision": "PRIORITIZE_MET_561392;HOLD_MET_561345_IN_LINKED_GROUP",
+  "evidence_grade": "official_public_source_pages_and_preexisting_official_API_metadata;no_photo_pixels_fetched",
+  "primary_candidate": {
+    "object_id": 561392,
+    "accession": "09.184.751",
+    "description": "Hieratic ostracon, notes concerning lamps/torches, inscribed on one side",
+    "source_page": "https://www.metmuseum.org/art/collection/search/561392",
+    "met_observed_packet": "data/acquisition/met/objects/561392.json",
+    "packet_body_sha256": "6b9499da2e3f704ba949899a15465f90775f9eaf84bfd081452c6da5f60df424",
+    "met_api_isPublicDomain": true,
+    "source_policy": "https://www.metmuseum.org/hubs/open-access",
+    "original_image_reference_count": 2,
+    "multi_accession_filename_detected": false,
+    "other_source_identity_link_disproved": false,
+    "same_support_group_key": "MET-09.184.751-UNRESOLVED_FACES",
+    "original_asset_sha256": null,
+    "licensed_transliteration_sha256": null,
+    "qualified_first_reader_confirmed": false,
+    "qualified_second_reader_confirmed": false,
+    "original_image_bytes_acquired": false,
+    "benchmark_alias_independence_confirmed": false,
+    "corpus_status": "BLOCKED_METADATA_ONLY",
+    "priority_reason": "official original imaging references under one accession; two views of one object; independent expert text/line mapping missing"
+  },
+  "linked_group": {
+    "object_ids": [
+      561345,
+      561369
+    ],
+    "accessions": [
+      "09.184.703",
+      "09.184.728"
+    ],
+    "official_pages": [
+      "https://www.metmuseum.org/art/collection/search/561345",
+      "https://www.metmuseum.org/art/collection/search/561369"
+    ],
+    "primary_561345_packet": "data/acquisition/met/objects/561345.json",
+    "primary_561345_image_filename": "09.184.728-09.184.703_EGDP017620.jpg",
+    "additional_561345_image_filename": "09.184.728-09.184.703_EGDP017621.jpg",
+    "source_relation": "Met object 561369 / 09.184.728 is catalogued under title 'Hieratic Ostracon- see 09.184.703'",
+    "relation_verified_from_primary_museum_page": true,
+    "physical_join_verified": false,
+    "same_manuscript_text_verified": false,
+    "both_in_one_photo_verified": false,
+    "artwork_display_status": "561345 on view; 561369 not on view per primary museum pages",
+    "source_overlap_policy": "quarantine both within one conservative leakage cluster pending expert physical-support and photo-frame analysis",
+    "group_key": "MET-09.184.703__09.184.728_LINKED_UNRESOLVED",
+    "original_asset_sha256": null,
+    "licensed_gold_sha256": null,
+    "corpus_status": "BLOCKED_LINKED_SOURCE_IDENTITY"
+  },
+  "source_census": {
+    "r017_public_metadata_rows": 266,
+    "literal_matches_for_561345_561369_561392_and_accessions": 0,
+    "conclusion": "NO_LITERAL_METADATA_MATCH_ONLY;NEVER_BENCHMARK_INDEPENDENCE",
+    "sealed_items_uninspected": true
+  },
+  "expert_collaboration_routes": [
+    {
+      "route": "Museo Egizio Turin institutional collection",
+      "official_research_team_page": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Collection/Our-projects/Research-projects/",
+      "named_expertise": "Susanne Töpfer, curator and coordinator of TPOP; published interests in Hieratic/papyrology",
+      "verified_public_contact": "collezione.papiri@museoegizio.it",
+      "source_contact_page": "https://collezionepapiri.museoegizio.it/en-GB/contacts/",
+      "availability_to_annotate_our_Met_object": "NOT_VERIFIED",
+      "fee_quote_usd": null,
+      "actual_commitment": false,
+      "correspondence_sent": false
+    },
+    {
+      "route": "Museo Egizio / Basel / Liège Crossing Boundaries",
+      "official_project_page": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Collection/Our-projects/Crossing-Boundaries/",
+      "relevance": "Ramesside Deir el-Medina papyri, scribal practices, reconstruction and palaeography",
+      "availability_to_annotate_our_Met_object": "NOT_VERIFIED",
+      "fee_quote_usd": null,
+      "actual_commitment": false,
+      "correspondence_sent": false
+    },
+    {
+      "route": "Met Egyptian Art departmental curatorial research",
+      "official_object_page": "https://www.metmuseum.org/art/collection/search/561392",
+      "relevance": "object cataloguing and accession/photo support linkage confirmation; not an implied transcription service",
+      "availability_to_annotate_our_object": "NOT_VERIFIED",
+      "fee_quote_usd": null,
+      "actual_commitment": false,
+      "correspondence_sent": false
+    }
+  ],
+  "owner_approval_required_before": [
+    "contact_institution",
+    "contract_scholar",
+    "spend_funds",
+    "commit_private_permissions",
+    "download_protected_photo"
+  ],
+  "metadata_only": true,
+  "authorities_verified": false,
+  "owner_authorized_outreach": false,
+  "institution_contacted": false,
+  "experts_engaged": false,
+  "newly_validated_image_line_pairs": 0,
+  "science_capability_points_earned": 0
+}

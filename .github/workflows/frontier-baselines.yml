@@ -38,6 +38,9 @@ jobs:
       - name: Audit W6 public-only metadata and documentary provider candidates (no network)
         run: python -m eval.baselines.w6_readiness
 
+      - name: Check W7 first source-linked provider-run decision remains unauthorized
+        run: python -m eval.baselines.w7_decision
+
       - name: Assert unapproved paid inference remains blocked
         run: |
           if python -m eval.baselines.baselinectl preflight; then

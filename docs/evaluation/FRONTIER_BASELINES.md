@@ -302,3 +302,49 @@ Before even one paid image request:
 5. Run actual provider requests and preserve all attempt failures/refusals/timeouts and raw provider receipts; evaluate using pinned official scorer and separately labeled EVAL-001 metrics; independent observer reviews results and provenance before status changes.
 
 **No provider credentials, image acquisition, new API inference, live images or human permission have been provided.** All W6 catalogue entries are documentary candidates, all execution gates remain blocked, `suite.yaml` is unchanged in `planning`, EVAL-003 still active and earns zero new points. This research only removes uncertainty over current *documented* model ID/routes, not experiment access.
+
+
+## W7 — Owner-executable first real inference decision (2026-10-09)
+
+**Deliverables:** [explicit unapproved two-stage decision packet](../../eval/baselines/w7_first_run_decision.json), [offline source-linked decision auditor](../../eval/baselines/w7_decision.py), [R-022 first-image expert-gold investigation](../research/R022_LINKED_MET_SOURCE_AND_EXPERT_GOLD_FIRST_PAIR.md). These are **reviewed provider documentation and planning outputs, not a real run, an authenticated approval or a model score**.
+
+### Why the first attempted request should be one user-owned image, not a scientific benchmark
+
+- **P0 — transport integrity:** owner-authorized **one** synthetic, locally authored image (for example a red square/blue circle; no Egyptian artefact, copyrighted work or answer gold), exact model account ID, one actual image-conditioned API request, one returned provider response preserved in a secure vault and original raw-output/usage hash. This proves successful *image transport* only. An unchanged-text image-swap visual-sensitivity check may be separately preregistered, but requires another approved attempt; no inferred Hieratic quality.
+- **P1 — frozen *public-evaluation-only* sample:** after separate explicit approval of exact public source identity and image rights, freeze one preselected `HieraticBench@d587dc990013f18007f1e7a8f56f96ff2f7127e2` public item **without consulting gold**, use exact pinned `bench/src/prompts.ts` prompt, preserve every failure/response and original source hash. This is a **transport/integration diagnostic**, not a population benchmark, and cannot tune prompts or choose subsequent examples based on the answer. P1 remains blocked until vault, rights, approved item snapshot and bill cap are verified.
+- **P2 — scientific evaluation:** only after P0/P1 technical transport works and an exact whole-public-universe attempt plan is independently preregistered and funded. Retain sealed exclusion, image/edition support groups, intention-to-test failure denominator, original upstream scorer and independent audit. Do **not** extrapolate one P1 result into a scored project capability milestone.
+
+The existing `eval/baselines/suite.yaml` intentionally remains `status: planning` with all authorization flags false, unknown approved dollar cap and null immutable live item/prompt bundle IDs. The new tool must also fail closed against any attempted JSON-generated "owner approval" or fabricated API usage receipts.
+
+### Published provider pricing: rate anchors, *not an image cost estimate*
+
+Public official vendor rate references observed **2026-10-09** (USD per 1,000,000 billed tokens; confirm authenticated exact tier and image/thinking-token billing before execution):
+
+| Provider / documented API model | Uncached input USD/MTok | Output USD/MTok | Rate/limitations |
+|---|---:|---:|---|
+| OpenAI [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) via Responses | **$0.10** | **$0.50** | [Official Standard short-context pricing](https://developers.openai.com/api/docs/pricing); different Batch/Flex, Fast, cached and long-context tiers. |
+| Anthropic [Claude Sonnet 5.5](https://platform.claude.com/docs/en/models/sonnet-5-5/overview) via Messages | **$2.00** | **$10.00** | Standard rate; image tokens counted as input; thinking/cache and account routes can change charges. |
+| Google [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash) via GenerateContent | **$0.75** | **$3.75** | [Official introduction pricing](https://ai.google.dev/gemini-api/docs/pricing) through **2026-12-31**; output may include thinking, and free tiers have different data-use policies; do not presume a free quota or use consumer subscription. |
+
+No defensible **total $ figure** is possible without the actual picture resolution, provider image-token accounting, output/thinking limit, retries, verified current rate, region/mode and user-defined maximum spend. The calculator formula in the decision packet is accounting guidance, *not* a quote. Avoid any API call until the owner supplies separate approval and a concrete capped budget.
+
+### Source-specific preflight contamination
+
+[Met object 561345](https://www.metmuseum.org/art/collection/search/561345) accession `09.184.703` is explicitly associated in [the Met's own 561369 record](https://www.metmuseum.org/art/collection/search/561369) (accession `09.184.728`, title **“Hieratic Ostracon- see 09.184.703”**). The two official images in `data/acquisition/met/objects/561345.json` contain both accession numbers in their filenames. The original physical relationship remains unadjudicated; **group 561345 and 561369 as one provisional source leakage cluster**.
+
+The first independently authored source-line-pair target is switched to **[Met 561392 / 09.184.751](https://www.metmuseum.org/art/collection/search/561392)**, which has documented public-domain image references mentioning just its own accession; the absence of a catalogue link is not proof of independence. This Met acquisition pilot is **not** automatically one of the frozen `HieraticBench` evaluation items. Keep genuine new training/pilot sources separate from evaluation-only public benchmark items. No original pixel bytes, specialist reading or source-independent science claim exists.
+
+### Operator command and stop conditions
+
+```bash
+python -m eval.baselines.w7_decision
+python -m eval.baselines.w6_readiness
+python -m eval.baselines.baselinectl validate-suite
+# Must still fail (cannot authorize provider calls):
+python -m eval.baselines.baselinectl preflight
+python -m unittest tests.evaluation.test_frontier_baselines -v
+```
+
+The W7 auditor cross-checks the R-022 linked object group, published model identities/rates and the prior official 266-public-only source snapshot, rejects false paid permissions/score promotion, and can only output `execution_authorized: false`. It **cannot** validate actual third-party letters, legal agreements, institutional identities, real API credentials or actual provider outputs. **No provider calls occurred** and no first scientific Hieratic prediction was scored in W7 overseer work. The entire decision remains `NOT_EXECUTED_NONCERTIFIABLE`.
+
+**Minimum owner inputs needed for a genuine P0 run:** choice of API provider account, availability and right to use its API key, a specific USD budget ceiling, an authenticated permitted image input, a genuinely protected raw-capture store and permission to transmit one user-owned generated image under the relevant API data-use policy. External correspondence/expert fees and Met original image acquisition remain separate authorizations.

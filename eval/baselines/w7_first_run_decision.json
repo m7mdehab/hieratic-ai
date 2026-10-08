@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0.0",
+  "decision_id": "EVAL003-W7-TRANSPORT-THEN-REAL-PUBLIC-RUN",
+  "as_of": "2026-10-09",
+  "execution_authorized": false,
+  "payment_authorized": false,
+  "api_credentials_verified": false,
+  "private_capture_vault_verified": false,
+  "source_image_bytes_verified": false,
+  "source_gold_licence_verified": false,
+  "official_public_benchmark_item_manifest_frozen": false,
+  "official_prompt_bytes_frozen": false,
+  "formal_run_preregistered": false,
+  "provider_account_model_access_tested": false,
+  "eligible_paid_api_calls": 0,
+  "priority": "P0_SINGLE_OWNED_SYNTHETIC_IMAGE_TRANSPORT",
+  "phases": [
+    {
+      "name": "P0",
+      "description": "single user-owned synthetic non-Hieratic PNG image, validate actual provider image transport and private raw-response custody",
+      "source_kind": "locally_generated_owned_fixture",
+      "image_source_id": null,
+      "source_image_sha256": null,
+      "max_images": 1,
+      "max_attempts": 1,
+      "metrics_allowed": false,
+      "hieratic_score_claim_allowed": false,
+      "substitution_allowed": false,
+      "status": "AWAITING_OWNER_ACCOUNT_AND_BUDGET_APPROVAL",
+      "estimated_cost_usd": null
+    },
+    {
+      "name": "P1",
+      "description": "one preregistered eligible public-only official benchmark image, exact pinned prompt and raw source evidence, capability diagnostic only not population score",
+      "source_kind": "pinned_official_public_eval_only",
+      "source_image_sha256": null,
+      "source_item_id": null,
+      "max_images": 1,
+      "max_attempts": 1,
+      "metrics_allowed": false,
+      "hieratic_score_claim_allowed": false,
+      "substitution_allowed": false,
+      "status": "AWAITING_RIGHTS_FREEZE_AND_EXPLICIT_APPROVAL",
+      "estimated_cost_usd": null
+    }
+  ],
+  "candidate_providers": [
+    {
+      "key": "openai-frontier",
+      "id": "gpt-6-luna",
+      "route": "v1/responses",
+      "model_doc": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+      "pricing_doc": "https://developers.openai.com/api/docs/pricing",
+      "input_usd_per_million_tokens": 0.1,
+      "output_usd_per_million_tokens": 0.5,
+      "rate_tier": "standard_short_context",
+      "verify_current_rate_before_spend": true
+    },
+    {
+      "key": "anthropic-frontier",
+      "id": "claude-sonnet-5-5",
+      "route": "v1/messages",
+      "model_doc": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+      "pricing_doc": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "input_usd_per_million_tokens": 2,
+      "output_usd_per_million_tokens": 10,
+      "rate_tier": "standard",
+      "verify_current_rate_before_spend": true
+    },
+    {
+      "key": "google-frontier",
+      "id": "gemini-3.8-flash",
+      "route": "v1beta/models/gemini-3.8-flash:generateContent",
+      "model_doc": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+      "pricing_doc": "https://ai.google.dev/gemini-api/docs/pricing",
+      "input_usd_per_million_tokens": 0.75,
+      "output_usd_per_million_tokens": 3.75,
+      "rate_tier": "paid_standard_intro_through_2026-12-31",
+      "verify_current_rate_before_spend": true
+    }
+  ],
+  "cost_policy": {
+    "max_total_spend_usd": null,
+    "provider_image_token_count_actual": null,
+    "provider_thinking_token_count_actual": null,
+    "no_spend_estimate_until_image_dimensions_token_count_and_account_rate_verified": true,
+    "token_formula": "USD=(billed_input_tokens*input_price_per_1M+billed_output_and_billed_thinking_tokens*output_price_per_1M)/1000000; modifiers and taxes extra",
+    "excluded_costs": [
+      "image resolution dependent input tokens",
+      "provider thinking or extra output usage",
+      "retry and timeout billed usage",
+      "batch/fast/regional tiers",
+      "provider quota and tax",
+      "private storage and specialist annotation"
+    ],
+    "credits_or_free_tier_assumed": false
+  },
+  "source_guard": {
+    "first_original_pilot_met_id": 561392,
+    "first_original_pilot_accession": "09.184.751",
+    "met_associated_companion_ids": [
+      561345,
+      561369
+    ],
+    "companion_group_status": "LINKED_CATALOGUE_SOURCE_KEEP_GROUPED",
+    "original_met_image_bytes_in_repo": false,
+    "sources_eligible_for_training": 0,
+    "same_support_group_independence_verified": false,
+    "r017_literal_screen_only_not_clearance": true,
+    "benchmark_gold_and_sealed_content_uninspected": true
+  },
+  "required_owner_actions": [
+    "identify owner-provided provider API account and approved exact model access",
+    "explicitly authorize a USD spending cap before first provider request",
+    "set up private immutable raw-response vault and artifact encryption/retention",
+    "record permitted image source and applicable rights including model-provider data processing",
+    "freeze original benchmark item identities and pinned official prompt bytes before any public science run",
+    "select attempt count, retry, failure inclusion, reasoning tier and no tuning",
+    "grant specific independent expert line transcription and second adjudicator permissions separately"
+  ],
+  "scientific_status": "NOT_EXECUTED_NONCERTIFIABLE",
+  "actual_provider_calls": 0,
+  "actual_source_images_sent": 0,
+  "actual_scored_hieratic_predictions": 0
+}

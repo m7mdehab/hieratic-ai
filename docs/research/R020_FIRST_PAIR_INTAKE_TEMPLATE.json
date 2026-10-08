@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "research_id": "R-020",
+  "record_type": "unsubmitted_first_pair_intake_template",
+  "created_at": "2026-10-08",
+  "template_not_authority_receipt": true,
+  "intake_status": "BLOCKED_NO_SOURCE_OR_RIGHTS",
+  "candidate_id": null,
+  "institutional_source": {
+    "catalogue_record_url": null,
+    "museum_object_id": null,
+    "accession_id": null,
+    "alternate_accession_ids": [],
+    "joined_support_ids": [],
+    "manuscript_group_id": null,
+    "side_id": null,
+    "writing_id": null,
+    "line_id": null,
+    "expert_legibility_approved": false
+  },
+  "original_image": {
+    "official_public_image_file_url": null,
+    "original_exposure_id": null,
+    "iiif_manifest_id": null,
+    "original_pixel_sha256": null,
+    "byte_length": null,
+    "pixel_width": null,
+    "pixel_height": null,
+    "format": null,
+    "image_side_id": null,
+    "rights_basis": null,
+    "rights_evidence_document_sha256": null,
+    "rights_scope_independently_verified": false,
+    "bytes_acquired": false
+  },
+  "textual_evidence": {
+    "diplomatic_transliteration": null,
+    "diplomatic_transliteration_sha256": null,
+    "scholarly_editor": null,
+    "edition_revision": null,
+    "edition_rightsholder": null,
+    "editor_licence_document_sha256": null,
+    "rights_training": false,
+    "rights_evaluation": false,
+    "rights_redistribution": false,
+    "rights_checkpoint_distribution": false,
+    "normalization_reference": null,
+    "translation_reference": null,
+    "diplomatic_and_normalized_separated": false
+  },
+  "expert_annotation": {
+    "first_independent_annotator_id": null,
+    "second_independent_annotator_id": null,
+    "adjudicator_id": null,
+    "annotator_authorization_receipts": [],
+    "independent_authorship_verified": false,
+    "uncertainty_preserved": false,
+    "restoration_and_damage_conventions": null,
+    "line_polygon_image_coordinates": null,
+    "orientation_and_reading_order": null,
+    "alignment_review_signed": false,
+    "expert_gold_approved": false
+  },
+  "benchmark_quarantine": {
+    "pinned_public_benchmark_revision": "alymoursy/hieraticbench@d587dc990013f18007f1e7a8f56f96ff2f7127e2",
+    "public_metadata_literal_accession_screen_only": true,
+    "aliases_reviewed": false,
+    "joined_fragments_reviewed": false,
+    "other_image_exposures_reviewed": false,
+    "exact_source_hashes_reviewed": false,
+    "near_duplicate_images_reviewed": false,
+    "published_editions_reviewed": false,
+    "pretraining_exposure_known": false,
+    "independent_benchmark_reviewer_receipt": null,
+    "training_admission": "BLOCKED"
+  },
+  "external_authority": {
+    "protected_independently_verified_trust_root_receipt": null,
+    "rights_holder_decision_receipt": null,
+    "egyptologist_decision_receipt": null,
+    "benchmark_auditor_decision_receipt": null,
+    "decision_signed_and_independently_verified": false
+  },
+  "experiment_claims": {
+    "one_pair_pipeline_proof": false,
+    "scientific_corpus_adequacy": "UNASSESSED",
+    "real_vision_model_run": false,
+    "independently_pinned_holdout": false,
+    "metric_report_authorized": false,
+    "certified_result": false
+  },
+  "governance": {
+    "outreach_authorized": false,
+    "contact_sent": false,
+    "third_party_assets_acquired": false,
+    "owner_approved_storage": false,
+    "owner_approved_intended_use": false
+  },
+  "missing_required": [
+    "exact_original_image_bytes_hash",
+    "license_or_original_authorized_editor_text",
+    "independent_egyptologist_gold",
+    "image_line_alignment",
+    "source_alias_and_near_duplicate_audit",
+    "trusted_external_authority_root",
+    "real_heldout_evaluation_universe"
+  ],
+  "result": "NO_GO"
+}

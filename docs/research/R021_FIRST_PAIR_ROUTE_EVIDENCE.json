@@ -47,7 +47,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-AHGP-E7851",
@@ -84,7 +87,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-AHGP-E7856",
@@ -120,7 +126,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-TPOP-1896",
@@ -158,7 +167,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-MET-561345",
@@ -196,7 +208,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-MET-561392",
@@ -232,7 +247,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-DDD",
@@ -267,7 +285,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-DUKE-HIERATIC",
@@ -306,7 +327,10 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
     },
     {
       "id": "R021-TSUKUBA-HDB-ABBOTT",
@@ -329,7 +353,8 @@
       "risks": [
         "registration required",
         "BM photo rights",
-        "potential manuscript pretraining exposure"
+        "potential manuscript pretraining exposure",
+        "direct benchmark support-name exposure confirmed"
       ],
       "status": "BLOCKED_RESTRICTED_ACCESS",
       "rank": "4_unlicensed_research_contact_only",
@@ -341,7 +366,12 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [
+        "wm-0021"
+      ],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "DIRECT_SOURCE_MANUSCRIPT_IDENTITY_MATCH"
     },
     {
       "id": "R021-HEARST-1905",
@@ -364,7 +394,8 @@
       "risks": [
         "same original support already appears in R017 AKU support records (Berkeley P.Hearst1282)",
         "public-domain edition rights depend on jurisdiction and scan",
-        "very strong test contamination possibility"
+        "very strong test contamination possibility",
+        "direct benchmark support-name exposure confirmed"
       ],
       "status": "BLOCKED_BENCHMARK_SUPPORT_OVERLAP",
       "rank": "5_reference_only_do_not_train",
@@ -376,7 +407,17 @@
       "source_alias_and_benchmark_image_audit": false,
       "admitted_for_training": false,
       "admitted_for_dev": false,
-      "admitted_for_scientific_eval": false
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [
+        "aku-0032",
+        "aku-0039",
+        "aku-0112",
+        "aku-0139",
+        "aku-0144",
+        "wm-0028"
+      ],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "DIRECT_SOURCE_MANUSCRIPT_IDENTITY_MATCH"
     }
   ]
 }

@@ -86,6 +86,43 @@ def make_bundle(tmp_path: Path) -> Path:
     return bundle_path
 
 
+def minimal_admission_evidence() -> dict:
+    """Schema-valid synthetic evidence envelope with deliberately untrusted claims."""
+    source_id, object_id, item_id = "SRC-HPDB", "SYNTHETIC-OBJECT-UNTRUSTED", "synthetic-admission-test"
+    nodes = [{"node_id": f"node-{index}", "node_type": "institution", "source_registry_id": source_id,
+              "source_object_id": object_id, "asset_id": f"asset-{index}", "sha256": None,
+              "creator_id": "synthetic-fixture", "created_at": "2026-10-08T00:00:00Z",
+              "review_status": "synthetic", "attributes": {}} for index in range(2)]
+    evidence = {
+        "schema_version": "1.0.0", "evidence_id": "synthetic-evidence",
+        "contributor_assertions": [{"assertion_id": "assertion-1", "claimant_id": "contributor-1",
+                                     "claimed_at": "2026-10-08T00:00:00Z", "subject_id": object_id,
+                                     "claim": "synthetic-only claim", "evidence_refs": []}],
+        "submitted_evidence": [], "license_terms": [], "independent_reviews": [], "bound_assets": [],
+        "benchmark_overlap": {"state": "not_yet_reviewed", "reviewer_id": None, "reviewed_at": None,
+                              "evidence_refs": [], "roster_version": "synthetic-roster-v1",
+                              "methods": [], "scope": {"object_ids": [], "accessions": [], "sides": [], "fragments": [],
+                                                          "edition_ids": [], "scribe_groups": [], "original_hashes": [],
+                                                          "derived_hashes": [], "perceptual_hashes": []}},
+        "decision": {"status": "allowed", "source_registry_id": source_id, "source_object_id": object_id,
+                     "intended_uses": ["training"], "reviewer_id": "untrusted-reviewer",
+                     "reviewed_at": "2026-10-08T00:00:00Z", "rationale": "synthetic test only",
+                     "limitations": [], "expires_at": None, "supersedes_receipt_id": None,
+                     "institutional_accession": "SYNTH-ACC", "manuscript_group_id": "SYNTH-MS",
+                     "fragment_ids": ["SYNTH-FRAG"], "side_ids": ["recto"], "scribe_group": None,
+                     "source_registry_record_sha256": "1" * 64},
+        "review_history": [],
+        "provenance_graph": {"schema_version": "1.0.0", "graph_id": "synthetic-graph", "item_id": item_id,
+                             "nodes": nodes, "edges": []},
+        "receipt": {"receipt_id": "untrusted-receipt", "key_id": "not-configured", "signed_by": "untrusted-reviewer",
+                    "signed_at": "2026-10-08T00:00:00Z", "payload_sha256": "0" * 64,
+                    "signature_ed25519_base64": "AA=="},
+    }
+    payload = {key: copy.deepcopy(value) for key, value in evidence.items() if key != "receipt"}
+    evidence["receipt"]["payload_sha256"] = release_corpus.digest(release_corpus.canonical(payload))
+    return evidence
+
+
 class CorpusReleaseTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -94,6 +131,119 @@ class CorpusReleaseTests(unittest.TestCase):
 
     def bundle(self, name="case"):
         return make_bundle(self.root / name)
+
+    def test_ed25519_receipt_verifier_accepts_rfc8032_vector_and_rejects_mutation(self):
+        # RFC 8032 test vector 2: public test material, not an authority key.
+        public_key = bytes.fromhex("3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c")
+        signature = bytes.fromhex("92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da"
+                                 "085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00")
+        message = bytes.fromhex("72")
+        self.assertTrue(release_corpus._verify_ed25519(public_key, signature, message))
+        self.assertFalse(release_corpus._verify_ed25519(public_key, signature, b"changed"))
+        self.assertFalse(release_corpus._verify_ed25519(public_key, signature[:-1], message))
+
+    def test_empty_trust_store_is_valid_but_cannot_claim_unconfigured_authorities(self):
+        trust_store = release_corpus.read_document(release_corpus.TRUST_ANCHORS)
+        self.assertEqual("no_external_authorities_configured", trust_store["status"])
+        self.assertEqual([], trust_store["anchors"])
+        self.assertEqual([], release_corpus.validate_trust_store(trust_store))
+        forged = copy.deepcopy(trust_store)
+        forged["anchors"].append({"key_id": "unverified-self-added-key"})
+        self.assertTrue(release_corpus.validate_trust_store(forged))
+
+    def test_untrusted_synthetic_receipt_cannot_bypass_source_registry_or_rights_gates(self):
+        evidence = minimal_admission_evidence()
+        trust_store = release_corpus.read_document(release_corpus.TRUST_ANCHORS)
+        errors = release_corpus.validate_admission_evidence(
+            evidence, trust_store, source_id="SRC-HPDB", source_object_id="SYNTHETIC-OBJECT-UNTRUSTED",
+            item_id="synthetic-admission-test", expected_assets={"original_image": ("image-1", "a" * 64)},
+            expected_roster_version="pinned-roster-v2", expected_source_record_sha256="2" * 64,
+            as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
+        self.assertTrue(any("source-registry rights record changed" in error for error in errors), errors)
+        self.assertTrue(any("no externally trusted authorization signing authority" in error for error in errors), errors)
+        self.assertTrue(any("benchmark overlap state is not_yet_reviewed" in error for error in errors), errors)
+        self.assertTrue(any("missing rights term for original_image/development" in error for error in errors), errors)
+
+    def test_provenance_graph_rejects_cycles_missing_fragment_and_hash_drift(self):
+        schema = release_corpus.read_document(release_corpus.ADMISSION_SCHEMA)
+        source_id, object_id, item_id = "SRC-HPDB", "SYNTHETIC-OBJECT", "synthetic-item"
+        kinds = release_corpus.REQUIRED_PROVENANCE_TYPES
+        nodes = []
+        for index, kind in enumerate(kinds):
+            attrs = {}
+            if kind == "object":
+                attrs = {"institutional_accession": "SYNTH-1", "manuscript_group_id": "MS-1"}
+            elif kind == "manuscript":
+                attrs = {"manuscript_group_id": "MS-1"}
+            elif kind == "fragment":
+                attrs = {"fragment_id": "F-1"}
+            elif kind == "side":
+                attrs = {"side_id": "recto"}
+            nodes.append({"node_id": f"n{index}", "node_type": kind, "source_registry_id": source_id,
+                          "source_object_id": object_id, "asset_id": f"asset-{kind}", "sha256": None,
+                          "creator_id": "synthetic-fixture", "created_at": "2026-10-08T00:00:00Z",
+                          "review_status": "synthetic", "attributes": attrs})
+        edges = [{"from_node_id": f"n{i}", "to_node_id": f"n{i+1}", "relation": "derived_from",
+                  "transformation_id": f"synthetic-transform-{i}", "evidence_refs": []} for i in range(len(nodes) - 1)]
+        graph = {"schema_version": "1.0.0", "graph_id": "synthetic-graph", "item_id": item_id,
+                 "nodes": nodes, "edges": edges}
+        identity = {"institutional_accession": "SYNTH-1", "manuscript_group_id": "MS-1",
+                    "fragment_ids": ["F-1"], "side_ids": ["recto"]}
+        self.assertEqual([], release_corpus.validate_provenance_graph(
+            graph, schema, item_id=item_id, source_id=source_id, source_object_id=object_id,
+            expected_hashes={}, object_identity=identity))
+        cyclic = copy.deepcopy(graph)
+        cyclic["edges"].append({"from_node_id": f"n{len(nodes)-1}", "to_node_id": "n0",
+                                "relation": "derived_from", "transformation_id": None, "evidence_refs": []})
+        errors = release_corpus.validate_provenance_graph(
+            cyclic, schema, item_id=item_id, source_id=source_id, source_object_id=object_id,
+            expected_hashes={}, object_identity=identity)
+        self.assertTrue(any("cycle" in error for error in errors), errors)
+        missing_fragment = copy.deepcopy(graph)
+        missing_fragment["nodes"] = [node for node in nodes if node["node_type"] != "fragment"]
+        missing_fragment["edges"] = [{**edge} for edge in edges if edge["from_node_id"] != "n4" and edge["to_node_id"] != "n4"]
+        errors = release_corpus.validate_provenance_graph(
+            missing_fragment, schema, item_id=item_id, source_id=source_id, source_object_id=object_id,
+            expected_hashes={}, object_identity=identity)
+        self.assertTrue(any("fragment" in error for error in errors), errors)
+        drift = copy.deepcopy(graph)
+        drift["nodes"][7]["sha256"] = "0" * 64
+        errors = release_corpus.validate_provenance_graph(
+            drift, schema, item_id=item_id, source_id=source_id, source_object_id=object_id,
+            expected_hashes={"original_image": "1" * 64}, object_identity=identity)
+        self.assertTrue(any("hash" in error for error in errors), errors)
+
+    def test_readiness_assessment_is_deterministic_and_keeps_all_candidates_blocked(self):
+        path = self.bundle()
+        assessment1, report1 = release_corpus.build_readiness_assessment(path)
+        assessment2, report2 = release_corpus.build_readiness_assessment(path)
+        self.assertEqual(assessment1, assessment2)
+        self.assertEqual(report1, report2)
+        self.assertEqual(15, len(assessment1["benchmark_candidates"]))
+        self.assertEqual(0, assessment1["cohort"]["real_items"])
+        self.assertEqual(1, assessment1["cohort"]["synthetic_items"])
+        self.assertTrue(all(item["admission_status"] == "blocked" for item in assessment1["benchmark_candidates"]))
+        self.assertTrue(all(item["overlap_state"] == "potential_overlap" for item in assessment1["benchmark_candidates"]))
+        self.assertTrue(all(item["exact_public_source_metadata_match_count"] == 0 for item in assessment1["benchmark_candidates"]))
+        self.assertEqual({12, 18}, {item["nearby_collection_witness_count"] for item in assessment1["benchmark_candidates"]})
+        self.assertIn("docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json", assessment1["source_references"])
+        self.assertFalse(assessment1["thresholds_invented"])
+        self.assertEqual("BLOCKED", assessment1["evidence_admission"])
+
+    def test_candidate_metadata_no_match_never_counts_as_independent_clearance(self):
+        candidate = {"candidate_id": "synthetic-candidate"}
+        state, reasons = release_corpus._candidate_benchmark_state(candidate, {
+            "exact_public_source_metadata_matches": [], "nearby_collection_witness_count": 1,
+        })
+        self.assertEqual("potential_overlap", state)
+        self.assertTrue(any("does not establish independence" in reason for reason in reasons))
+        state, _ = release_corpus._candidate_benchmark_state(candidate, {
+            "exact_public_source_metadata_matches": [{"benchmark_id": "synthetic-public-id"}],
+            "nearby_collection_witness_count": 1,
+        })
+        self.assertEqual("confirmed_overlap", state)
+        state, _ = release_corpus._candidate_benchmark_state(candidate, None)
+        self.assertEqual("not_yet_reviewed", state)
 
     def test_synthetic_release_validation_and_build_are_deterministic(self):
         path = self.bundle()
@@ -108,6 +258,10 @@ class CorpusReleaseTests(unittest.TestCase):
         output_a, output_b = self.root / "published-a", self.root / "published-b"
         release_corpus.publish(result, output_a, path)
         first = {p.name: p.read_bytes() for p in output_a.iterdir()}
+        self.assertEqual([], release_corpus.audit_release(result, output_a, path))
+        (output_a / "dataset-card.md").write_bytes(b"tampered")
+        self.assertTrue(any("differs" in error for error in release_corpus.audit_release(result, output_a, path)))
+        (output_a / "dataset-card.md").write_bytes(first["dataset-card.md"])
         with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
             release_corpus.publish(result, output_a, path)
         again, errors = release_corpus.validate_bundle(bundle, path)

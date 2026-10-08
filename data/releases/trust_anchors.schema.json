@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/data/releases/trust_anchors.schema.json",
+  "title": "DATA-008 authorization trust-anchor administration record",
+  "type": "object",
+  "required": ["schema_version", "status", "anchors", "revoked_receipt_ids", "superseded_receipt_ids"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "status": {"enum": ["no_external_authorities_configured", "externally_verified_authorities_configured", "synthetic_test_fixture"]},
+    "anchors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["key_id", "public_key_ed25519_base64", "reviewer_id", "authority_role", "source_ids", "valid_from", "valid_until", "verification_record"],
+        "properties": {
+          "key_id": {"type": "string", "minLength": 1},
+          "public_key_ed25519_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$"},
+          "reviewer_id": {"type": "string", "minLength": 1},
+          "authority_role": {"enum": ["rights_holder_representative", "institutional_steward", "legal_reviewer", "corpus_overseer"]},
+          "source_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"}},
+          "valid_from": {"type": "string", "format": "date-time"},
+          "valid_until": {"type": "string", "format": "date-time"},
+          "verification_record": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "revoked_receipt_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "superseded_receipt_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "no_external_authorities_configured"}}, "required": ["status"]}, "then": {"properties": {"anchors": {"maxItems": 0}}}},
+    {"if": {"properties": {"status": {"const": "externally_verified_authorities_configured"}}, "required": ["status"]}, "then": {"properties": {"anchors": {"minItems": 1}}}}
+  ],
+  "additionalProperties": false
+}

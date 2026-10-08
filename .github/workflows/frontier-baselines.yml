@@ -76,6 +76,7 @@ jobs:
             package.json
             package-lock.json
             bench/package.json
+            site/package.json
           sparse-checkout-cone-mode: false
           persist-credentials: false
 

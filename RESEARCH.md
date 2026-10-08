@@ -213,3 +213,16 @@ An independent overseer audit identified a new potential path toward a rights-co
 
 Detailed primary URLs, sample object IDs, explicit rights boundaries, proposed admission checks and an unsent contact inquiry:
 `docs/research/OPEN_ACCESS_HIERATIC_IMAGE_SOURCES_2026_10_08.md`.
+
+
+### R-016 — Primary-source shortlist for first real image-to-transliteration gold (W4 overseer)
+
+**2026-10-08. Status: VERIFIED-PRIMARY institutional source metadata / preliminary benchmark source-name audit, NO CORPUS ADMISSION.**
+
+Identified **15** specific public catalogue leads: **6 Turin Papyrus Online Platform (TPOP)** records with image policy CC0 but editorial text rights/open export unverified, plus **9 Met Open Access** Hieratic ostraca with institutional public-domain image labels but no verified image bytes or line-aligned gold. TPOP Cat.1896 / Cat.1971 are the first paired-corpus *permission-inquiry* priorities; Met 561345 / 561392 / 561361 are promising independently annotated image-only alternatives. Famous/fragment-assembled records are deferred or require additional group isolation.
+
+Independently checked **37 pinned HieraticBench Met source records and 61 pinned Wikimedia source records**, using source names/URLs only (no gold or images reused). None of the 15 proposed institutional identities was directly named in those 98 source records, but this is **NOT** full benchmark, item-hash, near-duplicate or pretrained-model leakage clearance; all 15 remain in `benchmark_quarantine_pending` for training and few-shot. Notably the pinned benchmark already includes Met 545587/545588/545584 and Wikimedia Turin King List Cat.1874 and other Turin ostraca; prevent re-admission through renamed images.
+
+R-016 defines two concrete gated tracks: obtain **written approved TPOP image+editor-text paired export**, or use individually verified **Met CC0 images plus newly commissioned, independently double-reviewed Egyptological gold**. Both require permitted access, exact image provenance, independent text/annotation rights, all-source quarantining and genuine leakage-safe splits before DATA-008 +3 can be reviewed. Two institution-specific outreach drafts are **unsent**. No acquisition, expert annotations, contacts, progress credit or research-coverage change occurred; canonical goal **32.5/100**, research coverage **14%**.
+
+Primary-source URLs, per-record evidence, identified benchmark exclusions, admission protocol and outreach drafts: `docs/research/R016_CORPUS_GOLD_FEASIBILITY.md`. Machine-readable **candidate-only** manifest: `docs/research/R016_PRELIMINARY_CANDIDATE_ROSTER.yaml`.

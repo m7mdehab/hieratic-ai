@@ -380,6 +380,7 @@ class MetMetadataEvidenceTests(unittest.TestCase):
             with self.assertRaisesRegex(acquisition.AcquisitionError, "symlink"):
                 acquisition._validate_metadata_output(link / "output.json")
 
+    @unittest.skipUnless(os.name == "posix", "Secure publication is restricted to POSIX dirfd platforms")
     def test_concurrent_packet_publishers_are_exclusive(self):
         with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
             path = Path(temp) / "packet.json"
@@ -398,6 +399,7 @@ class MetMetadataEvidenceTests(unittest.TestCase):
             self.assertEqual(packet, json.loads(path.read_text(encoding="utf-8")))
             self.assertEqual([], list(Path(temp).glob(".met-packet-*.tmp")))
 
+    @unittest.skipUnless(os.name == "posix", "Secure publication is restricted to POSIX dirfd platforms")
     def test_failed_packet_write_cleans_staging_and_leaves_no_destination(self):
         with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
             path = Path(temp) / "packet.json"
@@ -406,6 +408,64 @@ class MetMetadataEvidenceTests(unittest.TestCase):
                     acquisition._publish_metadata_packet(path, {"complete": True})
             self.assertFalse(path.exists())
             self.assertEqual([], list(Path(temp).glob(".met-packet-*.tmp")))
+
+    def test_image_reference_array_rejects_non_string_without_traceback(self):
+        for malformed in (None, 42, {}, [], True, ["nested"]):
+            with self.subTest(malformed=malformed):
+                body = self.response(additionalImages=[malformed])
+                packet = acquisition.met_metadata_packet(561345, transport=lambda _: (200, "application/json", body))
+                self.assertEqual("MET_IMAGE_URL_NOT_STRING", packet["error_code"])
+                self.assertEqual("failed", packet["verification_status"])
+                self.assertFalse(packet["rights_assessment"]["original_image_bytes_obtained"])
+
+    def test_reconciliation_handles_failed_and_absent_packets_without_source_clearance(self):
+        crosswalk = json.loads((ROOT / "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json").read_text(encoding="utf-8"))
+        missing = acquisition.met_metadata_packet(561345, transport=lambda _: (503, "text/plain", b"down"))
+        for packets in ([missing], []):
+            reconciled = acquisition.build_met_reconciliation(
+                packets, crosswalk, ROOT / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl"
+            )
+            self.assertEqual(15, len(reconciled["candidates"]))
+            self.assertTrue(reconciled["all_candidates_blocked"])
+            row = next(x for x in reconciled["candidates"] if x["candidate_id"] == "MET-561345")
+            self.assertFalse(row["api_identity_verified"])
+            self.assertEqual(0, row["image_view_count"])
+            self.assertIsNone(row["met_api_accession"])
+
+    @unittest.skipUnless(os.name == "posix", "dirfd path-swap regression requires POSIX")
+    def test_parent_swapped_after_validation_cannot_publish_outside_tree(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as workspace:
+            with tempfile.TemporaryDirectory() as outside:
+                base = Path(workspace)
+                approved = base / "approved"
+                approved.mkdir()
+                output = approved / "packet.json"
+                acquisition._validate_metadata_output(output)
+                renamed = base / "renamed-original"
+                original_link = acquisition.os.link
+                def adversarial_link(*args, **kwargs):
+                    approved.rename(renamed)
+                    approved.symlink_to(Path(outside), target_is_directory=True)
+                    return original_link(*args, **kwargs)
+                try:
+                    with unittest.mock.patch.object(acquisition.os, "link", side_effect=adversarial_link):
+                        with self.assertRaisesRegex(acquisition.AcquisitionError, "MET_OUTPUT_PARENT_CHANGED"):
+                            acquisition._publish_metadata_packet(output, {"untrusted": "fixture"})
+                    self.assertFalse((Path(outside) / "packet.json").exists())
+                    self.assertFalse((renamed / "packet.json").exists())
+                finally:
+                    if approved.is_symlink():
+                        approved.unlink()
+                    if renamed.exists():
+                        renamed.rename(approved)
+
+    def test_metadata_publisher_fails_closed_without_secure_dirfd(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as workspace:
+            output = Path(workspace) / "packet.json"
+            with unittest.mock.patch.object(acquisition.os, "name", "nt"):
+                with self.assertRaisesRegex(acquisition.AcquisitionError, "MET_SECURE_PUBLICATION_PLATFORM_UNSUPPORTED"):
+                    acquisition._publish_metadata_packet(output, {"ok": True})
+            self.assertFalse(output.exists())
 
     def test_r017_reconciliation_preserves_all_fifteen_as_blocked(self):
         crosswalk = json.loads((ROOT / "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json").read_text(encoding="utf-8"))

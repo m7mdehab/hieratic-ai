@@ -79,24 +79,27 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W7 is active. Latest independently integrated research: PR #76 (public
-  scholarly-source inventory and offline HPDB importer) and PR #77 (all 2,065
-  CC BY 4.0 HPDB source-metadata rows, excluding underlying licensed scan
-  pixels) merged. W7 VLM real-smoke preflight PR #78 merged after overseer
-  fixes to simulated sensitivity reporting, deterministic missing-resource
-  tests and CI barrier verification; exact-head workflows passed. No actual
-  checkpoint loaded or real image-conditioned forward was verified; keep
-  VLM-001 active with zero of its 2 points. W7 DATA-003 PR #75 remains open
-  and requires a pinned-parent directory-publication correction following
-  overseer review comment 6069753279, then exact-head Linux CI and
-  integration. The Met API records for nine public-domain-flagged objects
-  are metadata-only; no original image bytes, exact retrieval authorization,
-  gold annotation or corpus admission is established. The linked Met
-  561345/561369 accession group is not yet resolved; 561392 is the preferred
-  first-pair candidate. The owner prioritizes autonomous lawful research
-  using online resources and defers institutional/paid Egyptologist outreach.
-  Advance permitted public references, provenance and safe first-image
-  acquisition separately from rights/annotation promotion. EVAL-003 remains
-  an unexecuted model baseline pending independent provider/budget/rights
-  authorization. Maintain 32.5/100 weighted capability, 14% uncalibrated
-  research coverage, zero validated real experiments and zero trained models.
+  W7 source, original-image-readiness, and noncertifiable runtime engineering
+  integrations are completed. PR #76 and #77 added an offline HPDB importer and
+  2,065 real CC BY 4.0 source-metadata records, not protected original scan
+  pixels. PR #78 merged after independent review, simulated visual-sensitivity
+  integrity corrections and successful exact-head CI; no real weights loaded,
+  image-conditioned forward or actual Hieratic benchmark result was verified.
+  PR #75 merged at 6683cc1568873489533a9751c04d4537defaff55 following
+  pinned no-follow POSIX directory publication, parent-swap regression tests,
+  clean latest-main branch reconstruction and successful exact-head Project
+  Governance workflow 37850346081. All nine recorded Met objects remain
+  offline metadata-only NO_GO candidates; no original image bytes or SHA,
+  item-specific retrieval approval, expert-reviewed licensed readings or real
+  corpus admission has been established. Met 561392 remains the preferred
+  first-pair candidate; related Met 561345/561369 remain grouped for source
+  overlap review. The owner prioritizes lawful online-only autonomous research
+  and defers institutional or paid Egyptologist outreach. DATA-008 production
+  and VLM-001 scientific certification remain disabled. Next advance a
+  concrete owner-approved CC0 image acquisition with private provenance and
+  independently sourced scholarly line material where licensable; scope
+  genuine zero-cost model image inference only when actual hardware and
+  weights exist, or obtain separate provider/budget authorization for EVAL-003.
+  Stage any new external-agent wave through the approved parallel-handoff
+  protocol. Preserve canonical 32.5/100 capability, 14% uncalibrated research
+  coverage, zero validated real experiments and zero trained models.

@@ -71,6 +71,12 @@ jobs:
           sparse-checkout: |
             data/items
             bench/src/prompts.ts
+            bench/src/score.ts
+            bench/src/items.ts
+            package.json
+            package-lock.json
+            bench/package.json
+            site/package.json
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
@@ -83,3 +89,38 @@ jobs:
           python -m eval.baselines.public_freeze freeze --checkout "$BENCH_CHECKOUT" --output-dir "$FREEZE_DIR"
           python -m eval.baselines.public_freeze verify --checkout "$BENCH_CHECKOUT" --output-dir "$FREEZE_DIR"
           # No public benchmark items, gold or prompt source uploaded as artifacts.
+
+      - name: Install exact pinned upstream scorer runtime (no model requests)
+        working-directory: _external/hieraticbench
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Test original pinned TypeScript scoring functions on fake readings
+        working-directory: _external/hieraticbench
+        env:
+          BRIDGE: ${{ github.workspace }}/eval/baselines/official_replay.mjs
+          UPSTREAM: ${{ github.workspace }}/_external/hieraticbench
+        run: node --import tsx "$BRIDGE" --checkout "$UPSTREAM" --self-test true
+
+      - name: Replay full public 266-item synthetic archive and audit aggregate-only report
+        working-directory: _external/hieraticbench
+        env:
+          BRIDGE: ${{ github.workspace }}/eval/baselines/official_replay.mjs
+          UPSTREAM: ${{ github.workspace }}/_external/hieraticbench
+          REPO: ${{ github.workspace }}
+          PRIVATE: ${{ runner.temp }}/hieratic-scorer-synthetic
+        run: |
+          mkdir -p "$PRIVATE"
+          cd "$REPO"
+          python -m eval.baselines.replay_synthetic_fixture --checkout "$UPSTREAM" --outside "$PRIVATE"
+          cd "$UPSTREAM"
+          node --import tsx "$BRIDGE" \
+            --checkout "$UPSTREAM" \
+            --freeze "$PRIVATE/freeze.json" \
+            --receipt "$PRIVATE/receipt.json" \
+            --items "$PRIVATE/public-items.jsonl" \
+            --attempts "$PRIVATE/attempts.jsonl" \
+            --capture "$PRIVATE/capture.jsonl" \
+            --output-dir "$PRIVATE"
+          cd "$REPO"
+          python -m eval.baselines.replay_synthetic_audit --directory "$PRIVATE"
+          # No raw model outputs, original benchmark gold or external images uploaded.

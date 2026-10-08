@@ -28,7 +28,7 @@ This suite is developed independently from the overseer's `EVAL-003` frontier pr
 | `mock-vision-v1` | Deterministic Synthetic Baseline | Synthetic test harness | `v1.0.0` | Apache-2.0 | `synthetic_ci_fixture` | CPU (Offline) |
 | `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | `Qwen2_5_VLForConditionalGeneration` | `bfb8829e3c6c0ebad5da954181947bb9df50b0e0` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 16 GB VRAM) |
 | `pixtral-12b-2409` | Pixtral 12B | `LlavaForConditionalGeneration` | `31ea79a32c256037a503023e6022e3427f79612c` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
-| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | `MllamaForConditionalGeneration` | `9eb2daaa85` | Llama-3.2-Community | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
+| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | `MllamaForConditionalGeneration` | `9eb2daaa8597bf192a8b0e73f848f3a102794df5` | Llama-3.2-Community | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
 
 ### 2.2 Execution Gates
 
@@ -232,6 +232,69 @@ When running in environments without dedicated GPU accelerators or downloaded lo
 - It does **not** make unapproved paid external API calls.
 - Task `VLM-001` remains **scientifically unvalidated** (0.0 / 2.0 capability points) until genuine inference on approved local hardware is conducted and independently audited.
 
+### 7.5 Audited Host Environment Resource Inventory (Wave 7)
+
+An exhaustive hardware and environment audit of the active execution host reveals the following concrete barriers:
+- **Operating System:** Windows 11 (AMD64), Python 3.12.10.
+- **GPU Architecture:** AMD Radeon(TM) Graphics (integrated GPU, 512 MB AdapterRAM). **Zero NVIDIA CUDA GPU devices are present** (`torch.cuda.is_available() == False`).
+- **Host System RAM:** 7.74 GB visible memory total.
+- **Virtual Environment:** Python `.venv` contains minimal metadata dependencies (`jsonschema`, `pyyaml`, `attrs`). PyTorch (`torch`), Hugging Face Transformers (`transformers`), `torchvision`, `accelerate`, and `PIL` are **not installed**.
+- **Model Weights Cache:** Checked `$env:USERPROFILE\.cache\huggingface\hub`. Contains only text embedding models (`ModernBERT-base`, `kompress-v2-base`). **Zero multimodal vision-language model weights exist on disk.**
+- **Zero-Spend Constraint:** Strict $0.00 spend cap enforced per ADR-0023. Cloud GPU provisioning and commercial VLM API calls are strictly unapproved.
+
+### 7.6 Reproducible Environment Provisioning Specification
+
+To enable genuine open-weight VLM evaluation when compliant hardware and approved weights are provisioned, the following environment specification is registered:
+
+1. **Host Compute & Accelerator:**
+   - **OS:** Linux x86_64 (Ubuntu 22.04 LTS or 24.04 LTS recommended)
+   - **System RAM:** $\ge 32$ GB (64 GB recommended for 12B models)
+   - **GPU:** Dedicated NVIDIA CUDA GPU with Tensor Cores (Ampere, Ada Lovelace, or Hopper)
+   - **VRAM:** $\ge 16$ GB VRAM for 7B models (`qwen2.5-vl-7b-instruct`); $\ge 24$ GB VRAM for 11B/12B models (`pixtral-12b-2409`, `llama-3.2-11b-vision-instruct`). Examples: NVIDIA RTX 4090 (24 GB), A10G (24 GB), A100 (40/80 GB).
+   - **CUDA Drivers:** CUDA Toolkit 12.1+ / NVIDIA Driver $\ge 535.54.03$.
+
+2. **Python Dependencies:**
+   ```bash
+   pip install torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu121
+   pip install transformers>=4.49.0 accelerate>=0.26.0 pillow>=10.0.0 safetensors>=0.4.0
+   ```
+
+3. **Pinned Checkpoint Snapshots:**
+   - **Qwen 2.5 VL 7B Instruct:** `Qwen/Qwen2.5-VL-7B-Instruct` @ commit `bfb8829e3c6c0ebad5da954181947bb9df50b0e0`
+   - **Mistral Pixtral 12B:** `mistralai/Pixtral-12B-2409` @ commit `31ea79a32c256037a503023e6022e3427f79612c`
+   - **Meta Llama 3.2 11B Vision Instruct:** `meta-llama/Llama-3.2-11B-Vision-Instruct` @ commit `9eb2daaa8597bf192a8b0e73f848f3a102794df5`
+
+### 7.7 Six-Grade Evidence Matrix (Wave 7 Brief 2 Standard)
+
+Under Wave 7 Brief 2, capability tracking strictly separates six distinct evidence grades (A through F). **Never equate a unit-test mock or colored-shapes smoke with empirical Hieratic reading proficiency**:
+
+| Model Backbone | Grade A: Interface Implemented | Grade B: Format & Fixtures Tested | Grade C: Real Weights Loaded | Grade D: Actual Image Forward Pass | Grade E: Visual Sensitivity Control | Grade F: Authentic Hieratic Reading Gold |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| `mock-vision-v1` | **YES** | **YES** | **NO** (synthetic double) | **YES** (double generation) | **YES** (synthetic difference) | **NO** (0.0 pts; synthetic) |
+| `qwen2.5-vl-7b-instruct` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
+| `pixtral-12b-2409` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
+| `llama-3.2-11b-vision-instruct` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
+
+- **Grade A:** Base and specialized adapter classes implemented and registered in adapter factory.
+- **Grade B:** Multimodal chat templates, image token structures, and feature tensors verified via unit test doubles.
+- **Grade C:** Verified local weights files (`config.json`, weights `.safetensors` / `.bin`) loaded from disk on target device.
+- **Grade D:** Forward generation executed on raw image bytes decoded to tensors.
+- **Grade E:** Visual sensitivity control verified: model output responds distinctly to different visual inputs (Image A vs Image B) under a constant textual prompt.
+- **Grade F:** Authentic Hieratic expert-gold scientific evaluation. **Remains strictly NO (0.0 points)** across all models until independently cleared, rights-verified palaeographical cohorts and expert annotations exist.
+
+### 7.8 Pure-Python Geometric Image Generation & Visual Sensitivity Control
+
+To test the image-to-tensor pipeline without external dependencies or benchmark image contamination, the harness incorporates a standalone pure-Python RGB PNG generator (`eval/vlm/smoke.py`):
+- **Image A (Test Image):** 256x256 RGB PNG containing a solid red square (`[32:112, 32:112]`) and blue circle (`center=(176, 176), r=40`) on light gray background.
+  - Deterministic SHA-256: `b5cd2fa193f3a150cc6af2f677ea879c69e6bf7cf7e2b3233ce2214768e013bc`.
+- **Image B (Control Image):** 256x256 RGB PNG containing a solid green square (`[32:112, 32:112]`) and yellow circle (`center=(176, 176), r=40`) on light gray background.
+  - Deterministic SHA-256: `05c2b0836edf2e2ae6ed1c0e6a957a4d495613a3a42ecf418aa6d6c1c1f24f30`.
+- **Visual Sensitivity Control Protocol:**
+  1. Image A is processed with constant prompt: *"Describe the geometric shapes and colors present in this image."*
+  2. Image B is processed with the **identical** constant prompt.
+  3. Outputs, token counts, and input/output SHA-256 hashes are recorded.
+  4. If the completions differ, visual sensitivity is confirmed (`sensitivity_observed: true`). If identical, the model is flagged as visually insensitive or indeterminate.
+
 ---
 
 ## 8. CLI Reference Guide
@@ -310,4 +373,19 @@ python -m tools.vlm_baselines paired-compare \
   --shot-mode-b few-shot \
   --output artifacts/vlm_comparison.json
 ```
+
+### Real Visual Smoke Test (Local Weights & Hardware Verification)
+```bash
+# Live execution (fails closed with exit code 1 if GPU or weights are absent)
+python -m tools.vlm_baselines real-smoke \
+  --model qwen2.5-vl-7b-instruct \
+  --output artifacts/vlm_smoke_report.json
+
+# Simulated dry-run verification (for CI runners or non-accelerated development)
+python -m tools.vlm_baselines real-smoke \
+  --model qwen2.5-vl-7b-instruct \
+  --allow-simulated \
+  --output artifacts/vlm_smoke_report.json
+```
+
 

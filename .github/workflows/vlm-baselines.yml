@@ -95,6 +95,24 @@ jobs:
             --shot-mode-b few-shot \
             --output "$COMPARE_BOTH_PATH"
 
+      - name: Verify fail-closed hardware barrier on real-smoke
+        run: |
+          if python -m tools.vlm_baselines real-smoke --model qwen2.5-vl-7b-instruct; then
+            echo "Expected real-smoke to fail closed due to missing GPU/weights, but it succeeded!"
+            exit 1
+          else
+            echo "Real-smoke correctly failed closed reporting hardware/weights barrier"
+          fi
+
+      - name: Verify real-smoke diagnostic with simulated double
+        env:
+          SMOKE_REPORT_PATH: ${{ runner.temp }}/vlm_smoke_report.json
+        run: |
+          python -m tools.vlm_baselines real-smoke \
+            --model qwen2.5-vl-7b-instruct \
+            --allow-simulated \
+            --output "$SMOKE_REPORT_PATH"
+
       - name: Run VLM baseline unit and negative tests
         run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
 

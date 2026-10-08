@@ -31,7 +31,14 @@ from eval.vlm.adapter import (
     MockVLMAdapter,
     OpenWeightVLMAdapter,
     UnverifiedDemonstrationError,
+    VLMAdapterError,
     get_adapter,
+    validate_revision_pinning,
+)
+from eval.vlm.smoke import (
+    generate_geometric_control_image,
+    generate_geometric_test_image,
+    run_real_visual_smoke,
 )
 from eval.vlm.runner import RunnerError, VLMRunner
 from eval.vlm.scorer import (
@@ -1214,8 +1221,265 @@ class VLMBaselinesTests(unittest.TestCase):
         finally:
             tmp_path.unlink()
 
+    # --- 13. Wave 7 Real Visual Smoke & Adversarial Runtime Hardening Tests ---
+
+    def test_adversarial_corrupted_image_magic_bytes_rejected(self) -> None:
+        """Adversarially pass corrupted non-image bytes; preprocess_image must fail closed."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        with self.assertRaises(ImageConditioningError) as ctx:
+            adapter.preprocess_image(b"corrupted_garbage_bytes_not_png_or_jpeg")
+        self.assertIn("Corrupted or invalid image input", str(ctx.exception))
+
+    def test_adversarial_non_full_revision_rejected(self) -> None:
+        """Adversarially pass short or branch revision; validate_revision_pinning must fail closed."""
+        # Short hash
+        with self.assertRaises(VLMAdapterError) as ctx:
+            validate_revision_pinning("9eb2daaa85")
+        self.assertIn("not a full 40-character commit SHA", str(ctx.exception))
+
+        # Branch name
+        with self.assertRaises(VLMAdapterError):
+            validate_revision_pinning("main")
+
+        # Initializing open-weight adapter with short revision fails
+        mutated_cfg = copy.deepcopy(next(m for m in self.suite_data["models"] if "qwen" in m["key"]))
+        mutated_cfg["revision"] = "short1234"
+        with self.assertRaises(VLMAdapterError):
+            OpenWeightVLMAdapter(mutated_cfg)
+
+        # Full 40-character SHA succeeds
+        validate_revision_pinning("bfb8829e3c6c0ebad5da954181947bb9df50b0e0")
+
+    def test_adversarial_forged_weights_directory_rejected(self) -> None:
+        """Adversarially provide an empty directory as weights_dir; check_availability must fail."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        with tempfile.TemporaryDirectory() as empty_dir:
+            adapter = get_adapter(qwen_cfg, weights_dir=Path(empty_dir))
+            status = adapter.check_availability()
+            self.assertFalse(status.available)
+            self.assertFalse(status.hardware_info.get("weights_found", True))
+            self.assertIn("not found locally on disk or snapshot directory is incomplete", status.reason)
+
+    def test_adversarial_empty_whitespace_model_response_recorded_as_failed(self) -> None:
+        """Adversarially return empty or whitespace string from model generate; must record failed attempt."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockEmptyGenModel:
+            device = "cpu"
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                # Returns only input prompt tokens (no completion tokens)
+                return [[1, 2, 3]]
+
+        class MockEmptyProcessor:
+            mock_image_tag = True
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1, 2, 3]], "pixel_values": [[0.1]]}
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["   \n  "]
+
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=MockEmptyProcessor(), model_override=MockEmptyGenModel())
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image",
+            prompt="Prompt",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="identify",
+            item_id="TEST-EMPTY-RESP",
+        )
+        self.assertEqual(resp.status, "failed")
+        self.assertIsNone(resp.cleaned_prediction)
+        self.assertIn("empty or whitespace-only prediction", resp.error_message)
+
+    def test_adversarial_stop_strings_type_error_graceful_fallback(self) -> None:
+        """Verify that generate() raising TypeError on stop_strings falls back gracefully without stop_strings."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockTypeErrorGenModel:
+            device = "cpu"
+            def __init__(self) -> None:
+                self.calls = 0
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                self.calls += 1
+                if "stop_strings" in kwargs:
+                    raise TypeError("generate() got an unexpected keyword argument 'stop_strings'")
+                return [[1, 2, 100, 101]]
+
+        class MockProc:
+            mock_image_tag = True
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1, 2]], "pixel_values": [[0.1]]}
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["Recovered completion"]
+
+        mod = MockTypeErrorGenModel()
+        qwen_cfg = copy.deepcopy(next(m for m in self.suite_data["models"] if "qwen" in m["key"]))
+        qwen_cfg["stop_sequences"] = ["</s>"]
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=MockProc(), model_override=mod)
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image",
+            prompt="Prompt",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="identify",
+            item_id="TEST-FALLBACK",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "Recovered completion")
+        self.assertEqual(mod.calls, 2)
+
+    def test_pure_python_geometric_png_generation_and_integrity(self) -> None:
+        """Verify standalone pure-Python geometric PNG generator produces standards-compliant images."""
+        import struct
+        img_a = generate_geometric_test_image()
+        img_b = generate_geometric_control_image()
+
+        # Both must start with standard PNG signature
+        self.assertTrue(img_a.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertTrue(img_b.startswith(b"\x89PNG\r\n\x1a\n"))
+
+        # Both must unpack to width=256, height=256 from IHDR chunk
+        w_a, h_a = struct.unpack(">II", img_a[16:24])
+        w_b, h_b = struct.unpack(">II", img_b[16:24])
+        self.assertEqual((w_a, h_a), (256, 256))
+        self.assertEqual((w_b, h_b), (256, 256))
+
+        # Both images must have distinct SHA-256 hashes
+        sha_a = hashlib.sha256(img_a).hexdigest()
+        sha_b = hashlib.sha256(img_b).hexdigest()
+        self.assertNotEqual(sha_a, sha_b)
+
+    def test_real_smoke_fails_closed_without_hardware_or_weights(self) -> None:
+        """Verify real visual smoke test fails closed with exit code 1 when hardware/weights are absent."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        report, success = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
+
+        # In this Windows/no-CUDA environment, it must be cleanly blocked
+        self.assertFalse(success)
+        self.assertEqual(report["status"], "blocked")
+        self.assertEqual(report["classification"], "noncertifiable_diagnostic")
+        self.assertEqual(report["scientific_capability_points"], 0.0)
+        self.assertFalse(report["hieratic_reading_claim"])
+        self.assertFalse(report["simulated_double_smoke"])
+        self.assertGreater(len(report["missing_resources"]), 0)
+        self.assertFalse(report["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluated"])
+
+        # CLI invocation without --allow-simulated must return 1
+        ret = cli_main(["real-smoke", "--model", "qwen2.5-vl-7b-instruct"])
+        self.assertEqual(ret, 1)
+
+    def test_real_smoke_with_allow_simulated_evaluates_visual_sensitivity(self) -> None:
+        """Verify real visual smoke test with --allow-simulated runs image-to-tensor and sensitivity control."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        report, success = run_real_visual_smoke(qwen_cfg, allow_simulated=True)
+
+        self.assertTrue(success)
+        self.assertEqual(report["status"], "completed")
+        self.assertTrue(report["simulated_double_smoke"])
+        self.assertEqual(report["classification"], "noncertifiable_diagnostic")
+        self.assertEqual(report["scientific_capability_points"], 0.0)
+        self.assertFalse(report["hieratic_reading_claim"])
+
+        # Check visual sensitivity control
+        sens = report["sensitivity_control"]
+        self.assertTrue(sens["constant_prompt_preserved"])
+        self.assertTrue(sens["image_bytes_differ"])
+        self.assertTrue(sens["output_strings_differ"])
+        self.assertTrue(sens["sensitivity_observed"])
+
+        # Check token usage and hashes recorded
+        fwd_a = report["forward_test_image"]
+        fwd_b = report["forward_control_image"]
+        self.assertNotEqual(fwd_a["image_sha256"], fwd_b["image_sha256"])
+        self.assertNotEqual(fwd_a["output_sha256"], fwd_b["output_sha256"])
+        self.assertGreater(fwd_a["token_usage"]["total_tokens"], 0)
+        self.assertGreater(fwd_b["token_usage"]["total_tokens"], 0)
+
+        # Grade F remains strictly False
+        self.assertFalse(report["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluated"])
+
+        # CLI invocation with --allow-simulated must return 0
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+        tmp_path.unlink()
+        try:
+            ret = cli_main([
+                "real-smoke",
+                "--model", "qwen2.5-vl-7b-instruct",
+                "--allow-simulated",
+                "--output", str(tmp_path),
+            ])
+            self.assertEqual(ret, 0)
+            self.assertTrue(tmp_path.is_file())
+            loaded = json.loads(tmp_path.read_text(encoding="utf-8"))
+            self.assertEqual(loaded["status"], "completed")
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+    def test_visual_sensitivity_control_detects_image_insensitivity(self) -> None:
+        """Verify visual sensitivity control flags indeterminate when output does not respond to image change."""
+        from eval.vlm.adapter import MockVLMAdapter
+
+        class ConstantResponseAdapter(MockVLMAdapter):
+            def predict(self, *args: Any, **kwargs: Any) -> Any:
+                from eval.vlm.adapter import VLMResponse
+                return VLMResponse(
+                    status="success",
+                    raw_output="Identical static output regardless of image input.",
+                    cleaned_prediction="Identical static output regardless of image input.",
+                    error_message=None,
+                    latency_ms=10.0,
+                    token_usage={"prompt_tokens": 64, "completion_tokens": 8, "total_tokens": 72},
+                )
+
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        dummy_adapter = ConstantResponseAdapter(qwen_cfg)
+
+        report, success = run_real_visual_smoke(qwen_cfg, custom_adapter=dummy_adapter)
+        self.assertTrue(success)
+        sens = report["sensitivity_control"]
+        self.assertFalse(sens["output_strings_differ"])
+        self.assertFalse(sens["sensitivity_observed"])
+        self.assertFalse(report["evidence_grades"]["grade_e_visual_sensitivity_control_verified"])
+
+    def test_smoke_report_schema_conformity(self) -> None:
+        """Verify that both blocked and simulated smoke reports conform strictly to schema."""
+        from tools.vlm_baselines import validate_with_schema
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+
+        report_blocked, _ = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
+        errs_b = validate_with_schema(report_blocked, self.schema)
+        self.assertEqual(errs_b, [])
+
+        report_sim, _ = run_real_visual_smoke(qwen_cfg, allow_simulated=True)
+        errs_s = validate_with_schema(report_sim, self.schema)
+        self.assertEqual(errs_s, [])
+
+    def test_environment_provisioning_spec_structure(self) -> None:
+        """Verify reproducible environment provisioning specification contains all mandatory sections."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        spec = adapter.get_environment_provisioning_spec()
+
+        self.assertIn("hardware_requirements", spec)
+        self.assertIn("python_environment", spec)
+        self.assertIn("weights_layout", spec)
+        self.assertIn("scientific_spend_boundary", spec)
+        self.assertEqual(spec["scientific_spend_boundary"]["max_authorized_spend_usd"], 0.0)
+        self.assertFalse(spec["scientific_spend_boundary"]["cloud_compute_authorized"])
+        self.assertEqual(spec["provider_model_id"], "Qwen/Qwen2.5-VL-7B-Instruct")
+        self.assertEqual(spec["pinned_revision_sha"], "bfb8829e3c6c0ebad5da954181947bb9df50b0e0")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
 

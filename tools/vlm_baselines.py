@@ -33,6 +33,7 @@ from eval.vlm.integrity import (
 )
 from eval.vlm.runner import VLMRunner
 from eval.vlm.scorer import compare_manifests, score_manifest
+from eval.vlm.smoke import run_real_visual_smoke
 from eval.vlm.universe import (
     DEFAULT_UNIVERSE_PATH,
     admit_external_items,
@@ -578,6 +579,14 @@ def main(argv: list[str] | None = None) -> int:
     p_comp.add_argument("--output", type=Path, default=None)
     p_comp.add_argument("--diagnostic-only", action="store_true", help="Compare even if an input audit fails; output is stamped noncertifiable with the audit errors")
 
+    # real-smoke
+    p_smoke = subparsers.add_parser("real-smoke", help="Execute real visual smoke test on local hardware and model weights")
+    p_smoke.add_argument("--model", type=str, default="qwen2.5-vl-7b-instruct", help="Model candidate key to evaluate")
+    p_smoke.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH, help="Path to evaluation suite YAML")
+    p_smoke.add_argument("--weights-dir", type=Path, default=None, help="Local directory containing model snapshot weights")
+    p_smoke.add_argument("--output", type=Path, default=None, help="Path to write structured smoke report JSON")
+    p_smoke.add_argument("--allow-simulated", action="store_true", help="Allow simulated test doubles for dry-run verification in test environments")
+
     args = parser.parse_args(argv)
 
     try:
@@ -765,6 +774,39 @@ def main(argv: list[str] | None = None) -> int:
                     f"  [{c['rung']}] Delta ({c['metric_id']}, {c['metric_direction']}): {c['score_delta']} "
                     f"(95% Clustered CI: {ci_str}) over N={c['paired_samples']} paired attempts"
                 )
+            return 0
+
+        elif args.command == "real-smoke":
+            suite = load_yaml(args.suite)
+            model_cfg = next((m for m in suite["models"] if m["key"] == args.model), None)
+            if not model_cfg:
+                raise VLMCLIError(f"Model key '{args.model}' not found in suite.")
+
+            report, success = run_real_visual_smoke(
+                model_cfg,
+                weights_dir=args.weights_dir,
+                allow_simulated=args.allow_simulated,
+            )
+
+            if args.output:
+                write_json_atomic(args.output, report)
+                print(f"Smoke report written to {args.output}")
+
+            if not success:
+                print(f"BLOCKED: Real visual smoke test blocked for model '{args.model}':", file=sys.stderr)
+                for res in report.get("missing_resources", []):
+                    print(f"  - Missing prerequisite: {res}", file=sys.stderr)
+                print(f"Barrier summary: {report.get('barrier_summary')}", file=sys.stderr)
+                return 1
+
+            print(f"PASS: Real visual smoke test completed for model '{args.model}' (Simulated: {report.get('simulated_double_smoke')}).")
+            if "forward_test_image" in report:
+                print(f"  Image A SHA-256: {report['forward_test_image']['image_sha256'][:16]}...")
+            if "forward_control_image" in report:
+                print(f"  Image B SHA-256: {report['forward_control_image']['image_sha256'][:16]}...")
+            if "sensitivity_control" in report:
+                print(f"  Visual sensitivity observed: {report['sensitivity_control']['sensitivity_observed']}")
+            print(f"  Classification: {report['classification']} (0.0 capability points)")
             return 0
 
     except Exception as exc:

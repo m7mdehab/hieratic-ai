@@ -8,7 +8,8 @@
     { "$ref": "#/$defs/demonstration_bank" },
     { "$ref": "#/$defs/run_manifest" },
     { "$ref": "#/$defs/score_report" },
-    { "$ref": "#/$defs/evaluation_universe" }
+    { "$ref": "#/$defs/evaluation_universe" },
+    { "$ref": "#/$defs/smoke_report" }
   ],
   "$defs": {
     "suite": {
@@ -740,6 +741,52 @@
           "items": { "type": "string" }
         },
         "universe_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "smoke_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_type",
+        "schema_version",
+        "timestamp",
+        "model_key",
+        "provider_model_id",
+        "revision",
+        "status",
+        "classification",
+        "scientific_capability_points",
+        "hieratic_reading_claim",
+        "simulated_double_smoke",
+        "missing_resources",
+        "barrier_summary",
+        "host_environment",
+        "provisioning_spec",
+        "evidence_grades"
+      ],
+      "properties": {
+        "doc_type": { "const": "vlm_visual_smoke_report" },
+        "schema_version": { "const": "1.0.0" },
+        "timestamp": { "type": "string" },
+        "model_key": { "type": "string" },
+        "provider_model_id": { "type": "string" },
+        "revision": { "type": "string" },
+        "status": { "enum": ["completed", "blocked", "failed"] },
+        "classification": { "const": "noncertifiable_diagnostic" },
+        "scientific_capability_points": { "const": 0.0 },
+        "hieratic_reading_claim": { "const": false },
+        "simulated_double_smoke": { "type": "boolean" },
+        "missing_resources": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "barrier_summary": { "type": "string" },
+        "host_environment": { "type": "object" },
+        "provisioning_spec": { "type": "object" },
+        "evidence_grades": { "type": "object" },
+        "forward_test_image": { "type": "object" },
+        "forward_control_image": { "type": "object" },
+        "sensitivity_control": { "type": "object" }
       }
     }
   }

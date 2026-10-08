@@ -200,6 +200,8 @@ class RealPublishedEgyptianLexicalTests(unittest.TestCase):
         self.assertEqual(0, report["scored_blind_gold_evaluations"])
         self.assertEqual(0, report["certified_hieratic_image_reading_experiments"])
         self.assertEqual(64, len(report["report_sha256"]))
+        import json
+        print("LING002_REAL_SCHOLARLY_DIAGNOSTIC=" + json.dumps({"source_text_groups": report["source_text_groups"], "scoreable_text_groups": report["source_text_groups_with_scoreable_lemma"], "counts": counts, "ratios": report["ratios"], "report_sha256": report["report_sha256"]}, ensure_ascii=False, sort_keys=True))
         for ratio in report["ratios"].values():
             if ratio is not None:
                 self.assertGreaterEqual(ratio, 0)

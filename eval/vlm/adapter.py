@@ -288,8 +288,13 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
 
     execution_tier = "live_local_open_weight"
     scientific_validity = "candidate_baseline"
-    # Hugging Face class used to load this family, or None when no verified loader exists.
+    # Specific Hugging Face model class used to load this family (never generic AutoModelForVision2Seq)
     loader_class_name: str | None = None
+    # Specific Hugging Face processor class or AutoProcessor
+    processor_class_name: str = "AutoProcessor"
+    # Minimum required libraries
+    min_transformers_version: str = "4.45.0"
+    min_torch_version: str = "2.4.0"
     # Honest status: nothing here has been exercised against real weights, a GPU and a real image.
     runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
@@ -313,52 +318,145 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             self.execution_tier = "synthetic_ci_fixture"
             self.scientific_validity = "non_scientific_test_fixture"
 
-    def check_availability(self) -> AvailabilityStatus:
+    def get_runtime_metadata(self) -> dict[str, Any]:
+        """Return structured runtime metadata for auditing without leaking sensitive paths."""
+        weights_status = "unspecified"
         if self._processor_override is not None and self._model_override is not None:
+            weights_status = "test_double_injected"
+        elif self.weights_dir is not None:
+            weights_status = "custom_weights_dir_provided"
+        else:
+            weights_status = "hub_cache_or_default"
+
+        meta: dict[str, Any] = {
+            "model_key": self.model_key,
+            "provider_model_id": self.model_config.get("provider_model_id"),
+            "revision": self.model_config.get("revision"),
+            "loader_class_name": self.loader_class_name,
+            "processor_class_name": self.processor_class_name,
+            "min_transformers_version": self.min_transformers_version,
+            "min_torch_version": self.min_torch_version,
+            "runtime_verification": self.runtime_verification,
+            "execution_tier": self.execution_tier,
+            "scientific_validity": self.scientific_validity,
+            "weights_status": weights_status,
+        }
+
+        if self._torch_available:
+            try:
+                import torch
+                meta["torch_version"] = torch.__version__
+                meta["cuda_available"] = torch.cuda.is_available()
+                if torch.cuda.is_available():
+                    meta["cuda_device_count"] = torch.cuda.device_count()
+                    meta["cuda_device_name"] = torch.cuda.get_device_name(0)
+            except Exception:
+                pass
+
+        if self._transformers_available:
+            try:
+                import transformers
+                meta["transformers_version"] = transformers.__version__
+            except Exception:
+                pass
+
+        return meta
+
+    def check_availability(self) -> AvailabilityStatus:
+        base_hw_info = self.get_runtime_metadata()
+
+        if self._processor_override is not None and self._model_override is not None:
+            info = dict(base_hw_info)
+            info.update({"mode": "injected_test_interface", "promotable": False})
             return AvailabilityStatus(
                 available=True,
                 reason="Adapter configured with injected processor/model test doubles (unit-test harness; not real inference).",
-                hardware_info={"mode": "injected_test_interface", "promotable": False},
+                hardware_info=info,
             )
 
         if self.loader_class_name is None:
+            info = dict(base_hw_info)
+            info["loader_class"] = None
             return AvailabilityStatus(
                 available=False,
                 reason=(
                     f"Unsupported architecture path for model '{self.model_key}': no verified Hugging Face loader is "
                     f"registered for this family ({type(self).__name__}). Runtime status: {self.runtime_verification}."
                 ),
-                hardware_info={"loader_class": None, "runtime_verification": self.runtime_verification},
+                hardware_info=info,
             )
 
         if not self._torch_available:
+            info = dict(base_hw_info)
+            info["torch_installed"] = False
             return AvailabilityStatus(
                 available=False,
                 reason="PyTorch (torch) is not installed in the local environment.",
-                hardware_info={"torch_installed": False},
+                hardware_info=info,
             )
         if not self._transformers_available:
+            info = dict(base_hw_info)
+            info["transformers_installed"] = False
             return AvailabilityStatus(
                 available=False,
                 reason="Hugging Face Transformers is not installed in the local environment.",
-                hardware_info={"transformers_installed": False},
+                hardware_info=info,
             )
 
         import torch
+        import transformers
+
+        # Check library versions against minimums
+        current_tf_ver = getattr(transformers, "__version__", "0.0.0")
+        current_torch_ver = getattr(torch, "__version__", "0.0.0")
+
+        def _ver_tuple(v: str) -> tuple[int, ...]:
+            try:
+                clean = v.split("+")[0].split(".dev")[0]
+                return tuple(int(x) for x in clean.split(".") if x.isdigit())
+            except Exception:
+                return (0, 0, 0)
+
+        if _ver_tuple(current_tf_ver) < _ver_tuple(self.min_transformers_version):
+            info = dict(base_hw_info)
+            info.update({"current_transformers_version": current_tf_ver, "required_min": self.min_transformers_version})
+            return AvailabilityStatus(
+                available=False,
+                reason=(
+                    f"Hugging Face transformers version {current_tf_ver} is older than required "
+                    f"{self.min_transformers_version} for loader {self.loader_class_name}."
+                ),
+                hardware_info=info,
+            )
+
+        # Check architecture loader class exists in transformers
+        if not hasattr(transformers, self.loader_class_name):
+            info = dict(base_hw_info)
+            info.update({"missing_loader_class": self.loader_class_name})
+            return AvailabilityStatus(
+                available=False,
+                reason=(
+                    f"Loader class '{self.loader_class_name}' is not present in installed transformers {current_tf_ver}."
+                ),
+                hardware_info=info,
+            )
+
         cuda_ok = torch.cuda.is_available()
         device_count = torch.cuda.device_count() if cuda_ok else 0
         device_name = torch.cuda.get_device_name(0) if cuda_ok else None
 
         min_vram_gb = 16.0 if "7b" in self.model_key else 24.0
         if self.model_config.get("requires_cuda", True) and not cuda_ok:
+            info = dict(base_hw_info)
+            info.update({
+                "cuda_available": False,
+                "device_count": 0,
+                "device_name": None,
+            })
             return AvailabilityStatus(
                 available=False,
                 reason=f"Model '{self.model_key}' requires NVIDIA CUDA GPU acceleration (>= {min_vram_gb} GB VRAM), but no CUDA device is present.",
-                hardware_info={
-                    "cuda_available": False,
-                    "device_count": 0,
-                    "device_name": None,
-                },
+                hardware_info=info,
             )
 
         # Check local weights availability
@@ -370,44 +468,71 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                 weights_path = candidate_path
 
         if not weights_path or not weights_path.exists():
+            info = dict(base_hw_info)
+            info.update({
+                "cuda_available": cuda_ok,
+                "device_name": device_name,
+                "weights_found": False,
+            })
             return AvailabilityStatus(
                 available=False,
                 reason=(
                     f"Model weights for '{model_id}' are not found locally on disk. "
                     "Pre-downloaded weights directory is required for offline execution."
                 ),
-                hardware_info={
-                    "cuda_available": cuda_ok,
-                    "device_name": device_name,
-                    "weights_found": False,
-                },
+                hardware_info=info,
             )
 
+        info = dict(base_hw_info)
+        info.update({
+            "cuda_available": cuda_ok,
+            "device_count": device_count,
+            "device_name": device_name,
+            "weights_found": True,
+        })
         return AvailabilityStatus(
             available=True,
             reason="Local runtime meets GPU acceleration and offline weights prerequisites.",
-            hardware_info={
-                "cuda_available": cuda_ok,
-                "device_count": device_count,
-                "device_name": device_name,
-                "weights_path": str(weights_path),
-            },
+            hardware_info=info,
         )
 
     def _load_model_if_needed(self) -> None:
         if self._model is not None and self._processor is not None:
             return
 
+        if self.loader_class_name is None:
+            raise VLMAdapterError(
+                f"Cannot load model '{self.model_key}': loader_class_name is None for {type(self).__name__}."
+            )
+
         import torch
-        from transformers import AutoProcessor, AutoModelForVision2Seq
+        import transformers
+
+        loader_cls = getattr(transformers, self.loader_class_name, None)
+        if loader_cls is None:
+            raise VLMAdapterError(
+                f"Architecture loader class '{self.loader_class_name}' is not found in transformers library."
+            )
+
+        processor_cls = getattr(transformers, self.processor_class_name, getattr(transformers, "AutoProcessor", None))
+        if processor_cls is None:
+            raise VLMAdapterError(
+                f"Processor class '{self.processor_class_name}' not found in transformers library."
+            )
 
         model_path = str(self.weights_dir) if self.weights_dir else self.model_config["provider_model_id"]
-        self._processor = AutoProcessor.from_pretrained(model_path, local_files_only=True)
-        self._model = AutoModelForVision2Seq.from_pretrained(
+        revision = self.model_config.get("revision")
+
+        load_kwargs: dict[str, Any] = {"local_files_only": True}
+        if revision:
+            load_kwargs["revision"] = revision
+
+        self._processor = processor_cls.from_pretrained(model_path, **load_kwargs)
+        self._model = loader_cls.from_pretrained(
             model_path,
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
             device_map="auto" if torch.cuda.is_available() else "cpu",
-            local_files_only=True,
+            **load_kwargs,
         )
         self._model.eval()
 
@@ -417,10 +542,12 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
         prompt: str,
         pil_image: Any,
     ) -> dict[str, Any]:
-        """Format inputs appropriately for the underlying processor, ensuring image conditioning."""
-        full_text = f"{system_prompt}\n\n{prompt}"
+        """Format inputs appropriately for the underlying processor, strictly ensuring image conditioning.
+
+        Base class implementation requires explicit chat template or processor conditioning;
+        never falls back silently to unconditioned text-only prompts.
+        """
         if hasattr(self._processor, "apply_chat_template"):
-            # Multi-modal chat message structure
             messages = [
                 {"role": "system", "content": system_prompt},
                 {
@@ -436,11 +563,31 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                     messages, tokenize=False, add_generation_prompt=True
                 )
                 return self._processor(images=pil_image, text=formatted_text, return_tensors="pt")
-            except Exception:
-                # Fallback to standard processor call
-                pass
+            except Exception as exc:
+                raise ImageConditioningError(
+                    f"Chat template application failed for {self.model_key}: {exc}. "
+                    "Text-only fallback is prohibited by multimodal conditioning protocol."
+                ) from exc
 
-        return self._processor(images=pil_image, text=full_text, return_tensors="pt")
+        return self._processor(images=pil_image, text=f"{system_prompt}\n\n{prompt}", return_tensors="pt")
+
+    def format_few_shot_multimodal_inputs(
+        self,
+        system_prompt: str,
+        prompt: str,
+        pil_image: Any,
+        demonstration_items: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Prospective multi-image formatting helper for future cleared few-shot evaluation.
+
+        Unconditionally raises LiveFewShotBlockedError in live execution because verified
+        multi-image vision templates and audited exemplar pixels are not yet certified.
+        """
+        raise LiveFewShotBlockedError(
+            f"Multi-image few-shot formatting for '{self.model_key}' is prospective and blocked. "
+            "Authentic multi-image vision templates and audited rights-cleared exemplar image assets "
+            "are not certified on disk."
+        )
 
     def predict(
         self,
@@ -484,32 +631,49 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             pil_image = self.preprocess_image(image_bytes)
             inputs = self.format_multimodal_inputs(system_prompt, prompt, pil_image)
 
-            # Ensure image tensors exist in inputs
-            if "pixel_values" not in inputs and "images" not in inputs and not hasattr(self._processor, "mock_image_tag"):
+            # Ensure image tensors exist in inputs: check pixel_values or image feature tensors
+            has_visual_features = (
+                "pixel_values" in inputs
+                or "images" in inputs
+                or "pixel_values_videos" in inputs
+                or hasattr(self._processor, "mock_image_tag")
+            )
+            if not has_visual_features:
                 raise ImageConditioningError(
                     f"Processor output for {self.model_key} lacks visual features (pixel_values). "
                     "Multimodal image conditioning could not be established."
                 )
 
-            if hasattr(self._model, "device"):
-                inputs = {k: v.to(self._model.device) for k, v in inputs.items() if hasattr(v, "to")}
+            # Place inputs on model device
+            target_device = getattr(self._model, "device", None)
+            if target_device is not None:
+                inputs = {
+                    k: (v.to(target_device) if hasattr(v, "to") else v)
+                    for k, v in inputs.items()
+                }
 
             # Deterministic greedy forward decoding
             max_new_tokens = self.model_config.get("max_new_tokens", 256)
-            generated_ids = self._model.generate(
-                **inputs,
-                max_new_tokens=max_new_tokens,
-                do_sample=False,
-                temperature=0.0,
-            )
+            gen_kwargs: dict[str, Any] = {
+                "max_new_tokens": max_new_tokens,
+                "do_sample": False,
+                "temperature": 0.0,
+            }
+            if "stop_sequences" in self.model_config:
+                gen_kwargs["stop_strings"] = self.model_config["stop_sequences"]
+
+            generated_ids = self._model.generate(**inputs, **gen_kwargs)
 
             # Extract completion tokens, stripping prompt input IDs
             in_ids = inputs.get("input_ids")
             if in_ids is not None and hasattr(generated_ids, "__getitem__"):
-                generated_ids_trimmed = [
-                    out_ids[len(in_ids[i]):] if len(in_ids) > i else out_ids
-                    for i, out_ids in enumerate(generated_ids)
-                ]
+                generated_ids_trimmed = []
+                for i, out_ids in enumerate(generated_ids):
+                    if len(in_ids) > i:
+                        prompt_len = len(in_ids[i])
+                        generated_ids_trimmed.append(out_ids[prompt_len:])
+                    else:
+                        generated_ids_trimmed.append(out_ids)
             else:
                 generated_ids_trimmed = generated_ids
 
@@ -556,6 +720,9 @@ class Qwen2_5_VLAdapter(OpenWeightVLMAdapter):
     """Specialized adapter for Alibaba Qwen 2.5 VL architecture."""
 
     loader_class_name = "Qwen2_5_VLForConditionalGeneration"
+    processor_class_name = "AutoProcessor"
+    min_transformers_version = "4.49.0"
+    min_torch_version = "2.4.0"
     runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
     def format_multimodal_inputs(
@@ -564,6 +731,7 @@ class Qwen2_5_VLAdapter(OpenWeightVLMAdapter):
         prompt: str,
         pil_image: Any,
     ) -> dict[str, Any]:
+        """Format inputs for Qwen2.5-VL using its required chat template and vision processor call."""
         messages = [
             {"role": "system", "content": system_prompt},
             {
@@ -577,18 +745,24 @@ class Qwen2_5_VLAdapter(OpenWeightVLMAdapter):
         if hasattr(self._processor, "apply_chat_template"):
             try:
                 formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-                return self._processor(images=pil_image, text=formatted, return_tensors="pt")
+                return self._processor(images=[pil_image], text=formatted, return_tensors="pt")
             except Exception as exc:
                 raise ImageConditioningError(
                     f"Chat template application failed for Qwen2.5-VL: {exc}. Multimodal conditioning cannot proceed."
                 ) from exc
-        return self._processor(images=pil_image, text=f"{system_prompt}\n{prompt}", return_tensors="pt")
+
+        raise ImageConditioningError(
+            f"Processor for '{self.model_key}' lacks apply_chat_template. Cannot establish multimodal chat conditioning."
+        )
 
 
 class PixtralVLMAdapter(OpenWeightVLMAdapter):
     """Specialized adapter for Mistral Pixtral 12B architecture."""
 
     loader_class_name = "LlavaForConditionalGeneration"
+    processor_class_name = "AutoProcessor"
+    min_transformers_version = "4.45.0"
+    min_torch_version = "2.4.0"
     runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
     def format_multimodal_inputs(
@@ -597,6 +771,47 @@ class PixtralVLMAdapter(OpenWeightVLMAdapter):
         prompt: str,
         pil_image: Any,
     ) -> dict[str, Any]:
+        """Format inputs for Pixtral 12B using its Llava-compatible multimodal message structure."""
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image"},
+                    {"type": "text", "text": prompt},
+                ],
+            },
+        ]
+        if hasattr(self._processor, "apply_chat_template"):
+            try:
+                formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                return self._processor(images=[pil_image], text=formatted, return_tensors="pt")
+            except Exception as exc:
+                raise ImageConditioningError(
+                    f"Chat template application failed for Pixtral: {exc}. Multimodal conditioning cannot proceed."
+                ) from exc
+
+        raise ImageConditioningError(
+            f"Processor for '{self.model_key}' lacks apply_chat_template. Cannot establish multimodal chat conditioning."
+        )
+
+
+class Llama3_2_VisionAdapter(OpenWeightVLMAdapter):
+    """Specialized adapter for Meta Llama 3.2 11B Vision architecture."""
+
+    loader_class_name = "MllamaForConditionalGeneration"
+    processor_class_name = "AutoProcessor"
+    min_transformers_version = "4.45.0"
+    min_torch_version = "2.4.0"
+    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
+
+    def format_multimodal_inputs(
+        self,
+        system_prompt: str,
+        prompt: str,
+        pil_image: Any,
+    ) -> dict[str, Any]:
+        """Format inputs for Llama 3.2 Vision using official chat template structure."""
         messages = [
             {"role": "system", "content": system_prompt},
             {
@@ -613,23 +828,10 @@ class PixtralVLMAdapter(OpenWeightVLMAdapter):
                 return self._processor(images=pil_image, text=formatted, return_tensors="pt")
             except Exception as exc:
                 raise ImageConditioningError(
-                    f"Chat template application failed for Pixtral: {exc}. Multimodal conditioning cannot proceed."
+                    f"Chat template application failed for Llama 3.2 Vision: {exc}. Multimodal conditioning cannot proceed."
                 ) from exc
-        return self._processor(images=pil_image, text=f"{system_prompt}\n{prompt}", return_tensors="pt")
 
-
-class Llama3_2_VisionAdapter(OpenWeightVLMAdapter):
-    """Specialized adapter for Meta Llama 3.2 11B Vision architecture."""
-
-    loader_class_name = "MllamaForConditionalGeneration"
-    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
-
-    def format_multimodal_inputs(
-        self,
-        system_prompt: str,
-        prompt: str,
-        pil_image: Any,
-    ) -> dict[str, Any]:
+        # Fallback to direct placeholder formatting if processor does not have apply_chat_template
         full_text = f"<|image|><|begin_of_text|>{system_prompt}\n\n{prompt}"
         return self._processor(images=pil_image, text=full_text, return_tensors="pt")
 

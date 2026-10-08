@@ -23,12 +23,12 @@ This suite is developed independently from the overseer's `EVAL-003` frontier pr
 
 ### 2.1 Model Candidates
 
-| Key | Model Name | Architecture / Provider | License | Execution Tier | Hardware Prerequisite |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `mock-vision-v1` | Deterministic Synthetic Baseline | Internal synthetic harness | Apache-2.0 | `synthetic_ci_fixture` | CPU (Offline) |
-| `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | Alibaba Cloud / Qwen | Apache-2.0 | `hardware_accelerated_production` | CUDA GPU (>= 16 GB VRAM) |
-| `pixtral-12b-2409` | Pixtral 12B | Mistral AI | Apache-2.0 | `hardware_accelerated_production` | CUDA GPU (>= 24 GB VRAM) |
-| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | Meta | Llama-3.2-Community | `hardware_accelerated_production` | CUDA GPU (>= 24 GB VRAM) |
+| Key | Model Name | Architecture / Loader Class | Revision (Pinned) | License | Execution Tier | Hardware Prerequisite |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `mock-vision-v1` | Deterministic Synthetic Baseline | Synthetic test harness | `v1.0.0` | Apache-2.0 | `synthetic_ci_fixture` | CPU (Offline) |
+| `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | `Qwen2_5_VLForConditionalGeneration` | `bfb8829e3c6c0ebad5da954181947bb9df50b0e0` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 16 GB VRAM) |
+| `pixtral-12b-2409` | Pixtral 12B | `LlavaForConditionalGeneration` | `31ea79a32c256037a503023e6022e3427f79612c` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
+| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | `MllamaForConditionalGeneration` | `9eb2daaa85` | Llama-3.2-Community | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
 
 ### 2.2 Execution Gates
 
@@ -213,13 +213,24 @@ Real open-weight VLM inference requires:
 - Downloaded, approved model weights residing in a verified local cache.
 - Explicit approval for local execution under zero-spend policy ($0.00 spend).
 
-### 7.3 Fail-Closed Barrier Disclosure
+### 7.3 Wave 6 Technical Verification Status Matrix
+
+Under Wave 6 audit standards, capability claims are broken down strictly into five verifiable states:
+
+| Model Backbone | (1) Implemented Interface | (2) Unit-Tested Formatting | (3) Integration-Tested Loader | (4) Executed Inference | (5) Evaluated Hieratic Reading |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| `mock-vision-v1` | **YES** | **YES** | **YES** | **YES** (synthetic test double) | **YES** (CI test fixture only; non-certifiable) |
+| `qwen2.5-vl-7b-instruct` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
+| `pixtral-12b-2409` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
+| `llama-3.2-11b-vision-instruct` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
+
+### 7.4 Fail-Closed Barrier Disclosure
 
 When running in environments without dedicated GPU accelerators or downloaded local weights (such as standard CPU CI runners or developer laptops):
-- `OpenWeightVLMAdapter` **fails closed** cleanly, raising `ModelHardwareBarrierError` with a clear explanation of missing prerequisites.
+- `OpenWeightVLMAdapter` **fails closed** cleanly, reporting `Inference blocked by hardware/weights barrier` with an exact explanation of missing prerequisites (`cuda_available: false`, unprovisioned weights).
 - It does **not** fabricate synthetic model completions.
 - It does **not** make unapproved paid external API calls.
-- Task `VLM-001` remains **scientifically incomplete** until genuine inference on approved local hardware is conducted and audited.
+- Task `VLM-001` remains **scientifically unvalidated** (0.0 / 2.0 capability points) until genuine inference on approved local hardware is conducted and independently audited.
 
 ---
 

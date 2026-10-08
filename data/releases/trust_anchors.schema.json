@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://m7mdehab.github.io/hieratic-ai/data/releases/trust_anchors.schema.json",
-  "title": "DATA-008 authorization trust-anchor administration record",
+  "title": "DATA-008 untrusted trust-anchor administration metadata (not an authority root)",
+  "description": "Schema validation checks syntax only. Repository-controlled records and status fields cannot independently authorize a production release.",
   "type": "object",
   "required": ["schema_version", "status", "anchors", "revoked_receipt_ids", "superseded_receipt_ids"],
   "properties": {
     "schema_version": {"const": "1.0.0"},
-    "status": {"enum": ["no_external_authorities_configured", "externally_verified_authorities_configured", "synthetic_test_fixture"]},
+    "status": {"enum": ["no_external_authorities_configured", "externally_verified_authorities_configured", "synthetic_test_fixture"], "description": "A declared status is not verification; production authorization remains hard-disabled in code."},
     "anchors": {
       "type": "array",
       "uniqueItems": true,
@@ -21,7 +22,7 @@
           "source_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"}},
           "valid_from": {"type": "string", "format": "date-time"},
           "valid_until": {"type": "string", "format": "date-time"},
-          "verification_record": {"type": "string", "minLength": 1}
+          "verification_record": {"type": "string", "minLength": 1, "description": "Unverified administrative reference only; does not establish the key holder, institutional authority, reviewer identity, or role."}
         },
         "additionalProperties": false
       }

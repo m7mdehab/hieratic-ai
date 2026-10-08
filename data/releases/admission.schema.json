@@ -20,6 +20,10 @@
         "kind",
         "uri",
         "sha256",
+        "verification_status",
+        "verified_content_sha256",
+        "verification_receipt_ref",
+        "substantive_rights_determination",
         "submitted_by",
         "submitted_at",
         "component"
@@ -48,7 +52,23 @@
           "format": "uri"
         },
         "sha256": {
-          "$ref": "#/$defs/hash"
+          "$ref": "#/$defs/hash",
+          "description": "Submitter-declared hash only. This contract does not fetch or independently verify permission-document bytes."
+        },
+        "verification_status": {
+          "const": "reference_only_unverified",
+          "description": "Production verification is unavailable until an overseer-governed external authority onboarding contract exists."
+        },
+        "verified_content_sha256": {
+          "const": null,
+          "description": "No permission-document bytes have been independently verified."
+        },
+        "verification_receipt_ref": {
+          "const": null
+        },
+        "substantive_rights_determination": {
+          "const": "not_assessed",
+          "description": "A reference or declared hash is not a legal determination."
         },
         "submitted_by": {
           "$ref": "#/$defs/id"
@@ -530,7 +550,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "evidence_id": {
       "$ref": "#/$defs/id"

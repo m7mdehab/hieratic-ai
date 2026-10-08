@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import base64
+import hashlib
 import json
 import shutil
 import sys
@@ -94,7 +96,7 @@ def minimal_admission_evidence() -> dict:
               "creator_id": "synthetic-fixture", "created_at": "2026-10-08T00:00:00Z",
               "review_status": "synthetic", "attributes": {}} for index in range(2)]
     evidence = {
-        "schema_version": "1.0.0", "evidence_id": "synthetic-evidence",
+        "schema_version": "1.1.0", "evidence_id": "synthetic-evidence",
         "contributor_assertions": [{"assertion_id": "assertion-1", "claimant_id": "contributor-1",
                                      "claimed_at": "2026-10-08T00:00:00Z", "subject_id": object_id,
                                      "claim": "synthetic-only claim", "evidence_refs": []}],
@@ -121,6 +123,62 @@ def minimal_admission_evidence() -> dict:
     payload = {key: copy.deepcopy(value) for key, value in evidence.items() if key != "receipt"}
     evidence["receipt"]["payload_sha256"] = release_corpus.digest(release_corpus.canonical(payload))
     return evidence
+
+
+def _attacker_ed25519_keypair(seed: bytes) -> tuple[bytes, object]:
+    """Tiny deterministic test signer; deliberately not a production dependency."""
+    q = 2**255 - 19
+    order = 2**252 + 27742317777372353535851937790883648493
+    d = (-121665 * pow(121666, q - 2, q)) % q
+    i = pow(2, (q - 1) // 4, q)
+
+    def point_add(p, r):
+        x1, y1 = p
+        x2, y2 = r
+        product = d * x1 * x2 * y1 * y2 % q
+        x = (x1 * y2 + y1 * x2) * pow(1 + product, q - 2, q) % q
+        y = (y1 * y2 + x1 * x2) * pow(1 - product, q - 2, q) % q
+        return x, y
+
+    def scalar_mult(scalar, point):
+        result = (0, 1)
+        while scalar:
+            if scalar & 1:
+                result = point_add(result, point)
+            point = point_add(point, point)
+            scalar >>= 1
+        return result
+
+    def encode(point):
+        x, y = point
+        return int(y | ((x & 1) << 255)).to_bytes(32, "little")
+
+    base_y = 4 * pow(5, q - 2, q) % q
+    x2 = (base_y * base_y - 1) * pow(d * base_y * base_y + 1, q - 2, q) % q
+    base_x = pow(x2, (q + 3) // 8, q)
+    if base_x * base_x % q != x2:
+        base_x = base_x * i % q
+    if base_x & 1:
+        base_x = q - base_x
+    base = (base_x, base_y)
+
+    hashed = hashlib.sha512(seed).digest()
+    secret = bytearray(hashed[:32])
+    secret[0] &= 248
+    secret[31] &= 63
+    secret[31] |= 64
+    scalar = int.from_bytes(secret, "little")
+    public_key = encode(scalar_mult(scalar, base))
+    prefix = hashed[32:]
+
+    def sign(message: bytes) -> bytes:
+        nonce = int.from_bytes(hashlib.sha512(prefix + message).digest(), "little") % order
+        encoded_r = encode(scalar_mult(nonce, base))
+        challenge = int.from_bytes(hashlib.sha512(encoded_r + public_key + message).digest(), "little") % order
+        s = (nonce + challenge * scalar) % order
+        return encoded_r + s.to_bytes(32, "little")
+
+    return public_key, sign
 
 
 class CorpusReleaseTests(unittest.TestCase):
@@ -160,9 +218,173 @@ class CorpusReleaseTests(unittest.TestCase):
             expected_roster_version="pinned-roster-v2", expected_source_record_sha256="2" * 64,
             as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
         self.assertTrue(any("source-registry rights record changed" in error for error in errors), errors)
-        self.assertTrue(any("no externally trusted authorization signing authority" in error for error in errors), errors)
+        self.assertTrue(any("not an external trust root" in error for error in errors), errors)
         self.assertTrue(any("benchmark overlap state is not_yet_reviewed" in error for error in errors), errors)
         self.assertTrue(any("missing rights term for original_image/development" in error for error in errors), errors)
+
+    def test_attacker_generated_root_and_fabricated_roles_never_authorize_production(self):
+        evidence = minimal_admission_evidence()
+        evidence["submitted_evidence"] = [{
+            "evidence_id": "permission-1", "kind": "permission_letter",
+            "uri": "https://attacker.invalid/private/letter.pdf", "sha256": "a" * 64,
+            "verification_status": "reference_only_unverified", "verified_content_sha256": None,
+            "verification_receipt_ref": None, "substantive_rights_determination": "not_assessed",
+            "submitted_by": "attacker", "submitted_at": "2026-10-08T00:00:00Z", "component": "all",
+        }]
+        evidence["independent_reviews"] = [
+            {"review_id": "fake-rights", "reviewer_id": "invented-rights-officer", "reviewer_role": "rights_holder_representative",
+             "reviewed_at": "2026-10-08T00:00:00Z", "version": "1", "subject_id": "SYNTHETIC-OBJECT-UNTRUSTED",
+             "intended_use": ["training", "development", "redistribution"], "evidence_refs": ["permission-1"],
+             "decision": "allowed", "rationale": "forged role assertion", "limitations": [], "supersedes_review_id": None},
+            {"review_id": "fake-scholar", "reviewer_id": "invented-egyptologist", "reviewer_role": "egyptologist",
+             "reviewed_at": "2026-10-08T00:00:00Z", "version": "1", "subject_id": "SYNTHETIC-OBJECT-UNTRUSTED",
+             "intended_use": ["training"], "evidence_refs": ["permission-1"], "decision": "allowed",
+             "rationale": "forged scholarly approval", "limitations": [], "supersedes_review_id": None},
+            {"review_id": "fake-benchmark", "reviewer_id": "invented-auditor", "reviewer_role": "benchmark_auditor",
+             "reviewed_at": "2026-10-08T00:00:00Z", "version": "1", "subject_id": "SYNTHETIC-OBJECT-UNTRUSTED",
+             "intended_use": ["training"], "evidence_refs": ["permission-1"], "decision": "allowed",
+             "rationale": "forged overlap approval", "limitations": [], "supersedes_review_id": None},
+        ]
+        seed = hashlib.sha256(b"attacker-controlled signing seed").digest()
+        public_key, sign = _attacker_ed25519_keypair(seed)
+        payload = {key: copy.deepcopy(value) for key, value in evidence.items() if key != "receipt"}
+        payload_bytes = release_corpus.canonical(payload)
+        evidence["receipt"].update({
+            "receipt_id": "attacker-self-signed-1", "key_id": "attacker-root",
+            "signed_by": "attacker", "signed_at": "2026-10-08T00:00:00Z",
+            "payload_sha256": release_corpus.digest(payload_bytes),
+            "signature_ed25519_base64": base64.b64encode(sign(payload_bytes)).decode("ascii"),
+        })
+        trust_store = {
+            "schema_version": "1.0.0", "status": "externally_verified_authorities_configured",
+            "anchors": [{"key_id": "attacker-root", "public_key_ed25519_base64": base64.b64encode(public_key).decode("ascii"),
+                         "reviewer_id": "attacker", "authority_role": "corpus_overseer", "source_ids": ["SRC-HPDB"],
+                         "valid_from": "2026-01-01T00:00:00Z", "valid_until": "2027-01-01T00:00:00Z",
+                         "verification_record": "self-authored fake institutional approval"}],
+            "revoked_receipt_ids": [], "superseded_receipt_ids": [],
+        }
+        self.assertEqual([], release_corpus.validate_trust_store(trust_store), "attacker record is syntactically valid")
+        self.assertTrue(release_corpus._verify_ed25519(public_key, base64.b64decode(evidence["receipt"]["signature_ed25519_base64"]), payload_bytes))
+        errors = release_corpus.validate_admission_evidence(
+            evidence, trust_store, source_id="SRC-HPDB", source_object_id="SYNTHETIC-OBJECT-UNTRUSTED",
+            item_id="synthetic-admission-test", expected_assets={}, as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, errors)
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, release_corpus.production_authority_gate(trust_store, evidence))
+        self.assertEqual("reference_only_unverified", evidence["submitted_evidence"][0]["verification_status"])
+
+        # Changing claimed authority metadata cannot change the independent gate.
+        altered = copy.deepcopy(trust_store)
+        altered["anchors"][0]["verification_record"] = "different forged proof"
+        altered["anchors"][0]["authority_role"] = "legal_reviewer"
+        altered["status"] = "synthetic_test_fixture"
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, release_corpus.production_authority_gate(altered, evidence))
+
+    def test_invalid_document_claim_cannot_be_labeled_verified(self):
+        evidence = minimal_admission_evidence()
+        schema = release_corpus.read_document(release_corpus.ADMISSION_SCHEMA)
+        evidence["submitted_evidence"] = [{
+            "evidence_id": "claimed-verified", "kind": "permission_letter", "uri": "https://example.invalid/letter",
+            "sha256": "a" * 64, "verification_status": "verified", "verified_content_sha256": "a" * 64,
+            "verification_receipt_ref": "signed-by-self", "substantive_rights_determination": "permission_confirmed",
+            "submitted_by": "attacker", "submitted_at": "2026-10-08T00:00:00Z", "component": "all",
+        }]
+        errors = release_corpus._schema_errors_against(evidence, schema, "authorization evidence")
+        self.assertTrue(any("verification_status" in error for error in errors), errors)
+
+    def test_reviewer_disagreement_is_preserved_as_unresolved_without_exposing_reviewer_evidence(self):
+        evidence = minimal_admission_evidence()
+        evidence["independent_reviews"] = [
+            {"review_id": "review-allow", "reviewer_id": "person-a", "reviewer_role": "egyptologist",
+             "reviewed_at": "2026-10-08T00:00:00Z", "version": "1", "subject_id": "SYNTHETIC-OBJECT-UNTRUSTED",
+             "intended_use": ["training"], "evidence_refs": [], "decision": "allowed", "rationale": "private yes",
+             "limitations": [], "supersedes_review_id": None},
+            {"review_id": "review-deny", "reviewer_id": "person-b", "reviewer_role": "egyptologist",
+             "reviewed_at": "2026-10-08T00:00:00Z", "version": "1", "subject_id": "SYNTHETIC-OBJECT-UNTRUSTED",
+             "intended_use": ["training"], "evidence_refs": [], "decision": "denied", "rationale": "private no",
+             "limitations": [], "supersedes_review_id": None},
+        ]
+        errors = release_corpus.validate_admission_evidence(
+            evidence, release_corpus.read_document(release_corpus.TRUST_ANCHORS), source_id="SRC-HPDB",
+            source_object_id="SYNTHETIC-OBJECT-UNTRUSTED", item_id="synthetic-admission-test", expected_assets={},
+            as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, errors)
+        public_case = release_corpus._public_review_case({
+            "case_id": "dispute-1", "target_type": "line", "target_id": "line-1", "annotation_layer": "reading",
+            "annotation_gold_status": "uncertain_with_alternatives", "issue_flags": ["disputed_reading"],
+            "case_state": "needs_adjudication", "decisions": [
+                {"reviewer_id": "person-a", "rationale": "private yes"}, {"reviewer_id": "person-b", "rationale": "private no"}],
+            "adjudication": None,
+        })
+        self.assertTrue(public_case["disagreement"])
+        self.assertEqual(2, public_case["decision_count"])
+        rendered = json.dumps(public_case)
+        self.assertNotIn("person-a", rendered)
+        self.assertNotIn("private yes", rendered)
+
+    def test_revoked_receipt_is_rejected_even_as_untrusted_claim(self):
+        evidence = minimal_admission_evidence()
+        trust_store = release_corpus.read_document(release_corpus.TRUST_ANCHORS)
+        trust_store["revoked_receipt_ids"] = ["untrusted-receipt"]
+        errors = release_corpus.validate_admission_evidence(
+            evidence, trust_store, source_id="SRC-HPDB", source_object_id="SYNTHETIC-OBJECT-UNTRUSTED",
+            item_id="synthetic-admission-test", expected_assets={}, as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
+        self.assertTrue(any("has been revoked" in error for error in errors), errors)
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, errors)
+
+    def test_receipt_binding_and_source_object_inheritance_fail_closed(self):
+        evidence = minimal_admission_evidence()
+        trust_store = release_corpus.read_document(release_corpus.TRUST_ANCHORS)
+        evidence["decision"]["source_object_id"] = "SYNTHETIC-OBJECT-OTHER"
+        errors = release_corpus.validate_admission_evidence(
+            evidence, trust_store, source_id="SRC-HPDB", source_object_id="SYNTHETIC-OBJECT-UNTRUSTED",
+            item_id="synthetic-admission-test", expected_assets={},
+            as_of=release_corpus.dt.datetime(2026, 10, 8, tzinfo=release_corpus.dt.timezone.utc))
+        self.assertTrue(any("not bound to the admitted source and object" in error for error in errors), errors)
+        self.assertTrue(any("payload hash does not match" in error for error in errors), errors)
+        self.assertIn(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER, errors)
+
+    def test_synthetic_build_succeeds_but_production_promotion_is_hard_blocked(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(_yaml(path), path)
+        self.assertEqual([], errors)
+        self.assertEqual("synthetic_test_release", result["release"]["release_kind"])
+        bundle = _yaml(path)
+        bundle["release_kind"] = "corpus_v1_release"
+        _, production_errors = release_corpus.validate_bundle(bundle, path)
+        self.assertTrue(any(release_corpus.PRODUCTION_AUTHORIZATION_BLOCKER in error for error in production_errors), production_errors)
+        forged_result = copy.deepcopy(result)
+        forged_result["release"]["release_kind"] = "corpus_v1_release"
+        forged_result["errors"] = []
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "production authorization is hard-disabled"):
+            release_corpus._release_files(forged_result, path)
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "production authorization is hard-disabled"):
+            release_corpus.publish(forged_result, self.root / "forged-production", path)
+        self.assertFalse((self.root / "forged-production").exists())
+
+    def test_private_authorization_and_reviewer_evidence_are_not_published(self):
+        path = self.bundle()
+        base = path.parent
+        private_evidence = minimal_admission_evidence()
+        private_evidence["receipt"]["signature_ed25519_base64"] = "PRIVATE_SIGNATURE_CANARY"
+        private_evidence["submitted_evidence"] = [{
+            "evidence_id": "private-evidence", "kind": "permission_letter", "uri": "file:///private/permission-letter.pdf",
+            "sha256": "b" * 64, "verification_status": "reference_only_unverified", "verified_content_sha256": None,
+            "verification_receipt_ref": None, "substantive_rights_determination": "not_assessed",
+            "submitted_by": "PRIVATE_REVIEWER_CANARY", "submitted_at": "2026-10-08T00:00:00Z", "component": "all",
+        }]
+        private_path = base / "private-authorization.json"
+        private_path.write_text(json.dumps(private_evidence), encoding="utf-8")
+        bundle = _yaml(path)
+        bundle["items"][0]["authorization_evidence_path"] = private_path.name
+        path.write_text(yaml.safe_dump(bundle, sort_keys=False), encoding="utf-8")
+        result, errors = release_corpus.validate_bundle(bundle, path)
+        self.assertEqual([], errors)
+        public_bytes = b"\n".join(release_corpus._release_files(result, path).values())
+        for secret in (b"PRIVATE_SIGNATURE_CANARY", b"PRIVATE_REVIEWER_CANARY", b"file:///private/permission-letter.pdf", private_path.name.encode()):
+            self.assertNotIn(secret, public_bytes)
+        item = result["release"]["items"][0]
+        self.assertEqual("unverified_claims_not_production_authorization", item["authorization_evidence_summary"]["status"])
+        self.assertNotIn("reviewer-a", json.dumps(item["review_cases"]))
 
     def test_provenance_graph_rejects_cycles_missing_fragment_and_hash_drift(self):
         schema = release_corpus.read_document(release_corpus.ADMISSION_SCHEMA)
@@ -253,7 +475,8 @@ class CorpusReleaseTests(unittest.TestCase):
         record = result["release"]["items"][0]
         self.assertTrue(record["synthetic"])
         self.assertEqual("uncertain_with_alternatives", record["target_annotations"][0]["targets"][0]["annotation"]["grapheme_sequence"]["gold_status"])
-        self.assertTrue(record["review_cases"][0]["decisions"])
+        self.assertGreater(record["review_cases"][0]["decision_count"], 0)
+        self.assertNotIn("decisions", record["review_cases"][0])
         self.assertEqual("synthetic_test_release", result["release"]["release_kind"])
         output_a, output_b = self.root / "published-a", self.root / "published-b"
         release_corpus.publish(result, output_a, path)

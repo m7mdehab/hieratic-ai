@@ -43,6 +43,14 @@ MAX_INPUT_BYTES = 16 * 1024 * 1024
 MAX_ARTIFACT_BYTES = 256 * 1024 * 1024
 MAX_RELEASE_BYTES = 512 * 1024 * 1024
 GENERATOR = "hieratic-corpus-release/1.0.0"
+# This repository does not yet have an independently protected trust-root or
+# authenticated reviewer/document attestation service. No YAML value, key,
+# signature, environment variable, or caller-supplied receipt may turn this on.
+PRODUCTION_AUTHORIZATION_HARD_DISABLED = True
+PRODUCTION_AUTHORIZATION_BLOCKER = (
+    "production authorization is hard-disabled pending overseer-governed, "
+    "independently protected trust-root and reviewer/document verification onboarding"
+)
 ADMISSION_SCHEMA = ROOT / "data/releases/admission.schema.json"
 READINESS_SCHEMA = ROOT / "data/releases/readiness.schema.json"
 TRUST_ANCHOR_SCHEMA = ROOT / "data/releases/trust_anchors.schema.json"
@@ -263,7 +271,7 @@ def _schema_errors_against(value: Any, schema: dict[str, Any], label: str) -> li
 
 
 def validate_trust_store(trust_store: Any) -> list[str]:
-    """Validate administration metadata independently of individual receipts."""
+    """Check trust-store syntax only; this does not establish authority."""
     errors = _schema_errors_against(trust_store, read_document(TRUST_ANCHOR_SCHEMA), "trust-anchor store")
     if errors:
         return errors
@@ -290,6 +298,10 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     errors = _schema_errors_against(evidence, schema, "authorization evidence")
     if errors:
         return errors
+    # The function remains useful for structural/security regression checks.
+    # A cryptographically valid signature is not an authenticated institutional
+    # identity, reviewer role, permission document, or protected trust root.
+    errors.append(PRODUCTION_AUTHORIZATION_BLOCKER)
     trust_errors = validate_trust_store(trust_store)
     if trust_errors:
         return trust_errors
@@ -303,7 +315,7 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     if trust_store.get("status") == "externally_verified_authorities_configured" and not anchors:
         errors.append("trust-anchor store claims configured authorities but has no keys")
     if not isinstance(anchors, list) or not anchors:
-        errors.append("no externally trusted authorization signing authority is configured")
+        errors.append("no signing key is listed in trust-store metadata; this metadata is not an external trust root")
     anchor_ids = [row.get("key_id") for row in anchors if isinstance(row, dict)]
     if len(anchor_ids) != len(anchors) or len(anchor_ids) != len(set(anchor_ids)):
         errors.append("trust-anchor store has malformed or duplicate key identities")
@@ -313,7 +325,7 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     if expected_source_record_sha256 and decision.get("source_registry_record_sha256") != expected_source_record_sha256:
         errors.append("source-registry rights record changed after authorization review")
     if decision["status"] != "allowed":
-        errors.append(f"authorization decision is {decision['status']}; only independently allowed decisions admit an item")
+        errors.append(f"authorization decision claim is {decision['status']}; a claimed allowed value does not establish permission")
     if as_of is None:
         as_of = dt.datetime.now(dt.timezone.utc)
     reviewed_at = _utc(decision["reviewed_at"], "authorization review timestamp")
@@ -343,7 +355,7 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     trust = next((row for row in anchors if isinstance(row, dict) and row.get("key_id") == receipt.get("key_id")), None)
     signature_ok = False
     if trust is None:
-        errors.append(f"authorization signing key is not in the independently configured trust store: {receipt.get('key_id')}")
+        errors.append(f"authorization signing key is not listed in caller-controlled trust metadata: {receipt.get('key_id')}")
     else:
         if trust.get("reviewer_id") != receipt.get("signed_by"):
             errors.append("trust anchor reviewer identity does not match receipt signer")
@@ -377,13 +389,15 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     reviews = evidence["independent_reviews"]
     reviewers = {row["reviewer_id"] for row in reviews}
     if reviewers & claimant_ids:
-        errors.append("contributor cannot independently review their own rights assertions")
+        errors.append("claimed reviewer is also a contributor and cannot be treated as independent")
+    # These role strings are submitter claims. Keep checking their shape and
+    # conflicts, but never interpret them as independent identity proof.
     required_roles = {"rights_holder_representative", "egyptologist", "benchmark_auditor"}
     present_roles = {row["reviewer_role"] for row in reviews if row["decision"] == "allowed" and row["subject_id"] == source_object_id}
     if "institutional_steward" in present_roles or "legal_reviewer" in present_roles:
         required_roles.discard("rights_holder_representative")
     if required_roles - present_roles:
-        errors.append("missing independent role reviews: " + ", ".join(sorted(required_roles - present_roles)))
+        errors.append("missing claimed role-review rows: " + ", ".join(sorted(required_roles - present_roles)))
     by_role = {row["reviewer_role"]: row for row in reviews if row["decision"] == "allowed" and row["subject_id"] == source_object_id}
     rights_role = by_role.get("rights_holder_representative") or by_role.get("institutional_steward") or by_role.get("legal_reviewer")
     if rights_role and not {"training", "development", "redistribution"} <= set(rights_role["intended_use"]):
@@ -396,7 +410,7 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     accountable_reviewers = [row["reviewer_id"] for role in ("rights_holder_representative", "institutional_steward", "legal_reviewer", "egyptologist", "benchmark_auditor")
                              for row in [by_role.get(role)] if row]
     if len(accountable_reviewers) != len(set(accountable_reviewers)):
-        errors.append("rights, scholarly-gold, and benchmark-clearance roles must be held by distinct independent reviewers")
+        errors.append("claimed rights, scholarly-gold, and benchmark-clearance roles must use distinct reviewer IDs; identities remain unverified")
     for review in reviews:
         unknown = set(review["evidence_refs"]) - evidence_by_id.keys()
         if unknown:
@@ -464,7 +478,7 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
         if not required_values <= set(scope.get(key, [])):
             errors.append(f"benchmark overlap evidence scope omits source identity values for {key}")
     if not overlap["reviewer_id"] or overlap["reviewer_id"] in claimant_ids:
-        errors.append("benchmark overlap clearance lacks an independent reviewer")
+        errors.append("benchmark overlap clearance lacks a claimed reviewer; reviewer authority remains unverified")
     elif not any(row["reviewer_id"] == overlap["reviewer_id"] and row["reviewer_role"] == "benchmark_auditor" and row["decision"] == "allowed" for row in reviews):
         errors.append("benchmark overlap reviewer lacks a signed benchmark-auditor decision")
     if not overlap["evidence_refs"] or set(overlap["evidence_refs"]) - evidence_by_id.keys():
@@ -505,6 +519,65 @@ def validate_admission_evidence(evidence: Any, trust_store: Any, *, source_id: s
     return sorted(set(errors))
 
 
+def production_authority_gate(trust_store: Any, evidence: Any) -> list[str]:
+    """Fail closed until protected external authority onboarding exists.
+
+    Inputs are deliberately ignored: mutable repository trust files and signed
+    self-assertions cannot satisfy an independent trust-root requirement.
+    """
+    del trust_store, evidence
+    if PRODUCTION_AUTHORIZATION_HARD_DISABLED:
+        return [PRODUCTION_AUTHORIZATION_BLOCKER]
+    return []
+
+
+def _public_authorization_summary(evidence: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Emit only a non-sensitive receipt digest and explicitly unverified state."""
+    if evidence is None:
+        return None
+    receipt = evidence.get("receipt", {})
+    payload = {key: copy.deepcopy(value) for key, value in evidence.items() if key != "receipt"}
+    return {
+        "receipt_payload_sha256": digest(canonical(payload)),
+        "declared_receipt_id_sha256": digest(str(receipt.get("receipt_id", "")).encode("utf-8")),
+        "status": "unverified_claims_not_production_authorization",
+        "private_evidence_included": False,
+        "independent_reviewer_authority": "unverified",
+        "document_bytes_and_substantive_rights": "not_independently_verified",
+    }
+
+
+def _public_provenance_summary(graph: dict[str, Any] | None) -> dict[str, Any] | None:
+    if graph is None:
+        return None
+    return {
+        "graph_id": graph.get("graph_id"),
+        "item_id": graph.get("item_id"),
+        "graph_payload_sha256": digest(canonical(graph)),
+        "node_count": len(graph.get("nodes", [])),
+        "edge_count": len(graph.get("edges", [])),
+        "nodes": [{key: copy.deepcopy(node[key]) for key in (
+            "node_id", "node_type", "source_registry_id", "source_object_id", "asset_id", "sha256", "review_status"
+        ) if key in node} for node in graph.get("nodes", [])],
+        "edges": [{key: copy.deepcopy(edge[key]) for key in (
+            "from_node_id", "to_node_id", "relation", "transformation_id"
+        ) if key in edge} | {"evidence_reference_count": len(edge.get("evidence_refs", []))}
+            for edge in graph.get("edges", [])],
+        "status": "structurally_checked_claims_not_independently_verified",
+    }
+
+
+def _public_review_case(case: dict[str, Any]) -> dict[str, Any]:
+    """Keep aggregate QA state while excluding reviewer-level private material."""
+    public_fields = ("case_id", "target_type", "target_id", "annotation_layer",
+                     "annotation_gold_status", "issue_flags", "case_state")
+    public = {key: copy.deepcopy(case[key]) for key in public_fields if key in case}
+    public["decision_count"] = len(case.get("decisions", []))
+    public["adjudication_present"] = case.get("adjudication") is not None
+    public["disagreement"] = bool(case.get("disagreement") or case.get("case_state") == "needs_adjudication")
+    return public
+
+
 def _target_annotation(annotation: dict[str, Any], target_type: str, target_id: str) -> dict[str, Any] | None:
     if target_type == "line":
         value = next((x for x in annotation.get("lines", []) if x.get("line_id") == target_id), None)
@@ -539,6 +612,10 @@ def _validate_source(bundle: dict[str, Any], row: dict[str, Any], base: Path, re
         authorization_evidence = None
         if row.get("authorization_evidence_path"):
             authorization_evidence, _ = _read_checked(base, row["authorization_evidence_path"], audit)
+            # The authorization envelope can contain private permission-letter
+            # locations and reviewer identities. Its public summary below binds
+            # the canonical payload digest; do not expose the private path/hash.
+            audit[:] = [entry for entry in audit if entry["path"] != row["authorization_evidence_path"].replace("\\", "/")]
     except ReleaseError as exc:
         return {}, [f"{iid}: {exc}"]
 
@@ -679,15 +756,16 @@ def _validate_source(bundle: dict[str, Any], row: dict[str, Any], base: Path, re
         if split_row.get("benchmark_quarantine") or metadata_row.get("benchmark_quarantine"):
             errors.append(f"{iid}: EVAL-004 benchmark-quarantined item cannot be released")
         if release_kind == "corpus_v1_release":
+            errors.extend(production_authority_gate(None, None))
             for field in ("document_id", "page_id", "source_object_id", "image_sha256", "normalized_sha256"):
                 if not metadata_row.get(field):
                     errors.append(f"{iid}: production split metadata lacks required leakage identity {field}")
             if metadata_row.get("benchmark_overlap_review", {}).get("status") != "clear":
                 errors.append(f"{iid}: production split metadata requires reviewed clear benchmark overlap")
             if acquired.get("redistribution_requested") is not True or source.get("redistribution_use") != "allowed":
-                errors.append(f"{iid}: production release lacks independently allowed redistribution rights")
+                errors.append(f"{iid}: production release lacks a source-registry record marked allowed for redistribution")
             if source.get(f"{acquired.get('intended_use')}_use") != "allowed" or acquired.get("source_rights_snapshot", {}).get("use_decision") != "allowed":
-                errors.append(f"{iid}: production training use is not independently allowed")
+                errors.append(f"{iid}: production training use is not marked allowed in the source-rights snapshot")
             if acquired.get("acquisition_status") != "complete":
                 errors.append(f"{iid}: production input is not a completed DATA-002 acquisition")
             for label, permission, evidence in (
@@ -697,7 +775,7 @@ def _validate_source(bundle: dict[str, Any], row: dict[str, Any], base: Path, re
                 ("mapping redistribution", row["mapping_redistribution_permission"], row["mapping_rights_evidence_ref"]),
             ):
                 if permission != "allowed" or evidence.startswith(("synthetic:", "synthetic://")):
-                    errors.append(f"{iid}: {label} permission lacks independent allowed status and rights evidence")
+                    errors.append(f"{iid}: {label} permission lacks an allowed claim and a non-synthetic evidence reference")
             if authorization_evidence is None:
                 errors.append(f"{iid}: signed independent authorization evidence is missing")
             else:
@@ -784,10 +862,8 @@ def _validate_source(bundle: dict[str, Any], row: dict[str, Any], base: Path, re
         "required_attribution": source.get("attribution_requirements"),
         "source_rights_evidence_urls": source.get("rights_evidence_urls", []),
         "rights_provenance": {"source_registry_record": copy.deepcopy(source), "acquisition_record": copy.deepcopy(acquired)},
-        "authorization_receipt_id": (authorization_evidence or {}).get("receipt", {}).get("receipt_id"),
-        "authorization_decision": copy.deepcopy((authorization_evidence or {}).get("decision")),
-        "authorization_evidence": copy.deepcopy(authorization_evidence),
-        "provenance_graph": copy.deepcopy((authorization_evidence or {}).get("provenance_graph")),
+        "authorization_evidence_summary": _public_authorization_summary(authorization_evidence),
+        "provenance_graph_summary": _public_provenance_summary((authorization_evidence or {}).get("provenance_graph")),
         "benchmark_overlap_state": (authorization_evidence or {}).get("benchmark_overlap", {}).get("state", "not_yet_reviewed"),
         "annotation_training_permission": row["annotation_training_permission"],
         "annotation_redistribution_permission": row["annotation_redistribution_permission"],
@@ -811,7 +887,7 @@ def _validate_source(bundle: dict[str, Any], row: dict[str, Any], base: Path, re
         "gold_alignment_ids": sorted(x["alignment_id"] for x in gold_alignments),
         "target_annotations": target_annotations,
         "review_case_ids": sorted(row["review_case_ids"]),
-        "review_cases": copy.deepcopy(selected_cases),
+        "review_cases": [_public_review_case(case) for case in selected_cases],
         "split_assignment": copy.deepcopy(split_row),
         "gold_statuses": sorted({
             target.get("gold_status", "unknown")
@@ -862,7 +938,7 @@ def validate_bundle(bundle: Any, bundle_path: Path) -> tuple[dict[str, Any], lis
     if bundle["release_kind"] == "corpus_v1_release" and any(record.get("synthetic") for record in records):
         errors.append("synthetic input cannot be represented as a real corpus_v1_release")
     if bundle["release_kind"] == "corpus_v1_release" and not records:
-        errors.append("production corpus has no independently rights-cleared items")
+        errors.append("production corpus has no items passing the configured rights gates")
 
     # Leakage checks are repeated at release time, including reviewed near duplicates.
     active = [r for r in records if r.get("partition") in {"train", "dev", "test"}]
@@ -1013,12 +1089,12 @@ def build_readiness_assessment(bundle_path: Path, roster_path: Path = R016_ROSTE
                                "image_equivalence_status": (crosswalk_row or {}).get("image_equivalence_status", "UNREVIEWED"),
                                "blockers": sorted(set(blockers))})
     trust_errors = validate_trust_store(read_document(TRUST_ANCHORS))
-    blockers = [*validation_errors, *trust_errors, *crosswalk_errors]
+    blockers = [*validation_errors, *trust_errors, *crosswalk_errors, PRODUCTION_AUTHORIZATION_BLOCKER]
     if not real:
         blockers.append("no real items passed corpus admission; the accepted example is synthetic infrastructure evidence only")
     trust = read_document(TRUST_ANCHORS)
     if not trust.get("anchors"):
-        blockers.append("no independently verified institutional/reviewer signing anchors are configured")
+        blockers.append("no signing-key metadata is configured; repository metadata cannot establish an external trust root")
     if any(row["admission_status"] == "blocked" for row in candidate_rows):
         blockers.append(f"{sum(row['admission_status'] == 'blocked' for row in candidate_rows)} R-016 discovery candidates remain blocked")
     statuses = set()
@@ -1047,7 +1123,8 @@ def build_readiness_assessment(bundle_path: Path, roster_path: Path = R016_ROSTE
         "writing_media": counts("material_support"),
         "genres": counts("genre_register"),
         "annotation_granularity": {"sign_level_items": sum(any(target.get("target_type") == "sign" for group in x.get("target_annotations", []) for target in group.get("targets", [])) for x in real), "line_level_items": sum(any(target.get("target_type") == "line" for group in x.get("target_annotations", []) for target in group.get("targets", [])) for x in real)},
-        "reviewer_coverage": {"items": len(real), "reviewed_items": sum(bool(x.get("review_cases")) for x in real), "unique_reviewers": len({r.get("reviewer_id") for x in real for r in x.get("review_cases", []) if r.get("reviewer_id")})},
+        "reviewer_coverage": {"items": len(real), "reviewed_items": sum(bool(x.get("review_cases")) for x in real),
+                              "unique_reviewers": None, "reviewer_identity_visibility": "redacted_from_public_release"},
         "ambiguity": {"items_with_uncertain_gold": sum(any(v in {"uncertain_with_alternatives", "adjudication_pending"} for v in x.get("gold_statuses", [])) for x in real)},
         "disagreement": {"review_cases_with_disagreement": sum(x.get("review_disagreement_count", 0) for x in real)},
         "missing_or_illegible_gold": {"items": sum(any(v in {"missing_annotation", "illegible_unscorable"} for v in x.get("gold_statuses", [])) for x in real), "observed_statuses": sorted(statuses & {"missing_annotation", "illegible_unscorable"})},
@@ -1063,7 +1140,7 @@ def build_readiness_assessment(bundle_path: Path, roster_path: Path = R016_ROSTE
                 "benchmark_pinned_commit": roster.get("benchmark_version"), "generator": "hieratic-corpus-readiness/1.0.0"}
     assessment = {
         "schema_version": "1.0.0", "assessment_id": "readiness-" + digest(canonical(identity)), "as_of": str(roster.get("as_of", "1970-01-01")),
-        "software_integrity": "PASS" if not validation_errors and not trust_errors and not crosswalk_errors else "FAIL", "evidence_admission": "PASS" if real and not validation_errors and not trust_errors and not crosswalk_errors else "BLOCKED", "scientific_corpus_adequacy": "INDEPENDENT_REVIEW_REQUIRED",
+        "software_integrity": "PASS" if not validation_errors and not trust_errors and not crosswalk_errors else "FAIL", "evidence_admission": "BLOCKED", "scientific_corpus_adequacy": "INDEPENDENT_REVIEW_REQUIRED",
         "cohort": {"real_items": len(real), "synthetic_items": len(synthetic), "unique_manuscript_groups": len({x.get("document_id") for x in real}), "unique_source_objects": len({x.get("source_object_id") for x in real}), "partition_document_group_counts": split_counts},
         "dimensions": dimension_report, "benchmark_candidates": candidate_rows, "blockers": sorted(set(blockers)), "thresholds_invented": False,
         "source_references": ["data/sources/registry.yaml", "data/releases/rights-readiness.yaml", "docs/research/R017_PUBLIC_BENCHMARK_LINEAGE_AUDIT.md",
@@ -1282,6 +1359,8 @@ def _publish_windows(files: dict[str, bytes], output: Path) -> None:
 
 
 def _release_files(result: dict[str, Any], bundle_path: Path) -> dict[str, bytes]:
+    if result.get("release", {}).get("release_kind") == "corpus_v1_release" and PRODUCTION_AUTHORIZATION_HARD_DISABLED:
+        raise ReleaseError(PRODUCTION_AUTHORIZATION_BLOCKER)
     total = 0
     encoded_records = []
     for record in result["release"]["items"]:
@@ -1331,6 +1410,8 @@ def audit_release(result: dict[str, Any], release_dir: Path, bundle_path: Path) 
 
 
 def publish(result: dict[str, Any], output: Path, bundle_path: Path) -> None:
+    if result.get("release", {}).get("release_kind") == "corpus_v1_release" and PRODUCTION_AUTHORIZATION_HARD_DISABLED:
+        raise ReleaseError(PRODUCTION_AUTHORIZATION_BLOCKER)
     if result["errors"]:
         raise ReleaseError("release validation failed:\n" + "\n".join(result["errors"]))
     output = Path(os.path.abspath(output))

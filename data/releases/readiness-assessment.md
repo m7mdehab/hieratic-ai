@@ -84,7 +84,8 @@ R-017 screened 266 pinned public source metadata records; sealed records exclude
   "reviewer_coverage": {
     "items": 0,
     "reviewed_items": 0,
-    "unique_reviewers": 0
+    "reviewer_identity_visibility": "redacted_from_public_release",
+    "unique_reviewers": null
   },
   "rights_readiness_inventory": {
     "assets_downloaded": false,
@@ -211,7 +212,8 @@ R-017 screened 266 pinned public source metadata records; sealed records exclude
 ## Blockers
 
 - 15 R-016 discovery candidates remain blocked
-- no independently verified institutional/reviewer signing anchors are configured
 - no real items passed corpus admission; the accepted example is synthetic infrastructure evidence only
+- no signing-key metadata is configured; repository metadata cannot establish an external trust root
+- production authorization is hard-disabled pending overseer-governed, independently protected trust-root and reviewer/document verification onboarding
 
 No minimum sample-size threshold was invented. Software integrity, evidence admission, and scientific adequacy are separate decisions. This report is not a rights determination or corpus release.

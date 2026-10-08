@@ -3,8 +3,11 @@ from __future__ import annotations
 import copy
 import json
 import shutil
+import sys
 import tempfile
+import threading
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import patch
 
@@ -105,12 +108,16 @@ class CorpusReleaseTests(unittest.TestCase):
         output_a, output_b = self.root / "published-a", self.root / "published-b"
         release_corpus.publish(result, output_a, path)
         first = {p.name: p.read_bytes() for p in output_a.iterdir()}
-        with self.assertRaisesRegex(release_corpus.ReleaseError, "new, non-symlink"):
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
             release_corpus.publish(result, output_a, path)
         again, errors = release_corpus.validate_bundle(bundle, path)
         self.assertEqual([], errors)
         release_corpus.publish(again, output_b, path)
         self.assertEqual(first, {p.name: p.read_bytes() for p in output_b.iterdir()})
+        self.assertEqual({"release-manifest.json", "export.jsonl", "dataset-card.md", "rejection-report.json", "audit-trail.json"}, set(first))
+        manifest_a = json.loads(first["release-manifest.json"])
+        manifest_b = json.loads((output_b / "release-manifest.json").read_bytes())
+        self.assertEqual(manifest_a["dataset_version_id"], manifest_b["dataset_version_id"])
         self.assertIn("not a licensed production corpus", first["dataset-card.md"].decode())
 
     def test_mutated_unsafe_upstream_states_are_rejected(self):
@@ -181,24 +188,141 @@ class CorpusReleaseTests(unittest.TestCase):
         target.mkdir()
         marker = target / "keep.txt"
         marker.write_text("unchanged", encoding="utf-8")
-        with self.assertRaisesRegex(release_corpus.ReleaseError, "new, non-symlink"):
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
             release_corpus.publish(result, target, path)
         self.assertEqual("unchanged", marker.read_text(encoding="utf-8"))
         self.assertEqual([], list(self.root.glob(".exists.staging-*")))
+
+    def test_existing_empty_output_is_not_replaced(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        target = self.root / "empty-existing"
+        target.mkdir()
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
+            release_corpus.publish(result, target, path)
+        self.assertEqual([], list(target.iterdir()))
+        self.assertEqual([], list(self.root.glob(".empty-existing.staging-*")))
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux renameat2 race regression runs in hosted CI")
+    def test_simultaneous_publishers_have_one_complete_winner(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        target = self.root / "concurrent"
+        barrier = threading.Barrier(2)
+        original = release_corpus._rename_linux_noreplace
+
+        def synchronized_rename(parent_fd, staging_name, output_name):
+            barrier.wait(timeout=10)
+            return original(parent_fd, staging_name, output_name)
+
+        def attempt():
+            try:
+                release_corpus.publish(result, target, path)
+                return "published"
+            except release_corpus.ReleaseError:
+                return "refused"
+
+        with patch.object(release_corpus, "_rename_linux_noreplace", new=synchronized_rename):
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                outcomes = list(executor.map(lambda _: attempt(), range(2)))
+        self.assertCountEqual(["published", "refused"], outcomes)
+        self.assertEqual({"release-manifest.json", "export.jsonl", "dataset-card.md", "rejection-report.json", "audit-trail.json"}, {p.name for p in target.iterdir()})
+        self.assertEqual([], list(self.root.glob(".concurrent.staging-*")))
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux no-replace race regression runs in hosted CI")
+    def test_empty_destination_created_at_finalize_is_not_clobbered(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        target = self.root / "race-empty"
+        original = release_corpus._rename_linux_noreplace
+
+        def create_empty_then_rename(parent_fd, staging_name, output_name):
+            target.mkdir()
+            return original(parent_fd, staging_name, output_name)
+
+        with patch.object(release_corpus, "_rename_linux_noreplace", new=create_empty_then_rename):
+            with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
+                release_corpus.publish(result, target, path)
+        self.assertEqual([], list(target.iterdir()))
+        self.assertEqual([], list(self.root.glob(".race-empty.staging-*")))
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux symlink-swap regression runs in hosted CI")
+    def test_symlink_swap_at_finalize_is_not_followed(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        target = self.root / "symlink-race"
+        protected = self.root / "protected"
+        protected.mkdir()
+        sentinel = protected / "keep.txt"
+        sentinel.write_text("untouched", encoding="utf-8")
+        original = release_corpus._rename_linux_noreplace
+
+        def swap_symlink_then_rename(parent_fd, staging_name, output_name):
+            target.symlink_to(protected, target_is_directory=True)
+            return original(parent_fd, staging_name, output_name)
+
+        with patch.object(release_corpus, "_rename_linux_noreplace", new=swap_symlink_then_rename):
+            with self.assertRaisesRegex(release_corpus.ReleaseError, "already exists"):
+                release_corpus.publish(result, target, path)
+        self.assertTrue(target.is_symlink())
+        self.assertEqual("untouched", sentinel.read_text(encoding="utf-8"))
+        self.assertEqual([], list(self.root.glob(".symlink-race.staging-*")))
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux parent-swap regression runs in hosted CI")
+    def test_parent_path_swap_at_finalize_is_detected_and_rolled_back(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        parent = self.root / "parent"
+        parent.mkdir()
+        moved_parent = self.root / "parent-moved"
+        other = self.root / "other"
+        other.mkdir()
+        target = parent / "release"
+        original = release_corpus._rename_linux_noreplace
+
+        def swap_parent_then_rename(parent_fd, staging_name, output_name):
+            parent.rename(moved_parent)
+            parent.symlink_to(other, target_is_directory=True)
+            return original(parent_fd, staging_name, output_name)
+
+        with patch.object(release_corpus, "_rename_linux_noreplace", new=swap_parent_then_rename):
+            with self.assertRaisesRegex(release_corpus.ReleaseError, "parent path changed"):
+                release_corpus.publish(result, target, path)
+        self.assertFalse((moved_parent / "release").exists())
+        self.assertFalse((other / "release").exists())
+        self.assertEqual([], list(moved_parent.glob(".release.staging-*")))
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux symlink policy is checked in hosted CI")
+    def test_output_parent_symlink_is_rejected(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        real_parent = self.root / "real-parent"
+        real_parent.mkdir()
+        linked_parent = self.root / "linked-parent"
+        linked_parent.symlink_to(real_parent, target_is_directory=True)
+        with self.assertRaisesRegex(release_corpus.ReleaseError, "symlink"):
+            release_corpus.publish(result, linked_parent / "release", path)
+        self.assertFalse((real_parent / "release").exists())
 
     def test_failed_midwrite_cleans_staging_and_publishes_nothing(self):
         path = self.bundle()
         result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
         self.assertEqual([], errors)
         output = self.root / "never-published"
-        original = Path.write_bytes
+        original = release_corpus._write_staging_file
 
-        def fail_on_export(target, content):
-            if target.name == "export.jsonl":
+        def fail_on_export(staging, staging_fd, name, content):
+            if name == "export.jsonl":
                 raise OSError("synthetic injected disk failure")
-            return original(target, content)
+            return original(staging, staging_fd, name, content)
 
-        with patch.object(Path, "write_bytes", new=fail_on_export):
+        with patch.object(release_corpus, "_write_staging_file", new=fail_on_export):
             with self.assertRaisesRegex(OSError, "injected disk failure"):
                 release_corpus.publish(result, output, path)
         self.assertFalse(output.exists())

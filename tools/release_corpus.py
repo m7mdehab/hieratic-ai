@@ -7,10 +7,14 @@ from __future__ import annotations
 
 import argparse
 import copy
+import ctypes
+import errno
 import hashlib
 import json
 import os
+import secrets
 import shutil
+import stat
 import sys
 import tempfile
 from pathlib import Path
@@ -466,26 +470,185 @@ def _dataset_card(release: dict[str, Any]) -> str:
     ])
 
 
+def _write_staging_file(staging: Path, staging_fd: int | None, name: str, content: bytes) -> None:
+    """Write one exclusive staging file, refusing symlink or pre-existing entries."""
+    if staging_fd is None:
+        # Windows has no dir_fd support in Python's os.open. The staging name is
+        # private and newly-created; os.rename below supplies the no-clobber commit.
+        with (staging / name).open("xb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        return
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(name, flags, 0o600, dir_fd=staging_fd)
+    with os.fdopen(fd, "wb") as stream:
+        stream.write(content)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def _open_linux_directory_without_symlinks(path: Path) -> int:
+    """Open each absolute path component without following symlinks (Linux)."""
+    absolute = Path(os.path.abspath(path))
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    current_fd = os.open(absolute.anchor, flags)
+    try:
+        for component in absolute.parts[1:]:
+            try:
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except OSError as exc:
+                try:
+                    mode = os.stat(component, dir_fd=current_fd, follow_symlinks=False).st_mode
+                except OSError:
+                    raise exc
+                if stat.S_ISLNK(mode):
+                    raise ReleaseError("release output cannot traverse a symlink") from exc
+                raise
+            os.close(current_fd)
+            current_fd = next_fd
+        return current_fd
+    except Exception:
+        os.close(current_fd)
+        raise
+
+
+def _rename_linux_noreplace(parent_fd: int, staging_name: str, output_name: str) -> None:
+    """Atomically rename a complete directory only if the name is still absent."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    renameat2 = getattr(libc, "renameat2", None)
+    if renameat2 is None:
+        raise ReleaseError("Linux renameat2(RENAME_NOREPLACE) is required for safe release publication")
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    # Linux UAPI: include/uapi/linux/fs.h
+    rename_noreplace = 1
+    result = renameat2(parent_fd, os.fsencode(staging_name), parent_fd, os.fsencode(output_name), rename_noreplace)
+    if result == 0:
+        return
+    error = ctypes.get_errno()
+    if error in (errno.EEXIST, errno.ENOTEMPTY):
+        raise ReleaseError("release destination already exists; immutable releases are never replaced")
+    if error in (errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP):
+        raise ReleaseError("filesystem does not support atomic no-replace directory publication")
+    raise OSError(error, os.strerror(error), output_name)
+
+
+def _verify_linux_parent_path(path: Path, parent_fd: int) -> None:
+    """Fail if the caller's parent path was replaced after its fd was pinned."""
+    opened = os.fstat(parent_fd)
+    try:
+        named = os.stat(path, follow_symlinks=False)
+    except OSError as exc:
+        raise ReleaseError("release output parent path changed during publication") from exc
+    if not stat.S_ISDIR(named.st_mode) or (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino):
+        raise ReleaseError("release output parent path changed during publication")
+
+
+def _remove_published_linux_directory(parent_fd: int, name: str, published_fd: int) -> None:
+    """Remove only our just-published inode, never a replacement at its name."""
+    try:
+        entry = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        inode = os.fstat(published_fd)
+        if not stat.S_ISDIR(entry.st_mode) or (entry.st_dev, entry.st_ino) != (inode.st_dev, inode.st_ino):
+            return
+        for child in os.listdir(published_fd):
+            os.unlink(child, dir_fd=published_fd)
+        os.rmdir(name, dir_fd=parent_fd)
+    except OSError:
+        # A concurrent replacement is not ours to remove.
+        return
+
+
+def _publish_linux(files: dict[str, bytes], output: Path) -> None:
+    """Stage through a pinned parent fd, then atomically publish without clobbering."""
+    output_name = output.name
+    if output_name in ("", ".", "..") or os.sep in output_name:
+        raise ReleaseError("release output must name a new directory")
+    parent_fd = _open_linux_directory_without_symlinks(output.parent)
+    staging_name = f".{output_name}.staging-{secrets.token_hex(12)}"
+    staging_fd: int | None = None
+    staging_exists = False
+    try:
+        os.mkdir(staging_name, mode=0o700, dir_fd=parent_fd)
+        staging_exists = True
+        staging_fd = os.open(staging_name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent_fd)
+        staging_path = output.parent / staging_name
+        for name, content in files.items():
+            _write_staging_file(staging_path, staging_fd, name, content)
+        os.fsync(staging_fd)
+        _verify_linux_parent_path(output.parent, parent_fd)
+        # This is the single commit point. It is atomic, rejects every existing
+        # entry (including an empty directory or symlink), and exposes only a
+        # complete five-file release.
+        _rename_linux_noreplace(parent_fd, staging_name, output_name)
+        staging_exists = False
+        try:
+            _verify_linux_parent_path(output.parent, parent_fd)
+        except ReleaseError:
+            _remove_published_linux_directory(parent_fd, output_name, staging_fd)
+            raise
+        os.fsync(parent_fd)
+    finally:
+        if staging_fd is not None:
+            if staging_exists:
+                for name in os.listdir(staging_fd):
+                    try:
+                        os.unlink(name, dir_fd=staging_fd)
+                    except OSError:
+                        pass
+            os.close(staging_fd)
+        if staging_exists:
+            try:
+                os.rmdir(staging_name, dir_fd=parent_fd)
+            except OSError:
+                # Never follow or recursively remove a path that may have been
+                # swapped by another process. A leftover private staging dir is
+                # safer than touching an untrusted destination.
+                pass
+        os.close(parent_fd)
+
+
+def _publish_windows(files: dict[str, bytes], output: Path) -> None:
+    """Windows rename fails if the destination exists; stage beside the target."""
+    parent = output.parent.resolve(strict=True)
+    if not parent.is_dir():
+        raise ReleaseError("release output parent must already exist")
+    staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=parent))
+    try:
+        for name, content in files.items():
+            _write_staging_file(staging, None, name, content)
+        # Unlike POSIX rename, Windows MoveFile semantics do not replace an
+        # existing destination. This remains a no-clobber atomic directory move.
+        os.rename(staging, parent / output.name)
+    except Exception:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+
+
 def publish(result: dict[str, Any], output: Path, bundle_path: Path) -> None:
     if result["errors"]:
         raise ReleaseError("release validation failed:\n" + "\n".join(result["errors"]))
-    output = output.absolute()
-    un_resolved_parent = output.parent
-    while un_resolved_parent != un_resolved_parent.parent:
-        if un_resolved_parent.is_symlink():
-            raise ReleaseError("release output cannot traverse a symlink")
-        un_resolved_parent = un_resolved_parent.parent
-    parent = output.parent.resolve(strict=True)
-    output = parent / output.name
-    if output.exists() or output.is_symlink():
-        raise ReleaseError("release output must be a new, non-symlink path (release versions are immutable)")
-    if not parent.exists() or not parent.is_dir():
+    output = Path(os.path.abspath(output))
+    if output.name in ("", ".", ".."):
+        raise ReleaseError("release output must name a new directory")
+    if not output.parent.exists() or not output.parent.is_dir():
         raise ReleaseError("release output parent must already exist")
-    probe = parent
-    while probe != probe.parent:
-        if probe.is_symlink():
-            raise ReleaseError("release output cannot traverse a symlink")
-        probe = probe.parent
+    if sys.platform.startswith("linux"):
+        # A preflight check gives a fast, clear error; renameat2 is the actual
+        # no-clobber guarantee and closes the check/commit race.
+        if output.exists() or output.is_symlink():
+            raise ReleaseError("release destination already exists; immutable releases are never replaced")
+    elif os.name == "nt":
+        probe = output.parent
+        while probe != probe.parent:
+            if probe.is_symlink():
+                raise ReleaseError("release output cannot traverse a symlink")
+            probe = probe.parent
+        if output.exists() or output.is_symlink():
+            raise ReleaseError("release destination already exists; immutable releases are never replaced")
+    else:
+        raise ReleaseError("safe no-clobber directory publication is unsupported on this platform")
     total = 0
     encoded_records = []
     for record in result["release"]["items"]:
@@ -501,16 +664,10 @@ def publish(result: dict[str, Any], output: Path, bundle_path: Path) -> None:
         total += len(content)
     if total > MAX_RELEASE_BYTES:
         raise ReleaseError(f"release output exceeds {MAX_RELEASE_BYTES} byte limit")
-    staging = Path(tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=parent))
-    try:
-        for name, content in files.items():
-            (staging / name).write_bytes(content)
-        if output.exists() or output.is_symlink():
-            raise ReleaseError("release output appeared during build; refusing overwrite")
-        os.replace(staging, output)
-    except Exception:
-        shutil.rmtree(staging, ignore_errors=True)
-        raise
+    if sys.platform.startswith("linux"):
+        _publish_linux(files, output)
+    else:
+        _publish_windows(files, output)
 
 
 def main(argv: list[str] | None = None) -> int:

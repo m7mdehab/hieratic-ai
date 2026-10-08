@@ -644,6 +644,12 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                     return bool(getattr(value, "size", 0) or len(value))
                 if isinstance(value, (list, tuple)):
                     return bool(value) and any(_has_visual_payload(v) for v in value)
+                # Synthetic test doubles use nested numeric Python lists rather
+                # than torch tensors. Permit these ONLY in an explicitly marked
+                # non-scientific fixture; live model inputs must supply actual
+                # tensor-like visual features with a nonzero element count.
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    return self.scientific_validity == "non_scientific_test_fixture"
                 return False
             has_visual_features = any(_has_visual_payload(value) for value in visual_values)
             if not has_visual_features:

@@ -30,17 +30,18 @@ state:
   trained_models: 0
   best_verified_result: null
   last_accepted_task: "LING-001"
-  ready_tasks:
-    - "LING-002"
+  ready_tasks: []
   active_tasks:
     - "DATA-008"
     - "VLM-001"
     - "EVAL-003"
+    - "LING-002"
   review_tasks: []
   blockers:
     - "DATA-008: no item-rights-cleared real corpus with independently reviewed gold and clean real train/dev/test partitions."
     - "VLM-001: incomplete authentic-image few-shot and pinned correct official/native evaluation integration; no verified actual open-weight inference."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
+    - "LING-002: synthetic interpretation preflight merged; no independently licensed Egyptological lexical attestations, expert analyses or gold-backed morphology evaluation."
 
 canonical_files:
   start: "START_HERE.md"
@@ -78,19 +79,22 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W3 re-review on 2026-10-08: Luna DATA-008 PR #49 independently accepted
-  and merged as tested release infrastructure at commit
-  fabf52a511d4339ecf137113c60acea3932ee6fa, without awarding its
-  3 points: an actual independently rights-cleared expert-reviewed ML-ready
-  train/dev/test corpus is not available. Gemini VLM-001 PR #52 exact head
-  998aa11f5c0a51cf7d175f97a19d18871b0ce273 remains open and
-  revision_required: reviewer comment #6062558336 identifies incorrect
-  EVAL-001 metric IDs and CER direction, nonfunctional official-score channel,
-  invalid frozen-denominator proofs, nonvisual few-shot exemplars, and real
-  model/universe execution limitations. Continue existing VLM remediation,
-  safely dispatch dependency-ready LING-002 with strict lexical/source-rights
-  boundary (no invented Egyptian meanings), and have overseer work on a
-  separate research/architecture task only after user dispatches prompts and
-  returns (ADR-0023). Current accepted weighted sum 32.5/100 (67.5 left),
-  research coverage 14%, P6 2/10, EVAL-003 active 0/1.5, real experiments
-  0, trained models 0. Do not confuse CI with actual model reading.
+  W4 review: Luna LING-002 PR #59 exact head
+  d76763c19f4671200afe31ef083ed8ff406cb793 passed all hosted
+  governance/data/linguistic/evaluation CI and was accepted/merged as
+  synthetic-only lexical interpretation infrastructure (squash SHA
+  6ec6205bcab28e0db07aefc70d50527e8d47f83e); LING-002 remains
+  active/unvalidated 0/2 until independently verified Egyptological lexical
+  sources and expert-reviewed morphological analyses/evaluation exist.
+  Gemini VLM-001 PR #52 head 971a0d9017bcd926922340959dbd4b3e6bc8b09f
+  has corrected metric directions, official-channel naming and real few-shot
+  blocking but remains unmerged: review #6064094725 identifies independently
+  unaudited self-asserted frozen universe, arbitrary --items classified as
+  verified_external_items, and --require-certified accepting all-failed
+  unapproved live-open-weight manifests. Demand fail-closed revisions and
+  exact-head hosted CI before merging synthetic VLM preflight at zero credit.
+  DATA-008 real gold/rights bottleneck persists; R-016 acquired no pixels,
+  scholarly gold or rights. Goal 32.5/100, research coverage 14%, P6 2/10,
+  zero trained models or validated real experiments. ADR-0023: next-wave
+  prompts first, overseer executes next independent task only after the user
+  dispatches them and returns.

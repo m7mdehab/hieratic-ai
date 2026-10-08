@@ -46,3 +46,18 @@ The Met API's `isPublicDomain` value and the museum's Open Access statement are 
 - The logical fingerprint hashes `source_id`, `source_object_id`, and `canonical_object_url` using canonical JSON. Retrieval-event details do not change logical item identity.
 
 All examples are repository-authored metadata. They include no copied corpus records or binaries. The blocked AKU-PAL example deliberately omits item-rights and benchmark-overlap clearance; placeholder domains never count as real evidence.
+# W8 local image evidence
+
+`commons/w8_candidate_matrix.json` records the W8 candidate and quarantine decisions. Only the exact Cat.2044/013 p01 original is enabled for a single private local inspection fetch. The Commons file page and Museo Egizio collection policies identify the photograph as CC0; that grants reuse of the photograph and does not grant rights to transcriptions, editions, or annotations.
+
+After reviewing the exact file record, the bounded command is:
+
+```powershell
+python -m tools.acquisition commons-image-fetch data/acquisition/commons/CAT2044.json --candidate-id CAT2044
+```
+
+The command pins the Commons title, original upload path, file SHA1, dimensions, MIME, timestamp, CC0 license and museum credit. It does not follow redirects, accepts only the two hard-coded public HTTPS hosts, caps the response, rejects an existing vault target, and publishes the bytes with a no-clobber hard link. The unmodified image is stored under `%LOCALAPPDATA%\HieraticAI\private-artifacts\W8`; the tracked JSON output contains hashes and source evidence only, never image bytes or the local path.
+
+The current source registry does not contain a Museo Egizio source record. For that reason the W8 record is private-inspection evidence only, says `NOT_REGISTERED`, and explicitly blocks training and development while benchmark overlap remains unresolved and evaluation is unauthorized. It is not a validated DATA-002 admission or a DATA-008 release item. No detected region or processed derivative is transcription gold. Cat.1880 stays deferred because its edition/benchmark overlap is high risk; p01/p02 and alternate versions are one physical-support group. Met object 561392 remains metadata-only in this W8 work.
+
+The local vault should inherit the user's restrictive LocalAppData ACL. Do not move its image into Git, a public CI artifact, an issue, or an unapproved data store. For support/security review, disclose only the tracked redacted record and exact source links. This process does not fetch institutional correspondence, editorial content, benchmark material, or credentials.

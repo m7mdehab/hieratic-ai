@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import datetime as dt
 import hashlib
 import json
 import os
@@ -508,6 +509,145 @@ class MetMetadataEvidenceTests(unittest.TestCase):
         self.assertEqual([], list(validator.iter_errors(packet)))
         packet["rights_assessment"]["original_image_bytes_obtained"] = True
         self.assertTrue(list(validator.iter_errors(packet)))
+
+
+class CommonsImageAcquisitionTests(unittest.TestCase):
+    """Adversarial checks for the W8 single-file, quarantined acquisition route."""
+
+    def jpeg_fixture(self):
+        # Acquisition tests exercise identity, bounded transfer and publication;
+        # pixel decoding is covered separately by DATA-003 with the real image.
+        return b"\xff\xd8W8 synthetic transport fixture, intentionally not decodable\xff\xd9"
+
+    def fixture_transport(self, image_bytes: bytes):
+        candidate = dict(acquisition.COMMONS_CANDIDATES["CAT2044"])
+        candidate.update({
+            "size": len(image_bytes), "sha1": hashlib.sha1(image_bytes).hexdigest(),
+            "width": 32, "height": 24, "original_path": "/wikipedia/commons/fixture.jpg",
+            "timestamp": "2026-10-09T00:00:00Z",
+        })
+        payload = {"query": {"pages": [{"pageid": 999, "ns": 6, "title": candidate["title"], "imageinfo": [{
+            "size": len(image_bytes), "width": 32, "height": 24, "sha1": candidate["sha1"],
+            "mime": "image/jpeg", "timestamp": candidate["timestamp"],
+            "url": f"https://upload.wikimedia.org{candidate['original_path']}?tracking=discard",
+            "extmetadata": {"LicenseShortName": {"value": "CC0"}, "LicenseUrl": {"value": "https://creativecommons.org/publicdomain/zero/1.0/"}, "Credit": {"value": "Museo Egizio"}},
+        }]}]}}
+        calls = []
+        def transport(host, path, byte_limit):
+            calls.append((host, path, byte_limit))
+            if host == acquisition.COMMONS_API_HOST:
+                return 200, "application/json", json.dumps(payload).encode(), {"content-length": "1"}
+            return 200, "image/jpeg", image_bytes, {"etag": '"fixture"'}
+        return candidate, transport, calls
+
+    @unittest.skipUnless(os.name == "posix", "POSIX dirfd adversarial swap test")
+    def test_real_private_image_publish_resists_parent_replacement_with_symlink(self):
+        """Reproduce the W7 path swap against W8 physical image bytes."""
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            base = Path(td)
+            vault = base / "vault"
+            outside = base / "outside"
+            outside.mkdir()
+            saved_link = os.link
+            swapped = {"done": False}
+            def race_link(*args, **kwargs):
+                if not swapped["done"]:
+                    swapped["done"] = True
+                    vault.rename(base / "moved-vault")
+                    vault.symlink_to(outside, target_is_directory=True)
+                return saved_link(*args, **kwargs)
+            with patch.object(acquisition.os, "link", side_effect=race_link):
+                with self.assertRaisesRegex(
+                    acquisition.AcquisitionError, "VAULT_CHANGED_DURING_WRITE"
+                ):
+                    acquisition._publish_private_file(
+                        vault, "CAT2044-013-commons-original.jpg", b"pinned-private-bytes")
+            self.assertTrue(swapped["done"])
+            self.assertFalse(
+                (outside / "CAT2044-013-commons-original.jpg").exists())
+            self.assertFalse(
+                (base / "moved-vault" / "CAT2044-013-commons-original.jpg").exists())
+            self.assertEqual([], list((base / "moved-vault").iterdir()))
+
+    def test_real_private_publish_rejects_unexpected_output_filename(self):
+        with tempfile.TemporaryDirectory() as td:
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "FILENAME_NOT_ALLOWLISTED"):
+                acquisition._publish_private_file(
+                    Path(td), "../escape.jpg", b"bytes")
+
+    def test_cc0_acquisition_is_private_pinned_and_never_admitted(self):
+        image_bytes = self.jpeg_fixture()
+        candidate, transport, calls = self.fixture_transport(image_bytes)
+        with tempfile.TemporaryDirectory() as directory, unittest.mock.patch.dict(acquisition.COMMONS_CANDIDATES, {"CAT2044": candidate}):
+            packet, path = acquisition.acquire_commons_candidate("CAT2044", transport=transport, vault_root=Path(directory), now=dt.datetime(2026, 10, 9, tzinfo=dt.timezone.utc))
+            self.assertEqual(image_bytes, path.read_bytes())
+            self.assertEqual(hashlib.sha256(image_bytes).hexdigest(), packet["source_sha256"])
+            self.assertEqual("CC0", packet["license"]["identifier"])
+            self.assertEqual("NOT_REGISTERED", packet["use_boundary"]["source_registry_status"])
+            self.assertEqual("UNRESOLVED_QUARANTINED", packet["use_boundary"]["benchmark_overlap_status"])
+            self.assertEqual("BLOCKED", packet["use_boundary"]["training_admission"])
+            self.assertFalse(packet["private_storage"]["path_published"])
+            self.assertEqual(candidate["original_path"], calls[1][1])
+            self.assertNotIn("tracking", calls[1][1])
+
+    def test_rejects_non_cc0_changed_file_identity_and_deferred_candidate(self):
+        image_bytes = self.jpeg_fixture()
+        candidate, transport, _ = self.fixture_transport(image_bytes)
+        with tempfile.TemporaryDirectory() as directory, unittest.mock.patch.dict(acquisition.COMMONS_CANDIDATES, {"CAT2044": candidate}):
+            def altered(host, path, limit, field, value):
+                status, content_type, body, headers = transport(host, path, limit)
+                if host == acquisition.COMMONS_API_HOST:
+                    payload = json.loads(body)
+                    payload["query"]["pages"][0]["imageinfo"][0][field] = value
+                    body = json.dumps(payload).encode()
+                return status, content_type, body, headers
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "LICENSE_NOT_CC0"):
+                acquisition.acquire_commons_candidate("CAT2044", transport=lambda h, p, l: altered(h, p, l, "extmetadata", {"LicenseShortName": {"value": "CC BY-SA"}}), vault_root=Path(directory))
+            def wrong_title(host, path, limit):
+                status, content_type, body, headers = transport(host, path, limit)
+                if host == acquisition.COMMONS_API_HOST:
+                    payload = json.loads(body); payload["query"]["pages"][0]["title"] = "File:attacker.jpg"; body = json.dumps(payload).encode()
+                return status, content_type, body, headers
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "FILE_IDENTITY_MISMATCH"):
+                acquisition.acquire_commons_candidate("CAT2044", transport=wrong_title, vault_root=Path(directory))
+            def wrong_bytes(host, path, limit):
+                return transport(host, path, limit) if host == acquisition.COMMONS_API_HOST else (200, "image/jpeg", image_bytes + b"x", {})
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "BYTE_SIZE_MISMATCH"):
+                acquisition.acquire_commons_candidate("CAT2044", transport=wrong_bytes, vault_root=Path(directory))
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "NOT_AUTHORIZED"):
+                acquisition.acquire_commons_candidate("CAT1880", transport=transport, vault_root=Path(directory))
+
+    def test_existing_file_symlink_and_failed_write_are_no_clobber(self):
+        image_bytes = self.jpeg_fixture()
+        candidate, transport, _ = self.fixture_transport(image_bytes)
+        with tempfile.TemporaryDirectory() as directory, unittest.mock.patch.dict(acquisition.COMMONS_CANDIDATES, {"CAT2044": candidate}):
+            root = Path(directory); target = root / candidate["filename"]
+            target.write_bytes(b"existing")
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "TARGET_EXISTS"):
+                acquisition.acquire_commons_candidate("CAT2044", transport=transport, vault_root=root)
+            self.assertEqual(b"existing", target.read_bytes()); target.unlink()
+            protected = root / "outside.jpg"; protected.write_bytes(b"protected")
+            try:
+                target.symlink_to(protected)
+            except (OSError, NotImplementedError):
+                pass
+            else:
+                with self.assertRaisesRegex(acquisition.AcquisitionError, "TARGET_EXISTS"):
+                    acquisition.acquire_commons_candidate("CAT2044", transport=transport, vault_root=root)
+                self.assertEqual(b"protected", protected.read_bytes()); target.unlink()
+            with unittest.mock.patch.object(acquisition.os, "link", side_effect=OSError("fixture")):
+                with self.assertRaisesRegex(acquisition.AcquisitionError, "PUBLISH_FAILED"):
+                    acquisition.acquire_commons_candidate("CAT2044", transport=transport, vault_root=root)
+            self.assertEqual([], list(root.glob(".w8-*.part")))
+
+    def test_candidate_matrix_keeps_other_sources_quarantined(self):
+        matrix = json.loads((ROOT / "data/acquisition/commons/w8_candidate_matrix.json").read_text(encoding="utf-8"))
+        candidates = {item["candidate_id"]: item for item in matrix["candidates"]}
+        self.assertEqual({"CAT2044", "CAT1880", "MET-561392"}, set(candidates))
+        self.assertEqual("DEFERRED_NO_DOWNLOAD", candidates["CAT1880"]["selection"])
+        self.assertEqual("METADATA_ONLY_NO_IMAGE_FETCH_IN_W8", candidates["MET-561392"]["selection"])
+        self.assertTrue(all(item["benchmark_overlap"].split(";")[0].endswith("QUARANTINED") for item in candidates.values()))
 
 
 if __name__ == "__main__":

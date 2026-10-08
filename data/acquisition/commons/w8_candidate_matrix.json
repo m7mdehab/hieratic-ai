@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "W8 unlabelled local image-processing candidates; not a rights registry, corpus admission, training/dev manifest, or gold record",
+  "research_access_policy": {
+    "no_bulk_access": true,
+    "only_single_named_commons_file": true,
+    "raw_image_storage": "user-local private artifact vault outside Git",
+    "model_training": "blocked",
+    "benchmark_or_model_selection": "blocked until independent overlap review",
+    "editorial_text_or_transcription": "not acquired or reused"
+  },
+  "candidates": [
+    {
+      "candidate_id": "MET-561392",
+      "institution": "The Metropolitan Museum of Art",
+      "accession": "09.184.751",
+      "official_object_page": "https://www.metmuseum.org/art/collection/search/561392",
+      "metadata_api_record": "https://collectionapi.metmuseum.org/public/collection/v1/objects/561392",
+      "selection": "METADATA_ONLY_NO_IMAGE_FETCH_IN_W8",
+      "rights_evidence_status": "API_METADATA_ONLY; exact image/file scope not independently verified in this W8 acquisition",
+      "source_registry_status": "existing W7 source evidence; no W8 image registration or image rights approval",
+      "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+      "training_development_evaluation": "BLOCKED",
+      "gold_status": "NONE"
+    },
+    {
+      "candidate_id": "CAT2044",
+      "institution": "Museo Egizio, Turin",
+      "accession": "Cat.2044/013",
+      "physical_support_group": "Cat.2044/013",
+      "commons_file_title": "Journal of year 1 of Ramesses VI on recto and verso - Museo Egizio Turin C 2044 p01.jpg",
+      "commons_file_page": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+      "commons_file_revision": "https://commons.wikimedia.org/w/index.php?title=File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg&oldid=900807568",
+      "official_object_page": "https://collezioni.museoegizio.it/en-GB/material/Cat_2044/",
+      "official_papyrus_record": "https://collezionepapiri.museoegizio.it/en-GB/document/173/",
+      "file_page_license": "CC0 1.0",
+      "official_museum_image_policy": "The online collection states its images are freely downloadable/reusable under CC0; the TPOP image policy separately says users may use TPOP photos under CC0.",
+      "source_identity": "One institutional Cat.2044/013 support with recto/verso writing records; filename is not used to split supports.",
+      "historical_label_conflict": "Commons title says Ramesses VI; official TPOP Cat.2044/013 record says Ramesses V. Do not resolve this catalog/interpretive discrepancy from filename metadata.",
+      "expected_file": {"sha1": "752747405048f358147a7b1f0f697720c338394b", "bytes": 2649239, "mime": "image/jpeg", "width": 7063, "height": 3947, "revision_timestamp": "2024-02-08T16:25:22Z"},
+      "selection": "PRIMARY_SINGLE_FILE_LOCAL_INSPECTION",
+      "rights_evidence_status": "FILE_PAGE_CC0_AND_MUSEUM_IMAGE_POLICY_VERIFIED",
+      "source_registry_status": "NOT_REGISTERED; not an acquisition-manifest rights approval",
+      "benchmark_overlap": "UNRESOLVED_QUARANTINED; public metadata screen is not visual/edition clearance",
+      "training_development_evaluation": "BLOCKED",
+      "gold_status": "NONE"
+    },
+    {
+      "candidate_id": "CAT1880",
+      "institution": "Museo Egizio, Turin",
+      "accession": "Cat.1880",
+      "physical_support_group": "Cat.1880; p01/p02 and alternate photographs are one support group",
+      "commons_file_title": "The so-called 'Strike Papyrus' written by Amunnakht, papyurs - Museo Egizio (Turin) C 1880 p01.jpg",
+      "commons_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht,_papyurs_-_Museo_Egizio_(Turin)_C_1880_p01.jpg",
+      "official_object_page": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880/",
+      "official_papyrus_record": "https://collezionepapiri.museoegizio.it/en-GB/document/131/",
+      "file_page_license": "CC0 1.0",
+      "expected_file_metadata_observed": "6,941 x 3,431; JPEG; 3.31 MiB on the exact p01 file page. Commons lists a separate p02 file; all views remain one Cat.1880 physical-support group.",
+      "selection": "DEFERRED_NO_DOWNLOAD",
+      "reason": "Famous Strike Papyrus has high source/edition/benchmark leakage risk; no pixel-level or edition lineage clearance is established. It is not needed for the first unlabelled image-processing demonstration.",
+      "rights_evidence_status": "FILE_PAGE_CC0_AND_MUSEUM_IMAGE_POLICY_VERIFIED",
+      "benchmark_overlap": "HIGH_RISK_UNRESOLVED_QUARANTINED",
+      "training_development_evaluation": "BLOCKED",
+      "gold_status": "NONE"
+    }
+  ]
+}

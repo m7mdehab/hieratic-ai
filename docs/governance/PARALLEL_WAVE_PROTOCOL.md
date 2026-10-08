@@ -28,7 +28,7 @@ Also state:
 
 **Receiving Mohammed's concrete continuation/task prompt is authorization for that agent to execute the bounded task immediately.** Luna, the selected Anti-Gravity agent or another provider must not ask for another approval, postpone implementation for a wave sign-off, or reply with only a plan when it can act.
 
-The overseer supplies the assignment table and copy-ready prompts before dispatch, and begins its own independent safe work without an additional waiting checkpoint. The user remains free to override or stop the wave. This rule supersedes the old separate wave-approval hold from ADR-0010.
+The overseer **must first deliver the complete copy-ready agent prompts and its own separate parallel assignment** in the visible response, before executing that assigned work. Mohammed forwards the prompts, which authorize the agents to start immediately. **When Mohammed returns to the overseer chat to continue**, the overseer begins its independent, nonconflicting task during that interactive turn, without a second formal approval request. Do not finish overseer work before giving Mohammed a chance to dispatch. This sequencing is clarified by ADR-0023 and supersedes only the overseer-start timing of ADR-0022; user retains stop/override authority.
 
 No ordinary dispatch authorizes paid inference/spending, access to restricted data, unblinding sealed benchmarks, exposing secrets, destructive external actions, or changing protected canonical status/metrics. Those have separate evidence and permission gates. When blocked, agents complete all otherwise safe work and report the exact dependency instead of waiting idly.
 
@@ -63,7 +63,7 @@ When Mohammed returns agent feedback, the overseer combines:
 - newly unblocked tasks;
 - unresolved blockers.
 
-The next response should end with the next dependency-safe parallel wave, the overseer assignment, and ready-to-send execution prompts. Once Mohammed forwards a prompt, that agent executes immediately; do not append a redundant request for permission.
+The next dispatch response should contain the next dependency-safe parallel wave, ready-to-send agent prompts, and the overseer parallel assignment **before any overseer execution**. Mohammed then forwards those prompts and returns to start the overseer lane. Execution agents begin upon their prompt receipt, without an additional permission gate.
 
 
 ## Execution-lane topology

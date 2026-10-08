@@ -1,0 +1,52 @@
+{
+  "candidate_id": "CAT2044",
+  "commons_api_response_sha256": "c530f106a4661d9a0ce7bfdefe51642e435bee868a077223b438c278466f1030",
+  "commons_file_page_url": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+  "commons_file_revision_url": "https://commons.wikimedia.org/w/index.php?title=File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg&oldid=900807568",
+  "commons_file_sha1": "752747405048f358147a7b1f0f697720c338394b",
+  "commons_pageid": 145137491,
+  "declared_dimensions": [
+    7063,
+    3947
+  ],
+  "evidence_id": "W8-COMMONS-CAT2044-ORIGINAL-v1",
+  "exact_original_file_url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "historical_identity_note": "Commons file title says Ramesses VI; official TPOP Cat.2044/013 metadata identifies the writing as Ramesses V. Stable catalogue identity is accession-only; historical attribution is unresolved here.",
+  "institution": "Museo Egizio, Turin",
+  "license": {
+    "file_credit_observation": "Museo Egizio",
+    "identifier": "CC0",
+    "official_museum_policy_url": "https://collezioni.museoegizio.it/en-GB/",
+    "papyrus_database_image_policy_url": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/",
+    "url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "mime_type": "image/jpeg",
+  "official_object_url": "https://collezioni.museoegizio.it/en-GB/material/Cat_2044/",
+  "official_papyrus_record_url": "https://collezionepapiri.museoegizio.it/en-GB/document/173/",
+  "physical_support_group": "Cat.2044/013",
+  "private_storage": {
+    "asset_filename": "CAT2044-013-commons-original.jpg",
+    "path_published": false,
+    "storage_class": "user_local_private_artifact_vault"
+  },
+  "record_schema_version": "1.0.0",
+  "response_headers": {
+    "content-length": "2649239",
+    "etag": "bc1a164acc511758757572ad47f2f404",
+    "last-modified": "Thu, 08 Feb 2024 16:25:23 GMT"
+  },
+  "retrieved_at": "2026-10-08T22:26:21Z",
+  "source_attribution": "Museo Egizio, Turin; Wikimedia Commons file imported by Marco Chemello (WMIT). Attribution retained for provenance although CC0 does not require it.",
+  "source_byte_size": 2649239,
+  "source_object_id": "Cat.2044/013",
+  "source_sha256": "569e8e5bb446588481481bfea823fc95383bb7076270363c666f868b7fa5b912",
+  "use_boundary": {
+    "benchmark_overlap_status": "UNRESOLVED_QUARANTINED",
+    "development_admission": "BLOCKED",
+    "evaluation_admission": "NOT_AUTHORIZED",
+    "gold_or_transcription": "NONE",
+    "purpose": "unlabelled local image-processing research only",
+    "source_registry_status": "NOT_REGISTERED",
+    "training_admission": "BLOCKED"
+  }
+}

@@ -9,6 +9,7 @@ import http.client
 import ipaddress
 import json
 import os
+import re
 import socket
 import ssl
 import sys
@@ -17,7 +18,7 @@ import secrets
 import stat
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
@@ -36,6 +37,44 @@ MET_CANDIDATES = {
 }
 MAX_MET_RESPONSE_BYTES = 256 * 1024
 MET_TIMEOUT_SECONDS = 12
+COMMONS_CANDIDATES = {
+    "CAT2044": {
+        "title": "File:Journal of year 1 of Ramesses VI on recto and verso - Museo Egizio Turin C 2044 p01.jpg",
+        "page_url": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+        "object_url": "https://collezioni.museoegizio.it/en-GB/material/Cat_2044/",
+        "papyrus_record_url": "https://collezionepapiri.museoegizio.it/en-GB/document/173/",
+        "accession": "Cat.2044/013",
+        "filename": "CAT2044-013-commons-original.jpg",
+        "original_path": "/wikipedia/commons/e/e5/Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+        "sha1": "752747405048f358147a7b1f0f697720c338394b",
+        "size": 2649239,
+        "width": 7063,
+        "height": 3947,
+        "timestamp": "2024-02-08T16:25:22Z",
+        "source_revision": "https://commons.wikimedia.org/w/index.php?title=File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg&oldid=900807568",
+        "allowed_local_research_inspection": True,
+    },
+    "CAT1880": {
+        "title": "File:The so-called 'Strike Papyrus' written by Amunnakht, papyurs - Museo Egizio (Turin) C 1880 p01.jpg",
+        "page_url": "https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht%2C_papyurs_-_Museo_Egizio_%28Turin%29_C_1880_p01.jpg",
+        "object_url": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880/",
+        "papyrus_record_url": "https://collezionepapiri.museoegizio.it/en-GB/document/131/",
+        "accession": "Cat.1880",
+        "filename": "CAT1880-commons-original.jpg",
+        "original_path": None,
+        "sha1": None,
+        "size": None,
+        "width": 6941,
+        "height": 3431,
+        "timestamp": None,
+        "source_revision": "https://commons.wikimedia.org/w/index.php?title=File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht%2C_papyurs_-_Museo_Egizio_%28Turin%29_C_1880_p01.jpg&oldid=1114729465",
+        "allowed_local_research_inspection": False,
+    },
+}
+COMMONS_API_HOST = "commons.wikimedia.org"
+COMMONS_FILE_HOST = "upload.wikimedia.org"
+COMMONS_API_TIMEOUT_SECONDS = 20
+MAX_COMMONS_IMAGE_BYTES = 8 * 1024 * 1024
 
 
 class AcquisitionError(Exception):
@@ -86,6 +125,282 @@ def _met_get(path: str) -> tuple[int, str, bytes]:
         return response.status, content_type, body
     finally:
         connection.close()
+
+
+def _public_https_get(host: str, path: str, byte_limit: int) -> tuple[int, str, bytes, dict[str, str]]:
+    """Single bounded HTTPS GET to a fixed caller-allowlisted public host; never follows redirects."""
+    if host not in {COMMONS_API_HOST, COMMONS_FILE_HOST} or not path.startswith("/") or byte_limit <= 0:
+        raise AcquisitionError("COMMONS_REQUEST_OUTSIDE_ALLOWLIST")
+    answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+    addresses = sorted({answer[4][0] for answer in answers})
+    if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
+        raise AcquisitionError("COMMONS_DNS_NOT_PUBLIC")
+    connection = _PinnedHTTPSConnection(host, addresses[0], COMMONS_API_TIMEOUT_SECONDS)
+    try:
+        connection.request("GET", path, headers={
+            "Accept": "application/json, image/jpeg",
+            "Accept-Encoding": "identity",
+            "User-Agent": "Hieratic-AI/0.1 (https://github.com/m7mdehab/hieratic-ai; W8 single-file research acquisition)",
+            "Connection": "close",
+        })
+        response = connection.getresponse()
+        headers = {key.lower(): value for key, value in response.getheaders()}
+        if response.status != 200:
+            raise AcquisitionError(f"COMMONS_HTTP_STATUS_{response.status}")
+        if headers.get("content-encoding", "identity").lower() not in {"", "identity"}:
+            raise AcquisitionError("COMMONS_CONTENT_ENCODING_UNSUPPORTED")
+        declared = headers.get("content-length")
+        if declared and int(declared) > byte_limit:
+            raise AcquisitionError("COMMONS_RESPONSE_TOO_LARGE")
+        body = response.read(byte_limit + 1)
+        if len(body) > byte_limit:
+            raise AcquisitionError("COMMONS_RESPONSE_TOO_LARGE")
+        return response.status, headers.get("content-type", "").split(";", 1)[0].strip().lower(), body, headers
+    finally:
+        connection.close()
+
+
+def _commons_imageinfo(candidate_id: str, transport: Callable[..., tuple[int, str, bytes, dict[str, str]]] | None = None) -> tuple[dict[str, Any], str]:
+    candidate = COMMONS_CANDIDATES.get(candidate_id)
+    if candidate is None:
+        raise AcquisitionError("COMMONS_CANDIDATE_NOT_ALLOWLISTED")
+    if not candidate["allowed_local_research_inspection"]:
+        raise AcquisitionError("COMMONS_CANDIDATE_HELD_FOR_BENCHMARK_QUARANTINE_REVIEW")
+    params = urlencode({
+        "action": "query", "format": "json", "formatversion": "2", "prop": "imageinfo",
+        "titles": candidate["title"],
+        "iiprop": "url|size|width|height|sha1|timestamp|mime|user|comment|extmetadata",
+    })
+    request = transport or _public_https_get
+    status, content_type, body, _headers = request(COMMONS_API_HOST, f"/w/api.php?{params}", 512 * 1024)
+    if status != 200 or content_type != "application/json":
+        raise AcquisitionError("COMMONS_METADATA_RESPONSE_INVALID")
+    response_sha256 = hashlib.sha256(body).hexdigest()
+    try:
+        payload = json.loads(body)
+        pages = payload["query"]["pages"]
+        page = pages[0] if isinstance(pages, list) and len(pages) == 1 else None
+        image = page["imageinfo"][0] if page and len(page.get("imageinfo", [])) == 1 else None
+    except (KeyError, TypeError, json.JSONDecodeError, IndexError) as exc:
+        raise AcquisitionError("COMMONS_METADATA_RESPONSE_MALFORMED") from exc
+    if not page or page.get("title") != candidate["title"] or page.get("ns") != 6 or page.get("missing") is True or not image:
+        raise AcquisitionError("COMMONS_FILE_IDENTITY_MISMATCH")
+    license_meta = image.get("extmetadata", {})
+    short_name = re.sub(r"<[^>]*>", "", str(license_meta.get("LicenseShortName", {}).get("value", ""))).strip()
+    license_url = str(license_meta.get("LicenseUrl", {}).get("value", "")).strip()
+    credit = re.sub(r"<[^>]*>", " ", str(license_meta.get("Credit", {}).get("value", "")))
+    credit = " ".join(credit.split())
+    if short_name not in {"CC0", "CC0 1.0"} or "creativecommons.org/publicdomain/zero/1.0" not in license_url.lower():
+        raise AcquisitionError("COMMONS_EXACT_FILE_LICENSE_NOT_CC0")
+    if "Museo Egizio" not in credit:
+        raise AcquisitionError("COMMONS_FILE_CREDIT_DOES_NOT_IDENTIFY_MUSEO_EGIZIO")
+    image_url = image.get("url")
+    parts = urlsplit(image_url or "")
+    if (
+        parts.scheme != "https" or parts.hostname != COMMONS_FILE_HOST or parts.path != candidate["original_path"]
+        or parts.username or parts.password or parts.fragment
+    ):
+        raise AcquisitionError("COMMONS_ORIGINAL_URL_MISMATCH")
+    expected = {
+        "size": candidate["size"], "width": candidate["width"], "height": candidate["height"],
+        "sha1": candidate["sha1"], "mime": "image/jpeg", "timestamp": candidate["timestamp"],
+    }
+    for field, expected_value in expected.items():
+        if image.get(field) != expected_value:
+            raise AcquisitionError(f"COMMONS_PINNED_FILE_{field.upper()}_MISMATCH")
+    return {"pageid": page["pageid"], **{key: image[key] for key in expected}, "url": image_url,
+            "license_short_name": short_name, "license_url": license_url, "credit": credit}, response_sha256
+
+
+def _has_reparse_component(path: Path) -> bool:
+    current = Path(path.anchor)
+    for part in path.parts[1:]:
+        current = current / part
+        if current.is_symlink() or (hasattr(current, "is_junction") and current.is_junction()):
+            return True
+    return False
+
+
+def _default_private_vault() -> Path:
+    local = os.environ.get("LOCALAPPDATA")
+    if not local:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_REQUIRES_LOCALAPPDATA")
+    root = Path(local) / "HieraticAI" / "private-artifacts" / "W8"
+    repo = ROOT.resolve()
+    if root.resolve(strict=False) == repo or repo in root.resolve(strict=False).parents:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_MUST_BE_OUTSIDE_REPOSITORY")
+    return root
+
+
+def _publish_private_file(root: Path, filename: str, data: bytes) -> Path:
+    """Publish once into a private vault, without following swapped POSIX parents.
+
+    POSIX uses an open O_NOFOLLOW directory handle for staging, link and cleanup;
+    Windows retains a conservative local-vault path, validating directory identity
+    before and after publication (Windows Python lacks POSIX dir_fd hard-link APIs).
+    """
+    root = root.absolute()
+    if filename != "CAT2044-013-commons-original.jpg":
+        raise AcquisitionError("COMMONS_PRIVATE_FILENAME_NOT_ALLOWLISTED")
+    root.mkdir(parents=True, exist_ok=True)
+    if _has_reparse_component(root) or not root.is_dir():
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_HAS_REPARSE_COMPONENT")
+    resolved_root = root.resolve(strict=True)
+    if resolved_root != root:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_RESOLVED_PATH_CHANGED")
+    target = root / filename
+    if target.exists() or target.is_symlink():
+        raise AcquisitionError("COMMONS_PRIVATE_TARGET_EXISTS_OR_ESCAPES_VAULT")
+
+    if os.name == "posix" and hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NOFOLLOW"):
+        directory_fd: int | None = None
+        temporary_name = f".w8-{secrets.token_hex(16)}.part"
+        published = False
+        succeeded = False
+        try:
+            directory_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+            identity = os.fstat(directory_fd)
+            if not stat.S_ISDIR(identity.st_mode):
+                raise AcquisitionError("COMMONS_PRIVATE_VAULT_NOT_DIRECTORY")
+            opened_fd = os.open(
+                temporary_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o600, dir_fd=directory_fd,
+            )
+            with os.fdopen(opened_fd, "wb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.link(
+                temporary_name, filename, src_dir_fd=directory_fd,
+                dst_dir_fd=directory_fd, follow_symlinks=False,
+            )
+            published = True
+            try:
+                current = os.stat(root, follow_symlinks=False)
+                if not stat.S_ISDIR(current.st_mode) or (
+                    current.st_dev, current.st_ino
+                ) != (identity.st_dev, identity.st_ino):
+                    raise AcquisitionError("COMMONS_PRIVATE_VAULT_CHANGED_DURING_WRITE")
+            except OSError as exc:
+                raise AcquisitionError("COMMONS_PRIVATE_VAULT_CHANGED_DURING_WRITE") from exc
+            os.fsync(directory_fd)
+            succeeded = True
+            return target
+        except FileExistsError as exc:
+            raise AcquisitionError("COMMONS_PRIVATE_TARGET_EXISTS_OR_ESCAPES_VAULT") from exc
+        except OSError as exc:
+            raise AcquisitionError(f"COMMONS_PRIVATE_PUBLISH_FAILED:{type(exc).__name__}") from exc
+        finally:
+            if directory_fd is not None:
+                if published and not succeeded:
+                    try:
+                        os.unlink(filename, dir_fd=directory_fd)
+                    except OSError:
+                        pass
+                try:
+                    os.unlink(temporary_name, dir_fd=directory_fd)
+                except FileNotFoundError:
+                    pass
+                finally:
+                    os.close(directory_fd)
+
+    # Windows local-private-vault fallback: preserve original functionality
+    # and verify immutable destination directory identity on either side.
+    before = root.stat()
+    temporary = None
+    published = False
+    succeeded = False
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb", dir=root, prefix=".w8-", suffix=".part", delete=False
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        current = root.stat()
+        if (before.st_dev, before.st_ino) != (current.st_dev, current.st_ino):
+            raise AcquisitionError("COMMONS_PRIVATE_VAULT_CHANGED_DURING_WRITE")
+        os.link(temporary, target)
+        published = True
+        current = root.stat()
+        if (before.st_dev, before.st_ino) != (current.st_dev, current.st_ino):
+            raise AcquisitionError("COMMONS_PRIVATE_VAULT_CHANGED_DURING_WRITE")
+        succeeded = True
+        return target
+    except FileExistsError as exc:
+        raise AcquisitionError("COMMONS_PRIVATE_TARGET_EXISTS_OR_ESCAPES_VAULT") from exc
+    except OSError as exc:
+        raise AcquisitionError(f"COMMONS_PRIVATE_PUBLISH_FAILED:{type(exc).__name__}") from exc
+    finally:
+        if published and not succeeded:
+            try:
+                current = root.stat()
+                if (before.st_dev, before.st_ino) == (current.st_dev, current.st_ino):
+                    target.unlink(missing_ok=True)
+            except OSError:
+                pass
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
+def acquire_commons_candidate(
+    candidate_id: str,
+    *,
+    transport: Callable[..., tuple[int, str, bytes, dict[str, str]]] | None = None,
+    vault_root: Path | None = None,
+    now: dt.datetime | None = None,
+) -> tuple[dict[str, Any], Path]:
+    """Acquire one fixed CC0 image into the user-local vault; never admits or labels it as training data."""
+    candidate_id = candidate_id.upper()
+    candidate = COMMONS_CANDIDATES.get(candidate_id)
+    if candidate is None or not candidate["allowed_local_research_inspection"]:
+        raise AcquisitionError("COMMONS_CANDIDATE_NOT_AUTHORIZED_FOR_LOCAL_INSPECTION")
+    request = transport or _public_https_get
+    info, api_digest = _commons_imageinfo(candidate_id, request)
+    image_parts = urlsplit(info["url"])
+    # The API may append cache-busting/tracking query parameters. The immutable
+    # original is identified by its pinned upload.wikimedia.org path and SHA1;
+    # request only that path and keep the API's full URL as provenance.
+    status, content_type, image_bytes, headers = request(COMMONS_FILE_HOST, image_parts.path, MAX_COMMONS_IMAGE_BYTES)
+    if status != 200 or content_type != "image/jpeg":
+        raise AcquisitionError("COMMONS_IMAGE_RESPONSE_INVALID")
+    if len(image_bytes) != info["size"] or len(image_bytes) > MAX_COMMONS_IMAGE_BYTES:
+        raise AcquisitionError("COMMONS_IMAGE_BYTE_SIZE_MISMATCH")
+    if hashlib.sha1(image_bytes).hexdigest() != info["sha1"]:
+        raise AcquisitionError("COMMONS_IMAGE_SHA1_MISMATCH")
+    if not image_bytes.startswith(b"\xff\xd8") or not image_bytes.endswith(b"\xff\xd9"):
+        raise AcquisitionError("COMMONS_IMAGE_JPEG_MAGIC_OR_END_MARKER_INVALID")
+    digest = hashlib.sha256(image_bytes).hexdigest()
+    vault = (vault_root or _default_private_vault()).absolute()
+    if vault.resolve(strict=False) == ROOT.resolve() or ROOT.resolve() in vault.resolve(strict=False).parents:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_MUST_BE_OUTSIDE_REPOSITORY")
+    private_path = _publish_private_file(vault, candidate["filename"], image_bytes)
+    retrieved = (now or dt.datetime.now(dt.timezone.utc)).astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    source_title_note = "Commons file title says Ramesses VI; official TPOP Cat.2044/013 metadata identifies the writing as Ramesses V. Stable catalogue identity is accession-only; historical attribution is unresolved here."
+    record = {
+        "record_schema_version": "1.0.0", "evidence_id": f"W8-COMMONS-{candidate_id}-ORIGINAL-v1",
+        "candidate_id": candidate_id, "institution": "Museo Egizio, Turin",
+        "source_object_id": candidate["accession"], "physical_support_group": candidate["accession"],
+        "official_object_url": candidate["object_url"], "official_papyrus_record_url": candidate["papyrus_record_url"],
+        "commons_file_page_url": candidate["page_url"], "commons_file_revision_url": candidate["source_revision"],
+        "exact_original_file_url": info["url"], "commons_pageid": info["pageid"],
+        "commons_api_response_sha256": api_digest, "commons_file_sha1": info["sha1"],
+        "source_sha256": digest, "source_byte_size": len(image_bytes), "mime_type": content_type,
+        "declared_dimensions": [info["width"], info["height"]], "retrieved_at": retrieved,
+        "license": {"identifier": info["license_short_name"], "url": info["license_url"],
+                    "file_credit_observation": info["credit"], "official_museum_policy_url": "https://collezioni.museoegizio.it/en-GB/",
+                    "papyrus_database_image_policy_url": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/"},
+        "source_attribution": "Museo Egizio, Turin; Wikimedia Commons file imported by Marco Chemello (WMIT). Attribution retained for provenance although CC0 does not require it.",
+        "historical_identity_note": source_title_note,
+        "private_storage": {"storage_class": "user_local_private_artifact_vault", "asset_filename": candidate["filename"], "path_published": False},
+        "use_boundary": {"purpose": "unlabelled local image-processing research only", "source_registry_status": "NOT_REGISTERED", "benchmark_overlap_status": "UNRESOLVED_QUARANTINED", "training_admission": "BLOCKED", "development_admission": "BLOCKED", "evaluation_admission": "NOT_AUTHORIZED", "gold_or_transcription": "NONE"},
+        "response_headers": {key: headers.get(key) for key in ("etag", "last-modified", "content-length")},
+    }
+    return record, private_path
 
 
 def met_metadata_packet(object_id: int, *, transport: Callable[[str], tuple[int, str, bytes]] | None = None) -> dict[str, Any]:
@@ -318,6 +633,42 @@ def _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
                 pass
         for opened_fd in reversed(open_fds):
             os.close(opened_fd)
+
+
+def _publish_commons_evidence(output: Path, packet: dict[str, Any]) -> None:
+    """Publish only redacted metadata under data/acquisition/commons using atomic no-clobber linking."""
+    root = (ROOT / "data" / "acquisition" / "commons").resolve(strict=True)
+    absolute = output.absolute()
+    try:
+        relative = absolute.relative_to(root)
+    except ValueError as exc:
+        raise AcquisitionError("COMMONS_EVIDENCE_OUTPUT_OUTSIDE_ALLOWLIST") from exc
+    if len(relative.parts) != 1 or absolute.parent.resolve(strict=True) != root:
+        raise AcquisitionError("COMMONS_EVIDENCE_OUTPUT_PARENT_INVALID")
+    if absolute.exists() or absolute.is_symlink() or (hasattr(absolute, "is_junction") and absolute.is_junction()):
+        raise AcquisitionError("COMMONS_EVIDENCE_OUTPUT_EXISTS")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n", dir=root, prefix=".commons-", suffix=".tmp", delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(packet, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        if absolute.parent.resolve(strict=True) != root:
+            raise AcquisitionError("COMMONS_EVIDENCE_OUTPUT_PARENT_CHANGED")
+        os.link(temporary, absolute)
+        temporary.unlink()
+    except FileExistsError as exc:
+        raise AcquisitionError("COMMONS_EVIDENCE_OUTPUT_EXISTS") from exc
+    except OSError as exc:
+        raise AcquisitionError(f"COMMONS_EVIDENCE_PUBLISH_FAILED:{type(exc).__name__}") from exc
+    finally:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 def _load_yaml(path: Path) -> Any:
@@ -560,12 +911,39 @@ def load_and_validate(manifest_path: Path, registry_path: Path = REGISTRY_PATH, 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m tools.acquisition")
-    parser.add_argument("command", choices=["plan", "validate", "metadata-fetch-met"])
+    parser.add_argument("command", choices=["plan", "validate", "metadata-fetch-met", "commons-image-fetch"])
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     parser.add_argument("--schema", type=Path, default=SCHEMA_PATH)
     parser.add_argument("--object-id", type=int, help="one allowlisted Met collection object ID")
+    parser.add_argument("--candidate-id", help="one pinned Museo Egizio Commons candidate (CAT2044 only)")
     args = parser.parse_args(argv)
+    if args.command == "commons-image-fetch":
+        if not args.candidate_id:
+            parser.error("commons-image-fetch requires --candidate-id")
+        candidate_id = args.candidate_id.upper()
+        expected_output = ROOT / "data" / "acquisition" / "commons" / f"{candidate_id}.json"
+        if args.manifest.absolute() != expected_output.absolute():
+            parser.error("commons-image-fetch requires the fixed redacted evidence output path under data/acquisition/commons")
+        target = _validate_metadata_output(expected_output)
+        private_path: Path | None = None
+        try:
+            record, private_path = acquire_commons_candidate(candidate_id)
+            _publish_commons_evidence(target, record)
+        except (AcquisitionError, OSError) as exc:
+            if private_path is not None:
+                try:
+                    private_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps({"evidence_output": str(target.relative_to(ROOT)), "candidate_id": candidate_id,
+                          "source_sha256": record["source_sha256"], "source_byte_size": record["source_byte_size"],
+                          "dimensions": record["declared_dimensions"], "license": record["license"]["identifier"],
+                          "local_private_asset": str(private_path), "training_admission": "BLOCKED",
+                          "benchmark_overlap_status": "UNRESOLVED_QUARANTINED"}, sort_keys=True))
+        return 0
     if args.command == "metadata-fetch-met":
         if args.object_id is None:
             parser.error("metadata-fetch-met requires --object-id")

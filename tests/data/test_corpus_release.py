@@ -204,6 +204,24 @@ class CorpusReleaseTests(unittest.TestCase):
         self.assertEqual([], list(target.iterdir()))
         self.assertEqual([], list(self.root.glob(".empty-existing.staging-*")))
 
+    def test_destination_stays_absent_while_artifacts_are_staged(self):
+        path = self.bundle()
+        result, errors = release_corpus.validate_bundle(release_corpus.read_document(path), path)
+        self.assertEqual([], errors)
+        target = self.root / "not-visible-until-complete"
+        original = release_corpus._write_staging_file
+        observed = []
+
+        def observe_staging(staging, staging_fd, name, content):
+            self.assertFalse(target.exists(), "incomplete destination became visible during staging")
+            observed.append(name)
+            return original(staging, staging_fd, name, content)
+
+        with patch.object(release_corpus, "_write_staging_file", new=observe_staging):
+            release_corpus.publish(result, target, path)
+        self.assertEqual(5, len(observed))
+        self.assertEqual({"release-manifest.json", "export.jsonl", "dataset-card.md", "rejection-report.json", "audit-trail.json"}, {p.name for p in target.iterdir()})
+
     @unittest.skipUnless(sys.platform.startswith("linux"), "Linux renameat2 race regression runs in hosted CI")
     def test_simultaneous_publishers_have_one_complete_winner(self):
         path = self.bundle()

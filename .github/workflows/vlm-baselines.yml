@@ -95,6 +95,26 @@ jobs:
             --shot-mode-b few-shot \
             --output "$COMPARE_BOTH_PATH"
 
+      - name: Verify actual blocked-resource classification on CI
+        env:
+          BLOCKED_REPORT_PATH: ${{ runner.temp }}/vlm_blocked_report.json
+        run: |
+          if python -m tools.vlm_baselines real-smoke --model qwen2.5-vl-7b-instruct --output "$BLOCKED_REPORT_PATH"; then
+            echo "Expected the GPU-less CI runner to report a blocked real smoke." >&2
+            exit 1
+          fi
+          python -c 'import json,os; r=json.load(open(os.environ["BLOCKED_REPORT_PATH"],encoding="utf-8")); assert r["status"]=="blocked" and r["simulated_double_smoke"] is False and len(r["missing_resources"])>0 and r["evidence_grades"]["grade_d_actual_image_conditioned_forward_executed"] is False, "Nonzero exit was not a legitimate missing-resource barrier"'
+
+      - name: Verify real-smoke diagnostic with simulated double
+        env:
+          SMOKE_REPORT_PATH: ${{ runner.temp }}/vlm_smoke_report.json
+        run: |
+          python -m tools.vlm_baselines real-smoke \
+            --model qwen2.5-vl-7b-instruct \
+            --allow-simulated \
+            --output "$SMOKE_REPORT_PATH"
+          python -c 'import json,os; r=json.load(open(os.environ["SMOKE_REPORT_PATH"],encoding="utf-8")); assert r["simulated_double_smoke"] is True and r["sensitivity_control"]["sensitivity_observed"] is False and r["evidence_grades"]["grade_e_visual_sensitivity_control_verified"] is False, "Synthetic output was promoted into visual-sensitivity evidence"'
+
       - name: Run VLM baseline unit and negative tests
         run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
 

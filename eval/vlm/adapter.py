@@ -67,6 +67,19 @@ class VLMResponse:
     token_usage: dict[str, int] | None
 
 
+
+def validate_revision_pinning(revision: str | None) -> None:
+    """Validate that an open-weight model revision is an explicit, full 40-character commit SHA."""
+    if not revision:
+        raise VLMAdapterError("Open-weight model must specify an explicit pinned revision.")
+    clean = str(revision).strip()
+    if len(clean) != 40 or not all(c in "0123456789abcdefABCDEF" for c in clean):
+        raise VLMAdapterError(
+            f"Open-weight model revision '{revision}' is not a full 40-character commit SHA git hash. "
+            "Short or branch-based revisions are forbidden for scientific reproducibility."
+        )
+
+
 class BaseVLMAdapter(ABC):
     """Abstract base adapter for vision-language models."""
 
@@ -95,6 +108,22 @@ class BaseVLMAdapter(ABC):
         """Decode, convert to RGB, and enforce aspect-ratio preserving dimensions."""
         self.validate_image_input(image_bytes)
         if Image is None:
+            # Fallback binary magic byte and dimension checks when PIL is absent
+            is_png = image_bytes.startswith(b"\x89PNG\r\n\x1a\n")
+            is_jpeg = image_bytes.startswith(b"\xff\xd8\xff")
+            is_synth = image_bytes.startswith(b"synthetic_")
+            if not (is_png or is_jpeg or is_synth):
+                raise ImageConditioningError(
+                    f"Corrupted or invalid image input for model {self.model_key}: "
+                    "bytes do not match PNG or JPEG signature."
+                )
+            if is_png and len(image_bytes) >= 24:
+                import struct
+                w, h = struct.unpack(">II", image_bytes[16:24])
+                if w < min_dim or h < min_dim:
+                    raise ImageConditioningError(
+                        f"Image dimensions ({w}x{h}) smaller than minimum allowed {min_dim}px."
+                    )
             return None
         try:
             pil_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -306,6 +335,8 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
         model_override: Any = None,
     ) -> None:
         super().__init__(model_config)
+        if self.model_type == "open_weight":
+            validate_revision_pinning(self.model_config.get("revision"))
         self.weights_dir = Path(weights_dir) if weights_dir else None
         self._processor_override = processor_override
         self._model_override = model_override
@@ -317,6 +348,35 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             # A test double is not a live model: never label its output as live inference.
             self.execution_tier = "synthetic_ci_fixture"
             self.scientific_validity = "non_scientific_test_fixture"
+
+    def get_environment_provisioning_spec(self) -> dict[str, Any]:
+        """Return reproducible environment provisioning specification for this model."""
+        from eval.vlm.smoke import get_reproducible_provisioning_spec
+        return get_reproducible_provisioning_spec(self.model_config)
+
+    def check_weights_on_disk(self) -> bool:
+        """Check whether local snapshot directory exists and contains valid config and weights."""
+        model_id = self.model_config.get("provider_model_id", "")
+        target_path = self.weights_dir
+        if not target_path:
+            candidate_path = Path.home() / ".cache" / "huggingface" / "hub" / f"models--{model_id.replace('/', '--')}"
+            if candidate_path.is_dir():
+                target_path = candidate_path
+
+        if not target_path or not target_path.is_dir():
+            return False
+
+        has_cfg = (target_path / "config.json").is_file() or any(target_path.glob("snapshots/*/config.json"))
+        has_wt = (
+            any(target_path.glob("*.safetensors"))
+            or any(target_path.glob("*.bin"))
+            or (target_path / "model.safetensors.index.json").is_file()
+            or (target_path / "pytorch_model.bin.index.json").is_file()
+            or any(target_path.glob("snapshots/*/*.safetensors"))
+            or any(target_path.glob("snapshots/*/*.bin"))
+            or any(target_path.glob("snapshots/*/model.safetensors.index.json"))
+        )
+        return bool(has_cfg and has_wt)
 
     def get_runtime_metadata(self) -> dict[str, Any]:
         """Return structured runtime metadata for auditing without leaking sensitive paths."""
@@ -340,6 +400,7 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             "execution_tier": self.execution_tier,
             "scientific_validity": self.scientific_validity,
             "weights_status": weights_status,
+            "weights_found": self.check_weights_on_disk(),
         }
 
         if self._torch_available:
@@ -382,6 +443,19 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                 reason=(
                     f"Unsupported architecture path for model '{self.model_key}': no verified Hugging Face loader is "
                     f"registered for this family ({type(self).__name__}). Runtime status: {self.runtime_verification}."
+                ),
+                hardware_info=info,
+            )
+
+        model_id = self.model_config["provider_model_id"]
+        if not self.check_weights_on_disk():
+            info = dict(base_hw_info)
+            info["weights_found"] = False
+            return AvailabilityStatus(
+                available=False,
+                reason=(
+                    f"Model weights for '{model_id}' are not found locally on disk or snapshot directory is incomplete. "
+                    "Pre-downloaded weights directory with config.json and weights files is required for offline execution."
                 ),
                 hardware_info=info,
             )
@@ -456,30 +530,6 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             return AvailabilityStatus(
                 available=False,
                 reason=f"Model '{self.model_key}' requires NVIDIA CUDA GPU acceleration (>= {min_vram_gb} GB VRAM), but no CUDA device is present.",
-                hardware_info=info,
-            )
-
-        # Check local weights availability
-        model_id = self.model_config["provider_model_id"]
-        weights_path = self.weights_dir
-        if not weights_path:
-            candidate_path = Path.home() / ".cache" / "huggingface" / "hub" / f"models--{model_id.replace('/', '--')}"
-            if candidate_path.is_dir():
-                weights_path = candidate_path
-
-        if not weights_path or not weights_path.exists():
-            info = dict(base_hw_info)
-            info.update({
-                "cuda_available": cuda_ok,
-                "device_name": device_name,
-                "weights_found": False,
-            })
-            return AvailabilityStatus(
-                available=False,
-                reason=(
-                    f"Model weights for '{model_id}' are not found locally on disk. "
-                    "Pre-downloaded weights directory is required for offline execution."
-                ),
                 hardware_info=info,
             )
 
@@ -676,7 +726,15 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             if "stop_sequences" in self.model_config:
                 gen_kwargs["stop_strings"] = self.model_config["stop_sequences"]
 
-            generated_ids = self._model.generate(**inputs, **gen_kwargs)
+            try:
+                generated_ids = self._model.generate(**inputs, **gen_kwargs)
+            except TypeError as te:
+                if "stop_strings" in gen_kwargs and "stop_strings" in str(te):
+                    gen_kwargs_no_stop = dict(gen_kwargs)
+                    del gen_kwargs_no_stop["stop_strings"]
+                    generated_ids = self._model.generate(**inputs, **gen_kwargs_no_stop)
+                else:
+                    raise
 
             # Extract completion tokens, stripping prompt input IDs
             in_ids = inputs.get("input_ids")
@@ -685,7 +743,10 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                 for i, out_ids in enumerate(generated_ids):
                     if len(in_ids) > i:
                         prompt_len = len(in_ids[i])
-                        generated_ids_trimmed.append(out_ids[prompt_len:])
+                        if len(out_ids) >= prompt_len:
+                            generated_ids_trimmed.append(out_ids[prompt_len:])
+                        else:
+                            generated_ids_trimmed.append(out_ids)
                     else:
                         generated_ids_trimmed.append(out_ids)
             else:
@@ -699,11 +760,25 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                 )
                 raw_output = decoded[0].strip() if decoded else ""
             else:
-                raw_output = str(generated_ids_trimmed)
+                raw_output = str(generated_ids_trimmed).strip()
 
             elapsed_ms = (time.perf_counter() - start_time) * 1000.0
             in_len = int(in_ids.shape[-1]) if (in_ids is not None and hasattr(in_ids, "shape")) else 256
             out_len = int(len(raw_output.split()))
+
+            if not raw_output:
+                return VLMResponse(
+                    status="failed",
+                    raw_output=None,
+                    cleaned_prediction=None,
+                    error_message=f"Model '{self.model_key}' returned empty or whitespace-only prediction.",
+                    latency_ms=round(elapsed_ms, 2),
+                    token_usage={
+                        "prompt_tokens": in_len,
+                        "completion_tokens": 0,
+                        "total_tokens": in_len,
+                    },
+                )
 
             return VLMResponse(
                 status="success",

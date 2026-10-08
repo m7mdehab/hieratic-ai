@@ -293,3 +293,18 @@ Remaining real-world limitations include missing JPEG/TIFF/EXIF support, absent 
 LING-001 PR #51 receives its 2.0 roadmap points following source review and independent hosted testing. EVAL-001-aligned technical normalization may adjust declared Unicode/formatting distinctions but cannot invent linguistic equivalences, displace source readings, or coerce uncertain alternatives to certainty. Exact DATA-004 annotation bytes are pinned in the request by SHA-256; stale fixture hashes fail closed. Output publishing must not overwrite another writer's file even under a concurrent creation race. The final tested implementation uses atomic same-directory hard-link creation and rejects existing targets.
 
 The governance test suite now includes tests/linguistics, PR #53. DATA-008's right to 3 points requires a real source-cleared training/dev/test corpus, not only a synthetic assembly engine. VLM-001 requires actual scientific VLM runs, verified demonstrations and pinned correct scoring, not only mock tests. Canonical capability 30.5→32.5, P6 interpretation 2/10; model training/validated experiments remain 0.
+
+
+## ADR-0022 — A delivered execution prompt is authorization to start, without redundant approval gates
+
+**Status:** Accepted  
+**Date:** 2026-10-08  
+**Authority:** Mohammed's explicit instruction on 2026-10-08; supersedes the approval/waiting clauses of ADR-0010 and the earlier parallel-wave protocol.
+
+Once Mohammed sends a concrete continuation/task prompt to Luna (Codex), the selected Anti-Gravity agent (Gemini/Sonnet), or any future execution agent, **receipt of that prompt is the authorization to begin the bounded assigned task immediately**. Agents must not request a second "may I start?" permission, wait for a later wave sign-off, or return a planning-only response when the task is executable.
+
+The overseer publishes a dependency-safe wave assignment and copy-ready dispatch prompts, and may begin its own independent safe work without an artificial repeated approval checkpoint. Mohammed retains final authority to change or stop work. Sending a prompt does not waive the governance contract or authorize scope creep.
+
+**Separate explicit authorization is still required** for paid inference or nontrivial third-party spend, restricted data access/rights changes, revealing secrets, irreversible destructive operations, scientific release/unblinding, or any action explicitly held behind an external/security/legal gate. An ordinary task prompt does not implicitly approve those actions. Execute all safe, independent work and record blockers precisely.
+
+PR acceptance, capability points, protected state transitions, and promotion of claims remain exclusively overseer-reviewed. This decision alters dispatch latency, not integrity or review standards.

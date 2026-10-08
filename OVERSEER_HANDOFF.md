@@ -1,3 +1,12 @@
+## 2026-10-08 — W3 independent-review reconciliation and dispatch authority
+
+- The current canonical verified goal is **32.5/100** (remaining 67.5), research coverage **14%**, P6 **2/10**, validated real experiments **0**, trained models **0**. LING-001 +2 is accepted/merged through PRs #51/#53/#54. Agent evidence packages claiming 30.5 are prior to the accepted merger.
+- DATA-008 PR #49 remains open at `e9a4bdb8038a43a2f9aa819e8e21d8109ca12827`: independent overseer review requests a concurrency-safe immutable release publish, mandatory independent CI, refreshed state/base, a complete task brief, and retention of the truthful blocked production-corpus assessment; **0/3 points**. No real independently rights-cleared, expert-reviewed corpus exists.
+- VLM-001 PR #52 remains open at `fa7f469b31dd4159cd6d15c17d0138ae475b2963`: earlier reviewer comment documents fabricated demo evidence/hashes, stubbed real model adapter, unofficial scorer claims and incorrect statistical grouping; **0/2 points**. Green CI validates only synthetic harness checks, not a real VLM baseline.
+- EVAL-003 preflight/official scorer infrastructure is merged; task still active/unawarded until actually authorized provider runs and independently audited results. No new paid or restricted inference is authorized.
+- **Dispatch policy ADR-0022 (superseding previous wave approval hold):** Mohammed's act of sending a concrete task prompt authorizes that bounded agent task to start immediately, without a second approval. The overseer can concurrently perform safe independent work. Paid spending, rights access, sealed unblinding and protected decisions remain separately gated. See `docs/governance/PARALLEL_WAVE_PROTOCOL.md`.
+- Immediate follow-up: send targeted remediation prompts to Luna (DATA-008) and the active Anti-Gravity model (VLM-001); re-review amended exact-head PRs and CI; no premature acceptance or credit. LING-002 is dependency-ready for a *separate* scope-controlled task with authentic scholarly support, not automatically validated.
+
 ## W3 approved — overseer EVAL-003 preflight landed (2026-10-08)
 
 **Authority:** User explicitly approved W3. Active scientific lead task **EVAL-003** continues. Luna's separate pending W3 tasks DATA-008 (+3), LING-001 (+2), and Anti-Gravity's VLM-001 (+2) remain in canonical **ready**, not active, until external agent execution is observed. Scope preregistration merged PR #46. Agents use the copy-ready W3 prompts from the coordinating conversation; do not falsely claim direct agent launch.

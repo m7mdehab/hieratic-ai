@@ -1,7 +1,7 @@
 schema_version: "1.0.0"
 normalization_id: synthetic-transliteration-example
 annotation_id: SYNTH-ANNOTATION-AMBIGUOUS
-annotation_sha256: a69b3596da252176471237f44c4f19e30fb05102f9efb66ca1c2a825574fe77d
+annotation_sha256: cdc3312277c850236a07379ef9b014a5684c90cc7519a237a532d5d5c5c1469a
 profile_id: translit_compare_v1
 profile_version: "1.0.0"
 items:

@@ -315,8 +315,8 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
                        c["observed_morphology_alternatives"]
                    for c in result["candidates"]):
                 counts["published_morphology_bundle_in_candidates"] += 1
-    if len(per_text) != 311:
-        raise SourceError("Source-held-out count changed")
+    if len(per_text) != 309:
+        raise SourceError("Source-held-out count changed (two original texts have no scoreable lemma)")
     def ratio(num: str, denom: str) -> float | None:
         n = counts[denom]
         return round(counts[num] / n, 6) if n else None
@@ -329,6 +329,7 @@ def evaluate(bundle: dict[str, Any]) -> dict[str, Any]:
         "source_aed_lemma_count": len(bundle["lemmas"]),
         "source_aes_sentence_count": 445,
         "source_text_groups": len(bundle["texts"]),
+        "source_text_groups_with_scoreable_lemma": len(per_text),
         "metrics": dict(sorted(counts.items())),
         "ratios": {
             "lemma_candidate_coverage": ratio(

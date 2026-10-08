@@ -1,0 +1,580 @@
+{
+  "as_of": "2026-10-08",
+  "assessment_id": "readiness-cc2079e965e0e670c2411c6ca5b4c6fa6b91beddb3dbcd2e44ca6c7495182234",
+  "benchmark_candidates": [
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-1896",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-1971",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-1966",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-2021",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-NECROPOLIS-5",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 18 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "TPOP-1880",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 18,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561345",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561392",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561361",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561391",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561407",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561409",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561410",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561413",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    },
+    {
+      "admission_status": "blocked",
+      "blockers": [
+        "R-017 covers pinned public metadata only; no direct string match does not establish independence",
+        "R-017 identifies 12 nearby benchmark witnesses in this institutional collection",
+        "all-source benchmark accession/edition/near-duplicate quarantine",
+        "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs",
+        "candidate roster is metadata-only and does not grant use or acquisition permission",
+        "diplomatic/transliteration/editorial-text rights are not verified",
+        "exact institutional image bytes and original hash have not been verified",
+        "independent expert line/sign/transliteration gold and uncertainty",
+        "independent expert-reviewed line/sign gold is unavailable",
+        "independent rights and intended use for each actual image and editorial text/annotation",
+        "institutional alias, joined-fragment, edition, image-hash and perceptual-duplicate reviews remain pending",
+        "leakage-resistant nonempty real train/dev/test partitions",
+        "object, manuscript, fragment, side and exposure lineage is incomplete"
+      ],
+      "candidate_id": "MET-561621",
+      "exact_public_source_metadata_match_count": 0,
+      "image_equivalence_status": "NOT_TESTED",
+      "nearby_collection_witness_count": 12,
+      "overlap_state": "potential_overlap",
+      "rights_status": "NOT_CLEARED",
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING"
+    }
+  ],
+  "blockers": [
+    "15 R-016 discovery candidates remain blocked",
+    "no real items passed corpus admission; the accepted example is synthetic infrastructure evidence only",
+    "no signing-key metadata is configured; repository metadata cannot establish an external trust root",
+    "production authorization is hard-disabled pending overseer-governed, independently protected trust-root and reviewer/document verification onboarding"
+  ],
+  "cohort": {
+    "partition_document_group_counts": {
+      "dev": 0,
+      "test": 0,
+      "train": 0
+    },
+    "real_items": 0,
+    "synthetic_items": 1,
+    "unique_manuscript_groups": 0,
+    "unique_source_objects": 0
+  },
+  "dimensions": {
+    "ambiguity": {
+      "items_with_uncertain_gold": 0
+    },
+    "annotation_granularity": {
+      "line_level_items": 0,
+      "sign_level_items": 0
+    },
+    "benchmark_source_metadata_screen": {
+      "excluded_sealed_files_count": 2,
+      "gold_or_images_copied": false,
+      "public_metadata_records": 266,
+      "records_admitted_for_training": 0,
+      "source_family_counts": {
+        "aku": 150,
+        "cbl": 16,
+        "met": 37,
+        "wm": 61,
+        "ypm": 2
+      },
+      "unique_public_source_ids": 266,
+      "upstream_revision": "alymoursy/hieraticbench@d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+    },
+    "cross_partition_source_or_group_overlap": {
+      "items": 0,
+      "validation_errors": []
+    },
+    "disagreement": {
+      "review_cases_with_disagreement": 0
+    },
+    "genres": {},
+    "incomplete_rights": {
+      "items": 0
+    },
+    "missing_or_illegible_gold": {
+      "items": 0,
+      "observed_statuses": []
+    },
+    "missing_provenance": {
+      "items": 0
+    },
+    "period": {},
+    "reviewer_coverage": {
+      "items": 0,
+      "reviewed_items": 0,
+      "reviewer_identity_visibility": "redacted_from_public_release",
+      "unique_reviewers": null
+    },
+    "rights_readiness_inventory": {
+      "assets_downloaded": false,
+      "global_missing_evidence": [
+        "real completed DATA-002 acquisitions with original hashes",
+        "matching DATA-003 artifacts for each admitted page",
+        "item-level annotation and mapping rights, with training and redistribution permissions",
+        "DATA-004 annotations and DATA-005 mappings with auditable scholarly provenance",
+        "DATA-006 reviewed, unambiguous alignment coverage and DATA-007 expert review/adjudication",
+        "EVAL-004 train/dev/test manifest whose source-object, document, page, image hashes, normalized hashes and reviewed near-duplicate identities do not leak across partitions",
+        "independent review of corpus adequacy, subgroup coverage, terms, attribution and final release"
+      ],
+      "production_corpus_exists": false,
+      "production_corpus_status": "blocked_no_real_items_admitted",
+      "rights_granted": false
+    },
+    "source_registry_rights": [
+      {
+        "benchmark_quarantine": true,
+        "development_use": "prohibited",
+        "name": "HieraticBench",
+        "redistribution_use": "conditional",
+        "rights_class": "EVALUATION-ONLY",
+        "rights_evidence_urls": [
+          "https://github.com/alymoursy/hieraticbench"
+        ],
+        "source_id": "SRC-HIERATICBENCH",
+        "training_use": "prohibited"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "conditional",
+        "name": "Diagnostic Deir el-Medina Dataset (DDD)",
+        "redistribution_use": "conditional",
+        "rights_class": "NONCOMMERCIAL",
+        "rights_evidence_urls": [
+          "https://zenodo.org/records/20553713"
+        ],
+        "source_id": "SRC-DDD",
+        "training_use": "conditional"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "not_approved",
+        "name": "Tabin / PaPYrus sign corpus",
+        "redistribution_use": "not_approved",
+        "rights_class": "UNKNOWN",
+        "rights_evidence_urls": [
+          "https://github.com/jtabin/PaPYrus",
+          "https://openscience.ub.uni-mainz.de/items/7aef8525-734c-4ab5-a5c3-4fbf312e1397"
+        ],
+        "source_id": "SRC-PAPYRUS",
+        "training_use": "not_approved"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "not_approved",
+        "name": "Isut annotated Hieratic texts",
+        "redistribution_use": "not_approved",
+        "rights_class": "UNKNOWN",
+        "rights_evidence_urls": [
+          "https://isut.uliege.be/admin/about",
+          "https://github.com/nederhof/isut"
+        ],
+        "source_id": "SRC-ISUT",
+        "training_use": "not_approved"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "not_approved",
+        "name": "HieraticAI Westcar annotations and model",
+        "redistribution_use": "not_approved",
+        "rights_class": "UNKNOWN",
+        "rights_evidence_urls": [
+          "https://github.com/MargotBelot/HieraticAI"
+        ],
+        "source_id": "SRC-HIERATICAI",
+        "training_use": "not_approved"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "conditional",
+        "name": "Hieratische Paläographie Database (HPDB) datasets",
+        "redistribution_use": "conditional",
+        "rights_class": "OPEN-BY",
+        "rights_evidence_urls": [
+          "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+        ],
+        "source_id": "SRC-HPDB",
+        "training_use": "conditional"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "conditional",
+        "name": "AKU-PAL",
+        "redistribution_use": "conditional",
+        "rights_class": "PER-ITEM",
+        "rights_evidence_urls": [
+          "https://aku-pal.uni-mainz.de/faq"
+        ],
+        "source_id": "SRC-AKU-PAL",
+        "training_use": "conditional"
+      },
+      {
+        "benchmark_quarantine": false,
+        "development_use": "prohibited",
+        "name": "Thesaurus Linguae Aegyptiae (TLA) live website",
+        "redistribution_use": "conditional",
+        "rights_class": "RESTRICTED",
+        "rights_evidence_urls": [
+          "https://thesaurus-linguae-aegyptiae.de/info/licenses"
+        ],
+        "source_id": "SRC-TLA",
+        "training_use": "prohibited"
+      }
+    ],
+    "unresolved_overlap": {
+      "items": 0
+    },
+    "writing_media": {}
+  },
+  "evidence_admission": "BLOCKED",
+  "schema_version": "1.0.0",
+  "scientific_corpus_adequacy": "INDEPENDENT_REVIEW_REQUIRED",
+  "software_integrity": "PASS",
+  "source_references": [
+    "data/sources/registry.yaml",
+    "data/releases/rights-readiness.yaml",
+    "docs/research/R017_PUBLIC_BENCHMARK_LINEAGE_AUDIT.md",
+    "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json",
+    "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl",
+    "docs\\research\\R016_PRELIMINARY_CANDIDATE_ROSTER.yaml",
+    "eval\\benchmarks\\hieraticbench\\manifest.yaml"
+  ],
+  "thresholds_invented": false
+}

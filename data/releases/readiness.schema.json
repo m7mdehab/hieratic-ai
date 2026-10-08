@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/data/releases/readiness.schema.json",
+  "title": "DATA-008 cohort and evidence readiness assessment",
+  "type": "object",
+  "required": ["schema_version", "assessment_id", "as_of", "software_integrity", "evidence_admission", "scientific_corpus_adequacy", "cohort", "dimensions", "benchmark_candidates", "blockers", "thresholds_invented"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"}, "assessment_id": {"type": "string"}, "as_of": {"type": "string", "format": "date"},
+    "software_integrity": {"enum": ["PASS", "FAIL"]}, "evidence_admission": {"enum": ["PASS", "BLOCKED"]}, "scientific_corpus_adequacy": {"enum": ["INDEPENDENT_REVIEW_REQUIRED", "REVIEWED_ADEQUATE", "REVIEWED_INADEQUATE"]},
+    "cohort": {"type": "object", "required": ["real_items", "synthetic_items", "unique_manuscript_groups", "unique_source_objects", "partition_document_group_counts"], "properties": {"real_items": {"type": "integer", "minimum": 0}, "synthetic_items": {"type": "integer", "minimum": 0}, "unique_manuscript_groups": {"type": "integer", "minimum": 0}, "unique_source_objects": {"type": "integer", "minimum": 0}, "partition_document_group_counts": {"type": "object", "properties": {"train": {"type": "integer", "minimum": 0}, "dev": {"type": "integer", "minimum": 0}, "test": {"type": "integer", "minimum": 0}}, "additionalProperties": false}}, "additionalProperties": false},
+    "dimensions": {"type": "object", "required": ["period", "writing_media", "genres", "annotation_granularity", "reviewer_coverage", "ambiguity", "disagreement", "missing_or_illegible_gold", "missing_provenance", "incomplete_rights", "unresolved_overlap"], "additionalProperties": {"type": ["object", "array", "integer", "number", "string", "null"]}},
+    "benchmark_candidates": {"type": "array", "items": {"type": "object", "required": ["candidate_id", "overlap_state", "admission_status", "exact_public_source_metadata_match_count", "nearby_collection_witness_count", "source_lineage_status", "rights_status", "image_equivalence_status", "blockers"], "properties": {"candidate_id": {"type": "string"}, "overlap_state": {"enum": ["confirmed_overlap", "potential_overlap", "not_yet_reviewed", "independently_cleared"]}, "admission_status": {"enum": ["blocked", "eligible_for_independent_review"]}, "exact_public_source_metadata_match_count": {"type": "integer", "minimum": 0}, "nearby_collection_witness_count": {"type": "integer", "minimum": 0}, "source_lineage_status": {"type": "string"}, "rights_status": {"type": "string"}, "image_equivalence_status": {"type": "string"}, "blockers": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": false}},
+    "blockers": {"type": "array", "items": {"type": "string"}}, "thresholds_invented": {"const": false}, "source_references": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

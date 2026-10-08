@@ -2,7 +2,7 @@
 
 - **Task ID:** DATA-008
 - **Weight:** 3.0 capability points, awarded only by independent overseer acceptance
-- **Branch:** `task/DATA-008-ml-ready-corpus`
+- **Branch:** `task/DATA-008-rights-evidence-gates`
 - **Depends on:** DATA-003, DATA-005, DATA-006, DATA-007, and EVAL-004 — validated infrastructure contracts
 - **Write scope:** `tasks/DATA-008.md`, `data/releases/**`, `schemas/dataset_release.schema.json`, `tools/release_corpus.py`, `tests/data/test_corpus_release.py`, and `docs/data/CORPUS_V1_RELEASE.md`
 - **Canonical status/progress:** maintained only in `TASKS.yaml` and `PROJECT_STATE.yaml` by the overseer
@@ -32,12 +32,20 @@ The release tool consumes those contracts. It does not download assets, grant ri
 ## Required deliverables
 
 - Versioned input-bundle and output-manifest schemas.
+- Versioned, strict schemas for signed item authorization/provenance evidence, trust-anchor administration, and readiness reports.
 - Deterministic CLI validation and release construction with stable dataset version IDs, input hashes, lineage, partition summaries, exclusions, and audit evidence.
 - Five-file immutable publication contract: `release-manifest.json`, `export.jsonl`, `dataset-card.md`, `rejection-report.json`, and `audit-trail.json`.
 - Fail-closed checks for source/object identity, rights and attribution for images/annotations/mappings, item permissions and intended use, benchmark quarantine/overlap, hashes, score eligibility, and source-object/document/page/image/near-duplicate leakage across partitions.
 - Safe input-size and output-size limits, bundle-relative path containment, symlink rejection, and atomic no-clobber publication. Concurrent publishers must not replace each other's outputs; a final destination must be absent before a complete staged release becomes visible.
 - Synthetic positive, negative, mutation, integration, concurrency, and reproducibility tests. Fixtures must be repository-authored and contain no restricted images or benchmark answers.
 - A metadata-only rights-readiness inventory and blocked-production assessment that never imply permission.
+- Versioned authorization-envelope structure for item-scoped claims, declared hashes, role assertions, and lineage. These fields remain unverified inputs: a signature proves control of a key only, and repository trust-anchor YAML is not a separately protected authority root.
+- Production authorization is hard-disabled in code until overseer-governed onboarding supplies an independently protected trust-root, authenticated institutional/reviewer identities and roles, independently verified permission-document bytes, and substantive rights determinations. No repository field, self-signed receipt, or environment setting can enable production.
+- Public release records include only redacted authorization/provenance digests and aggregate review outcomes. Permission-document URIs/content, receipt signatures, private reviewer identities, rationales, and reviewer-level evidence are excluded.
+- Revocation, supersession, expiry, signer scope, reviewer independence, source-registry drift, rights-component coverage, and benchmark-overlap review are fail-closed admission conditions.
+- A deterministic readiness report that separates software integrity, evidence admission, and independent scientific adequacy, and screens the R-016 metadata-only candidate roster without promoting a candidate to cleared status.
+- Candidate screening consumes the R-017 266-record public-metadata census and its 15-entry R-016 crosswalk only when pinned to the same benchmark revision; it reports literal matches, nearby institution-family witnesses, unresolved lineage/image equivalence and rights, while keeping every candidate blocked.
+- A byte-for-byte audit command for published output and a production-admission runbook. These establish release-engine behavior only; they do not assert that a real corpus is available.
 
 ## Acceptance criteria
 
@@ -51,6 +59,11 @@ The release tool consumes those contracts. It does not download assets, grant ri
 - [ ] `synthetic_test_release` cannot be relabeled as `corpus_v1_release`.
 - [ ] Full governance, data, linguistic, evaluation, and state/source-registry validation pass locally and required hosted CI passes on the exact reviewed commit.
 - [ ] No third-party raw assets, benchmark answers, canonical progress/status changes, or self-awarded points are added.
+- [ ] Production authorization has a trust root independently protected from the task branch, plus independently authenticated institutions, reviewer identities and roles. **Pending external governance onboarding; production is hard-disabled.**
+- [ ] Permission-document bytes are independently verified against the submitted reference and declared hash, and a qualified authority makes a substantive rights determination. **Pending; references and declared hashes remain explicitly unverified.**
+- [ ] Signed receipts bind source-registry state, asset hashes, use terms and lineage. **Structural contract only; self-signatures are not authority.**
+- [ ] A readiness assessment reports the 15 R-016 candidates individually and preserves unknown/potential benchmark-overlap states until qualified review examines object/accession, sides, fragments, editions, scribes and original/derived image identity.
+- [ ] All three readiness dimensions are reported separately: software integrity, admissible evidence, and expert/overseer judgment of scientific adequacy. No unsupported minimum sample size or adequacy claim is introduced.
 
 ### Real corpus evidence required before claiming DATA-008 complete or awarding 3.0 points
 
@@ -61,6 +74,10 @@ The release tool consumes those contracts. It does not download assets, grant ri
 - [ ] Independent overseer review confirms dataset adequacy, subgroup coverage, legal/provenance evidence, export terms, and that the release is actually suitable for the claimed ML use.
 
 No minimum scientifically adequate sample size is specified by this task. The overseer must assess adequacy separately; a non-empty or structurally valid synthetic split is insufficient.
+
+## W5 implementation boundary
+
+This work strengthens synthetic release infrastructure and records a fail-closed authority boundary. Production authorization is hard-disabled even if a contributor adds a syntactically valid key, labels the trust store externally verified, and creates a matching self-signed receipt. Such a receipt establishes only that the signer controls that key. Reviewer names/roles in signed content are claims, not independent proof. Evidence URIs and their declared hashes do not prove the referenced bytes or establish permission. The release engine does not fetch restricted letters or make legal determinations. The readiness report is a snapshot of repository evidence, not a permission determination. DATA-008 remains 0/3 and a genuine `corpus_v1_release` remains pending until independently protected authority onboarding and a real, rights-cleared, expert-reviewed corpus are separately accepted.
 
 ## Scientific, rights, and security limitations
 

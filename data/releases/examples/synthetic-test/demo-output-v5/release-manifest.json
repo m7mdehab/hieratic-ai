@@ -1,0 +1,535 @@
+{
+  "dataset_version_id": "corpus-e50f48891dc5ec42d627e2db89287f88ecb71cd1340058cc99a937700a85e8f3",
+  "excluded_items": [],
+  "generator": "hieratic-corpus-release/1.0.0",
+  "inputs": [
+    {
+      "path": "acquisition.yaml",
+      "sha256": "ddeeeafc53a87bac597e65582dacceb7a57b1d791087e7a5531301ecf357aa47",
+      "size_bytes": 1631
+    },
+    {
+      "path": "alignment.yaml",
+      "sha256": "0da7e9e9fff32a0cee10e291fe33b5991849e44ed47de598152edd9fd1347138",
+      "size_bytes": 890
+    },
+    {
+      "path": "annotation.yaml",
+      "sha256": "a8f61eb7db25fdfbafda79fb487111b2130de57beb05ced8458a533bf76523ca",
+      "size_bytes": 5871
+    },
+    {
+      "path": "artifacts/dataset-manifest.json",
+      "sha256": "b837c9416228c45f04a75ffcf809adcb60a5d889b265447b012e025b255e7198",
+      "size_bytes": 3633
+    },
+    {
+      "path": "mapping.yaml",
+      "sha256": "954fff29cd974a1ae9cbab333d61a838f9f44b3f30071f702e1244b6899327fc",
+      "size_bytes": 668
+    },
+    {
+      "path": "preprocessing.yaml",
+      "sha256": "fbdaaada72c6248c008cf58207cf32dd9aea3852a835490f4e946e3c89feab45",
+      "size_bytes": 823
+    },
+    {
+      "path": "review.yaml",
+      "sha256": "b77d927861e697ead199454fc250b75340c56fe2cc0522f1fd1da55a602bef08",
+      "size_bytes": 2445
+    },
+    {
+      "path": "split-metadata.yaml",
+      "sha256": "c567be8ff11147b296f3389e99d2663540963684ba967be588380ad5cdfcfd99",
+      "size_bytes": 1178
+    },
+    {
+      "path": "split.yaml",
+      "sha256": "b3364e94507a87fa25e6d1338c166f35107bd7a075cdf09a542eb4df6fcb2c20",
+      "size_bytes": 2770
+    }
+  ],
+  "items": [
+    {
+      "alignment_set_id": "synthetic-alignment-v1",
+      "annotation_id": "SYNTH-ANNOTATION-AMBIGUOUS",
+      "annotation_provenance": {
+        "document": {
+          "date_range": {
+            "certainty": "unknown",
+            "end": null,
+            "start": null
+          },
+          "genre_register": null,
+          "geographic_provenance": null,
+          "material_support": "synthetic-support",
+          "metadata": {},
+          "period": "synthetic-period",
+          "scribe_group": null
+        },
+        "provenance": {
+          "asset_refs": [],
+          "collection": null,
+          "institution": null,
+          "rights_provenance_ref": "Synthetic fixture; geometries and readings are fabricated placeholders.",
+          "source_object_id": "SYNTHETIC-OBJECT-002",
+          "source_registry_id": "SRC-HPDB",
+          "source_url": "https://example.invalid/synthetic-object-002"
+        }
+      },
+      "annotation_redistribution_permission": "unknown",
+      "annotation_rights_evidence_ref": "synthetic:fixture-only",
+      "annotation_training_permission": "unknown",
+      "authorization_evidence_summary": null,
+      "benchmark_overlap_state": "not_yet_reviewed",
+      "document_id": "synthetic-doc-2",
+      "fragment_ids": [],
+      "gold_alignment_ids": [],
+      "gold_statuses": [
+        "unknown"
+      ],
+      "institutional_accession": null,
+      "intended_use": "training",
+      "item_id": "release-item-1",
+      "manuscript_group_id": null,
+      "mapping_records": [
+        {
+          "hieroglyphic_correspondence": {
+            "citations": [],
+            "confidence": null,
+            "qualifiers": [],
+            "status": "unresolved",
+            "value": null
+          },
+          "historical_context": [],
+          "identity_id": "SYNTHETIC-OBS-001",
+          "identity_status": "unresolved",
+          "observed_hieratic": {
+            "citations": [],
+            "confidence": null,
+            "qualifiers": [
+              "synthetic placeholder; no sign image or historical claim"
+            ],
+            "status": "unresolved",
+            "value": null
+          },
+          "provenance": [],
+          "transliteration_value": {
+            "citations": [],
+            "confidence": null,
+            "qualifiers": [],
+            "status": "unresolved",
+            "value": null
+          },
+          "variants": []
+        }
+      ],
+      "mapping_redistribution_permission": "unknown",
+      "mapping_relations": [],
+      "mapping_rights_evidence_ref": "synthetic:fixture-only",
+      "mapping_set_id": "synthetic-structure-example-v1",
+      "mapping_training_permission": "unknown",
+      "original_sha256": null,
+      "page_id": "page-2",
+      "partition": "train",
+      "preprocessed_artifact_ref": {
+        "artifact_manifest": "artifacts/dataset-manifest.json",
+        "dataset_version_id": "ds-6061803ddda423e09e4f7498e708ff0c6e5ac67eb2cb8bcbec601917df8f1548",
+        "path": "synthetic-page-1.png",
+        "sha256": "6c075549728dc4137a7bbeb42ea1419a9965d54daeba7964622b70709970bd7b"
+      },
+      "preprocessed_sha256": "6c075549728dc4137a7bbeb42ea1419a9965d54daeba7964622b70709970bd7b",
+      "provenance_graph_summary": null,
+      "redistribution_permission": "conditional",
+      "required_attribution": "Cite the Hieratische Paläographie DB project and preserve attribution and source provenance for image/IIIF derivatives",
+      "review_case_ids": [
+        "synthetic-case-1"
+      ],
+      "review_cases": [
+        {
+          "adjudication_present": false,
+          "annotation_gold_status": "uncertain_with_alternatives",
+          "annotation_layer": "grapheme_sequence",
+          "case_id": "synthetic-case-1",
+          "case_state": "needs_adjudication",
+          "decision_count": 2,
+          "disagreement": true,
+          "issue_flags": [
+            "disputed_reading"
+          ],
+          "target_id": "line-2",
+          "target_type": "line"
+        }
+      ],
+      "review_disagreement_count": 1,
+      "review_set_id": "synthetic-independent-review-v1",
+      "rights_class": "OPEN-BY",
+      "rights_provenance": {
+        "acquisition_record": {
+          "acquisition_mode": "manual_reference",
+          "acquisition_status": "planned",
+          "actual_sha256": null,
+          "benchmark_overlap_review": {
+            "evidence_ref": null,
+            "overlap_check_version": null,
+            "reviewed_at": null,
+            "reviewer_id": null,
+            "status": "not_assessed"
+          },
+          "benchmark_overlap_risk": "unknown",
+          "benchmark_quarantine": false,
+          "canonical_object_url": "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/",
+          "evidence_urls": [
+            "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+          ],
+          "exact_access_url": null,
+          "expected_mime_type": null,
+          "expected_path": "synthetic/no-asset",
+          "expected_sha256": null,
+          "expected_size_bytes": null,
+          "http_etag": null,
+          "http_last_modified": null,
+          "intended_use": "training",
+          "is_synthetic_fixture": true,
+          "item_rights_review": {
+            "approval_status": "not_started",
+            "evidence_ref": null,
+            "item_url": null,
+            "license_identifier": null,
+            "reviewed_at": null,
+            "reviewer_id": null,
+            "rightsholder": null
+          },
+          "provenance_urls": [
+            "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+          ],
+          "redistribution_requested": false,
+          "required_attribution": "Cite the Hieratische Paläographie DB project and preserve attribution and source provenance for image/IIIF derivatives",
+          "retrieval_events": [],
+          "retrieval_timestamp": null,
+          "review_conditions": [],
+          "source_id": "SRC-HPDB",
+          "source_object_id": "SYNTHETIC-OBJECT-002",
+          "source_rights_snapshot": {
+            "rights_class": "OPEN-BY",
+            "use_decision": "conditional"
+          },
+          "status_reason": "Synthetic IDs only; no data acquired",
+          "transformation_status": "not_acquired"
+        },
+        "source_registry_record": {
+          "accessed_at": "2026-10-08",
+          "attribution_requirements": "Cite the Hieratische Paläographie DB project and preserve attribution and source provenance for image/IIIF derivatives",
+          "automated_access_constraints": [
+            "preserve_dataset_attribution",
+            "preserve_image_layer_provenance"
+          ],
+          "benchmark_overlap_risk": "unknown",
+          "benchmark_quarantine": false,
+          "canonical_url": "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/",
+          "commercial_use": "conditional",
+          "development_use": "conditional",
+          "evaluation_use": "conditional",
+          "evidence_urls": [
+            "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+          ],
+          "granularity": "2,065 sign-item records, 937-record concordance table, IIIF curation, and volume manifests",
+          "license_url": "https://creativecommons.org/licenses/by/4.0/",
+          "model_release_review": "required",
+          "name": "Hieratische Paläographie Database (HPDB) datasets",
+          "open_questions": [
+            "Preserve per-image source provenance and attribution when selecting or transforming IIIF-linked material."
+          ],
+          "project_review_markers": [
+            "IMAGE-LAYER-REVIEW",
+            "PROVENANCE-REVIEW"
+          ],
+          "provenance_notes": "The official metadata datasets are CC BY 4.0. Keep image/IIIF source provenance and attribution; this record does not treat the underlying historical facsimiles as newly licensed by HPDB.",
+          "recommended_project_role": "palaeographic_retrieval_and_concordance",
+          "redistribution_use": "conditional",
+          "responsible_party": "Hieratische Paläographie DB Project (University of Tsukuba / The University of Tokyo)",
+          "rights_class": "OPEN-BY",
+          "rights_evidence_urls": [
+            "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+          ],
+          "rights_text_verbatim": "All datasets are published under the Creative Commons Attribution 4.0 International license (CC BY 4.0).",
+          "rightsholder": "Hieratische Paläographie DB Project for its datasets; underlying facsimile/image layers retain their source rights",
+          "source_id": "SRC-HPDB",
+          "source_type": "palaeography_database",
+          "training_use": "conditional",
+          "verified_status": "VERIFIED-PRIMARY"
+        }
+      },
+      "scribe_group": null,
+      "side_ids": [],
+      "source_id": "SRC-HPDB",
+      "source_object_id": "SYNTHETIC-OBJECT-002",
+      "source_rights_evidence_urls": [
+        "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/"
+      ],
+      "split_assignment": {
+        "atomic_group_id": "944647c56ddf30d0",
+        "benchmark_overlap_review": {
+          "evidence_ref": null,
+          "overlap_check_version": null,
+          "reviewed_at": null,
+          "reviewer_id": null,
+          "roster_version": null,
+          "status": "not_assessed"
+        },
+        "benchmark_quarantine": false,
+        "document_id": "synthetic-doc-2",
+        "exclusion_reason": null,
+        "genre_register": "administrative",
+        "image_sha256": null,
+        "institution": "Synthetic-Archive-A",
+        "item_id": "release-item-1",
+        "material_support": "papyrus",
+        "normalized_sha256": null,
+        "page_id": "page-2",
+        "partition": "train",
+        "perceptual_hash": null,
+        "period": "early",
+        "scribe_group": "scribe-a",
+        "source_id": "SRC-HPDB",
+        "source_object_id": "SYNTHETIC-OBJECT-002"
+      },
+      "synthetic": true,
+      "target_annotations": [
+        {
+          "alignment": {
+            "alignment_id": "alignment-line-1",
+            "confidence": null,
+            "depends_on_alignment_ids": [],
+            "hypotheses": [],
+            "page_id": "page-2",
+            "provenance_ref": "synthetic:fixture",
+            "region_ids": [
+              "region-2-line-block"
+            ],
+            "relation": "one_to_one",
+            "review_state": "unreviewed",
+            "reviewer_id": null,
+            "status": "unresolved",
+            "targets": [
+              {
+                "target_id": "line-2",
+                "target_type": "line"
+              }
+            ]
+          },
+          "targets": [
+            {
+              "annotation": {
+                "geometry": {
+                  "kind": "polyline",
+                  "vertices": [
+                    [
+                      0.8,
+                      0.25
+                    ],
+                    [
+                      0.15,
+                      0.25
+                    ]
+                  ]
+                },
+                "grapheme_sequence": {
+                  "explanation": "Synthetic uncertain span; both candidate sequences remain acceptable.",
+                  "gold_status": "uncertain_with_alternatives",
+                  "selected_value_id": null,
+                  "values": [
+                    {
+                      "confidence": 0.55,
+                      "equivalent_to_selected": false,
+                      "evidence_ref": "visual-review-a",
+                      "value": [
+                        "SYNTH-GRAPHEME-A"
+                      ],
+                      "value_id": "grapheme-reading-a"
+                    },
+                    {
+                      "confidence": 0.45,
+                      "equivalent_to_selected": false,
+                      "evidence_ref": "visual-review-b",
+                      "value": [
+                        "SYNTH-GRAPHEME-B"
+                      ],
+                      "value_id": "grapheme-reading-b"
+                    }
+                  ]
+                },
+                "hieroglyphic_rendering": {
+                  "explanation": null,
+                  "gold_status": "missing_annotation",
+                  "selected_value_id": null,
+                  "values": []
+                },
+                "lemma_analysis": null,
+                "line_id": "line-2",
+                "morphology": null,
+                "normalized_representation": {
+                  "layer": {
+                    "explanation": null,
+                    "gold_status": "missing_annotation",
+                    "selected_value_id": null,
+                    "values": []
+                  },
+                  "tokenization_profile": null,
+                  "tokens": []
+                },
+                "page_id": "page-2",
+                "parent_line_id": null,
+                "reading_direction": "right_to_left",
+                "reading_order": 0,
+                "region_id": "region-2-line-block",
+                "sequence_id": "sequence-2",
+                "syntax": null,
+                "translations": [
+                  {
+                    "language": "en",
+                    "references": {
+                      "explanation": "No translation supplied in this synthetic fixture.",
+                      "gold_status": "adjudication_pending",
+                      "selected_value_id": null,
+                      "values": []
+                    }
+                  }
+                ],
+                "transliteration": {
+                  "explanation": "Placeholder alternatives only; not an Egyptological reading.",
+                  "gold_status": "uncertain_with_alternatives",
+                  "selected_value_id": null,
+                  "values": [
+                    {
+                      "confidence": null,
+                      "equivalent_to_selected": false,
+                      "evidence_ref": null,
+                      "value": "SYNTHETIC-READING-A",
+                      "value_id": "transliteration-a"
+                    },
+                    {
+                      "confidence": null,
+                      "equivalent_to_selected": false,
+                      "evidence_ref": null,
+                      "value": "SYNTHETIC-READING-B",
+                      "value_id": "transliteration-b"
+                    }
+                  ]
+                }
+              },
+              "target_id": "line-2",
+              "target_type": "line"
+            }
+          ]
+        },
+        {
+          "alignment": {
+            "alignment_id": "alignment-region-2",
+            "confidence": null,
+            "depends_on_alignment_ids": [],
+            "hypotheses": [],
+            "page_id": "page-2",
+            "provenance_ref": "synthetic:fixture",
+            "region_ids": [
+              "region-2"
+            ],
+            "relation": "unresolved",
+            "review_state": "unreviewed",
+            "reviewer_id": null,
+            "status": "unresolved",
+            "targets": []
+          },
+          "targets": []
+        }
+      ],
+      "training_permission": "conditional"
+    }
+  ],
+  "partition_counts": {
+    "dev": 0,
+    "excluded": 0,
+    "test": 0,
+    "train": 1
+  },
+  "release_id": "synthetic-release-test",
+  "release_kind": "synthetic_test_release",
+  "schema_version": "1.0.0",
+  "split_profile_id": "PROFILE-DOC-HOLDOUT",
+  "split_statistics": {
+    "dimension_counts": {
+      "genre_register": {
+        "administrative": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      },
+      "institution": {
+        "Synthetic-Archive-A": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      },
+      "material_support": {
+        "papyrus": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      },
+      "period": {
+        "early": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      },
+      "scribe_group": {
+        "scribe-a": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      },
+      "source_id": {
+        "SRC-HPDB": {
+          "dev": 0,
+          "excluded": 0,
+          "test": 0,
+          "train": 1
+        }
+      }
+    },
+    "document_counts": {
+      "dev": 0,
+      "excluded": 0,
+      "test": 0,
+      "train": 1
+    },
+    "excluded_or_quarantined_count": 0,
+    "item_counts": {
+      "dev": 0,
+      "excluded": 0,
+      "test": 0,
+      "train": 1
+    },
+    "known_scribe_counts": {
+      "dev": 0,
+      "excluded": 0,
+      "test": 0,
+      "train": 1
+    },
+    "warning_count": 1
+  },
+  "split_version": "1.1.0",
+  "split_warnings": [
+    "low_sample_stratum ('SRC-HPDB',): 1 atomic groups for 3 requested partitions; one or more partitions may be empty"
+  ]
+}

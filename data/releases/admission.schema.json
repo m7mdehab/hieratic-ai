@@ -1,0 +1,882 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/data/releases/admission.schema.json",
+  "title": "DATA-008 item authorization and provenance evidence",
+  "type": "object",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evidenceRef": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "kind",
+        "uri",
+        "sha256",
+        "verification_status",
+        "verified_content_sha256",
+        "verification_receipt_ref",
+        "substantive_rights_determination",
+        "submitted_by",
+        "submitted_at",
+        "component"
+      ],
+      "properties": {
+        "evidence_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "license_terms",
+            "permission_letter",
+            "institutional_policy",
+            "catalogue_record",
+            "access_receipt",
+            "annotation_agreement",
+            "mapping_agreement",
+            "expert_agreement",
+            "benchmark_check",
+            "image_identity",
+            "other"
+          ]
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash",
+          "description": "Submitter-declared hash only. This contract does not fetch or independently verify permission-document bytes."
+        },
+        "verification_status": {
+          "const": "reference_only_unverified",
+          "description": "Production verification is unavailable until an overseer-governed external authority onboarding contract exists."
+        },
+        "verified_content_sha256": {
+          "const": null,
+          "description": "No permission-document bytes have been independently verified."
+        },
+        "verification_receipt_ref": {
+          "const": null
+        },
+        "substantive_rights_determination": {
+          "const": "not_assessed",
+          "description": "A reference or declared hash is not a legal determination."
+        },
+        "submitted_by": {
+          "$ref": "#/$defs/id"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "component": {
+          "enum": [
+            "original_image",
+            "derived_image",
+            "diplomatic_transcription",
+            "transliteration",
+            "hieroglyphic_rendering",
+            "translation",
+            "sign_mapping",
+            "expert_gold",
+            "model_training",
+            "model_adaptation",
+            "dataset_redistribution",
+            "checkpoint_distribution",
+            "evaluation_only",
+            "all"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "assertion": {
+      "type": "object",
+      "required": [
+        "assertion_id",
+        "claimant_id",
+        "claimed_at",
+        "subject_id",
+        "claim",
+        "evidence_refs"
+      ],
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/id"
+        },
+        "claimant_id": {
+          "$ref": "#/$defs/id"
+        },
+        "claimed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "subject_id": {
+          "$ref": "#/$defs/id"
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "licenseTerm": {
+      "type": "object",
+      "required": [
+        "term_id",
+        "component",
+        "use",
+        "decision",
+        "license_identifier",
+        "terms_evidence_ref",
+        "attribution",
+        "conditions",
+        "asset_id",
+        "asset_sha256"
+      ],
+      "properties": {
+        "term_id": {
+          "$ref": "#/$defs/id"
+        },
+        "component": {
+          "enum": [
+            "original_image",
+            "derived_image",
+            "diplomatic_transcription",
+            "transliteration",
+            "hieroglyphic_rendering",
+            "translation",
+            "sign_mapping",
+            "expert_gold",
+            "model_training",
+            "model_adaptation",
+            "dataset_redistribution",
+            "checkpoint_distribution",
+            "evaluation_only"
+          ]
+        },
+        "use": {
+          "enum": [
+            "training",
+            "development",
+            "adaptation",
+            "redistribution",
+            "checkpoint_distribution",
+            "evaluation"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "allowed",
+            "denied",
+            "conditional",
+            "unknown",
+            "unverified",
+            "revoked"
+          ]
+        },
+        "license_identifier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "terms_evidence_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "attribution": {
+          "type": "string"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "asset_id": {
+          "$ref": "#/$defs/id"
+        },
+        "asset_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "review_id",
+        "reviewer_id",
+        "reviewer_role",
+        "reviewed_at",
+        "version",
+        "subject_id",
+        "intended_use",
+        "evidence_refs",
+        "decision",
+        "rationale",
+        "limitations",
+        "supersedes_review_id"
+      ],
+      "properties": {
+        "review_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reviewer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reviewer_role": {
+          "enum": [
+            "rights_holder_representative",
+            "institutional_steward",
+            "legal_reviewer",
+            "egyptologist",
+            "benchmark_auditor",
+            "corpus_overseer"
+          ]
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject_id": {
+          "$ref": "#/$defs/id"
+        },
+        "intended_use": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "training",
+              "development",
+              "adaptation",
+              "redistribution",
+              "checkpoint_distribution",
+              "evaluation"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "decision": {
+          "enum": [
+            "allowed",
+            "denied",
+            "conditional",
+            "unknown",
+            "unverified",
+            "revoked"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supersedes_review_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundAsset": {
+      "type": "object",
+      "required": [
+        "component",
+        "source_registry_id",
+        "source_object_id",
+        "asset_id",
+        "sha256"
+      ],
+      "properties": {
+        "component": {
+          "enum": [
+            "original_image",
+            "derived_image",
+            "diplomatic_transcription",
+            "transliteration",
+            "hieroglyphic_rendering",
+            "translation",
+            "sign_mapping",
+            "expert_gold"
+          ]
+        },
+        "source_registry_id": {
+          "type": "string",
+          "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "source_object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "asset_id": {
+          "$ref": "#/$defs/id"
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "required": [
+        "receipt_id",
+        "key_id",
+        "signed_by",
+        "signed_at",
+        "payload_sha256",
+        "signature_ed25519_base64"
+      ],
+      "properties": {
+        "receipt_id": {
+          "$ref": "#/$defs/id"
+        },
+        "key_id": {
+          "$ref": "#/$defs/id"
+        },
+        "signed_by": {
+          "$ref": "#/$defs/id"
+        },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "signature_ed25519_base64": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenanceGraph": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "graph_id",
+        "item_id",
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "graph_id": {
+          "$ref": "#/$defs/id"
+        },
+        "item_id": {
+          "$ref": "#/$defs/id"
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "node_id",
+              "node_type",
+              "source_registry_id",
+              "source_object_id",
+              "asset_id",
+              "sha256",
+              "creator_id",
+              "created_at",
+              "review_status",
+              "attributes"
+            ],
+            "properties": {
+              "node_id": {
+                "$ref": "#/$defs/id"
+              },
+              "node_type": {
+                "enum": [
+                  "institution",
+                  "collection",
+                  "object",
+                  "manuscript",
+                  "fragment",
+                  "side",
+                  "image_exposure",
+                  "acquisition",
+                  "original_image",
+                  "preprocessing",
+                  "annotation",
+                  "alignment",
+                  "expert_review",
+                  "split",
+                  "release"
+                ]
+              },
+              "source_registry_id": {
+                "type": "string"
+              },
+              "source_object_id": {
+                "$ref": "#/$defs/id"
+              },
+              "asset_id": {
+                "$ref": "#/$defs/id"
+              },
+              "sha256": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/hash"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "creator_id": {
+                "$ref": "#/$defs/id"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "review_status": {
+                "enum": [
+                  "not_reviewed",
+                  "pending",
+                  "reviewed",
+                  "adjudicated",
+                  "synthetic"
+                ]
+              },
+              "attributes": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "from_node_id",
+              "to_node_id",
+              "relation",
+              "transformation_id",
+              "evidence_refs"
+            ],
+            "properties": {
+              "from_node_id": {
+                "$ref": "#/$defs/id"
+              },
+              "to_node_id": {
+                "$ref": "#/$defs/id"
+              },
+              "relation": {
+                "enum": [
+                  "contains",
+                  "identifies",
+                  "depicts",
+                  "acquired_as",
+                  "derived_from",
+                  "annotates",
+                  "aligns",
+                  "reviewed_as",
+                  "assigned_to",
+                  "released_as"
+                ]
+              },
+              "transformation_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/id"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "contributor_assertions",
+    "submitted_evidence",
+    "license_terms",
+    "independent_reviews",
+    "bound_assets",
+    "benchmark_overlap",
+    "decision",
+    "review_history",
+    "receipt"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "evidence_id": {
+      "$ref": "#/$defs/id"
+    },
+    "contributor_assertions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assertion"
+      }
+    },
+    "submitted_evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceRef"
+      }
+    },
+    "license_terms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/licenseTerm"
+      }
+    },
+    "independent_reviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/review"
+      }
+    },
+    "bound_assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/boundAsset"
+      }
+    },
+    "benchmark_overlap": {
+      "type": "object",
+      "required": [
+        "state",
+        "reviewer_id",
+        "reviewed_at",
+        "evidence_refs",
+        "roster_version",
+        "methods",
+        "scope"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "confirmed_overlap",
+            "potential_overlap",
+            "not_yet_reviewed",
+            "independently_cleared"
+          ]
+        },
+        "reviewer_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "roster_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "type": "object",
+          "required": [
+            "object_ids",
+            "accessions",
+            "sides",
+            "fragments",
+            "edition_ids",
+            "scribe_groups",
+            "original_hashes",
+            "derived_hashes",
+            "perceptual_hashes"
+          ],
+          "properties": {
+            "object_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "accessions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sides": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fragments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "edition_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "scribe_groups": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "original_hashes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/hash"
+              }
+            },
+            "derived_hashes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/hash"
+              }
+            },
+            "perceptual_hashes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "status",
+        "source_registry_id",
+        "source_object_id",
+        "intended_uses",
+        "reviewer_id",
+        "reviewed_at",
+        "rationale",
+        "limitations",
+        "expires_at",
+        "supersedes_receipt_id",
+        "institutional_accession",
+        "manuscript_group_id",
+        "fragment_ids",
+        "side_ids",
+        "scribe_group",
+        "source_registry_record_sha256"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "allowed",
+            "denied",
+            "conditional",
+            "unknown",
+            "unverified",
+            "revoked"
+          ]
+        },
+        "source_registry_id": {
+          "type": "string"
+        },
+        "source_object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "intended_uses": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "training",
+              "development",
+              "adaptation",
+              "redistribution",
+              "checkpoint_distribution",
+              "evaluation"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "reviewer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "supersedes_receipt_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "institutional_accession": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manuscript_group_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fragment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "side_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "scribe_group": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_registry_record_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event_id",
+          "event",
+          "at",
+          "actor_id",
+          "reason",
+          "supersedes_event_id"
+        ],
+        "properties": {
+          "event_id": {
+            "$ref": "#/$defs/id"
+          },
+          "event": {
+            "enum": [
+              "submitted",
+              "reviewed",
+              "allowed",
+              "denied",
+              "conditional",
+              "revoked",
+              "expired",
+              "superseded"
+            ]
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor_id": {
+            "$ref": "#/$defs/id"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "supersedes_event_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "receipt": {
+      "$ref": "#/$defs/receipt"
+    },
+    "provenance_graph": {
+      "$ref": "#/$defs/provenanceGraph"
+    }
+  },
+  "additionalProperties": false
+}

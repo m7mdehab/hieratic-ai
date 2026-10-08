@@ -13,6 +13,8 @@ import socket
 import ssl
 import sys
 import tempfile
+import secrets
+import stat
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import urlsplit
@@ -243,30 +245,77 @@ def _validate_metadata_output(output: Path) -> Path:
     if resolved_parent != absolute.parent or not resolved_parent.is_dir():
         raise AcquisitionError("metadata packet output parent must be a real directory")
     if absolute.is_symlink() or (hasattr(absolute, "is_junction") and absolute.is_junction()) or absolute.exists():
-        raise AcquisitionError("refusing to overwrite existing metadata packet")
-    return absolute
+        raise AcquisitionError("refusing to overwrite existing metadata packdef _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
+    """Publish through an anchored directory FD, never through re-resolved parent symlinks.
 
-
-def _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
-    """Atomically publish a complete packet without replacing any existing path."""
-    temp_name: str | None = None
+    The POSIX dirfd + O_NOFOLLOW chain protects against a parent swapped after
+    _validate_metadata_output. On unsupported operating systems fail closed;
+    callers can use the hosted Linux workflow for metadata publication.
+    """
+    if os.name != "posix" or not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise AcquisitionError("MET_SECURE_PUBLICATION_PLATFORM_UNSUPPORTED")
+    root = (ROOT / "data" / "acquisition").resolve(strict=True)
     try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n", dir=output.parent, prefix=".met-packet-", suffix=".tmp", delete=False) as stream:
-            temp_name = stream.name
+        relative = output.absolute().relative_to(root)
+        if not relative.parts or any(x in {"", ".", ".."} for x in relative.parts):
+            raise AcquisitionError("metadata packet output path is invalid")
+    except ValueError as exc:
+        raise AcquisitionError("metadata packet output must remain under data/acquisition") from exc
+
+    dir_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    parent_fd: int | None = None
+    open_fds: list[int] = []
+    staging_name: str | None = None
+    published = False
+    try:
+        parent_fd = os.open(root, dir_flags)
+        open_fds.append(parent_fd)
+        for segment in relative.parts[:-1]:
+            parent_fd = os.open(segment, dir_flags, dir_fd=parent_fd)
+            open_fds.append(parent_fd)
+        original = os.fstat(parent_fd)
+        if not stat.S_ISDIR(original.st_mode):
+            raise AcquisitionError("MET_OUTPUT_PARENT_NOT_DIRECTORY")
+        if output.is_symlink() or output.exists():
+            raise AcquisitionError("refusing to overwrite existing metadata packet")
+        staging_name = f".met-packet-{secrets.token_hex(16)}.tmp"
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+        fd = os.open(staging_name, flags, 0o600, dir_fd=parent_fd)
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
             json.dump(packet, stream, ensure_ascii=False, sort_keys=True, indent=2)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.link(temp_name, output, follow_symlinks=False)
+        os.link(staging_name, relative.name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd, follow_symlinks=False)
+        published = True
+        # A rename/replacement of the original parent must not report success.
+        try:
+            current = os.stat(output.parent, follow_symlinks=False)
+            if (current.st_dev, current.st_ino) != (original.st_dev, original.st_ino) or not stat.S_ISDIR(current.st_mode):
+                raise AcquisitionError("MET_OUTPUT_PARENT_CHANGED_DURING_PUBLICATION")
+        except OSError as exc:
+            raise AcquisitionError("MET_OUTPUT_PARENT_CHANGED_DURING_PUBLICATION") from exc
+        os.fsync(parent_fd)
     except FileExistsError as exc:
         raise AcquisitionError(f"refusing to overwrite metadata packet: {output}") from exc
+    except AcquisitionError:
+        if published and parent_fd is not None:
+            os.unlink(relative.name, dir_fd=parent_fd)
+        raise
     except OSError as exc:
-        raise AcquisitionError(f"cannot atomically publish metadata packet: {type(exc).__name__}") from exc
+        if published and parent_fd is not None:
+            os.unlink(relative.name, dir_fd=parent_fd)
+        raise AcquisitionError(f"cannot securely publish metadata packet: {type(exc).__name__}") from exc
     finally:
-        if temp_name:
+        if staging_name is not None and parent_fd is not None:
             try:
-                os.unlink(temp_name)
+                os.unlink(staging_name, dir_fd=parent_fd)
             except FileNotFoundError:
+                pass
+        for opened_fd in reversed(open_fds):
+            os.close(opened_fd)
+
+ror:
                 pass
 
 

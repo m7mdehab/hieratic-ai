@@ -12,6 +12,12 @@ Read:
 
 If the task brief conflicts with a canonical accepted decision, stop and report the conflict.
 
+## Dispatch is execution authorization
+
+When Mohammed sends or forwards a concrete task/continuation prompt, **start its authorized work immediately**. Do not ask for a second approval, repeat the wave plan as a substitute for implementation, or claim that work will begin later. Complete all dependency-safe, within-scope work and return evidence. If a missing external capability prevents one portion, execute independent portions and report the exact remaining blocker.
+
+The prompt does **not** authorize paid model inference, nontrivial spending, use of restricted/uncleared third-party data, secret disclosure, irreversible destructive activity, or release/unblinding of sealed material. Those operations remain separately gated. Never self-approve your own PR, capability points, task status or scientific claims.
+
 ## Your role
 
 Execution agents are implementation workers. They are expected to execute a bounded specification well, not redesign the program.

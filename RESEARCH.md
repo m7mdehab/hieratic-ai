@@ -201,3 +201,15 @@ W3's EVAL-003 remains active and earns zero until real inference, frozen run/cos
 EVAL-003 PR #50 integrated actual *pinned upstream official TypeScript scorer* into redacted private-capture replay. Native scorer parity exercised on 266 synthetic items, with failure and abstention accounting, but no model output was generated. EVAL-003 remains active, unearned +0/1.5.
 
 Current project milestone 32.5/100. No licensed production manuscript dataset, real VLM run, actual expert annotation or training experiments have been verified. Research coverage remains 14%.
+
+
+### R-015 — Institutional CC0 Hieratic image-source leads (source discovery only)
+
+**2026-10-08. Status: VERIFIED-PRIMARY institutional access/rights statements; NO ITEM ADMISSION.**
+
+An independent overseer audit identified a new potential path toward a rights-compatible image *source* beyond HPDB/AKU-PAL/DDD: Museo Egizio's Turin Papyrus Online Platform (TPOP) explicitly describes **CC0 images** and about **80 public Hieratic papyri**, with over **12,050 registered Hieratic papyrus entries**; Met Open Access also publishes CC0 public-domain images and identifiable Hieratic ostraca. TPOP partner PDFs and editor-authored transcriptions/translations have **different or insufficiently demonstrated** reuse rights. Met's image availability and `isPublicDomain` status require per-object verification.
+
+**Core limit:** these are rights-policy and object-discovery leads, not a licensed paired corpus. Image-content hashes, registered access/automated extraction terms, expert text/annotation rights, benchmark source/near-duplicate disjointness, and independent train/dev/test gold remain unresolved. HieraticBench already contains Met and Wikimedia source items; neither may be mined for examples. No acquisition, rights approval, experiment, data release, capability points or research-coverage percentage change is asserted.
+
+Detailed primary URLs, sample object IDs, explicit rights boundaries, proposed admission checks and an unsent contact inquiry:
+`docs/research/OPEN_ACCESS_HIERATIC_IMAGE_SOURCES_2026_10_08.md`.

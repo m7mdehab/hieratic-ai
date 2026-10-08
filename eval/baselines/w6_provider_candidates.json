@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0.0",
+  "research_id": "W6-EVAL003-PROVIDER-CANDIDATES",
+  "as_of": "2026-10-08",
+  "documentary_evidence_only": true,
+  "can_execute": false,
+  "externally_authorized": false,
+  "provider_calls": 0,
+  "provider_credentials_verified": false,
+  "prices_quoted_for_full_images": false,
+  "benchmark_sha": "d587dc990013f18007f1e7a8f56f96ff2f7127e2",
+  "official_public_items_expected": 266,
+  "rung_counts": {
+    "identify": 116,
+    "signs": 150
+  },
+  "sealed_excluded": true,
+  "scorer_status": "PINNED_SYNTHETIC_REPLAY_ONLY_NO_REAL_RESULTS",
+  "all_current_model_ids_must_remain_candidate_only": true,
+  "models": [
+    {
+      "key": "openai-frontier",
+      "provider": "openai",
+      "model_id": "gpt-6-luna",
+      "api_route": "https://api.openai.com/v1/responses",
+      "model_spec_url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+      "vision_spec_url": "https://developers.openai.com/api/docs/guides/images-vision",
+      "model_id_verified_from_official_docs": true,
+      "model_access_verified_in_user_account": false,
+      "image_input_verified_from_official_docs": true,
+      "raw_api_execution_occurred": false,
+      "model_status": "candidate_documented_not_executed",
+      "input_payload_style": "image input content block",
+      "effort_options": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "proposed_effort": "none",
+      "effort_selection_status": "requires_protocol_freeze_and_comparison_review"
+    },
+    {
+      "key": "anthropic-frontier",
+      "provider": "anthropic",
+      "model_id": "claude-sonnet-5-5",
+      "api_route": "https://api.anthropic.com/v1/messages",
+      "model_spec_url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+      "vision_spec_url": "https://platform.claude.com/docs/en/build-with-claude/vision",
+      "model_id_verified_from_official_docs": true,
+      "model_access_verified_in_user_account": false,
+      "image_input_verified_from_official_docs": true,
+      "raw_api_execution_occurred": false,
+      "model_status": "candidate_documented_not_executed",
+      "input_payload_style": "user image source (base64/URL/file) in Messages API",
+      "effort_options": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "proposed_effort": "medium",
+      "effort_selection_status": "requires_protocol_freeze_and_comparison_review"
+    },
+    {
+      "key": "google-frontier",
+      "provider": "google",
+      "model_id": "gemini-3.8-flash",
+      "api_route": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      "model_spec_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+      "vision_spec_url": "https://ai.google.dev/gemini-api/docs/image-understanding",
+      "model_id_verified_from_official_docs": true,
+      "model_access_verified_in_user_account": false,
+      "image_input_verified_from_official_docs": true,
+      "raw_api_execution_occurred": false,
+      "model_status": "candidate_documented_not_executed",
+      "input_payload_style": "multimodal contents with inline image/File API as supported",
+      "effort_options": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "proposed_effort": "low",
+      "effort_selection_status": "requires_protocol_freeze_and_comparison_review"
+    }
+  ],
+  "shared_blockers": [
+    "owner_approved_budget_and_credentials_missing",
+    "provider_terms_and_image_handling_not_yet_reviewed_by_owner",
+    "exact_public_only_manifest_private_capture_frozen_run_receipts_not_authorized",
+    "real_image_inputs_not_loaded_or_sent",
+    "no_real_provider_predictions_or_raw_outputs",
+    "no_official_real_score_and_no_validated_experiment"
+  ],
+  "planned_attempts_full_266_by_3_models_by_3_samples": 2394
+}

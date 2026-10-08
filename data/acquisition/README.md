@@ -11,7 +11,27 @@ python -m tools.acquisition plan data/acquisition/examples/hieraticbench-evaluat
 python -m tools.acquisition validate data/acquisition/examples/hpdb-reference.yaml
 ```
 
-`plan` is offline and never fetches data. It prints a planning result separately from an admission result, plus missing conditions, target path, provenance requirements, and logical fingerprint. The planner never admits an asset to a corpus. A refused request returns a nonzero status. `validate` has the same checks and is suitable for automation. This task does not implement a fetch command.
+`plan` is offline and never fetches data. It prints a planning result separately from an admission result, plus missing conditions, target path, provenance requirements, and logical fingerprint. The planner never admits an asset to a corpus. A refused request returns a nonzero status. `validate` has the same checks and is suitable for automation.
+
+The opt-in `metadata-fetch-met` command retrieves one allowlisted public object record from The Met's documented per-object API. It is never run by `plan`, `validate`, or CI. It accepts no URL, only the nine dispatched object IDs, refuses redirects, pins a public DNS result for TLS, caps response size, validates object ID/accession and image-reference hosts, and writes one packet with exclusive-create semantics under `data/acquisition/`. It never requests image URLs. For example:
+
+```bash
+python -m tools.acquisition metadata-fetch-met data/acquisition/met/objects/561345.json --object-id 561345
+```
+
+The evidence packet records the raw API body SHA-256, response size, timestamp and observed metadata. The raw API body itself and all image bytes are not stored. Existing output files are never overwritten. A failed request emits a stable error code in the packet and exits nonzero.
+
+## W6 Met and Turin evidence
+
+- `met/objects/<objectID>.json` contains one captured Met object API response summary per allowlisted ID, including accession, public-domain flag, canonical object page, original/small/additional image URL metadata and SHA-256 of the exact JSON response body. `original_image_sha256` remains null because no image bytes were requested.
+- `met/metadata_packet.schema.json` constrains the packet and hard-codes the metadata-only rights boundary.
+- `met/r017_reconciliation.json` screens all 15 R-016 candidates against the pinned 266-row R-017 public metadata snapshot. It preserves every candidate as blocked. A zero literal accession match means only no string hit in this snapshot; it does not prove source independence. All image URLs for one Met object remain grouped as views of that same candidate; no pixel comparison is claimed.
+- `met/w6_candidate_evidence.json` records the nine Met candidates and two Turin editorial-access candidates (Cat.1896 and Cat.1971). Turin metadata is carried forward from R-020; no TPOP API/export was assumed or invoked, and no editorial text was copied.
+- The source registry currently has no Met entry. These packets are source investigation evidence only; they are not registered acquisition manifests, a rights approval, benchmark clearance, DATA-008 release, or training admission.
+
+## Rights and evidence boundary
+
+The Met API's `isPublicDomain` value and the museum's Open Access statement are separately recorded. Public-domain artwork identity and a general image policy do not by themselves verify the exact image bytes, exact exposure/view, scholarly transcription rights, independent expert gold, or absence of benchmark/edition/pretraining overlap. Current packets show public-domain flags for all nine IDs, but leave exact-photo use determination, image hashes, text permission, and independence unresolved. The runbook remains: (1) independently confirm support, accession aliases, face and writing; (2) obtain the exact original image through an authorized channel; (3) hash and inspect those bytes and map each view/side; (4) establish use-specific image rights and attribution; (5) secure separately licensed editorial text or commission expert-authored diplomatic readings; (6) conduct independent scholarly and rights review; (7) adjudicate benchmark, edition, alias, and perceptual image overlaps; (8) use DATA-008 only after protected authority onboarding and every required review. No outreach or actual image acquisition is performed by this command.
 
 ## Policy and conditions
 

@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import os
+import socket
+import tempfile
+import threading
 import unittest
+import unittest.mock
 from pathlib import Path
 
 import yaml
@@ -246,10 +252,202 @@ class AcquisitionManifestTests(unittest.TestCase):
         self.assertEqual("ALLOWED", plans[0]["decision"])
 
     def test_examples_contain_only_repository_authored_metadata(self) -> None:
-        allowed_suffixes = {".yaml", ".yml", ".md"}
+        allowed_suffixes = {".yaml", ".yml", ".md", ".json"}
         for path in (ROOT / "data/acquisition").rglob("*"):
             if path.is_file():
                 self.assertIn(path.suffix.lower(), allowed_suffixes, f"unexpected non-metadata file: {path}")
+
+
+class MetMetadataEvidenceTests(unittest.TestCase):
+    def response(self, object_id: int = 561345, **overrides):
+        record = {
+            "objectID": object_id, "accessionNumber": acquisition.MET_CANDIDATES[object_id],
+            "isPublicDomain": True, "objectURL": f"https://www.metmuseum.org/art/collection/search/{object_id}",
+            "department": "Egyptian Art", "objectName": "Ostracon", "title": "Synthetic fixture",
+            "period": "Synthetic", "objectDate": "Synthetic", "medium": "Limestone; ink",
+            "primaryImage": "https://images.metmuseum.org/CRDImages/eg/original/test.jpg",
+            "primaryImageSmall": "https://images.metmuseum.org/CRDImages/eg/web-large/test.jpg",
+            "additionalImages": ["https://images.metmuseum.org/CRDImages/eg/original/test-back.jpg"],
+            "approvalReceipt": {"status": "independently_cleared", "reviewer": "forged-applicant-reviewer"},
+        }
+        record.update(overrides)
+        return json.dumps(record, separators=(",", ":")).encode()
+
+    def fake_transport(self, body=None, status=200, content_type="application/json"):
+        captured = []
+        def run(path):
+            captured.append(path)
+            return status, content_type, self.response() if body is None else body
+        return run, captured
+
+    def test_allowlisted_met_metadata_retrieval_does_not_follow_images(self):
+        transport, paths = self.fake_transport()
+        packet = acquisition.met_metadata_packet(561345, transport=transport)
+        self.assertEqual(["/public/collection/v1/objects/561345"], paths)
+        self.assertEqual("verified_api_response_identity_and_schema", packet["verification_status"])
+        self.assertEqual(hashlib.sha256(self.response()).hexdigest(), packet["response_body_sha256"])
+        self.assertIsNone(packet["rights_assessment"]["original_image_sha256"])
+        self.assertFalse(packet["rights_assessment"]["original_image_bytes_obtained"])
+        self.assertEqual("BLOCKED_METADATA_ONLY", packet["rights_assessment"]["training_admission"])
+
+    def test_unknown_id_is_rejected_without_network(self):
+        transport, paths = self.fake_transport()
+        packet = acquisition.met_metadata_packet(999999, transport=transport)
+        self.assertEqual("MET_OBJECT_ID_NOT_ALLOWLISTED", packet["error_code"])
+        self.assertEqual([], paths)
+
+    def test_wrong_api_object_id_and_stale_accession_fail_closed(self):
+        for payload, expected in ((self.response(object_id=561392), "MET_OBJECT_ID_MISMATCH"),
+                                  (self.response(accessionNumber="09.184.999"), "MET_ACCESSION_MISMATCH"),
+                                  (self.response(objectURL="https://attacker.example/object/561345"), "MET_OBJECT_URL_MISMATCH")):
+            transport, _ = self.fake_transport(payload)
+            self.assertEqual(expected, acquisition.met_metadata_packet(561345, transport=transport)["error_code"])
+
+    def test_malformed_json_empty_images_and_invalid_rights_type_fail(self):
+        cases = ((b"{", "MET_JSON_MALFORMED"),
+                 (self.response(primaryImage=""), "MET_IMAGE_METADATA_MALFORMED"),
+                 (self.response(isPublicDomain="yes"), "MET_RIGHTS_FLAG_MISSING_OR_INVALID"))
+        for body, expected in cases:
+            with self.subTest(expected=expected):
+                transport, _ = self.fake_transport(body)
+                self.assertEqual(expected, acquisition.met_metadata_packet(561345, transport=transport)["error_code"])
+
+    def test_conflicting_rights_and_fake_receipt_cannot_change_blocked_authority(self):
+        for is_pd in (True, False):
+            transport, _ = self.fake_transport(self.response(isPublicDomain=is_pd))
+            packet = acquisition.met_metadata_packet(561345, transport=transport)
+            self.assertEqual(is_pd, packet["rights_assessment"]["api_is_public_domain"])
+            self.assertEqual("BLOCKED_METADATA_ONLY", packet["rights_assessment"]["training_admission"])
+            self.assertFalse(packet["rights_assessment"]["independent_text_permission_verified"])
+            self.assertFalse(packet["rights_assessment"]["benchmark_independence_cleared"])
+            self.assertNotIn("approvalReceipt", packet["observed"])
+
+    def test_hostile_redirect_http_failure_and_oversized_body_are_rejected(self):
+        for status, body, expected in ((302, self.response(), "MET_HTTP_STATUS_302"),
+                                       (503, b"down", "MET_HTTP_STATUS_503"),
+                                       (200, b"x" * (acquisition.MAX_MET_RESPONSE_BYTES + 1), "MET_RESPONSE_TOO_LARGE")):
+            transport, _ = self.fake_transport(body, status=status)
+            packet = acquisition.met_metadata_packet(561345, transport=transport)
+            self.assertEqual(expected, packet["error_code"])
+
+    def test_image_url_host_and_path_are_restricted(self):
+        for url in ("https://127.0.0.1/CRDImages/eg/original/x.jpg", "https://images.metmuseum.org/other/x.jpg", "http://images.metmuseum.org/CRDImages/eg/original/x.jpg"):
+            transport, _ = self.fake_transport(self.response(primaryImage=url))
+            self.assertEqual("MET_IMAGE_URL_OUTSIDE_ALLOWLIST", acquisition.met_metadata_packet(561345, transport=transport)["error_code"])
+
+    def test_dns_private_address_is_rejected_before_request(self):
+        with unittest.mock.patch.object(acquisition.socket, "getaddrinfo", return_value=[(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 443))]):
+            with self.assertRaisesRegex(OSError, "MET_DNS_NOT_PUBLIC"):
+                acquisition._met_get("/public/collection/v1/objects/561345")
+
+    def test_met_http_redirect_is_never_followed(self):
+        requests = []
+        class Response:
+            status = 302
+            def getheader(self, name, default=None):
+                return "https://127.0.0.1/steal" if name == "Location" else default
+        class Connection:
+            def __init__(self, host, pinned_ip, timeout):
+                self.host, self.pinned_ip, self.timeout = host, pinned_ip, timeout
+            def request(self, method, path, headers):
+                requests.append((method, path, headers))
+            def getresponse(self):
+                return Response()
+            def close(self):
+                pass
+        dns = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+        with unittest.mock.patch.object(acquisition.socket, "getaddrinfo", return_value=dns), unittest.mock.patch.object(acquisition, "_PinnedHTTPSConnection", Connection):
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "MET_HTTP_STATUS_302"):
+                acquisition._met_get("/public/collection/v1/objects/561345")
+        self.assertEqual([("GET", "/public/collection/v1/objects/561345", unittest.mock.ANY)], requests)
+
+    def test_output_path_and_symlink_are_refused_before_network(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
+            folder = Path(temp)
+            existing = folder / "existing.json"
+            existing.write_text("", encoding="utf-8")
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "overwrite"):
+                acquisition._validate_metadata_output(existing)
+            with self.assertRaises(acquisition.AcquisitionError):
+                acquisition._validate_metadata_output(ROOT / "tools" / "escape.json")
+            link = folder / "dir-link"
+            target = folder / "target"
+            target.mkdir()
+            try:
+                link.symlink_to(target, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable on this host")
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "symlink"):
+                acquisition._validate_metadata_output(link / "output.json")
+
+    def test_concurrent_packet_publishers_are_exclusive(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
+            path = Path(temp) / "packet.json"
+            packet = {"complete": True}
+            outcomes = []
+            def publish():
+                try:
+                    acquisition._publish_metadata_packet(path, packet)
+                    outcomes.append("published")
+                except acquisition.AcquisitionError:
+                    outcomes.append("refused")
+            threads = [threading.Thread(target=publish) for _ in range(2)]
+            for thread in threads: thread.start()
+            for thread in threads: thread.join()
+            self.assertCountEqual(["published", "refused"], outcomes)
+            self.assertEqual(packet, json.loads(path.read_text(encoding="utf-8")))
+            self.assertEqual([], list(Path(temp).glob(".met-packet-*.tmp")))
+
+    def test_failed_packet_write_cleans_staging_and_leaves_no_destination(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
+            path = Path(temp) / "packet.json"
+            with unittest.mock.patch.object(acquisition.json, "dump", side_effect=OSError("fixture write failure")):
+                with self.assertRaisesRegex(acquisition.AcquisitionError, "cannot atomically publish"):
+                    acquisition._publish_metadata_packet(path, {"complete": True})
+            self.assertFalse(path.exists())
+            self.assertEqual([], list(Path(temp).glob(".met-packet-*.tmp")))
+
+    def test_r017_reconciliation_preserves_all_fifteen_as_blocked(self):
+        crosswalk = json.loads((ROOT / "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json").read_text(encoding="utf-8"))
+        packets = [acquisition.met_metadata_packet(object_id, transport=lambda _: (200, "application/json", self.response(object_id)))
+                   for object_id in acquisition.MET_CANDIDATES]
+        result = acquisition.build_met_reconciliation(packets, crosswalk, ROOT / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl")
+        self.assertEqual(15, len(result["candidates"]))
+        self.assertTrue(result["all_candidates_blocked"])
+        self.assertTrue(all(row["training_admission"] == "BLOCKED" for row in result["candidates"]))
+        for object_id in acquisition.MET_CANDIDATES:
+            row = next(row for row in result["candidates"] if row["candidate_id"] == f"MET-{object_id}")
+            self.assertGreaterEqual(row["image_view_count"], 1)
+            self.assertEqual("NOT_CLEARED", row["rights_status"])
+
+    def test_normalized_accession_alias_is_reported_but_never_clears_benchmark_overlap(self):
+        crosswalk = json.loads((ROOT / "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json").read_text(encoding="utf-8"))
+        packet = acquisition.met_metadata_packet(561345, transport=lambda _: (200, "application/json", self.response()))
+        with tempfile.TemporaryDirectory() as directory:
+            metadata = Path(directory) / "metadata.jsonl"
+            metadata.write_text(json.dumps({"id": "fixture-alias", "object_name": "Synthetic catalogue 09 184 703 alternate form"}) + "\n", encoding="utf-8")
+            result = acquisition.build_met_reconciliation([packet], crosswalk, metadata)
+        row = next(row for row in result["candidates"] if row["candidate_id"] == "MET-561345")
+        self.assertEqual([], row["literal_accession_substring_matches_in_pinned_R017_public_metadata"])
+        self.assertEqual(["fixture-alias"], row["normalized_accession_string_matches_in_pinned_R017_public_metadata"])
+        self.assertEqual("BLOCKED", row["training_admission"])
+
+    def test_turin_candidates_remain_metadata_only_and_not_met_source(self):
+        evidence = json.loads((ROOT / "data/acquisition/met/w6_candidate_evidence.json").read_text(encoding="utf-8"))
+        turin = [item for item in evidence["turin_candidates"] if item["accession"] in {"Cat.1896", "Cat.1971"}]
+        self.assertEqual({"Cat.1896", "Cat.1971"}, {item["accession"] for item in turin})
+        self.assertTrue(all(item["status"] == "BLOCKED_METADATA_ONLY" for item in turin))
+        self.assertTrue(all(item["editorial_text_permission_verified"] is False for item in turin))
+        self.assertFalse(evidence["source_registry_contains_met_record"])
+
+    def test_packet_schema_validates_real_packets_and_rejects_promoted_image_evidence(self):
+        from jsonschema import Draft202012Validator, FormatChecker
+        schema = json.loads((ROOT / "data/acquisition/met/metadata_packet.schema.json").read_text(encoding="utf-8"))
+        packet = json.loads((ROOT / "data/acquisition/met/objects/561345.json").read_text(encoding="utf-8"))
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        self.assertEqual([], list(validator.iter_errors(packet)))
+        packet["rights_assessment"]["original_image_bytes_obtained"] = True
+        self.assertTrue(list(validator.iter_errors(packet)))
 
 
 if __name__ == "__main__":

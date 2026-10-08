@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hieratic-ai.invalid/schemas/met-metadata-evidence-1.0.0.json",
+  "title": "Met object metadata evidence packet",
+  "type": "object",
+  "required": ["packet_schema_version", "retrieved_at", "candidate_id", "endpoint", "requested_object_id", "http_status", "content_type", "response_body_bytes", "response_body_sha256", "verification_status", "error_code", "observed", "field_verification", "rights_assessment", "identity_review"],
+  "properties": {
+    "packet_schema_version": {"const": "1.0.0"},
+    "retrieved_at": {"type": "string", "format": "date-time"},
+    "candidate_id": {"type": "string", "pattern": "^MET-[0-9]+$"},
+    "institution": {"type": "string"},
+    "endpoint": {"type": "string", "format": "uri", "pattern": "^https://collectionapi\\.metmuseum\\.org/public/collection/v1/objects/[0-9]+$"},
+    "requested_object_id": {"type": "integer", "minimum": 1},
+    "expected_accession_from_R017": {"type": ["string", "null"]},
+    "http_status": {"type": ["integer", "null"]},
+    "content_type": {"type": ["string", "null"]},
+    "response_body_bytes": {"type": ["integer", "null"], "minimum": 0},
+    "response_body_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "verification_status": {"enum": ["verified_api_response_identity_and_schema", "failed"]},
+    "error_code": {"type": ["string", "null"]},
+    "observed": {"type": ["object", "null"], "additionalProperties": true},
+    "field_verification": {"type": "object", "additionalProperties": {"enum": ["api_observed", "not_observed"]}},
+    "rights_assessment": {"type": "object", "required": ["api_is_public_domain", "museum_policy_url", "exact_original_image_eligibility", "original_image_bytes_obtained", "original_image_sha256", "diplomatic_hieratic_gold_present", "independent_text_permission_verified", "benchmark_independence_cleared", "training_admission"], "properties": {
+      "api_is_public_domain": {"type": ["boolean", "null"]}, "museum_policy_url": {"type": "string", "format": "uri"},
+      "policy_scope_observation": {"type": "string"}, "exact_original_image_eligibility": {"type": "string"},
+      "original_image_bytes_obtained": {"const": false}, "original_image_sha256": {"const": null},
+      "diplomatic_hieratic_gold_present": {"const": false}, "independent_text_permission_verified": {"const": false},
+      "benchmark_independence_cleared": {"const": false}, "training_admission": {"const": "BLOCKED_METADATA_ONLY"}
+    }, "additionalProperties": false},
+    "identity_review": {"type": "object", "additionalProperties": true}
+  },
+  "additionalProperties": false
+}

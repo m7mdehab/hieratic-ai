@@ -1,3 +1,10 @@
+## 2026-10-08 — Explicit staged wave handoff (ADR-0023) and new research lead
+
+- **Correct synchronization:** At each new wave the overseer first sends BOTH agent prompts plus a description of the overseer task, without completing its own task. Mohammed dispatches the agent prompts and returns to this chat; the overseer then executes its parallel work in that live interactive turn. Agents still execute immediately upon receiving their prompts, no second approval. See ADR-0023 and updated parallel-wave protocol.
+- **New independent overseer research completed:** [PR #56](https://github.com/m7mdehab/hieratic-ai/pull/56) merged with R-015: Museo Egizio TPOP and Met CC0 Hieratic image leads, rights boundary distinctions, sample institution records, quarantine requirements and an unsent institutional inquiry. No asset admitted, no model gold, no capability or research percentage change.
+- DATA-008 #49 and VLM-001 #52 remain open/revision required pending agent remediations. Keep ongoing agent branches unconflicted and review exact updated SHAs when returned.
+- Verified goal 32.5/100, research coverage 14%, 0 validated real experiments and 0 trained models.
+
 ## 2026-10-08 — W3 independent-review reconciliation and dispatch authority
 
 - The current canonical verified goal is **32.5/100** (remaining 67.5), research coverage **14%**, P6 **2/10**, validated real experiments **0**, trained models **0**. LING-001 +2 is accepted/merged through PRs #51/#53/#54. Agent evidence packages claiming 30.5 are prior to the accepted merger.

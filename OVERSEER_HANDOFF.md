@@ -1,3 +1,13 @@
+## W3 approved — overseer EVAL-003 preflight landed (2026-10-08)
+
+**Authority:** User explicitly approved W3. Active scientific lead task **EVAL-003** continues. Luna's separate pending W3 tasks DATA-008 (+3), LING-001 (+2), and Anti-Gravity's VLM-001 (+2) remain in canonical **ready**, not active, until external agent execution is observed. Scope preregistration merged PR #46. Agents use the copy-ready W3 prompts from the coordinating conversation; do not falsely claim direct agent launch.
+
+**Overseer W3 delivered:** merged [PR #47](https://github.com/m7mdehab/hieratic-ai/pull/47), independent governance, error-analysis and frontier-baseline preflight CI green. **175 evaluation tests** passed. It added external-vault item-specific rendered prompt and image byte checking; exact pinned upstream inventory/source/scorer hashes; per-model config/route/spend/custody declarations; a private raw response audit with separate status counts for ok/failure/abstained/timeout/refused and rejection of missing/duplicate attempts; a synthetic no-consent CI blocker; and a detailed 2026-10-08 official-source rights-readiness audit for HPDB, AKU-PAL, DDD, TLA, PaPYrus, Isut, HieraticAI, HieraticBench.
+
+**Scientific interpretation:** PR #47 is research tooling/readiness, **not completed EVAL-003**, a model run, demonstrated Hieratic reading, or new source data clearance. No provider credentials, paid inference or restricted material used. Real EVAL-003 completion still requires separate user spending permission, pinned genuine rendered prompts, authenticated actual provider responses, exact official scorer replay, matched model comparison and independently reviewed publications. Remaining source/item rights are unresolved.
+
+**Canonical state:** verified capability 30.5/100, remaining 69.5, research coverage 14%, P1 5/5, P2 8.5/10, P3 17/20, P4–P8 0, control 5/5, experiments 0, trained models 0. This W3 sync changes only current_wave/handoff, not progress or task statuses.
+
 # Overseer Handoff — Hieratic AI
 
 **Last reconciled:** 2026-10-08, approved W2 overseer batch complete. `PROJECT_STATE.yaml` and `TASKS.yaml` on `main` are authoritative; this document is a compact, derived handoff.

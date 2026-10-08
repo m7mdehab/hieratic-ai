@@ -604,5 +604,71 @@ class OriginalRunFreezeTests(unittest.TestCase):
         ]))
 
 
+
+class OriginalScorerAggregateRedactionTests(unittest.TestCase):
+    """Fake aggregate receipts; official TypeScript scoring itself runs in CI."""
+
+    def setUp(self):
+        from eval.baselines.replay_synthetic_audit import audit
+        self.audit=audit
+        self.tmp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root=Path(self.tmp.name)
+        self.data={
+            "schema_version":"1.0.0","report_type":"private_inputs_to_public_aggregate_no_authentication",
+            "evaluation_id":"FRONTIER-SYNTHETIC-SCORER-QA",
+            "upstream_commit":"d587dc990013f18007f1e7a8f56f96ff2f7127e2",
+            "official_scorer_sha256":"a"*64,
+            "public_item_manifest_sha256":"b"*64,"raw_capture_sha256":"c"*64,
+            "model_key":"synthetic-score-bridge","provider_model_id":"synthetic-test-only",
+            "rung_aggregates":{},
+            "note":"Synthetic fixtures only, no model experiments",
+            "original_provider_calls_authenticated":False,
+            "independently_accepted_result":False,
+        }
+        for rung,n in (("identify",116),("signs",150)):
+            self.data["rung_aggregates"][rung]={
+                "official_upstream_scored_sample_item_macro":0,
+                "official_scored_items":n,"official_scored_samples":n,
+                "official_item_coverage":1,"scheduled_items":n,
+                "scheduled_attempts":n,"statuses":{
+                    "ok":n,"failed":0,"abstained":0,"timeout":0,"refused":0
+                },"intention_to_test_zero_for_failed_macro":0,
+            }
+
+    def write(self):
+        path=self.root/"original-scores-FRONTIER-SYNTHETIC-SCORER-QA.json"
+        path.write_text(json.dumps(self.data),encoding="utf-8")
+
+    def test_synthetic_only_aggregate_passes(self):
+        self.write()
+        self.audit(self.root)
+
+    def test_refusals_must_remain_in_denominator(self):
+        self.data["rung_aggregates"]["identify"]["statuses"]["failed"]=1
+        self.write()
+        with self.assertRaisesRegex(ValueError,"incomplete"):
+            self.audit(self.root)
+
+    def test_publishing_gold_or_per_item_text_is_rejected(self):
+        self.data["gold"]="SYNTHETIC ANSWER NOT SOURCE GOLD"
+        self.write()
+        with self.assertRaisesRegex(ValueError,"scope"):
+            self.audit(self.root)
+
+    def test_fake_provider_execution_attestation_rejected(self):
+        self.data["original_provider_calls_authenticated"]=True
+        self.write()
+        with self.assertRaisesRegex(ValueError,"false experimental"):
+            self.audit(self.root)
+
+    def test_capture_coverage_requires_equal_scored_and_success(self):
+        self.data["rung_aggregates"]["signs"]["official_scored_samples"]=20
+        self.write()
+        with self.assertRaisesRegex(ValueError,"denominator"):
+            self.audit(self.root)
+
+
+
 if __name__=="__main__":
     unittest.main()

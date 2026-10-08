@@ -181,3 +181,14 @@ DATA-003 #36: deterministic image preprocessing, SHA256 lineage, coordinate tran
 All four merged following independent negative-test review, targeted fixes and final green CI (34 governance/80 data/145 evaluation tests by last PR). No copyrighted manuscript images, real historical mappings, expert adjudication, trained models, model outputs, or benchmark scores were produced.
 
 **Verified progress +10.0** to 30.5/100, P3 17/20, P2 8.5/10, coverage unchanged at 14%. DATA-008, VLM-001 and LING-001 become dependency-ready only.
+
+
+### R-013 — W3 original baseline freeze and primary-source rights readiness
+
+**Status:** MERGED RESEARCH INFRASTRUCTURE, no model results. Date: 2026-10-08.
+
+[PR #47](https://github.com/m7mdehab/hieratic-ai/pull/47) passed complete frontier-baseline CI: 175 evaluation tests and frozen pinned public inventory/prompt-source verification. `eval/baselines/run_freeze.py` rejects unapproved/unsafely stored, altered, missing or mismatched original model prompt/image attempt evidence; per-attempt private provider responses are checked against *individual* rendered prompt hashes, not only an upstream shared prompt-source digest. The tool purposely emits no raw responses, claims no real provider calls and cannot validate rights/consent from a Boolean flag alone.
+
+Official evidence audit `eval/baselines/SOURCE_RIGHTS_READINESS.md` (primary sources as of audit date): HPDB data CC BY with distinct underlying source imaging rights; AKU-PAL per-image; DDD noncommercial/share-alike plus individual image copyright; TLA limits mass copying; PaPYrus, HieraticAI, Isut software rights not equal to images. HieraticBench quarantined externally for evaluation only. No unrestricted corpus admission from these observations.
+
+W3's EVAL-003 remains active and earns zero until real inference, frozen run/cost/rights record, official scores, independent reproduction and human scientific review. No change to 30.5/100 progress, 14% coverage or 0 experiment/model counts.

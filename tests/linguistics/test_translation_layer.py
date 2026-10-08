@@ -135,6 +135,38 @@ class RealPublishedTranslationTests(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(1, tr.main(["predict", "--sentence-id", "BAD-ID"]))
 
+
+    def test_real_cross_source_publisher_full_german_sentence_parallels(self):
+        report = tr.evaluate(self.dataset)
+        self.assertEqual(
+            14, report["metrics"]["sentences_with_cross_text_attested_full_german_translation"])
+        paragraphs = tr._parallel_translations(self.dataset["sentences"])
+        actual = [
+            tr.translate_sentence(sent, tr._observations(self.dataset["sentences"]),
+                                  parallel_translations=paragraphs)
+            for sent in self.dataset["sentences"].values()
+        ]
+        full = [p for p in actual if p["publisher_attested_german_sentence"]]
+        self.assertEqual(14, len(full))
+        for p in full:
+            self.assertEqual("CROSS_TEXT_EXACT_SENTENCE_PARALLEL", p["translation_mode"])
+            self.assertGreater(p["independent_source_text_support_for_sentence"], 0)
+            self.assertNotEqual("", p["publisher_attested_german_sentence"])
+
+    def test_forged_target_sentence_translation_cannot_self_retrieve(self):
+        records = copy.deepcopy(self.dataset["sentences"])
+        sid, chosen = next(iter(records.items()))
+        own_text = chosen["text"]
+        for s in records.values():
+            if s["text"] == own_text:
+                s["sentence_translation"] = "A TARGET-ONLY SECRET GERMAN REFERENCE"
+        lookup = tr._parallel_translations(records)
+        out = tr.translate_sentence(records[sid], tr._observations(records),
+                                    parallel_translations=lookup)
+        self.assertNotEqual("A TARGET-ONLY SECRET GERMAN REFERENCE",
+                            out["publisher_attested_german_sentence"])
+        self.assertFalse(out["publisher_target_translation_used_for_generation"])
+
     def test_no_network_and_no_image_claim(self):
         src = Path(tr.__file__).read_text("utf-8")
         for banned in ("requests.get(", "urlopen(", "model.generate(", "torch.load("):

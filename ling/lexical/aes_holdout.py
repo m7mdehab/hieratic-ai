@@ -150,13 +150,19 @@ def read_bundle(*, root: Path = ROOT, data: Path | None = None) -> dict[str, Any
         if not isinstance(source_text, str) or not source_text:
             raise SourceError("Missing original-source text ID")
         texts.add(source_text)
-        for token in sentence.get("token", []):
-            tid = token.get("_id")
-            if not isinstance(tid, str) or not tid or tid in seen:
-                raise SourceError("Invalid or duplicate editorial token ID")
+        for offset, token in enumerate(sentence.get("token", [])):
+            publisher_id = token.get("_id")
+            if publisher_id is not None and (not isinstance(publisher_id, str) or not publisher_id):
+                raise SourceError("Malformed publisher token ID")
+            # Fifteen damaged/unlabelled publisher tokens have no _id. Preserve
+            # that absence; a stable local locator is NOT an editorial ID.
+            tid = publisher_id or f"UNIDENTIFIED_SOURCE_TOKEN:{sentence_id}:{offset}"
+            if tid in seen:
+                raise SourceError("Duplicate publisher token or derived locator")
             seen.add(tid)
             tokens.append({
-                "id": tid, "sentence_id": sentence_id, "text": source_text,
+                "id": tid, "publisher_token_id": publisher_id,
+                "sentence_id": sentence_id, "text": source_text,
                 "written_form": token.get("written_form"),
                 "lemmaID": token.get("lemmaID"),
                 "lemma_form": token.get("lemma_form"),
@@ -165,7 +171,8 @@ def read_bundle(*, root: Path = ROOT, data: Path | None = None) -> dict[str, Any
                              if k in token and token[k] not in (None, "")},
             })
     if (len(tokens) != 2526 or len(texts) != 311
-        or sum(bool(t["lemmaID"]) for t in tokens) != 2305):
+        or sum(bool(t["lemmaID"]) for t in tokens) != 2305
+        or sum(t["publisher_token_id"] is None for t in tokens) != 15):
         raise SourceError("Published AES token/text/lemma census drift")
     # No scholarly token is rewritten or filled in when its published labels
     # are absent. A separate source-text holdout controls candidate training.

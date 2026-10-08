@@ -213,6 +213,110 @@ class PreprocessingTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"symlink"):
                 pp._publish_readiness_output(link/"escape.json",{})
 
+
+class W8PrivateImageInspectionTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);self.vault=self.root/"vault";self.vault.mkdir()
+        self.env=mock.patch.dict(os.environ,{"LOCALAPPDATA":str(self.root)},clear=False);self.env.start()
+        self.suffix=mock.patch.object(pp,"W8_VAULT_SUFFIX",Path("vault"));self.suffix.start()
+        self.addCleanup(self.suffix.stop);self.addCleanup(self.env.stop);self.addCleanup(self.temp.cleanup)
+        self.profile=pp._w8_load_profile()
+        self.data=b"synthetic private-evidence contract fixture"
+        source=self.profile["source_lock"].copy();source.update({"file_sha256":hashlib.sha256(self.data).hexdigest(),"file_sha1":hashlib.sha1(self.data).hexdigest(),"byte_size":len(self.data)})
+        self.profile["source_lock"]=source
+        self.image=self.vault/"CAT2044-013-commons-original.jpg";self.image.write_bytes(self.data)
+        self.evidence=self.vault/"CAT2044.json"
+        self.record={"candidate_id":"CAT2044","source_object_id":"Cat.2044/013","physical_support_group":"Cat.2044/013","commons_pageid":source["commons_pageid"],"commons_api_response_sha256":source["commons_api_response_sha256"],"source_sha256":source["file_sha256"],"source_byte_size":len(self.data),"commons_file_sha1":source["file_sha1"],"declared_dimensions":source["dimensions"],"mime_type":"image/jpeg","exact_original_file_url":"https://upload.wikimedia.org"+source["exact_original_path"]+"?utm_source=commons.wikimedia.org","commons_file_page_url":source["exact_file_page"],"commons_file_revision_url":source["exact_file_revision"],"license":{"identifier":"CC0","url":source["license_url"],"file_credit_observation":"Museo Egizio","official_museum_policy_url":source["official_museum_policy_url"],"papyrus_database_image_policy_url":source["papyrus_database_image_policy_url"]},"use_boundary":{"source_registry_status":"NOT_REGISTERED","benchmark_overlap_status":"UNRESOLVED_QUARANTINED","training_admission":"BLOCKED","development_admission":"BLOCKED","evaluation_admission":"NOT_AUTHORIZED","gold_or_transcription":"NONE"}}
+        self.evidence.write_text(json.dumps(self.record),encoding="utf-8")
+
+    def test_exact_source_evidence_is_bound_and_never_admitted(self):
+        data,evidence,source,evidence_sha=pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        self.assertEqual(self.data,data);self.assertEqual("Cat.2044/013",source["source_object_id"])
+        self.assertEqual("NOT_REGISTERED",evidence["use_boundary"]["source_registry_status"])
+        self.assertEqual(hashlib.sha256(self.evidence.read_bytes()).hexdigest(),evidence_sha)
+
+    def test_changed_image_hash_wrong_support_license_or_promotion_refuses(self):
+        self.image.write_bytes(self.data+b"tamper")
+        with self.assertRaisesRegex(ValueError,"hash/size"):
+            pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        self.image.write_bytes(self.data)
+        for field,value,pattern in (("source_object_id","Cat.9999","source lock"),("physical_support_group","another-support","source lock"),("exact_original_file_url","https://attacker.invalid/upload.wikimedia.org"+self.profile["source_lock"]["exact_original_path"],"source lock")):
+            bad=dict(self.record);bad[field]=value;self.evidence.write_text(json.dumps(bad),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,pattern):pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        for field,value in (("commons_api_response_sha256","0"*64),("commons_pageid",1)):
+            bad=dict(self.record);bad[field]=value;self.evidence.write_text(json.dumps(bad),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,"source lock"):pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        for field,value in (("identifier","CC-BY"),("url","https://example.invalid/license")):
+            bad=json.loads(json.dumps(self.record));bad["license"][field]=value;self.evidence.write_text(json.dumps(bad),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,"license evidence"):pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        bad=json.loads(json.dumps(self.record));bad["license"]["official_museum_policy_url"]="https://attacker.invalid/";self.evidence.write_text(json.dumps(bad),encoding="utf-8")
+        with self.assertRaisesRegex(ValueError,"license evidence"):pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+        for field,value in (("benchmark_overlap_status","CLEAR"),("training_admission","ALLOWED"),("gold_or_transcription","VERIFIED")):
+            bad=json.loads(json.dumps(self.record));bad["use_boundary"][field]=value;self.evidence.write_text(json.dumps(bad),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,"promoted"):pp._w8_verify_inputs(self.image,self.evidence,self.profile)
+
+    def test_evidence_and_image_must_be_inside_vault_without_symlinks(self):
+        outside=self.root/"CAT2044-013-commons-original.jpg";outside.write_bytes(self.data)
+        with self.assertRaisesRegex(ValueError,"inside the protected"):
+            pp._w8_verify_inputs(outside,self.evidence,self.profile)
+        link=self.vault/"CAT2044.json.link"
+        try:link.symlink_to(self.evidence)
+        except (OSError,NotImplementedError):self.skipTest("symlink creation unavailable")
+        with self.assertRaisesRegex(ValueError,"symlink"):
+            pp._w8_verify_inputs(self.image,link,self.profile)
+
+    def test_locked_profile_detects_parameter_mutation(self):
+        payload=json.loads(pp.W8_PROFILE.read_text(encoding="utf-8"));payload["limits"]["analysis_downsample_factor"]=1
+        profile_path=self.root/"altered-profile.json";profile_path.write_text(json.dumps(payload),encoding="utf-8")
+        with self.assertRaisesRegex(ValueError,"profile hash"):
+            pp._w8_load_profile(profile_path)
+
+    def test_locked_profile_hash_is_stable_across_checkout_line_endings(self):
+        profile_path=self.root/"crlf-profile.json"
+        normalized=pp.W8_PROFILE.read_bytes().replace(b"\r\n",b"\n")
+        profile_path.write_bytes(normalized.replace(b"\n",b"\r\n"))
+        loaded=pp._w8_load_profile(profile_path)
+        self.assertEqual(loaded["profile_id"],"w8-cat2044-unlabelled-image-inspection")
+        self.assertEqual(loaded["source_lock"]["file_sha256"],pp.W8_EXPECTED_SHA256)
+
+    def test_pixel_region_and_line_proposals_are_synthetic_and_non_gold(self):
+        try:from PIL import Image,ImageDraw
+        except ImportError:self.skipTest("Pillow is an optional local-only W8 JPEG runtime")
+        image=Image.new("RGB",(1600,1280),(245,245,245));draw=ImageDraw.Draw(image)
+        draw.rectangle((80,100,1510,1180),fill=(155,112,78))
+        for y in (450,650,850):draw.line((220,y,1380,y+8),fill=(45,35,28),width=15)
+        analysis=pp._w8_pixel_analysis(image,pp._w8_load_profile())
+        self.assertEqual(analysis,pp._w8_pixel_analysis(image,pp._w8_load_profile()))
+        self.assertGreater(len(analysis["candidate_material_regions"]),0)
+        self.assertGreater(len(analysis["candidate_line_regions"]),0)
+        self.assertTrue(all(line["status"].endswith("not_transcription_gold") for line in analysis["candidate_line_regions"]))
+        self.assertTrue(all(line["reading_status"]=="UNKNOWN_UNREVIEWED" for line in analysis["candidate_line_regions"]))
+        self.assertIn("coordinate_transform_source_to_analysis",analysis)
+
+    def test_decoder_refuses_oversize_and_corrupt_bytes(self):
+        with self.assertRaisesRegex(ValueError,"byte bound"):
+            pp._w8_decode(b"x"*(pp.W8_MAX_BYTES+1),self.profile["source_lock"])
+        with self.assertRaisesRegex(ValueError,"missing"):
+            pp._w8_decode(b"bad jpeg",self.profile["source_lock"])
+        height,width=6000,6000
+        sof=b"\xff\xd8\xff\xc0\x00\x0b\x08"+height.to_bytes(2,"big")+width.to_bytes(2,"big")+b"\x01\x01\x11\x00\xff\xd9"
+        with self.assertRaisesRegex(ValueError,"pixel dimensions exceed"):
+            pp._jpeg_header(sof,max_pixels=pp.W8_MAX_PIXELS)
+
+    def test_private_output_is_no_clobber_and_failed_derivative_write_cleans_directory(self):
+        try:from PIL import Image
+        except ImportError:self.skipTest("Pillow is an optional local-only W8 JPEG runtime")
+        output=self.vault/"inspection"
+        output.mkdir()
+        with mock.patch.object(pp,"_w8_load_profile",return_value=self.profile),mock.patch.object(pp,"_w8_verify_inputs",return_value=(self.data,self.record,self.profile["source_lock"],"evidence-hash")),mock.patch.object(pp,"_w8_decode",return_value=Image.new("RGB",(32,24),(120,90,60))),mock.patch.object(pp,"_w8_pixel_analysis",return_value={"analysis_dimensions":[4,3],"downsample_factor":8,"candidate_material_regions":[],"candidate_line_regions":[],"coordinate_transform_source_to_analysis":[[.125,0,0],[0,.125,0],[0,0,1]]}):
+            with self.assertRaisesRegex(ValueError,"already exists"):
+                pp.inspect_w8_real_image(Path("profile"),Path("image"),Path("evidence"),output)
+        output.rmdir()
+        with mock.patch.object(pp,"_w8_load_profile",return_value=self.profile),mock.patch.object(pp,"_w8_verify_inputs",return_value=(self.data,self.record,self.profile["source_lock"],"evidence-hash")),mock.patch.object(pp,"_w8_decode",return_value=Image.new("RGB",(32,24),(120,90,60))),mock.patch.object(pp,"_w8_pixel_analysis",return_value={"analysis_dimensions":[4,3],"downsample_factor":8,"candidate_material_regions":[],"candidate_line_regions":[],"coordinate_transform_source_to_analysis":[[.125,0,0],[0,.125,0],[0,0,1]]}),mock.patch.object(Image.Image,"save",side_effect=OSError("synthetic derivative failure")):
+            with self.assertRaisesRegex(OSError,"derivative failure"):
+                pp.inspect_w8_real_image(Path("profile"),Path("image"),Path("evidence"),output)
+        self.assertFalse(output.exists())
+
 def run_from_payload(payload, base, out):
     manifest=base/"manifest.yaml"; manifest.write_text(yaml.safe_dump(payload, sort_keys=True), encoding="utf-8")
     return run(manifest, out)

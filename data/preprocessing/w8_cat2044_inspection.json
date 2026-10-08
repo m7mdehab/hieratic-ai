@@ -1,0 +1,46 @@
+{
+  "profile_id": "w8-cat2044-unlabelled-image-inspection",
+  "profile_version": "1.0.0",
+  "engine_version": "W8-CAT2044-INSPECTION-1.0.0",
+  "source_lock": {
+    "candidate_id": "CAT2044",
+    "institution": "Museo Egizio, Turin",
+    "source_object_id": "Cat.2044/013",
+    "physical_support_group": "Cat.2044/013",
+    "exact_file_page": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+    "exact_file_revision": "https://commons.wikimedia.org/w/index.php?title=File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg&oldid=900807568",
+    "exact_original_path": "/wikipedia/commons/e/e5/Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+    "commons_pageid": 145137491,
+    "commons_api_response_sha256": "c530f106a4661d9a0ce7bfdefe51642e435bee868a077223b438c278466f1030",
+    "file_sha1": "752747405048f358147a7b1f0f697720c338394b",
+    "file_sha256": "569e8e5bb446588481481bfea823fc95383bb7076270363c666f868b7fa5b912",
+    "byte_size": 2649239,
+    "mime_type": "image/jpeg",
+    "dimensions": [7063, 3947],
+    "exif_orientation": 1,
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "official_museum_policy_url": "https://collezioni.museoegizio.it/en-GB/",
+    "papyrus_database_image_policy_url": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/"
+  },
+  "limits": {
+    "maximum_bytes": 8388608,
+    "maximum_pixels": 35000000,
+    "analysis_downsample_factor": 8,
+    "candidate_region_min_area_pixels": 500,
+    "line_row_ink_minimum": 80,
+    "line_row_gap_merge": 2,
+    "maximum_crop_proposals": 32,
+    "maximum_crop_area_pixels": 4000000,
+    "maximum_total_crop_pixels": 10000000,
+    "deskew_policy": "estimate on projections; apply only if absolute estimate is at least 0.25 degrees; otherwise preserve source angle"
+  },
+  "outputs": {
+    "storage": "user-local private artifact vault outside Git",
+    "training_admission": "BLOCKED",
+    "development_admission": "BLOCKED",
+    "evaluation_admission": "NOT_AUTHORIZED",
+    "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+    "annotation_or_gold": "NONE"
+  }
+}

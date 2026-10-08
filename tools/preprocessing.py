@@ -1,6 +1,6 @@
-"""Deterministic, dependency-free preprocessing for provenance-cleared images."""
+"""Deterministic registered-data preprocessing plus one pinned private W8 image inspection path."""
 from __future__ import annotations
-import argparse, binascii, hashlib, json, math, os, re, struct, sys, tempfile, zlib
+import argparse, binascii, hashlib, json, math, os, re, stat, struct, sys, tempfile, zlib
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -28,7 +28,7 @@ def _read(path:Path)->Any:
     except (OSError,UnicodeError,yaml.YAMLError) as exc:raise PreprocessingError(f"{path}: {exc}") from exc
 def _digest(data:bytes)->str:return hashlib.sha256(data).hexdigest()
 
-def _jpeg_header(data:bytes)->tuple[int,int,int|None]:
+def _jpeg_header(data:bytes,*,max_pixels:int=MAX_IMAGE_PIXELS)->tuple[int,int,int|None]:
     """Read bounded JPEG frame dimensions and EXIF orientation; never decodes pixels."""
     if not data.startswith(b"\xff\xd8"):raise PreprocessingError("JPEG magic is missing")
     pos=2;width=height=None;orientation=None;segments=0
@@ -51,7 +51,7 @@ def _jpeg_header(data:bytes)->tuple[int,int,int|None]:
         elif marker==0xE1 and segment.startswith(b"Exif\x00\x00"):
             orientation=_exif_orientation(segment[6:])
     if width is None or height is None or width<1 or height<1:raise PreprocessingError("JPEG frame dimensions are missing")
-    if width*height>MAX_IMAGE_PIXELS:raise PreprocessingError("JPEG pixel dimensions exceed inspection safety limit")
+    if width*height>max_pixels:raise PreprocessingError("JPEG pixel dimensions exceed inspection safety limit")
     return width,height,orientation
 
 def _exif_orientation(tiff:bytes)->int|None:
@@ -483,12 +483,243 @@ def run(manifest_path:Path,out_dir:Path,acquisition:dict[str,Any]|None=None)->di
     identity={"schema_version":payload["schema_version"],"profile_id":payload["profile_id"],"acquisition_manifest_id":payload["acquisition_manifest_id"],"items":records};version="ds-"+hashlib.sha256(json.dumps(identity,sort_keys=True,separators=(",",":")).encode()).hexdigest();result={**identity,"dataset_version_id":version,"generator":"hieratic-preprocessing/1.0.0"}
     (out_dir/"dataset-manifest.json").write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8");return result
 
+W8_PROFILE=ROOT/"data/preprocessing/w8_cat2044_inspection.json"
+W8_EXPECTED_SHA256="569e8e5bb446588481481bfea823fc95383bb7076270363c666f868b7fa5b912"
+W8_PROFILE_SHA256="86e65185d0852a4229443651294e9ecbd0b0eb1f91d00e273e2bdd1e9857ac50"
+W8_VAULT_SUFFIX=Path("HieraticAI/private-artifacts/W8")
+W8_MAX_BYTES=8*1024*1024
+W8_MAX_PIXELS=35_000_000
+W8_MAX_EVIDENCE_BYTES=256*1024
+
+def _w8_private_root()->Path:
+    local=os.environ.get("LOCALAPPDATA")
+    if not local:raise PreprocessingError("W8 local inspection requires LOCALAPPDATA private vault")
+    root=(Path(local)/W8_VAULT_SUFFIX).absolute()
+    if root.resolve(strict=True)==ROOT.resolve() or ROOT.resolve() in root.resolve(strict=True).parents:raise PreprocessingError("W8 private vault must be outside repository")
+    if _has_symlink_or_junction(root):raise PreprocessingError("W8 private vault contains a symlink or junction")
+    return root.resolve(strict=True)
+
+def _has_symlink_or_junction(path:Path)->bool:
+    current=Path(path.anchor)
+    for part in path.parts[1:]:
+        current=current/part
+        if current.is_symlink() or (hasattr(current,"is_junction") and current.is_junction()):return True
+    return False
+
+def _w8_read_private_file(path:Path,limit:int,label:str)->bytes:
+    flags=os.O_RDONLY|getattr(os,"O_BINARY",0)|getattr(os,"O_NOFOLLOW",0)
+    try:descriptor=os.open(path,flags)
+    except OSError as exc:raise PreprocessingError(f"W8 {label} cannot be opened without following links") from exc
+    try:
+        metadata=os.fstat(descriptor);reparse_flag=getattr(stat,"FILE_ATTRIBUTE_REPARSE_POINT",0x400)
+        if not stat.S_ISREG(metadata.st_mode) or getattr(metadata,"st_file_attributes",0)&reparse_flag:raise PreprocessingError(f"W8 {label} is not a regular non-reparse file")
+        if metadata.st_size>limit:raise PreprocessingError(f"W8 {label} exceeds configured byte bound")
+        with os.fdopen(descriptor,"rb",closefd=False) as stream:data=stream.read(limit+1)
+        if len(data)>limit:raise PreprocessingError(f"W8 {label} exceeds configured byte bound")
+        current=path.stat()
+        if (metadata.st_dev,metadata.st_ino)!=(current.st_dev,current.st_ino):raise PreprocessingError(f"W8 {label} path changed while reading")
+        return data
+    finally:os.close(descriptor)
+
+def _w8_load_profile(path:Path=W8_PROFILE)->dict[str,Any]:
+    try:raw=path.read_bytes();payload=json.loads(raw.decode("utf-8"))
+    except (OSError,UnicodeError,json.JSONDecodeError) as exc:raise PreprocessingError("W8 inspection profile is missing or malformed") from exc
+    # Git stores this repository text file with LF. Normalize checkout line endings
+    # before checking the immutable content lock so Windows CRLF checkouts match CI.
+    if _digest(raw.replace(b"\r\n",b"\n"))!=W8_PROFILE_SHA256:raise PreprocessingError("W8 inspection profile hash differs from immutable profile lock")
+    if payload.get("profile_id")!="w8-cat2044-unlabelled-image-inspection" or payload.get("profile_version")!="1.0.0" or payload.get("engine_version")!="W8-CAT2044-INSPECTION-1.0.0":raise PreprocessingError("unsupported W8 inspection profile")
+    source=payload.get("source_lock",{})
+    required={"candidate_id":"CAT2044","institution":"Museo Egizio, Turin","source_object_id":"Cat.2044/013","physical_support_group":"Cat.2044/013","exact_file_page":"https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg","exact_file_revision":"https://commons.wikimedia.org/w/index.php?title=File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg&oldid=900807568","exact_original_path":"/wikipedia/commons/e/e5/Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg","commons_pageid":145137491,"commons_api_response_sha256":"c530f106a4661d9a0ce7bfdefe51642e435bee868a077223b438c278466f1030","file_sha256":W8_EXPECTED_SHA256,"file_sha1":"752747405048f358147a7b1f0f697720c338394b","byte_size":2649239,"mime_type":"image/jpeg","dimensions":[7063,3947],"exif_orientation":1,"license":"CC0","license_url":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","official_museum_policy_url":"https://collezioni.museoegizio.it/en-GB/","papyrus_database_image_policy_url":"https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/"}
+    if any(source.get(key)!=value for key,value in required.items()):raise PreprocessingError("W8 source lock changed from the one authorized image")
+    if payload.get("outputs",{}).get("training_admission")!="BLOCKED" or payload.get("outputs",{}).get("development_admission")!="BLOCKED" or payload.get("outputs",{}).get("evaluation_admission")!="NOT_AUTHORIZED" or payload.get("outputs",{}).get("benchmark_overlap")!="UNRESOLVED_QUARANTINED" or payload.get("outputs",{}).get("annotation_or_gold")!="NONE":raise PreprocessingError("W8 processing admission boundary changed")
+    return payload
+
+def _w8_verify_inputs(image_path:Path,evidence_path:Path,profile:dict[str,Any])->tuple[bytes,dict[str,Any],dict[str,Any],str]:
+    vault=_w8_private_root()
+    image_path=image_path.absolute();evidence_path=evidence_path.absolute()
+    for path,label in ((image_path,"image"),(evidence_path,"evidence")):
+        absolute=path.absolute()
+        if _has_symlink_or_junction(absolute):raise PreprocessingError(f"W8 {label} path contains a symlink or junction")
+        try:resolved=absolute.resolve(strict=True);resolved.relative_to(vault)
+        except (OSError,ValueError) as exc:raise PreprocessingError(f"W8 {label} must be inside the protected private vault") from exc
+    if image_path.name!="CAT2044-013-commons-original.jpg":raise PreprocessingError("W8 image filename does not match locked source")
+    if evidence_path.name!="CAT2044.json":raise PreprocessingError("W8 evidence filename does not match locked source")
+    if image_path.is_symlink() or evidence_path.is_symlink():raise PreprocessingError("W8 input must not be a symlink")
+    if len(image_path.resolve(strict=True).relative_to(vault).parts)!=1 or len(evidence_path.resolve(strict=True).relative_to(vault).parts)!=1:raise PreprocessingError("W8 source and evidence files must be direct private-vault children")
+    try:data=_w8_read_private_file(image_path,W8_MAX_BYTES,"source image");evidence_raw=_w8_read_private_file(evidence_path,W8_MAX_EVIDENCE_BYTES,"acquisition evidence");evidence=json.loads(evidence_raw.decode("utf-8"))
+    except (OSError,UnicodeError,json.JSONDecodeError) as exc:raise PreprocessingError("W8 private evidence or image is unreadable") from exc
+    source=profile["source_lock"]
+    if len(data)!=source["byte_size"] or _digest(data)!=source["file_sha256"] or hashlib.sha1(data).hexdigest()!=source["file_sha1"]:raise PreprocessingError("W8 source byte hash/size differs from immutable lock")
+    url_parts=urlsplit(evidence.get("exact_original_file_url", ""))
+    if evidence.get("candidate_id")!="CAT2044" or evidence.get("source_object_id")!=source["source_object_id"] or evidence.get("physical_support_group")!=source["physical_support_group"] or evidence.get("commons_pageid")!=source["commons_pageid"] or evidence.get("commons_api_response_sha256")!=source["commons_api_response_sha256"] or evidence.get("source_sha256")!=source["file_sha256"] or evidence.get("source_byte_size")!=source["byte_size"] or evidence.get("commons_file_sha1")!=source["file_sha1"] or evidence.get("declared_dimensions")!=source["dimensions"] or evidence.get("mime_type")!=source["mime_type"] or url_parts.scheme!="https" or url_parts.hostname!="upload.wikimedia.org" or url_parts.path!=source["exact_original_path"] or url_parts.username or url_parts.password or url_parts.fragment:raise PreprocessingError("W8 acquisition evidence does not match exact source lock")
+    if evidence.get("commons_file_page_url")!=source["exact_file_page"] or evidence.get("commons_file_revision_url")!=source["exact_file_revision"]:raise PreprocessingError("W8 evidence cites a different Commons page or revision")
+    license_info=evidence.get("license",{});boundary=evidence.get("use_boundary",{})
+    if license_info.get("identifier")!="CC0" or license_info.get("url")!=source["license_url"] or license_info.get("official_museum_policy_url")!=source["official_museum_policy_url"] or license_info.get("papyrus_database_image_policy_url")!=source["papyrus_database_image_policy_url"] or "Museo Egizio" not in license_info.get("file_credit_observation",""):raise PreprocessingError("W8 exact-file license evidence is not CC0 or its rights sources changed")
+    if boundary.get("source_registry_status")!="NOT_REGISTERED" or boundary.get("benchmark_overlap_status")!="UNRESOLVED_QUARANTINED" or boundary.get("training_admission")!="BLOCKED" or boundary.get("development_admission")!="BLOCKED" or boundary.get("evaluation_admission")!="NOT_AUTHORIZED" or boundary.get("gold_or_transcription")!="NONE":raise PreprocessingError("W8 source evidence was promoted beyond inspection-only status")
+    return data,evidence,source,_digest(evidence_raw)
+
+def _w8_decode(data:bytes,source:dict[str,Any]):
+    """Decode only the one pinned JPEG with Pillow decompression guards."""
+    if len(data)>W8_MAX_BYTES:raise PreprocessingError("W8 source exceeds byte bound")
+    width,height,orientation=_jpeg_header(data,max_pixels=W8_MAX_PIXELS)
+    if width*height>W8_MAX_PIXELS:raise PreprocessingError("W8 decoded pixel count exceeds safety bound")
+    import io, warnings
+    try:
+        from PIL import Image,ImageOps,UnidentifiedImageError
+    except ImportError as exc:raise PreprocessingError("W8 JPEG pixel processing requires Pillow; install the documented optional image runtime") from exc
+    effective_orientation=orientation if orientation is not None else 1
+    if [width,height]!=source["dimensions"] or effective_orientation!=source["exif_orientation"]:raise PreprocessingError("W8 JPEG dimensions or EXIF orientation differ from source lock")
+    previous_limit=Image.MAX_IMAGE_PIXELS;Image.MAX_IMAGE_PIXELS=W8_MAX_PIXELS
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error",Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(data)) as check:
+                if check.format!="JPEG" or check.size!=(width,height):raise PreprocessingError("W8 decoder format or dimension mismatch")
+                check.verify()
+            image=Image.open(io.BytesIO(data));image.load()
+            corrected=ImageOps.exif_transpose(image).convert("RGB")
+    except (OSError,ValueError,Image.DecompressionBombError,Image.DecompressionBombWarning,UnidentifiedImageError) as exc:raise PreprocessingError(f"W8 JPEG pixel decode failed: {type(exc).__name__}") from exc
+    finally:Image.MAX_IMAGE_PIXELS=previous_limit
+    if corrected.size!=(width,height):raise PreprocessingError("W8 EXIF transform unexpectedly changed locked source dimensions")
+    return corrected
+
+def _w8_pixel_analysis(image,profile:dict[str,Any])->dict[str,Any]:
+    """Return low-resolution material/ink proposals and diagnostics; never labels text."""
+    from PIL import Image
+    factor=profile["limits"]["analysis_downsample_factor"];width,height=image.size
+    small=image.resize((max(1,(width+factor-1)//factor),max(1,(height+factor-1)//factor)),Image.Resampling.NEAREST)
+    sw,sh=small.size;scale_x=width/sw;scale_y=height/sh;raw_rgb=small.convert("RGB").tobytes();pixels=list(zip(raw_rgb[0::3],raw_rgb[1::3],raw_rgb[2::3]));paper=bytearray(sw*sh);dark=bytearray(sw*sh);red=bytearray(sw*sh)
+    hist=[0]*256;paper_count=dark_count=red_count=0
+    margin_x=max(2,sw//100);margin_y=max(2,sh//100)
+    for i,(r,g,b) in enumerate(pixels):
+        lum=(299*r+587*g+114*b)//1000;hist[lum]+=1
+        x=i%sw;y=i//sw
+        # Exclude the photographed frame and edge shadow; classify brown paper
+        # or very dark pixels only within the inner page area.
+        is_paper=margin_x<=x<sw-margin_x and margin_y<=y<sh-margin_y and ((r>g+8 and g>b+3 and r<247) or lum<80)
+        if is_paper:
+            paper[i]=1;paper_count+=1
+            if lum<80:dark[i]=1;dark_count+=1
+            if r-g>26 and r>b*1.18 and lum<190:red[i]=1;red_count+=1
+    min_area=profile["limits"]["candidate_region_min_area_pixels"];seen=bytearray(sw*sh);regions=[]
+    for start,value in enumerate(paper):
+        if not value or seen[start]:continue
+        seen[start]=1;stack=[start];left=right=start%sw;top=bottom=start//sw;area=0
+        while stack:
+            pos=stack.pop();x=pos%sw;y=pos//sw;area+=1;left=min(left,x);right=max(right,x);top=min(top,y);bottom=max(bottom,y)
+            for neighbor in (pos-1 if x else -1,pos+1 if x+1<sw else -1,pos-sw if y else -1,pos+sw if y+1<sh else -1):
+                if neighbor>=0 and paper[neighbor] and not seen[neighbor]:seen[neighbor]=1;stack.append(neighbor)
+        if area>=min_area and not ((right-left+1)/sw>0.95 and (bottom-top+1)/sh>0.90):
+            regions.append({"analysis_box":[left,top,right+1,bottom+1],"source_box":[round(left*scale_x),round(top*scale_y),min(width,round((right+1)*scale_x)),min(height,round((bottom+1)*scale_y))],"sampled_pixels":area,"status":"unlabelled_material_or_text_region_candidate","interpretation_status":"UNKNOWN_UNREVIEWED_NOT_GOLD"})
+    row_counts=[sum(dark[y*sw:(y+1)*sw]) for y in range(sh)];threshold=profile["limits"]["line_row_ink_minimum"]
+    active=[count>=threshold for count in row_counts];merge=profile["limits"]["line_row_gap_merge"]
+    bands=[];y=0
+    while y<sh:
+        if not active[y]:y+=1;continue
+        top=y;end=y;gap=0;y+=1
+        while y<sh:
+            if active[y]:end=y;gap=0
+            else:
+                gap+=1
+                if gap>merge:break
+            y+=1
+        if end+1-top>10:
+            for split_top in range(top,end+1,8):bands.append((split_top,min(end+1,split_top+8)))
+        else:bands.append((top,end+1))
+    lines=[]
+    for top,bottom in bands:
+        counts=[sum(dark[row*sw+x] for row in range(top,bottom)) for x in range(sw)];columns=[count>=max(1,(bottom-top)//3) for count in counts];spans=[];x=0
+        while x<sw:
+            if not columns[x]:x+=1;continue
+            x0=x;last=x;gap=0;x+=1
+            while x<sw:
+                if columns[x]:last=x;gap=0
+                else:
+                    gap+=1
+                    if gap>4:break
+                x+=1
+            if last-x0>=3:spans.append((x0,last+1))
+        for left,right in spans:
+            box=[round(left*scale_x),round(top*scale_y),min(width,round(right*scale_x)),min(height,round(bottom*scale_y))]
+            if box[2]-box[0]<40 or box[3]-box[1]<12:continue
+            points=[(x,y) for y in range(top,bottom) for x in range(left,right) if dark[y*sw+x]]
+            correction=0.0
+            if len(points)>=8:
+                mx=sum(x for x,_ in points)/len(points);my=sum(y for _,y in points)/len(points);variance=sum((x-mx)**2 for x,_ in points)
+                if variance>0:
+                    slope=sum((x-mx)*(y-my) for x,y in points)/variance;estimate=math.degrees(math.atan(slope))
+                    if 0.25<=abs(estimate)<=5.0:correction=round(estimate,3)
+            lines.append({"source_box":box,"analysis_box":[left,top,right,bottom],"reading_order":"right_to_left_candidate_order_only","first_candidate_edge":"right","status":"unlabelled_line_region_proposal_not_transcription_gold","reading_status":"UNKNOWN_UNREVIEWED","estimated_baseline_angle_degrees":round(estimate,3) if len(points)>=8 and variance>0 else None,"deskew_correction_degrees":correction,"deskew_status":"heuristic correction applied to crop" if correction else "not applied; estimated angle below threshold or insufficient evidence"})
+    lines=sorted(lines,key=lambda item:(item["source_box"][1],-item["source_box"][0]))[:profile["limits"]["maximum_crop_proposals"]]
+    total=len(pixels);mean=sum((i*n) for i,n in enumerate(hist))/max(total,1);variance=sum(((i-mean)**2)*n for i,n in enumerate(hist))/max(total,1)
+    return {"analysis_dimensions":[sw,sh],"downsample_factor":factor,"material_candidate_pixel_fraction":paper_count/max(total,1),"dark_candidate_pixel_fraction":dark_count/max(paper_count,1),"red_tone_or_brown_pigment_candidate_pixel_fraction":red_count/max(paper_count,1),"sampled_luminance_mean":round(mean,4),"sampled_luminance_stddev":round(math.sqrt(variance),4),"candidate_material_regions":sorted(regions,key=lambda item:(item["source_box"][1],item["source_box"][0]))[:128],"candidate_line_regions":lines,"coordinate_transform_source_to_analysis":[[sw/width,0,0],[0,sh/height,0],[0,0,1]],"diagnostic_warning":"Color and darkness heuristics propose image regions only; they do not identify ink, script, reading, line truth, or gold. Red/brown hues can be papyrus, stain, or ink and are not distinguished as a scholarly reading."}
+
+def inspect_w8_real_image(manifest_path:Path,image_path:Path,evidence_path:Path,out_dir:Path)->dict[str,Any]:
+    """Private, fixed-source image-processing demonstration; never a corpus admission path."""
+    profile=_w8_load_profile(manifest_path);data,evidence,source,evidence_digest=_w8_verify_inputs(image_path,evidence_path,profile);image=_w8_decode(data,source);analysis=_w8_pixel_analysis(image,profile)
+    vault=_w8_private_root();absolute=out_dir.absolute()
+    if _has_symlink_or_junction(absolute):raise PreprocessingError("W8 output path contains a symlink or junction")
+    try:resolved_parent=absolute.parent.resolve(strict=True)
+    except OSError as exc:raise PreprocessingError("W8 output parent must exist inside the private vault") from exc
+    if resolved_parent!=vault:raise PreprocessingError("W8 output directory must be a direct child of the private local vault")
+    if absolute.exists() or absolute.is_symlink():raise PreprocessingError("W8 output directory already exists; refusing overwrite")
+    absolute.mkdir()
+    created=[]
+    try:
+        from PIL import Image,ImageDraw,ImageOps
+        factor=analysis["downsample_factor"];sw,sh=analysis["analysis_dimensions"]
+        overlay=image.copy();draw=ImageDraw.Draw(overlay)
+        for region in analysis["candidate_material_regions"]:
+            x0,y0,x1,y1=region["source_box"];draw.rectangle((x0,y0,x1-1,y1-1),outline=(255,170,0),width=max(2,factor//2))
+        for index,line in enumerate(analysis["candidate_line_regions"],1):
+            x0,y0,x1,y1=line["source_box"];draw.rectangle((x0,y0,x1-1,y1-1),outline=(0,210,255),width=max(2,factor//2));draw.text((x0,y0),f"L{index} ?",fill=(0,30,100),stroke_width=1,stroke_fill=(255,255,255))
+        preview=overlay.copy();preview.thumbnail((1800,1800),Image.Resampling.LANCZOS)
+        artifacts=[]
+        def save_image(name,image_obj):
+            path=absolute/name;created.append(path);image_obj.save(path,format="PNG",optimize=False,compress_level=9);blob=path.read_bytes();artifacts.append({"path":name,"sha256":_digest(blob),"byte_size":len(blob),"dimensions":list(image_obj.size)});return path
+        save_image("candidate-regions-overlay.png",preview)
+        mask=Image.new("L",(sw,sh));mask_rgb=image.resize((sw,sh),Image.Resampling.NEAREST).convert("RGB").tobytes();margin_x=max(2,sw//100);margin_y=max(2,sh//100);mask.putdata([255 if margin_x<=i%sw<sw-margin_x and margin_y<=i//sw<sh-margin_y and ((r>g+8 and g>b+3 and r<247) or ((299*r+587*g+114*b)//1000)<80) else 0 for i,(r,g,b) in enumerate(zip(mask_rgb[0::3],mask_rgb[1::3],mask_rgb[2::3]))]);save_image("material-candidate-mask.png",mask)
+        crop_records=[]
+        total_crop_pixels=0
+        for index,line in enumerate(analysis["candidate_line_regions"],1):
+            box=line["source_box"];pad_x=24;pad_y=64;crop_box=[max(0,box[0]-pad_x),max(0,box[1]-pad_y),min(image.width,box[2]+pad_x),min(image.height,box[3]+pad_y)];crop=image.crop(tuple(crop_box));angle=line["deskew_correction_degrees"];crop_width,crop_height=crop.size
+            source_crop_pixels=crop_width*crop_height;crop_limit=profile["limits"]["maximum_crop_area_pixels"];aggregate_limit=profile["limits"]["maximum_total_crop_pixels"]
+            if source_crop_pixels>crop_limit or total_crop_pixels+source_crop_pixels>aggregate_limit:
+                crop_records.append({**line,"crop_artifact":None,"crop_source_bounds":crop_box,"crop_status":"omitted_private_output_size_limit","source_crop_pixels":source_crop_pixels});continue
+            total_crop_pixels+=source_crop_pixels
+            if angle:
+                crop=crop.rotate(angle,resample=Image.Resampling.BILINEAR,expand=True,fillcolor=(255,255,255))
+                theta=math.radians(angle);cosine=math.cos(theta);sine=math.sin(theta);out_cx,out_cy=crop.width/2,crop.height/2;in_cx,in_cy=crop_width/2,crop_height/2
+                rotate=[[cosine,sine,out_cx-cosine*in_cx-sine*in_cy],[-sine,cosine,out_cy+sine*in_cx-cosine*in_cy],[0,0,1]]
+                source_to_crop=_matrix_multiply(rotate,[[1,0,-crop_box[0]],[0,1,-crop_box[1]],[0,0,1]])
+            else:source_to_crop=[[1,0,-crop_box[0]],[0,1,-crop_box[1]],[0,0,1]]
+            name=f"line-candidate-{index:03d}.png";save_image(name,crop)
+            crop_records.append({**line,"crop_artifact":name,"crop_status":"written_unlabelled_candidate","source_crop_pixels":source_crop_pixels,"crop_source_bounds":crop_box,"crop_context_padding_pixels":[pad_x,pad_y],"source_to_crop_transform":source_to_crop,"crop_bounds":"left/top inclusive; right/bottom exclusive"})
+        input_sha=_digest(data);evidence_sha=evidence_digest
+        identity={"profile_id":profile["profile_id"],"profile_version":profile["profile_version"],"engine_version":profile["engine_version"],"profile_sha256":W8_PROFILE_SHA256,"source_sha256":input_sha,"source_dimensions":source["dimensions"],"source_object_id":source["source_object_id"],"physical_support_group":source["physical_support_group"],"asset_view":"Commons p01; side/exposure is not independently mapped to recto or verso","historical_label_status":"unresolved: Commons filename says Ramesses VI while TPOP record says Ramesses V","evidence_sha256":evidence_sha,"analysis":analysis,"artifacts":artifacts,"crop_records":crop_records,"decoder":{"name":"Pillow","version":__import__("PIL").__version__},"exif_orientation":source["exif_orientation"],"orientation_operation":"EXIF transpose; identity for locked source orientation 1","rights_and_science_boundary":profile["outputs"],"gold_or_reading_created":False,"scientific_status":"UNLABELLED_HEURISTIC_OUTPUT; REVIEW_AND_READINGS_UNKNOWN"}
+        identity["processing_id"]="w8-"+_digest(json.dumps(identity,sort_keys=True,separators=(",",":")).encode("utf-8"))
+        complete=absolute/"inspection-manifest.json";temporary=absolute/".inspection-manifest.tmp";created.append(temporary)
+        with temporary.open("w",encoding="utf-8",newline="\n") as stream:stream.write(json.dumps(identity,ensure_ascii=False,sort_keys=True,indent=2)+"\n");stream.flush();os.fsync(stream.fileno())
+        os.rename(temporary,complete);created.remove(temporary);created.append(complete)
+        return identity
+    except Exception:
+        for path in reversed(created):
+            try:path.unlink(missing_ok=True)
+            except OSError:pass
+        try:absolute.rmdir()
+        except OSError:pass
+        raise
+
 def main(argv=None)->int:
     parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest="command",required=True)
     check=sub.add_parser("validate");check.add_argument("manifest",type=Path);check.add_argument("--acquisition",type=Path)
     execute=sub.add_parser("run");execute.add_argument("manifest",type=Path);execute.add_argument("--acquisition",type=Path);execute.add_argument("--output",type=Path,required=True)
     readiness=sub.add_parser("met-readiness",help="offline, no-go preflight for an exact W6 Met image view")
     readiness.add_argument("--object-id",type=int,default=561392);readiness.add_argument("--view",default="primaryImage",help="primaryImage or additionalImages:<zero-based-index>");readiness.add_argument("--output",type=Path)
+    inspect=sub.add_parser("inspect-image",help="private, pinned W8 unlabelled Cat.2044 image-processing demonstration")
+    inspect.add_argument("manifest",type=Path,nargs="?",default=W8_PROFILE);inspect.add_argument("--image",type=Path,required=True,help="exact acquired JPEG inside the private W8 vault")
+    inspect.add_argument("--evidence",type=Path,required=True,help="redacted Cat.2044 acquisition record inside the private W8 vault")
+    inspect.add_argument("--output",type=Path,required=True,help="new, unused output directory inside the private W8 vault")
     args=parser.parse_args(argv)
     try:
         if args.command=="met-readiness":
@@ -497,6 +728,10 @@ def main(argv=None)->int:
             if errors:raise PreprocessingError(f"readiness output schema failure: {errors[0].message}")
             if args.output:_publish_readiness_output(args.output,result)
             print(json.dumps({"assessment_id":result["assessment_id"],"selected_object":args.object_id,"accession":result["selected_candidate"]["accession"],"view":args.view,"image_url":result["selected_candidate"]["exact_image_url"],"go_no_go":result["selected_candidate"]["go_no_go"],"download_performed":False,"blocker_count":len(result["selected_candidate"]["blockers"]),"output":str(args.output) if args.output else None},ensure_ascii=False,sort_keys=True))
+            return 0
+        if args.command=="inspect-image":
+            result=inspect_w8_real_image(args.manifest,args.image,args.evidence,args.output)
+            print(json.dumps({"processing_id":result["processing_id"],"source_sha256":result["source_sha256"],"source_dimensions":result["source_dimensions"],"decoder":result["decoder"],"candidate_material_regions":len(result["analysis"]["candidate_material_regions"]),"candidate_line_regions":len(result["analysis"]["candidate_line_regions"]),"artifact_count":len(result["artifacts"]),"output":str(args.output),"training_admission":"BLOCKED","benchmark_overlap":"UNRESOLVED_QUARANTINED","gold_created":False},sort_keys=True))
             return 0
         if args.command=="validate":
             acquisition=_read(args.acquisition) if args.acquisition else None;errors=validate_request(_read(args.manifest),_read(REGISTRY),args.manifest.parent,acquisition)

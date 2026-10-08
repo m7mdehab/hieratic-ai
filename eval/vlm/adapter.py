@@ -632,12 +632,20 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             inputs = self.format_multimodal_inputs(system_prompt, prompt, pil_image)
 
             # Ensure image tensors exist in inputs: check pixel_values or image feature tensors
-            has_visual_features = (
-                "pixel_values" in inputs
-                or "images" in inputs
-                or "pixel_values_videos" in inputs
-                or hasattr(self._processor, "mock_image_tag")
-            )
+            # A processor attribute cannot certify visual conditioning. Require a
+            # concrete nonempty image payload in the actual generated model inputs.
+            visual_values = [inputs.get(name) for name in ("pixel_values", "images")]
+            def _has_visual_payload(value: Any) -> bool:
+                if value is None:
+                    return False
+                if hasattr(value, "numel"):
+                    return bool(value.numel() > 0)
+                if hasattr(value, "shape"):
+                    return bool(getattr(value, "size", 0) or len(value))
+                if isinstance(value, (list, tuple)):
+                    return bool(value) and any(_has_visual_payload(v) for v in value)
+                return False
+            has_visual_features = any(_has_visual_payload(value) for value in visual_values)
             if not has_visual_features:
                 raise ImageConditioningError(
                     f"Processor output for {self.model_key} lacks visual features (pixel_values). "
@@ -831,9 +839,10 @@ class Llama3_2_VisionAdapter(OpenWeightVLMAdapter):
                     f"Chat template application failed for Llama 3.2 Vision: {exc}. Multimodal conditioning cannot proceed."
                 ) from exc
 
-        # Fallback to direct placeholder formatting if processor does not have apply_chat_template
-        full_text = f"<|image|><|begin_of_text|>{system_prompt}\n\n{prompt}"
-        return self._processor(images=pil_image, text=full_text, return_tensors="pt")
+        raise ImageConditioningError(
+            f"Processor for '{self.model_key}' lacks apply_chat_template. "
+            "Cannot establish trusted Llama Vision image conditioning."
+        )
 
 
 def get_adapter(model_config: dict[str, Any], **kwargs: Any) -> BaseVLMAdapter:

@@ -234,3 +234,23 @@ The W3 task boundaries are deliberate:
 - EVAL-003 focuses on untuned vendor frontier models with identical, predeclared official public item/rung surface and no image-based prompt tuning.
 
 No accepted scientific capability points accrue from this W3 methodology work alone. The canonical goal remains **30.5/100** pending actual independently accepted weighted tasks.
+
+
+## 13. Original native HieraticBench public scorer replay, no reimplementation
+
+`eval/baselines/official_replay.mjs` imports **the actual pinned upstream TypeScript `bench/src/score.ts`** through Node/tsx from the frozen checkout (`d587dc990013f18007f1e7a8f56f96ff2f7127e2`). It reads authorized public metadata/gold from upstream *in memory*, combines them with a private externally stored response JSONL archive, and writes only a redacted aggregate JSON report to an external directory. It will not import anything from `data/private` or the commissioned sealed pair.
+
+This is necessary to complete EVAL-003's requirement that **official scoring be executed**, not reimplemented or inferred from published leaderboard numerics.
+
+**Preconditions for actual original-run scoring:**
+1. User explicitly approves provider spend/rights separately; authenticated actual provider raw capture and immutable provider receipts exist.
+2. `eval.baselines.run_freeze.validate_locked` confirms the real per-attempt rendered prompt/image hash and complete pinned 266 item-rung universe; `audit_original_capture` verifies every original response including errors/refusals.
+3. Native replay `--checkout` must point to the exact external pinned HieraticBench Git revision and must have Node 22/tsx dependencies installed from its committed lockfile.
+4. Private `--freeze`, `--receipt`, `--items`, `--attempts`, `--capture` and `--output-dir` paths must be outside this public repository. The replay checks byte-level hashes of pinned scorer/prompt source, item/attempt/archive records and provider/model identity.
+5. Independent research reviewer must verify the underlying provider logs, rights grants, complete attempted denominators and downstream statistics before stating any externally meaningful model score.
+
+**Reporting:** Results are separate for script identification (116 public items) and isolated single signs (150 public items). The tool reports the upstream's native *successfully scored sample → per-item mean → rung macro mean* convention **and** a second conservative `intention_to_test_zero_for_failed_macro`, counting failures, timeouts, refusals and abstentions as zero. The first is comparable to the benchmark's public leaderboard scoring convention only for equivalent coverage and prompt protocol; the second makes incomplete model calls transparent. It reports scoring coverage and attempt statuses, never a composite score or claim about sentence transcription/translation.
+
+**Important privacy safeguard:** The original benchmark's publicly scored sign labels are present only in the ephemeral upstream checkout; no gold, per-item results, parsed sign guesses, provider raw answers or source images are copied into the project's Git history or aggregate report.
+
+**CI:** The `frontier-baselines.yml` workflow runs a built-in fake-script/fake-sign parity test against *the real pinned official TypeScript source*, then creates a **synthetic 266-attempt full public-manifest fixture** in `runner.temp`. It replays placeholder text/failures through the real scorer and audits the resulting aggregate for exact count and absence of answer-bearing fields. **This is not new frontier-model inference and awards zero EVAL-003 points.** A real provider call and independently accepted scored archive remain required.

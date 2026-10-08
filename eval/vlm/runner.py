@@ -16,6 +16,7 @@ from typing import Any
 from eval.vlm.adapter import (
     BaseVLMAdapter,
     ImageConditioningError,
+    LiveFewShotBlockedError,
     UnverifiedDemonstrationError,
     VLMResponse,
 )
@@ -159,7 +160,7 @@ class VLMRunner:
                 "token_usage": resp.token_usage,
                 "timestamp": timestamp,
             }
-        except UnverifiedDemonstrationError as exc:
+        except (UnverifiedDemonstrationError, LiveFewShotBlockedError) as exc:
             # Explicit fail-closed attempt preservation for unverified few-shot fixtures
             attempt_record = {
                 "item_id": item_id,
@@ -203,6 +204,7 @@ class VLMRunner:
         shot_mode: str = "zero_shot",
         manifest_id: str | None = None,
         samples_per_item: int = 1,
+        items_tier: str = "synthetic_ci_items",
     ) -> dict[str, Any]:
         """Run evaluation over items, generating an immutable run manifest."""
         if not items:
@@ -218,6 +220,16 @@ class VLMRunner:
         if not manifest_id:
             time_slug = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             manifest_id = f"vlm_run_{self.adapter.model_key}_{shot_mode}_{time_slug}"
+
+        # Build frozen universe manifest hash across scheduled attempts
+        universe_keys = []
+        for mode in modes:
+            for s_idx in range(samples_per_item):
+                for item in items:
+                    universe_keys.append(f"{item['item_id']}::{item['rung']}::{mode}::{s_idx}")
+        universe_keys.sort()
+        universe_payload = json.dumps(universe_keys).encode("utf-8")
+        universe_sha256 = hashlib.sha256(universe_payload).hexdigest()
 
         for mode in modes:
             for s_idx in range(samples_per_item):
@@ -256,6 +268,12 @@ class VLMRunner:
             "suite_id": self.suite["suite_id"],
             "suite_sha256": self.suite_sha256,
             "demonstrations_sha256": self.demos_sha256 if ("few_shot" in modes) else None,
+            "universe_manifest": {
+                "universe_sha256": universe_sha256,
+                "expected_attempt_count": len(universe_keys),
+                "expected_universe_count": len(universe_keys),
+                "items_tier": items_tier,
+            },
             "model_key": self.adapter.model_key,
             "model_id": self.adapter.model_config["provider_model_id"],
             "shot_mode": shot_mode,
@@ -269,6 +287,7 @@ class VLMRunner:
             "coverage_summary": {
                 "total_items": len(items),
                 "total_attempts": total_attempts,
+                "expected_universe_count": len(universe_keys),
                 "success_count": successes,
                 "failure_count": failures,
                 "abstention_count": abstentions,

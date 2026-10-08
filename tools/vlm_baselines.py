@@ -158,15 +158,25 @@ def validate_demonstrations(
         if did.startswith(benchmark_prefixes) or any(did.startswith(f"DEMO-{p}") for p in benchmark_prefixes):
             errors.append(f"Demonstration '{did}' uses a reserved HieraticBench prefix; quarantine violated.")
 
-    if require_authentic or status == "reviewed_authentic":
+    # Clearance forgery detection: synthetic fixture banks cannot claim approved rights
+    if status == "synthetic_fixture_only":
+        if rights.get("rights_review_status") == "approved_with_evidence":
+            errors.append("Demonstration clearance forgery: 'synthetic_fixture_only' bank cannot assert 'approved_with_evidence'.")
+        if rights.get("quarantine_verified"):
+            errors.append("Demonstration clearance forgery: 'synthetic_fixture_only' bank cannot assert quarantine_verified=true.")
+
+    # Authentic clearance verification
+    if require_authentic or status == "reviewed_authentic" or rights.get("rights_review_status") == "approved_with_evidence":
         if rights.get("rights_review_status") != "approved_with_evidence":
             errors.append("Authentic demonstration bank requires rights_review_status='approved_with_evidence'.")
         if not rights.get("quarantine_verified", False):
             errors.append("Authentic demonstration bank requires quarantine_verified=true.")
 
-        # Verify real image files on disk
         for d in items:
             img_ref = d.get("image_ref", "")
+            if not img_ref or img_ref.startswith("facsimile://"):
+                errors.append(f"Demonstration '{d['demo_id']}' lacks authentic image file on disk: {img_ref}")
+                continue
             img_path = Path(img_ref)
             if not img_path.is_file():
                 errors.append(f"Demonstration '{d['demo_id']}' image file not found on disk: {img_ref}")
@@ -186,6 +196,7 @@ def audit_manifest(
     suite_path: Path = DEFAULT_SUITE_PATH,
     schema_path: Path = SCHEMA_PATH,
     require_certified: bool = False,
+    items_path: Path | None = None,
 ) -> list[str]:
     """Audit run manifest completeness, schema compliance, hash stability, and promotion gating."""
     schema = load_schema(schema_path)
@@ -211,6 +222,29 @@ def audit_manifest(
 
     if len(attempts) != cov.get("total_attempts"):
         errors.append(f"Attempt count mismatch: recorded {len(attempts)} != summary {cov.get('total_attempts')}")
+
+    # Frozen universe verification
+    univ = manifest.get("universe_manifest")
+    if univ:
+        expected_cnt = univ.get("expected_attempt_count")
+        if expected_cnt is not None and len(attempts) != expected_cnt:
+            errors.append(
+                f"Frozen universe violation: recorded attempts {len(attempts)} != "
+                f"expected universe attempts {expected_cnt}. Truncated manifest detected."
+            )
+
+        recorded_sha = univ.get("universe_sha256")
+        if recorded_sha and len(attempts) == expected_cnt:
+            attempt_keys = sorted(
+                f"{a['item_id']}::{a['rung']}::{a.get('shot_mode', 'zero_shot')}::{a.get('sample_index', 0)}"
+                for a in attempts
+            )
+            attempt_sha = hashlib.sha256(json.dumps(attempt_keys).encode("utf-8")).hexdigest()
+            if attempt_sha != recorded_sha:
+                errors.append(
+                    f"Frozen universe hash mismatch: attempts hash {attempt_sha[:12]} != "
+                    f"universe manifest {recorded_sha[:12]}"
+                )
 
     # Check composite key uniqueness: (item_id, rung, shot_mode, sample_index)
     seen_composite = set()
@@ -339,6 +373,7 @@ def main(argv: list[str] | None = None) -> int:
     p_run = subparsers.add_parser("run", help="Execute evaluation run")
     p_run.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
     p_run.add_argument("--demos", type=Path, default=DEFAULT_DEMOS_PATH)
+    p_run.add_argument("--items", type=Path, default=None, help="Path to evaluation items JSON/YAML")
     p_run.add_argument("--model", type=str, default="mock-vision-v1")
     p_run.add_argument("--shot-mode", type=str, choices=["zero_shot", "few_shot", "both", "zero-shot", "few-shot"], default="both")
     p_run.add_argument("--output", type=Path, required=True, help="Path to save run manifest JSON")
@@ -349,6 +384,7 @@ def main(argv: list[str] | None = None) -> int:
     p_audit = subparsers.add_parser("audit-manifest", help="Audit run manifest completeness and integrity")
     p_audit.add_argument("--manifest", type=Path, required=True)
     p_audit.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
+    p_audit.add_argument("--items", type=Path, default=None)
     p_audit.add_argument("--require-certified", action="store_true", help="Reject synthetic CI fixtures")
 
     # score
@@ -356,11 +392,14 @@ def main(argv: list[str] | None = None) -> int:
     p_score.add_argument("--manifest", type=Path, required=True)
     p_score.add_argument("--gold", type=Path, default=None)
     p_score.add_argument("--output", type=Path, default=None)
+    p_score.add_argument("--allow-incomplete-gold", action="store_true", help="Permit missing gold without failing closed")
 
     # paired-compare
     p_comp = subparsers.add_parser("paired-compare", help="Compare two run manifests on identical items")
     p_comp.add_argument("--manifest-a", type=Path, required=True)
     p_comp.add_argument("--manifest-b", type=Path, required=True)
+    p_comp.add_argument("--shot-mode-a", type=str, default=None, help="Condition filter for manifest A")
+    p_comp.add_argument("--shot-mode-b", type=str, default=None, help="Condition filter for manifest B")
     p_comp.add_argument("--gold", type=Path, default=None)
     p_comp.add_argument("--output", type=Path, default=None)
 
@@ -404,9 +443,16 @@ def main(argv: list[str] | None = None) -> int:
                 adapter = OpenWeightVLMAdapter(model_cfg, weights_dir=args.weights_dir)
 
             runner = VLMRunner(suite, demos, adapter, suite_path=args.suite, demos_path=args.demos)
-            items = create_synthetic_items()
+
+            if args.items and args.items.is_file():
+                items = load_json(args.items) if args.items.suffix == ".json" else load_yaml(args.items)
+                items_tier = "verified_external_items"
+            else:
+                items = create_synthetic_items()
+                items_tier = "synthetic_ci_items"
+
             shot_mode = args.shot_mode.replace("-", "_")
-            manifest = runner.run_suite(items, shot_mode=shot_mode)
+            manifest = runner.run_suite(items, shot_mode=shot_mode, items_tier=items_tier)
 
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -417,7 +463,12 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         elif args.command == "audit-manifest":
-            errors = audit_manifest(args.manifest, args.suite, require_certified=args.require_certified)
+            errors = audit_manifest(
+                args.manifest,
+                args.suite,
+                require_certified=args.require_certified,
+                items_path=args.items,
+            )
             if errors:
                 print("Manifest audit FAILED:", file=sys.stderr)
                 for e in errors:
@@ -429,7 +480,11 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "score":
             manifest = load_json(args.manifest)
             gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
-            report = score_manifest(manifest, gold)
+            report = score_manifest(
+                manifest,
+                gold,
+                require_complete_gold=(not args.allow_incomplete_gold),
+            )
 
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -440,7 +495,7 @@ def main(argv: list[str] | None = None) -> int:
             for rung, rdata in report["project_native_eval001"].items():
                 ci_str = str(rdata['cluster_bootstrap_ci_95']) if rdata['cluster_bootstrap_ci_95'] else f"[{rdata['cluster_ci_status']}]"
                 print(
-                    f"  [{rung}] {rdata['primary_metric_id']}: "
+                    f"  [{rung}] {rdata['primary_metric_id']} ({rdata['metric_direction']}): "
                     f"Intention-to-test={rdata['intention_to_test_score']} "
                     f"(Clusters={rdata['cluster_count']}, 95% Clustered CI: {ci_str}) "
                     f"Coverage={rdata['coverage_rate']}"
@@ -452,7 +507,13 @@ def main(argv: list[str] | None = None) -> int:
             manifest_b = load_json(args.manifest_b)
             gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
 
-            comps = compare_manifests(manifest_a, manifest_b, gold)
+            comps = compare_manifests(
+                manifest_a,
+                manifest_b,
+                gold,
+                shot_mode_a=args.shot_mode_a,
+                shot_mode_b=args.shot_mode_b,
+            )
             if args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_text(json.dumps(comps, indent=2), encoding="utf-8")
@@ -462,7 +523,7 @@ def main(argv: list[str] | None = None) -> int:
             for c in comps:
                 ci_str = str(c['delta_cluster_ci_95']) if c['delta_cluster_ci_95'] else f"[{c['delta_ci_status']}]"
                 print(
-                    f"  [{c['rung']}] Delta ({c['metric_id']}): {c['score_delta']} "
+                    f"  [{c['rung']}] Delta ({c['metric_id']}, {c['metric_direction']}): {c['score_delta']} "
                     f"(95% Clustered CI: {ci_str}) over N={c['paired_samples']} paired attempts"
                 )
             return 0

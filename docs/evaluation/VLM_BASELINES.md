@@ -94,12 +94,13 @@ The records contain synthetic facsimile references for CI regression testing. Th
 
 ### 3.3 Fail-Closed Few-Shot Clearance Policy
 
-Real few-shot evaluation must **fail closed** (`UnverifiedDemonstrationError`) unless all of the following conditions are satisfied:
-1. **Actual Pixels on Disk:** Demonstration items must point to genuine image files on disk. Pure URI placeholders (`facsimile://...`) fail closed.
-2. **Cryptographic SHA-256 Hash Verification:** On-disk image bytes must match the recorded SHA-256 hash exactly.
-3. **Item-Specific Rights Review:** The demonstration bank must carry `rights_review_status: "approved_with_evidence"` backed by independent provenance review.
-4. **Partition Quarantine:** Image hashes and item identifiers must be verified not to overlap with HieraticBench or any training/evaluation split.
-5. **Forbidden Prefix Rejection:** Reserved HieraticBench ID prefixes (`AKU-`, `CBL-`, `HB-`, `MET-`, `WM-`, `YPM-`) are strictly forbidden.
+Real few-shot evaluation must **fail closed** (`LiveFewShotBlockedError` or `UnverifiedDemonstrationError`) unless all of the following conditions are satisfied:
+1. **Unconditional Model Architecture Gate:** In `OpenWeightVLMAdapter`, live few-shot evaluation on open-weight backbones is unconditionally blocked (`LiveFewShotBlockedError`) until verified multi-image vision templates, exemplar pixels, and provenance receipts exist.
+2. **Actual Pixels on Disk:** Demonstration items must point to genuine image files on disk. Pure URI placeholders (`facsimile://...`) or unverified records fail closed.
+3. **Cryptographic SHA-256 Hash Verification:** On-disk image bytes must match the recorded SHA-256 hash exactly.
+4. **Item-Specific Rights Review:** The demonstration bank must carry `rights_review_status: "approved_with_evidence"` backed by independent provenance review. Asserting `approved_with_evidence` without verifiable on-disk images fails closed.
+5. **Partition Quarantine:** Image hashes and item identifiers must be verified not to overlap with HieraticBench or any training/evaluation split.
+6. **Forbidden Prefix Rejection:** Reserved HieraticBench ID prefixes (`AKU-`, `CBL-`, `HB-`, `MET-`, `WM-`, `YPM-`) are strictly forbidden.
 
 Synthetic fixtures are permitted **only** in the synthetic CI harness tier (`mock-vision-v1`) when explicitly operating under `synthetic_ci_fixture`.
 
@@ -121,11 +122,18 @@ $$\text{Composite Identity} = (\text{item\_id}, \text{rung}, \text{shot\_mode}, 
 
 This composite key prevents collisions across multi-mode evaluation runs and guarantees exact 1-to-1 pairing in paired comparisons.
 
-### 4.2 Full Denominator Accounting
+### 4.2 Frozen Evaluation Denominators & Universe Integrity
+
+To ensure that attempt deletion cannot conceal failures or alter denominator totals, the runner and auditor enforce frozen evaluation universes:
+- **`universe_manifest`:** Every run manifest records `expected_universe_count`, `expected_attempt_count`, `items_tier`, and `universe_sha256`. The hash is computed deterministically over the scheduled Cartesian product of items, rungs, shot modes, and samples.
+- **Fail-Closed Universe Audit:** The manifest auditor computes the scheduled universe independently. If attempts were truncated or removed, or if the recorded `universe_sha256` does not match, the audit fails closed immediately.
+- **Gold Eligibility Audit:** All scheduled items must be checked for gold label completeness. Manifests record `gold_eligible_count` and `missing_gold_count`. By default, missing gold fails closed (`require_complete_gold: true`).
+
+### 4.3 Full Denominator Accounting
 
 To prevent survivorship bias, the evaluation suite reports two distinct metric variants:
 1. **Intention-to-Test Score (`intention_to_test_score`):**
-   Evaluates all attempted items ($N_{\text{total}}$), assigning a score of $0.0$ to non-successes (failures, timeouts, abstentions, refusals). This is the primary scientific metric.
+   Evaluates all attempted items ($N_{\text{total}}$), assigning a score of $0.0$ to non-successes (failures, timeouts, abstentions, refusals) for higher-is-better metrics, or $1.0$ penalty for lower-is-better error metrics (`TR_CER`). This is the primary scientific metric.
 2. **Conditional Score (`conditional_score`):**
    Evaluates only successful completions ($N_{\text{success}}$), reported alongside explicit counts for failures, abstentions, timeouts, and refusals.
 
@@ -140,14 +148,17 @@ $$\text{Coverage Rate} = \frac{N_{\text{success}}}{N_{\text{total attempts}}}$$
 To prevent misleading claims, scoring channels are strictly separated:
 1. **Official Upstream Benchmark (`official_hieraticbench`):**
    - Authoritative scoring implemented by the pinned TypeScript scorer (`bench/src/score.ts`).
-   - Evaluated via official runner/replay paths.
+   - In this offline preflight harness, official scoring is explicitly reported with `official_scoring_status: "NOT_INTEGRATED"` and `official_hieraticbench: null`.
+   - Never accepts caller-injected arbitrary score summaries as authoritative evidence.
 2. **Project-Native Diagnostics (`project_native_eval001`):**
-   - Internal diagnostic metrics defined in `eval/metric_contract.yaml`:
-     - Script Identification: `SCRIPT_ACC`
-     - Isolated Sign Recognition: `SIGN_ACC`
-     - Transliteration: `CER_V1` ($\text{CER} = \frac{\text{Levenshtein}(R, H)}{\text{Length}(R)}$)
-     - Translation: `TRANSLATION_BLEU_4`
-   - Clearly labeled as project-native to prevent conflation with official upstream leaderboard scores.
+   - In-house metrics strictly conforming to `eval/metric_contract.yaml`:
+     - Script Identification: `SCRIPT_ACC` (direction: higher, unit: proportion)
+     - Isolated Sign Recognition: `SIGN_TOP1` (direction: higher, unit: proportion)
+     - Sequential Transliteration: `TR_CER` (direction: lower, unit: edit_error_rate, Levenshtein CER, 1.0 penalty for unfulfilled attempts)
+     - Translation: `TRANS_CHRF` (direction: higher, unit: score)
+   - Secondary diagnostics: `TR_TER` (WER), `DIAG_ACCURACY` ($\max(0.0, 1.0 - \text{CER})$), and `VLM_DIAG_BLEU_4`.
+   - Direction handling: for `TR_CER` (`direction: lower`), paired differences are reported as $\Delta = \text{Score}_B - \text{Score}_A$ (negative values indicate lower error rate for $B$, hence improvement).
+   - Clearly labeled under the `project_native_eval001` channel to prevent conflation with official upstream leaderboard scores.
 3. **Adversarial Parity Testing:**
    - Dedicated adversarial parity tests (`test_adversarial_parity_exposes_differences_with_official_scoring`) demonstrate where in-house metrics diverge from upstream scoring (e.g., conversational framing wrappers, multi-sign Gardiner array matching), preventing unwarranted claims of parity.
 
@@ -217,17 +228,30 @@ python -m tools.vlm_baselines validate-demonstrations
 
 ### Run Synthetic CI Evaluation
 ```bash
+# Synthetic CI run (default built-in items)
 python -m tools.vlm_baselines run \
   --model mock-vision-v1 \
   --shot-mode both \
   --output artifacts/vlm_manifest.json
+
+# Run on verified external items (tagged as verified_external_items)
+python -m tools.vlm_baselines run \
+  --model mock-vision-v1 \
+  --items data/verified_items.json \
+  --shot-mode zero-shot \
+  --output artifacts/vlm_manifest.json
 ```
 
-### Audit Run Manifest (Strict Certification Mode)
+### Audit Run Manifest (Strict Certification & Gold Integrity)
 ```bash
-# Standard validation
+# Standard validation with frozen universe audit and gold eligibility verification
 python -m tools.vlm_baselines audit-manifest \
   --manifest artifacts/vlm_manifest.json
+
+# Allow incomplete gold labels (for unannotated pilot runs)
+python -m tools.vlm_baselines audit-manifest \
+  --manifest artifacts/vlm_manifest.json \
+  --allow-incomplete-gold
 
 # Certified results gate (fails closed on synthetic fixtures)
 python -m tools.vlm_baselines audit-manifest \
@@ -240,12 +264,28 @@ python -m tools.vlm_baselines audit-manifest \
 python -m tools.vlm_baselines score \
   --manifest artifacts/vlm_manifest.json \
   --output artifacts/vlm_score_report.json
+
+# With incomplete gold tolerance:
+python -m tools.vlm_baselines score \
+  --manifest artifacts/vlm_manifest.json \
+  --allow-incomplete-gold \
+  --output artifacts/vlm_score_report.json
 ```
 
 ### Paired Comparison
 ```bash
+# Paired comparison between distinct zero-shot and few-shot manifests
 python -m tools.vlm_baselines paired-compare \
   --manifest-a artifacts/vlm_manifest_zero.json \
   --manifest-b artifacts/vlm_manifest_few.json \
   --output artifacts/vlm_comparison.json
+
+# Paired comparison on multi-mode manifest using explicit condition filters
+python -m tools.vlm_baselines paired-compare \
+  --manifest-a artifacts/vlm_manifest_both.json \
+  --manifest-b artifacts/vlm_manifest_both.json \
+  --shot-mode-a zero-shot \
+  --shot-mode-b few-shot \
+  --output artifacts/vlm_comparison.json
 ```
+

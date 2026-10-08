@@ -27,6 +27,7 @@ from eval.vlm.adapter import (
     AvailabilityStatus,
     ImageConditioningError,
     InferenceHardwareBarrierError,
+    LiveFewShotBlockedError,
     MockVLMAdapter,
     OpenWeightVLMAdapter,
     UnverifiedDemonstrationError,
@@ -34,6 +35,8 @@ from eval.vlm.adapter import (
 )
 from eval.vlm.runner import RunnerError, VLMRunner
 from eval.vlm.scorer import (
+    PairedComparisonError,
+    ScorerError,
     character_error_rate,
     chrf_score,
     compare_manifests,
@@ -134,8 +137,8 @@ class VLMBaselinesTests(unittest.TestCase):
     def test_unreviewed_demonstration_bank_fails_live_few_shot_inference(self) -> None:
         qwen_cfg = next(m for m in self.suite_data["models"] if m["key"] == "qwen2.5-vl-7b-instruct")
         adapter = OpenWeightVLMAdapter(qwen_cfg)
-        # Attempting few-shot prediction with unreviewed synthetic demonstrations must fail closed
-        with self.assertRaises(UnverifiedDemonstrationError) as ctx:
+        # Live few-shot is unconditionally blocked until authentic templates and pixels exist
+        with self.assertRaises(LiveFewShotBlockedError) as ctx:
             adapter.predict(
                 image_bytes=b"dummy_image_data",
                 prompt="Prompt",
@@ -145,7 +148,7 @@ class VLMBaselinesTests(unittest.TestCase):
                 item_id="TEST-01",
                 demonstrations_meta=self.demos_data,
             )
-        self.assertIn("synthetic_fixture_only", str(ctx.exception))
+        self.assertIn("unconditionally blocked", str(ctx.exception).lower())
 
     def test_authentic_demonstration_clearance_requires_on_disk_pixels_and_hash(self) -> None:
         # A bank falsely claiming reviewed_authentic without image files on disk must fail
@@ -283,9 +286,9 @@ class VLMBaselinesTests(unittest.TestCase):
         # Check metric IDs adhere to eval/metric_contract.yaml
         rungs = report["project_native_eval001"]
         self.assertEqual(rungs["identify"]["primary_metric_id"], "SCRIPT_ACC")
-        self.assertEqual(rungs["signs"]["primary_metric_id"], "SIGN_ACC")
-        self.assertEqual(rungs["transliterate"]["primary_metric_id"], "CER_V1")
-        self.assertEqual(rungs["translate"]["primary_metric_id"], "TRANSLATION_BLEU_4")
+        self.assertEqual(rungs["signs"]["primary_metric_id"], "SIGN_TOP1")
+        self.assertEqual(rungs["transliterate"]["primary_metric_id"], "TR_CER")
+        self.assertEqual(rungs["translate"]["primary_metric_id"], "TRANS_CHRF")
 
     def test_adversarial_parity_exposes_differences_with_official_scoring(self) -> None:
         """Adversarially demonstrate why in-house metrics must not be claimed as upstream official scores."""
@@ -429,6 +432,134 @@ class VLMBaselinesTests(unittest.TestCase):
             ret = cli_main(["score", "--manifest", str(out_manifest), "--output", str(out_report)])
             self.assertEqual(ret, 0)
             self.assertTrue(out_report.is_file())
+
+    # --- 8. Targeted Adversarial Parity and Regression Tests ---
+
+    def test_adversarial_missing_gold_omission_detected(self) -> None:
+        """Adversarially verify that missing gold is never silently dropped from scored denominators."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Mutate gold: remove one item entirely
+        corrupted_gold = create_synthetic_gold()
+        first_key = next(iter(corrupted_gold.keys()))
+        del corrupted_gold[first_key]
+
+        # By default, denominator integrity forbids silent dropout; must raise ScorerError
+        with self.assertRaises(ScorerError) as ctx:
+            score_manifest(manifest, corrupted_gold, require_complete_gold=True)
+        self.assertIn("Denominator integrity forbids silently dropping missing-gold items", str(ctx.exception))
+
+        # When explicitly allowed, intention-to-test must record worst-case penalty and report missing count
+        report = score_manifest(manifest, corrupted_gold, require_complete_gold=False)
+        rungs = report["project_native_eval001"]
+        has_missing = any(r["gold_eligibility"]["missing_gold_count"] > 0 for r in rungs.values())
+        self.assertTrue(has_missing)
+
+    def test_adversarial_truncated_manifest_rejected_by_frozen_universe(self) -> None:
+        """Adversarially delete an attempt and lower self-reported counts; auditor must reject truncation."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="both")
+
+        # Delete an attempt and maliciously decrement self-reported totals to evade count checks
+        deleted_attempt = manifest["attempts"].pop()
+        manifest["coverage_summary"]["total_attempts"] -= 1
+        if deleted_attempt["status"] == "success":
+            manifest["coverage_summary"]["success_count"] -= 1
+
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            json.dump(manifest, tmp)
+            tmp_path = Path(tmp.name)
+        try:
+            errors = audit_manifest(tmp_path, SUITE_PATH, SCHEMA_PATH)
+            self.assertTrue(any("Frozen universe violation" in e and "Truncated manifest detected" in e for e in errors))
+        finally:
+            tmp_path.unlink()
+
+    def test_adversarial_forged_rights_permissions_rejected(self) -> None:
+        """Adversarially assert approved_with_evidence on synthetic placeholder fixtures; must fail closed."""
+        mutated = copy.deepcopy(self.demos_data)
+        mutated["status"] = "synthetic_fixture_only"
+        mutated["rights_review"]["rights_review_status"] = "approved_with_evidence"
+        mutated["rights_review"]["quarantine_verified"] = True
+
+        with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
+            yaml.dump(mutated, tmp)
+            tmp_path = Path(tmp.name)
+        try:
+            errors = validate_demonstrations(tmp_path, SCHEMA_PATH)
+            self.assertTrue(any("Demonstration clearance forgery" in e for e in errors))
+        finally:
+            tmp_path.unlink()
+
+    def test_adversarial_absent_exemplar_pixels_blocks_few_shot(self) -> None:
+        """Adversarially verify that live few-shot is unconditionally blocked on open-weight backbones."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if m["key"] == "qwen2.5-vl-7b-instruct")
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        with self.assertRaises(LiveFewShotBlockedError):
+            adapter.predict(
+                image_bytes=b"dummy_bytes",
+                prompt="Prompt",
+                system_prompt="Sys",
+                shot_mode="few_shot",
+                rung="transliterate",
+                item_id="TEST-FEW-01",
+                demonstrations_meta=self.demos_data,
+            )
+
+    def test_adversarial_duplicate_shot_identities_in_pairing_detected(self) -> None:
+        """Adversarially pass both-mode manifest without condition filter; collapsing must be rejected."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        gold = create_synthetic_gold()
+
+        manifest_both = runner.run_suite(items, shot_mode="both")
+
+        # Passing manifest_both without --shot-mode-a / --shot-mode-b must raise PairedComparisonError
+        with self.assertRaises(PairedComparisonError) as ctx:
+            compare_manifests(manifest_both, manifest_both, gold)
+        self.assertIn("explicit condition filter", str(ctx.exception))
+
+        # When proper filters are provided, paired comparison succeeds
+        comps = compare_manifests(manifest_both, manifest_both, gold, shot_mode_a="zero_shot", shot_mode_b="few_shot")
+        self.assertGreater(len(comps), 0)
+
+    def test_adversarial_cer_metric_direction_and_name_conforms_to_contract(self) -> None:
+        """Adversarially verify that TR_CER is strictly lower-is-better (0.0=perfect) in edit_error_rate units."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        gold = create_synthetic_gold()
+
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+        report = score_manifest(manifest, gold)
+
+        xlit = report["project_native_eval001"]["transliterate"]
+        self.assertEqual(xlit["primary_metric_id"], "TR_CER")
+        self.assertEqual(xlit["metric_direction"], "lower")
+        self.assertEqual(xlit["metric_unit"], "edit_error_rate")
+        # Ensure it is NOT reported as 1 - CER (which was the old inverted CER_V1)
+        self.assertGreaterEqual(xlit["intention_to_test_score"], 0.0)
+
+    def test_adversarial_official_score_spoofing_rejected(self) -> None:
+        """Adversarially verify that official HieraticBench channel is strictly NOT_INTEGRATED."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        gold = create_synthetic_gold()
+
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Injected fake replay summary cannot spoof official leaderboard status
+        fake_summary = {"item_macro_accuracy": 0.99, "note": "spoofed"}
+        report = score_manifest(manifest, gold, official_replay_summary=fake_summary)
+        self.assertEqual(report["official_scoring_status"], "NOT_INTEGRATED")
+        self.assertIsNone(report["official_hieraticbench"])
 
 
 if __name__ == "__main__":

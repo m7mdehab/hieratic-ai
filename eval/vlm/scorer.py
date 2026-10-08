@@ -24,6 +24,39 @@ class ScorerError(ValueError):
     pass
 
 
+class PairedComparisonError(ScorerError):
+    """Raised when paired comparison cannot pair attempts unambiguously."""
+    pass
+
+
+METRIC_SPECIFICATIONS: dict[str, dict[str, Any]] = {
+    "identify": {
+        "metric_id": "SCRIPT_ACC",
+        "direction": "higher",
+        "unit": "proportion",
+        "primary": True,
+    },
+    "signs": {
+        "metric_id": "SIGN_TOP1",
+        "direction": "higher",
+        "unit": "proportion",
+        "primary": True,
+    },
+    "transliterate": {
+        "metric_id": "TR_CER",
+        "direction": "lower",
+        "unit": "edit_error_rate",
+        "primary": True,
+    },
+    "translate": {
+        "metric_id": "TRANS_CHRF",
+        "direction": "higher",
+        "unit": "score",
+        "primary": True,
+    },
+}
+
+
 def levenshtein_distance(seq1: Sequence[Any], seq2: Sequence[Any]) -> int:
     """Compute standard Levenshtein edit distance between two sequences."""
     n1, n2 = len(seq1), len(seq2)
@@ -229,8 +262,13 @@ def score_manifest(
     manifest: dict[str, Any],
     gold_items: dict[str, dict[str, Any]],
     official_replay_summary: dict[str, Any] | None = None,
+    require_complete_gold: bool = True,
 ) -> dict[str, Any]:
-    """Compute structured evaluation report with explicit channel separation and clustered uncertainty."""
+    """Compute structured evaluation report with explicit channel separation and clustered uncertainty.
+
+    Strictly separates project-native EVAL-001 metrics from official upstream HieraticBench claims.
+    Official replay summary injection is disabled in the offline harness to guarantee scoring integrity.
+    """
     attempts = manifest.get("attempts", [])
     if not attempts:
         raise ScorerError("Manifest contains no attempts to score.")
@@ -249,6 +287,14 @@ def score_manifest(
     project_native_rungs: dict[str, Any] = {}
 
     for rung, rung_attempts in by_rung.items():
+        spec = METRIC_SPECIFICATIONS.get(rung)
+        if not spec:
+            raise ScorerError(f"Unsupported evaluation rung: '{rung}'")
+
+        metric_id = spec["metric_id"]
+        metric_direction = spec["direction"]
+        metric_unit = spec["unit"]
+
         total_scheduled = len(rung_attempts)
         total_attempted = total_scheduled
 
@@ -257,6 +303,43 @@ def score_manifest(
         failure_count = sum(1 for a in rung_attempts if a["status"] == "failed")
         timeout_count = sum(1 for a in rung_attempts if a["status"] == "timeout")
         refusal_count = sum(1 for a in rung_attempts if a["status"] == "refused")
+
+        # Gold eligibility accounting
+        gold_eligible_count = 0
+        missing_gold_count = 0
+        missing_gold_item_ids: list[str] = []
+
+        for a in rung_attempts:
+            iid = a["item_id"]
+            gold = gold_items.get(iid)
+            if not gold:
+                missing_gold_count += 1
+                missing_gold_item_ids.append(iid)
+                continue
+
+            # Check required gold fields per rung contract
+            has_gold = False
+            if rung == "identify":
+                has_gold = bool(gold.get("script") or gold.get("script_label"))
+            elif rung == "signs":
+                has_gold = bool(gold.get("gardiner") or gold.get("acceptable_grapheme_ids"))
+            elif rung == "transliterate":
+                has_gold = bool(gold.get("transliteration") or gold.get("transliteration_reference"))
+            elif rung == "translate":
+                has_gold = bool(gold.get("translation") or gold.get("translation_references"))
+
+            if has_gold:
+                gold_eligible_count += 1
+            else:
+                missing_gold_count += 1
+                missing_gold_item_ids.append(iid)
+
+        if require_complete_gold and missing_gold_count > 0:
+            raise ScorerError(
+                f"Scoring refused for rung '{rung}': {missing_gold_count} of {total_scheduled} "
+                f"scheduled attempts lack required gold annotations (e.g. {missing_gold_item_ids[:3]}). "
+                "Denominator integrity forbids silently dropping missing-gold items."
+            )
 
         # Cluster attempts by document_id
         cluster_intention_scores: dict[str, list[float]] = {}
@@ -267,53 +350,68 @@ def score_manifest(
             item_id = a["item_id"]
             doc_id = a.get("document_id") or item_id.rsplit("-", 1)[0]
             gold = gold_items.get(item_id)
+
             if not gold:
+                # If incomplete gold was allowed, assign worst-case penalty in intention-to-test
+                penalty = 1.0 if metric_direction == "lower" else 0.0
+                cluster_intention_scores.setdefault(doc_id, []).append(penalty)
                 continue
 
             raw_pred = a.get("raw_output")
             status = a.get("status")
 
-            # Score computation for project-native metrics
-            if status != "success" or not raw_pred or is_abstention(raw_pred):
-                # Intention-to-test scores failure/abstention as 0.0
-                cluster_intention_scores.setdefault(doc_id, []).append(0.0)
+            # Check valid completion
+            is_valid_success = (status == "success" and raw_pred and not is_abstention(raw_pred))
+
+            if not is_valid_success:
+                # Intention-to-test assigns worst-case penalty:
+                # For error metrics (direction == "lower"), penalty is 1.0.
+                # For accuracy/score metrics (direction == "higher"), penalty is 0.0.
+                penalty = 1.0 if metric_direction == "lower" else 0.0
+                cluster_intention_scores.setdefault(doc_id, []).append(penalty)
                 continue
 
-            # Valid response scoring
+            # Compute rung-specific primary and diagnostic metrics
             score_val = 0.0
             if rung == "identify":
-                gold_script = gold.get("script", "").capitalize()
+                gold_script = (gold.get("script") or gold.get("script_label") or "").capitalize()
                 pred_script = clean_script_prediction(raw_pred)
                 score_val = 1.0 if (pred_script.lower() == gold_script.lower()) else 0.0
 
             elif rung == "signs":
-                gold_sign = gold.get("gardiner", "").upper()
                 pred_sign = clean_sign_prediction(raw_pred)
-                score_val = 1.0 if (pred_sign == gold_sign) else 0.0
+                gold_acceptable = gold.get("acceptable_grapheme_ids")
+                if gold_acceptable and isinstance(gold_acceptable, list):
+                    score_val = 1.0 if (pred_sign in [g.upper() for g in gold_acceptable]) else 0.0
+                else:
+                    gold_sign = (gold.get("gardiner") or "").upper()
+                    score_val = 1.0 if (pred_sign == gold_sign) else 0.0
 
             elif rung == "transliterate":
-                gold_xlit = gold.get("transliteration", "")
-                pred_xlit = a.get("cleaned_prediction") or raw_pred
+                gold_xlit = gold.get("transliteration") or gold.get("transliteration_reference") or ""
+                pred_xlit = a.get("cleaned_prediction") or raw_pred or ""
                 cer = character_error_rate(gold_xlit, pred_xlit)
                 wer = word_error_rate(gold_xlit, pred_xlit)
-                score_val = max(0.0, 1.0 - cer)
-                secondary_accum.setdefault("cer", []).append(round(cer, 4))
+                # Primary metric is TR_CER (lower is better, edit error rate)
+                score_val = round(cer, 4)
                 secondary_accum.setdefault("wer", []).append(round(wer, 4))
+                secondary_accum.setdefault("diag_accuracy", []).append(round(max(0.0, 1.0 - cer), 4))
 
             elif rung == "translate":
-                gold_trans = gold.get("translation", "")
-                pred_trans = a.get("cleaned_prediction") or raw_pred
-                bleu = sentence_bleu(gold_trans, pred_trans)
+                gold_trans = gold.get("translation") or gold.get("translation_references", [""])[0] or ""
+                pred_trans = a.get("cleaned_prediction") or raw_pred or ""
+                # Primary metric is TRANS_CHRF (higher is better, chrF)
                 chrf = chrf_score(gold_trans, pred_trans)
-                score_val = bleu
-                secondary_accum.setdefault("chrf", []).append(round(chrf, 4))
+                bleu = sentence_bleu(gold_trans, pred_trans)
+                score_val = chrf
+                secondary_accum.setdefault("vlm_diag_bleu_4", []).append(round(bleu, 4))
 
             cluster_intention_scores.setdefault(doc_id, []).append(score_val)
             conditional_scores.append(score_val)
 
         # Flat values across all clusters for intention-to-test mean
         all_intent = [s for cluster_vals in cluster_intention_scores.values() for s in cluster_vals]
-        intent_mean = round(sum(all_intent) / len(all_intent), 4) if all_intent else 0.0
+        intent_mean = round(sum(all_intent) / len(all_intent), 4) if all_intent else (1.0 if metric_direction == "lower" else 0.0)
         cond_mean = round(sum(conditional_scores) / len(conditional_scores), 4) if conditional_scores else None
 
         # 2,000 document-clustered bootstrap resamples (EVAL-006 standard)
@@ -326,17 +424,12 @@ def score_manifest(
         cov_rate = round(success_count / total_scheduled, 4) if total_scheduled > 0 else 0.0
         abst_rate = round(abstention_count / total_scheduled, 4) if total_scheduled > 0 else 0.0
 
-        metric_id = {
-            "identify": "SCRIPT_ACC",
-            "signs": "SIGN_ACC",
-            "transliterate": "CER_V1",
-            "translate": "TRANSLATION_BLEU_4",
-        }.get(rung, "ACCURACY")
-
         sec_metrics = {k: round(sum(v) / len(v), 4) for k, v in secondary_accum.items() if v}
 
         project_native_rungs[rung] = {
             "primary_metric_id": metric_id,
+            "metric_direction": metric_direction,
+            "metric_unit": metric_unit,
             "intention_to_test_score": intent_mean,
             "conditional_score": cond_mean,
             "cluster_bootstrap_ci_95": list(ci_bounds) if ci_bounds else None,
@@ -344,6 +437,11 @@ def score_manifest(
             "cluster_ci_status": ci_status,
             "total_scheduled": total_scheduled,
             "total_attempted": total_attempted,
+            "gold_eligibility": {
+                "gold_eligible_count": gold_eligible_count,
+                "missing_gold_count": missing_gold_count,
+                "status": "complete_gold_coverage" if missing_gold_count == 0 else "incomplete_gold_coverage",
+            },
             "success_count": success_count,
             "abstention_count": abstention_count,
             "failure_count": failure_count,
@@ -362,8 +460,9 @@ def score_manifest(
         "execution_tier": execution_tier,
         "scientific_validity": scientific_validity,
         "certification_status": cert_status,
-        "scoring_channel": "dual_channel_comparison" if official_replay_summary else "project_native_eval001",
-        "official_hieraticbench": official_replay_summary,
+        "scoring_channel": "project_native_eval001",
+        "official_scoring_status": "NOT_INTEGRATED",
+        "official_hieraticbench": None,
         "model_key": model_key,
         "shot_mode": shot_mode,
         "coverage_rate": manifest["coverage_summary"]["coverage_rate"],
@@ -376,58 +475,129 @@ def compare_manifests(
     manifest_a: dict[str, Any],
     manifest_b: dict[str, Any],
     gold_items: dict[str, dict[str, Any]],
+    shot_mode_a: str | None = None,
+    shot_mode_b: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Compute paired statistical comparison pairing attempts strictly across (item_id, rung, sample_index).
+    """Compute paired statistical comparison pairing attempts strictly across composite identities (item_id, rung, sample_index).
 
     Follows EVAL-006 clustered resampling over document clusters.
+    Demands matched complete coverage over the declared paired universe and rejects collapsed duplicates.
     """
-    # Key attempts on composite identity: (item_id, rung, sample_index)
-    attempts_a = {(a["item_id"], a["rung"], a.get("sample_index", 0)): a for a in manifest_a.get("attempts", [])}
-    attempts_b = {(b["item_id"], b["rung"], b.get("sample_index", 0)): b for b in manifest_b.get("attempts", [])}
+    raw_attempts_a = manifest_a.get("attempts", [])
+    raw_attempts_b = manifest_b.get("attempts", [])
 
-    common_composite_keys = sorted(set(attempts_a.keys()) & set(attempts_b.keys()))
+    if not raw_attempts_a or not raw_attempts_b:
+        raise PairedComparisonError("Cannot compare manifests: one or both contain no attempts.")
+
+    # Determine shot mode condition filters
+    modes_in_a = {a.get("shot_mode", "zero_shot") for a in raw_attempts_a}
+    modes_in_b = {b.get("shot_mode", "zero_shot") for b in raw_attempts_b}
+
+    if len(modes_in_a) > 1 and not shot_mode_a:
+        raise PairedComparisonError(
+            f"Manifest A contains multiple shot modes {sorted(modes_in_a)}. "
+            "You must specify an explicit condition filter (--shot-mode-a) to avoid collapsing attempts."
+        )
+    if len(modes_in_b) > 1 and not shot_mode_b:
+        raise PairedComparisonError(
+            f"Manifest B contains multiple shot modes {sorted(modes_in_b)}. "
+            "You must specify an explicit condition filter (--shot-mode-b) to avoid collapsing attempts."
+        )
+
+    filt_a = [a for a in raw_attempts_a if (not shot_mode_a or a.get("shot_mode") == shot_mode_a)]
+    filt_b = [b for b in raw_attempts_b if (not shot_mode_b or b.get("shot_mode") == shot_mode_b)]
+
+    # Key attempts strictly by (item_id, rung, sample_index)
+    dict_a: dict[tuple[str, str, int], dict[str, Any]] = {}
+    for a in filt_a:
+        key = (a["item_id"], a["rung"], a.get("sample_index", 0))
+        if key in dict_a:
+            raise PairedComparisonError(
+                f"Duplicate composite key {key} in Condition A. Collapsed pairing is prohibited."
+            )
+        dict_a[key] = a
+
+    dict_b: dict[tuple[str, str, int], dict[str, Any]] = {}
+    for b in filt_b:
+        key = (b["item_id"], b["rung"], b.get("sample_index", 0))
+        if key in dict_b:
+            raise PairedComparisonError(
+                f"Duplicate composite key {key} in Condition B. Collapsed pairing is prohibited."
+            )
+        dict_b[key] = b
+
+    keys_a = set(dict_a.keys())
+    keys_b = set(dict_b.keys())
+
+    unmatched_in_a = sorted(keys_b - keys_a)
+    unmatched_in_b = sorted(keys_a - keys_b)
+
+    if unmatched_in_a or unmatched_in_b:
+        raise PairedComparisonError(
+            f"Paired comparison requires matched complete coverage. "
+            f"Unmatched in Condition A: {len(unmatched_in_a)}, Unmatched in Condition B: {len(unmatched_in_b)}."
+        )
+
+    common_keys = sorted(keys_a)
     by_rung_keys: dict[str, list[tuple[str, str, int]]] = {}
-    for k in common_composite_keys:
+    for k in common_keys:
         by_rung_keys.setdefault(k[1], []).append(k)
 
     comparisons: list[dict[str, Any]] = []
 
     for rung, composite_keys in by_rung_keys.items():
+        spec = METRIC_SPECIFICATIONS.get(rung)
+        if not spec:
+            raise PairedComparisonError(f"Unsupported rung in paired comparison: '{rung}'")
+
+        metric_id = spec["metric_id"]
+        metric_direction = spec["direction"]
+
         cluster_deltas: dict[str, list[float]] = {}
         scores_a_all: list[float] = []
         scores_b_all: list[float] = []
 
-        metric_id = {
-            "identify": "SCRIPT_ACC",
-            "signs": "SIGN_ACC",
-            "transliterate": "CER_V1",
-            "translate": "TRANSLATION_BLEU_4",
-        }.get(rung, "SCORE")
-
         for item_id, _, s_idx in composite_keys:
             gold = gold_items.get(item_id)
             if not gold:
-                continue
+                raise PairedComparisonError(
+                    f"Item '{item_id}' missing from gold repository during paired comparison."
+                )
 
-            att_a = attempts_a[(item_id, rung, s_idx)]
-            att_b = attempts_b[(item_id, rung, s_idx)]
+            att_a = dict_a[(item_id, rung, s_idx)]
+            att_b = dict_b[(item_id, rung, s_idx)]
             doc_id = att_a.get("document_id") or att_b.get("document_id") or item_id.rsplit("-", 1)[0]
 
             def eval_attempt(att: dict[str, Any]) -> float:
-                if att.get("status") != "success":
-                    return 0.0
+                status = att.get("status")
                 raw = att.get("raw_output")
-                if not raw or is_abstention(raw):
-                    return 0.0
+                if status != "success" or not raw or is_abstention(raw):
+                    return 1.0 if metric_direction == "lower" else 0.0
+
                 if rung == "identify":
-                    return 1.0 if (clean_script_prediction(raw).lower() == gold.get("script", "").lower()) else 0.0
+                    gold_script = (gold.get("script") or gold.get("script_label") or "").capitalize()
+                    pred_script = clean_script_prediction(raw)
+                    return 1.0 if (pred_script.lower() == gold_script.lower()) else 0.0
+
                 elif rung == "signs":
-                    return 1.0 if (clean_sign_prediction(raw) == gold.get("gardiner", "").upper()) else 0.0
+                    pred_sign = clean_sign_prediction(raw)
+                    gold_acceptable = gold.get("acceptable_grapheme_ids")
+                    if gold_acceptable and isinstance(gold_acceptable, list):
+                        return 1.0 if (pred_sign in [g.upper() for g in gold_acceptable]) else 0.0
+                    gold_sign = (gold.get("gardiner") or "").upper()
+                    return 1.0 if (pred_sign == gold_sign) else 0.0
+
                 elif rung == "transliterate":
-                    return max(0.0, 1.0 - character_error_rate(gold.get("transliteration", ""), att.get("cleaned_prediction") or raw))
+                    gold_xlit = gold.get("transliteration") or gold.get("transliteration_reference") or ""
+                    pred_xlit = att.get("cleaned_prediction") or raw or ""
+                    return character_error_rate(gold_xlit, pred_xlit)
+
                 elif rung == "translate":
-                    return sentence_bleu(gold.get("translation", ""), att.get("cleaned_prediction") or raw)
-                return 0.0
+                    gold_trans = gold.get("translation") or gold.get("translation_references", [""])[0] or ""
+                    pred_trans = att.get("cleaned_prediction") or raw or ""
+                    return chrf_score(gold_trans, pred_trans)
+
+                return 1.0 if metric_direction == "lower" else 0.0
 
             sa = eval_attempt(att_a)
             sb = eval_attempt(att_b)
@@ -455,8 +625,11 @@ def compare_manifests(
         comparisons.append({
             "baseline_manifest_id": manifest_a["manifest_id"],
             "comparison_manifest_id": manifest_b["manifest_id"],
+            "condition_a": shot_mode_a or manifest_a.get("shot_mode", "all"),
+            "condition_b": shot_mode_b or manifest_b.get("shot_mode", "all"),
             "rung": rung,
             "metric_id": metric_id,
+            "metric_direction": metric_direction,
             "composite_pairing": True,
             "baseline_score": mean_a,
             "comparison_score": mean_b,

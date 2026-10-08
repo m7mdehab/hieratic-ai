@@ -35,6 +35,11 @@ class UnverifiedDemonstrationError(VLMAdapterError):
     pass
 
 
+class LiveFewShotBlockedError(VLMAdapterError):
+    """Raised when live few-shot inference is attempted without verified multi-image vision templates and audited exemplar pixels."""
+    pass
+
+
 class InferenceHardwareBarrierError(VLMAdapterError):
     """Raised when open-weight model inference is blocked by missing local hardware or unprovisioned weights."""
     pass
@@ -355,23 +360,14 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
     ) -> VLMResponse:
         self.validate_image_input(image_bytes)
 
-        # Enforce strict few-shot clearance: live inference cannot use synthetic fixtures
+        # Enforce strict few-shot clearance: live inference cannot use synthetic fixtures or unverified templates
         if shot_mode == "few_shot":
-            if not demonstrations_meta:
-                raise UnverifiedDemonstrationError(
-                    "Few-shot inference requires demonstration metadata; none provided."
-                )
-            if demonstrations_meta.get("status") == "synthetic_fixture_only":
-                raise UnverifiedDemonstrationError(
-                    "Real few-shot inference fails closed: demonstration bank is marked "
-                    "'synthetic_fixture_only'. Authentic image files on disk, verified rights, "
-                    "and exact/near-duplicate clearance are required."
-                )
-            if demonstrations_meta.get("rights_review", {}).get("rights_review_status") != "approved_with_evidence":
-                raise UnverifiedDemonstrationError(
-                    "Real few-shot inference fails closed: demonstration bank rights status is not "
-                    "'approved_with_evidence'."
-                )
+            raise LiveFewShotBlockedError(
+                "Live few-shot evaluation on open-weight backbones is unconditionally blocked. "
+                "Authentic multi-image vision/chat template integration and verified on-disk exemplar "
+                "images with audited rights clearance are not yet available. "
+                "Synthetic fixture banks cannot be used for live open-weight evaluation."
+            )
 
         # Check local hardware/weights availability
         status = self.check_availability()

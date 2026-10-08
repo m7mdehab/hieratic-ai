@@ -71,6 +71,7 @@ jobs:
         env:
           MANIFEST_A: ${{ runner.temp }}/vlm_ci_zero.json
           MANIFEST_B: ${{ runner.temp }}/vlm_ci_few.json
+          MANIFEST_BOTH: ${{ runner.temp }}/vlm_ci_manifest.json
           COMPARE_PATH: ${{ runner.temp }}/vlm_ci_comparison.json
         run: |
           python -m tools.vlm_baselines run \
@@ -84,6 +85,12 @@ jobs:
           python -m tools.vlm_baselines paired-compare \
             --manifest-a "$MANIFEST_A" \
             --manifest-b "$MANIFEST_B" \
+            --output "$COMPARE_PATH"
+          python -m tools.vlm_baselines paired-compare \
+            --manifest-a "$MANIFEST_BOTH" \
+            --manifest-b "$MANIFEST_BOTH" \
+            --shot-mode-a zero-shot \
+            --shot-mode-b few-shot \
             --output "$COMPARE_PATH"
 
       - name: Run VLM baseline unit and negative tests

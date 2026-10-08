@@ -1,0 +1,134 @@
+{
+  "registry_version": "0.1.0",
+  "as_of": "2026-10-09",
+  "classification": "reference_only_no_original_image_bytes_no_labels",
+  "owner_lane": "overseer",
+  "source_group_policy": "physical_support_and_join_graph_not_photo_filename",
+  "rights_rule": "Each exact image and editor-authored text licensed independently. A catalogue page and third-party uploader declaration cannot certify other derivatives.",
+  "candidates": [
+    {
+      "id": "R024-TURIN-2044-013",
+      "support_group": "MUSEO-EGIZIO:CAT-2044/013",
+      "accessions": [
+        "Cat.2044",
+        "Cat.2044/013"
+      ],
+      "role": "first_real_unlabelled_hieratic_image_preprocessing",
+      "priority": 1,
+      "institution": "Museo Egizio Torino",
+      "museum_url": "https://collezioni.museoegizio.it/en-GB/material/Cat_2044_013/",
+      "tpop_url": "https://collezionepapiri.museoegizio.it/en-GB/document/173/",
+      "image_file_page": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso,_papyurs_-_Museo_Egizio_(Turin)_C_2044_p01.jpg",
+      "image_claim_license": "CC0-1.0",
+      "image_licence_evidence": "Exact Commons image-file page and Museo Egizio collection CC0 policy; require revision check at actual fetch",
+      "published_file_metadata": {
+        "width": 7063,
+        "height": 3947,
+        "format": "JPEG",
+        "source_byte_sha256": null,
+        "actual_bytes_obtained": false
+      },
+      "image_view_identity": "UNVERIFIED recto/verso side and text-zone pairing",
+      "scholarly_sources": [
+        "https://collezionepapiri.museoegizio.it/en-GB/document/173/",
+        "https://collezioni.museoegizio.it/en-GB/material/Cat_2044_013/"
+      ],
+      "text_licence": "NOT_ITEM_VERIFIED_FOR_MACHINE_REUSE",
+      "available_public_reading": "TPOP has writing units and hieroglyphic renderings; English translation labelled in preparation, other French at Ramses Online; museum presentation has selected translated extracts, not a proven line-wise diplomatic pairing.",
+      "dating_issue": "Museum identifies year 1 Ramesses VI; TPOP record assigns Ramesses V to multiple writing units; exact text-to-view/king association must be resolved, not auto-corrected.",
+      "known_physical_group_issue": "Cat.2044/013 is not an independent new source simply because a page names Cat.2044; views/writing subrecords same support until documented separation.",
+      "silver_line_status": "NO_EXACT_IMAGE_LINE_PAIRS",
+      "gold_status": "NONE",
+      "benchmark_overlap": "NOT_CLEARED",
+      "corpus_admission": "BLOCKED",
+      "next": "Inspect true image and recto/verso against writing-unit coordinates; no line silver until exact edition rights and side match."
+    },
+    {
+      "id": "R024-TURIN-1880",
+      "support_group": "MUSEO-EGIZIO:CAT-1880",
+      "accessions": [
+        "Cat.1880"
+      ],
+      "role": "secondary_real_pixels_and_bibliographic_alignment",
+      "priority": 2,
+      "institution": "Museo Egizio Torino",
+      "museum_url": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880/",
+      "tpop_url": "https://collezionepapiri.museoegizio.it/en-GB/document/131",
+      "image_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht,_papyurs_-_Museo_Egizio_(Turin)_C_1880_p01.jpg",
+      "image_claim_license": "CC0-1.0",
+      "image_licence_evidence": "Exact Commons image-file page and Museo Egizio collection CC0 policy; require revision check at actual fetch",
+      "published_file_metadata": {
+        "width": 6941,
+        "height": 3431,
+        "format": "JPEG",
+        "source_byte_sha256": null,
+        "actual_bytes_obtained": false
+      },
+      "image_view_identity": "UNVERIFIED p01 side/exposure (other p02/p03 JPEG and recto/verso TIFF exist)",
+      "scholarly_sources": [
+        "https://collezionepapiri.museoegizio.it/en-GB/document/131",
+        "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Collection/History-and-content/Highlights-Turin-Strike-Papyrus/"
+      ],
+      "text_licence": "NOT_ITEM_VERIFIED_FOR_MACHINE_REUSE",
+      "available_public_reading": "TPOP has many writing-level units, rendered hieroglyphic images, and Ramses Online ID 453; English translation in preparation, French/German not universally public; museum provides prose quoted translation rather than an exact pixel-to-line reading.",
+      "dating_issue": null,
+      "known_physical_group_issue": "At least seven related Commons media views/resolutions of same physical Cat.1880 papyrus; never split by filenames or recto/verso.",
+      "silver_line_status": "NO_EXACT_IMAGE_LINE_PAIRS",
+      "gold_status": "NONE",
+      "benchmark_overlap": "NOT_CLEARED",
+      "corpus_admission": "BLOCKED",
+      "next": "Try public writing-unit maps, later lawful published edition; preserve all related views under one holdout source group."
+    },
+    {
+      "id": "R024-TURIN-1883-2095",
+      "support_group": "MUSEO-EGIZIO:CAT-1883+CAT-2095",
+      "accessions": [
+        "Cat.1883",
+        "Cat.2095",
+        "Cat.1883+Cat.2095"
+      ],
+      "role": "first_existing_explicit_line_numbered_scholarly_edition_candidate",
+      "priority": 1,
+      "institution": "Museo Egizio Torino",
+      "museum_url": null,
+      "tpop_url": "https://papyri.museoegizio.it/Object/detail.aspx?!iid=cc962347971e4c43a317c37bd2278281",
+      "image_file_page": null,
+      "image_claim_license": "MUSEUM_IMAGES_CC_BY_2_0_DEFAULT_PER_JOURNAL_GUIDELINES_WITH_THIRD_PARTY_FIGURE_EXCEPTIONS",
+      "image_licence_evidence": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+      "published_file_metadata": {
+        "width": null,
+        "height": null,
+        "format": null,
+        "source_byte_sha256": null,
+        "actual_bytes_obtained": false
+      },
+      "image_view_identity": "Journal Figs 6 and 8 show recto and verso scans; figures 7/9 are editorial facsimiles, not original source pixels.",
+      "scholarly_sources": [
+        "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+        "https://doi.org/10.29353/rime.2022.4418"
+      ],
+      "text_licence": "RESEARCHGATE_LISTS_CC_BY_4_0_BUT_EXACT_PUBLISHER_TEXT_LICENSE_NOT_ITEM_VERIFIED",
+      "available_public_reading": "Landrino 2022 article provides explicit recto columns 1-3 and verso lines, transliteration, translation, alternatives, notes and original-source photo figures.",
+      "published_layout": "recto col1 four lines, col2 twelve, col3 twelve; verso one column nine lines; candidate totals 37 line slots, several damaged/uncertain, not all usable.",
+      "dating_issue": "Article discusses Ramesses VII as best regnal reading; alternative historic identifications exist.",
+      "known_physical_group_issue": "Five joined fragments, one combined physical text witness; Cat.1883 (large) and Cat.2095 (four smaller) must never split across train/test; paper notes one incorrectly joined corner and palimpsest.",
+      "silver_line_status": "PUBLISHED_LINES_EXIST_NO_VERIFIED_PHOTO_TO_LINE_ROI_OR_TEXT_REUSE_RIGHTS",
+      "gold_status": "PUBLISHED_EDITORIAL_EDITION_NOT_INDEPENDENT_BLIND_GOLD",
+      "benchmark_overlap": "NOT_CLEARED",
+      "corpus_admission": "BLOCKED",
+      "next": "Locate exact CC0 museum-scanned original or exact figure-level CC BY evidence; verify author's edition text license independently; align first easy, non-restored line as diagnostic only."
+    }
+  ],
+  "global_blockers_for_certified_accuracy": [
+    "independently verified clean benchmark/source split",
+    "model-blind expert/edition source authentication and allowed evaluation use",
+    "actual image hashes and source/side/ROI identity",
+    "true experiment preregistration"
+  ],
+  "scientific_state": {
+    "verified_capability": 32.5,
+    "research_coverage_historical_unrecalibrated": 14,
+    "validated_real_experiments": 0,
+    "trained_models": 0
+  }
+}

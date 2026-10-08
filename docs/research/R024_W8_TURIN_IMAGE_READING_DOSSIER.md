@@ -1,0 +1,49 @@
+# R-024 — Wave 8 independent Turin image↔reading source audit
+
+**Date:** 2026-10-09 · **Owner:** overseer · **Status:** online primary-source evidence; image bytes and edition annotations not acquired · **Companion:** [machine-readable candidate registry](R024_W8_TURIN_CANDIDATES.json) and [silver-label protocol](../evaluation/W8_SILVER_LABEL_AND_SOURCE_SPLIT_PROTOCOL.md).
+
+## Governing decision
+
+The user requires an **online-first, free-first, solution-exhaustion workflow**. Lack of an Egyptologist, paid API or high-end GPU does **not** stop legal source discovery, licensed original image preprocessing, source-bibliographic lookup, unlabelled segmentation, or local model diagnostics. Nonetheless, a famous published text is not a sealed unseen expert gold standard. Differentiate engineering facts from claims of reading proficiency.
+
+## Source and licensing evidence
+
+1. **Institutional reuse:** [Museo Egizio's collection](https://collezioni.museoegizio.it/en-GB) explicitly says museum online-collection *images* are reusable under **CC0**. [TPOP's separate terms](https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/) say covered photos are CC0; **partner PDFs** can be CC BY-NC; authors/editors of individual texts need attribution; rights for arbitrary modern textual reconstructions do not follow from photo CC0.
+2. **Cat.2044/013** [museum record](https://collezioni.museoegizio.it/en-GB/material/Cat_2044_013/) is titled *Journal of year 1 of Ramesses VI on recto and verso*; exact [Commons photo p01](https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso,_papyurs_-_Museo_Egizio_(Turin)_C_2044_p01.jpg) is stated **CC0**, 7063×3947 JPEG. The *same accession* [TPOP document 173](https://collezionepapiri.museoegizio.it/en-GB/document/173/) describes **several different journal texts on recto and verso**, identifies many writing units with **Ramesses V** and provides hieroglyph rendering images. Its public **English translation is in preparation**; the French translation directs to Ramses Online ID 3791. **Material catalogue-date difference:** museum's Ramesses VI title versus TPOP Ramesses V writing-level attribution; do **not** silently reconcile to one period or assign one exact line to p01. Resolve the face/writing/edition mapping first. This is an excellent first **unlabelled real-image** source, not yet proven silver OCR pairs.
+3. **Cat.1880** is confirmed as the hieratic Strike Papyrus by [museum](https://collezioni.museoegizio.it/en-GB/material/Cat_1880/) and [TPOP document 131](https://collezionepapiri.museoegizio.it/en-GB/document/131). Its exact [Commons reduced-view p01](https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht,_papyurs_-_Museo_Egizio_(Turin)_C_1880_p01.jpg) is **CC0**, 6941×3431 JPEG; a separate [Commons group](https://commons.wikimedia.org/wiki/Category:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880) contains seven original/alternate recto-verso files including TIFF. Treat the **entire object and all its images** as one physical support for leakage controls. TPOP lists editor Anne-Claude Honnay and further contributors, hieroglyph renderings and Ramses Online ID **453**; English translations are currently marked *in preparation*. Museum prose quotes are not a per-line matched diplomatic transcription.
+4. **Cat.1883 + Cat.2095** is the highest-yield *published line-level edition route*: [Martina Landrino, Rivista del Museo Egizio 6 (2022), DOI 10.29353/rime.2022.4418](https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/). It explicitly includes original photo scans **Figs 6 (recto) and 8 (verso)**, facsimiles **Figs 7 and 9**, diplomatic scholarly transcription/transliteration/translation with damaged text and alternatives. It describes **five joined fragments**: large Cat.1883 and four smaller Cat.2095. The recto: columns of **4, 12 and 12 lines**; verso: **9 lines** in one column. The verso is flipped horizontally from recto; a fragment is incorrectly joined. The text discusses Ramesses VII as preferred regnal name. These detailed coordinates provide useful non-AI constraints for image→text investigation. However, without precise image geometry, *the edition does not yet prove exact pixel/line pairings in the model's input frame*.
+5. **Licence caveat for Cat.1883+2095:** the official [Rivista guidelines](https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf) identify **CC BY 2.0** for museum-provided figure images (and author images by default unless otherwise indicated), while historical Černý notebook figures **3–5 explicitly bear Griffith Institute copyright** in the article. [ResearchGate's copy](https://www.researchgate.net/publication/367001231_Papyrus_Turin_Cat_1883_Cat_2095_A_New_Edition_of_an_Already_Known_Papyrus) *reports* **CC BY 4.0 for the paper**, but the publisher article page itself does **not** present a verified per-article text license in the visible page. Consequently, **do not bulk import journal line transcriptions into public repository, model training or unrestricted released silver labels until verifying the author/publisher text-specific reuse statement and figure-specific credits**. Linking and citing the scholarly reading is already useful; the absence of a confirmed text-training license must not stop unlabelled legal images and code.
+
+## Prioritized next action by objective
+
+| Objective | Preferred physical group | Available immediately | Still to verify |
+| --- | --- | --- | --- |
+| Actual Hieratic pixel pre-processing | Cat.2044/013 | File-level CC0 p01, dimensions, museum/TPOP metadata | Actual downloaded bytes/SHA; p01 side; exposure; physical support & benchmark identity |
+| Secondary original-image and layout stress tests | Cat.1880 | CC0 photo and distinct recto/verso variants | Original byte hashes, authentic writing-unit correspondence |
+| Documented published *line* comparison | Joined Cat.1883+2095 | Scholar's col/line numbering, 37 layout slots including uncertain lines, original photographs in article | Exact original image provenance and figure rights; author textual license; line ROI; benchmark overlap |
+| Source-independent unseen evaluation | **None yet** | Protocol design, blind logging, group-key policy | Independent held-out support, licensed reference and blind verification |
+
+**Do not conflate** Met 561345 and 561369, Cat.2044 vs Cat.2044/013, Cat.1883 vs Cat.2095, or recto/verso/facsimile/crops of the same manuscript. Cross-platform identifiers, support, side, photo SHA and edition source are distinct fields.
+
+## Minimum productive online-first ladder
+
+1. **Verified existing CC0 pixels:** have Luna obtain one file to ignored controlled custody under exact posted permissions and project owner operational rules, compute hash, visually inspect and segment.
+2. **Image–reading traceable discovery:** for Cat.1883+2095 inspect the exact original photo *Figs 6/8* and original museum file availability, edition lines and rights; where online license permits, produce clearly marked **silver** line labels. If not, select another open-licensed edition, public-domain historic transcription (check edition/author dates) or one of the TPOP records.
+3. **No-label diagnostics:** image deskew, connected-components, ROI proposals, blind visual descriptions or model outputs run without any editorial text in prompt. No certified OCR metric.
+4. **True silver diagnostics:** preregister fixed image view and line/ROI, blind model output, freeze its immutable SHA, only then open a separately permitted published editorial comparison; encode lacunae/alternatives and score transparently. No training, hyperparameter tuning or leaderboard claims from those lines.
+5. **Source-group separation:** cross-check exact accessions/aliases, HieraticBench public-source metadata plus all known R-021 leaks, editions, visual duplicates and near-duplicates before using any new source for training/dev. Unknown remains quarantined, not auto-rejected from **unlabelled, nontraining visual diagnostics**.
+6. **Real VLM inference on owned images:** model-independent generated shapes on actual small CPU VLM; Hieratic pixels when properly sourced. Failure of one hardware route triggers small-model/CPU/ONNX search, not project stoppage.
+
+## Research/experiment honesty
+
+As of writing: **0 acquired image bytes by this overseer lane, 0 actual input-image SHA-256, 0 extracted scholarly line labels, 0 region-level manual alignment, 0 validated real model experiments, 0 trained models, 0 certified Hieratic reading results**. Do not infer that editorial line count equals a number of independent manuscripts or eligible test items. No institutional contacts, money, benchmark sealed access or training promotions. Canonical metrics untouched: **32.5/100, 14% historical uncalibrated research coverage**.
+
+## Acceptance checklist for later integration
+
+- Photo p01/p02/recto/verso relationship checked against *exact source pixel content*, not filename.
+- Source rights URL + actual byte hash/width/height + publisher attribution stored, not conjectured.
+- A proposed published reading maps to one support, one face, one writing/column and line; transformations invertibly trace ROI.
+- A **separate** text-license evidence field is positive before licensed silver material is distributed or trained upon.
+- No public benchmark or multiple exposures from one support enter both train and evaluation.
+- Raw image-only hypotheses locked before revealing editorial reading; uncertainty preserved.
+- Engineering and scientific outcomes reported as separate facts, with no invented metric progress.

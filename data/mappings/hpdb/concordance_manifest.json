@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "source": "Hieratische Paläographie DB published ID Concordance Table",
+  "source_home": "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/",
+  "source_table": "https://moeller.jinsha.tsukuba.ac.jp/en/concordance/",
+  "publisher": "Hieratische Paläographie DB Project, University of Tsukuba / University of Tokyo",
+  "source_repository": "hp-db/hp-db.github.io",
+  "source_revision": "a8cfcf52632487cf1d61a5793d84c9b2f7192d5a",
+  "source_path": "public/data/id_correspondence.json",
+  "source_git_blob_sha1": "9de1829304fcb2c3b5ee054fd7bd0e6f1dea964b",
+  "source_license": "CC-BY-4.0",
+  "source_citation": "Masakatsu Nagai, Toshihito Waki, Yona Takahashi, and Satoru Nakamura, Hieratische Paläographie DB, https://moeller.jinsha.tsukuba.ac.jp/",
+  "expected_concordance_count": 937,
+  "match_type_counts": {
+    "matched": 628,
+    "compound": 158,
+    "unmatched": 124,
+    "unknown": 27
+  },
+  "linked_index_count": 2065,
+  "exact_printed_notation_matches": 2053,
+  "printed_notation_discrepancies": 12,
+  "discrepancy_item_ids": [
+    "122001",
+    "145001",
+    "163007",
+    "165017",
+    "169010",
+    "170006",
+    "174007",
+    "321001",
+    "323008",
+    "339009",
+    "339010",
+    "365004"
+  ],
+  "source_type": "publisher_palaeography_cross_system_reference_not_original_manuscript",
+  "usage": "reference_metadata_only_not_an_original_photo_or_line_transcription",
+  "source_media_rights": "UNVERIFIED",
+  "training_admission": "BLOCKED_REFERENCE_METADATA_ONLY",
+  "scientific_evaluation_admission": "BLOCKED_REFERENCE_METADATA_ONLY",
+  "notes": "Literal concordance joins to Moller printed-hieratic identifiers are provenance-aware references; the twelve divergent published Gardiner notations must remain visible. No confidence/gold may be inferred from matched source type."
+}

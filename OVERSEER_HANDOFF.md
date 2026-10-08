@@ -1,3 +1,11 @@
+## 2026-10-08 — W4 overseer R-016 completed, agents dispatched independently
+
+- Mohammed confirmed both **Luna LING-002** and **Anti-Gravity/Gemini 3.8 Flash VLM-001 remediation** W4 prompts have been sent and explicitly directed the overseer to start R-016; complies with staged handoff ADR-0023. Agent work is ongoing outside this repo research branch; do not invent agent completion.
+- R-016 primary research in `docs/research/R016_CORPUS_GOLD_FEASIBILITY.md` and 15-candidate YAML roster: six Museo Egizio TPOP Hieratic document records, nine Met OA Hieratic ostraca. Source policy and individual institutional object pages verified; no actual pixels/gold. Preliminary source-name audit of **37 pinned HieraticBench Met plus 61 Wikimedia public item metadata** found no direct candidate IDs but does **not** clear near duplicates / additional source aliases. In particular benchmark Met items and other Turin Commons originals must stay excluded.
+- Proposed rights/annotation routes: (A) museum-authorized CC0 images plus explicitly separately licensed TPOP scholarly editorial text with stable writing IDs; (B) OA Met images plus new independently licensed expert-created line gold. Institutional inquiries drafted but **unsent**. Data rights, benchmark leakage, expert availability and approved contact identity are next actual constraints.
+- DATA-008 remains **active/unvalidated at 0/3** despite merged infrastructure PR #49; VLM-001 **active/unvalidated at 0/2** on PR #52; EVAL-003 **active 0/1.5**; LING-002 **ready at 0/2** until independently accepted. Canonical **32.5/100**, coverage **14%**, model experiments **0**, trained models **0**.
+- On next agent return: inspect new exact PR heads, CI, code and evidence for both lanes; never self-award. Ask owner before any outbound rights inquiry, research agreement, purchase or restricted/registered data acquisition.
+
 ## 2026-10-08 — W3 DATA-008 merge and VLM-001 scientific re-review
 
 - **Verified goal:** 32.5/100, remaining 67.5; **research coverage 14%**, **P2 8.5/10**, **P3 17/20**, **P6 2/10**, other phases P1 5/5 and P4/P5/P7/P8 0. Zero validated real model experiments or trained models.

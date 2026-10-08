@@ -194,7 +194,13 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
         if prediction["publisher_attested_german_sentence"]:
             counts["sentences_with_cross_text_attested_full_german_translation"] += 1
         # Published target is opened ONLY after the independent prediction.
-        metric = word_f1(prediction["gloss_sequence"], sentence["sentence_translation"])
+        # Score exactly the actual output selected by the translation layer:
+        # source-independent publisher sentence where attested, otherwise gloss.
+        predicted_german = (prediction["publisher_attested_german_sentence"]
+                            or prediction["gloss_sequence"])
+        metric = word_f1(predicted_german, sentence["sentence_translation"])
+        if prediction["publisher_attested_german_sentence"] and metric["f1"] == 1:
+            counts["cross_text_publisher_full_sentence_word_exact"] += 1
         counts["scored_sentences"] += 1
         counts["tokens_total"] += prediction["tokens_total"]
         counts["tokens_abstained"] += prediction["tokens_abstained"]
@@ -209,6 +215,8 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
         if include_examples and len(cases) < 10:
             cases.append({
                 "sentence_id": sid, "text_id": sentence["text"],
+                "actual_translation_output": predicted_german,
+                "translation_mode": prediction["translation_mode"],
                 "prediction_gloss_sequence": prediction["gloss_sequence"],
                 "publisher_sentence_translation": sentence["sentence_translation"],
                 "word_overlap_f1": metric["f1"], "token_abstentions": prediction["tokens_abstained"],

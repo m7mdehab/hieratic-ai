@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/linguistic_normalization.schema.json",
+  "title": "Hieratic AI transliteration normalization request",
+  "type": "object",
+  "required": ["schema_version", "normalization_id", "annotation_id", "annotation_sha256", "profile_id", "profile_version", "items"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "normalization_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+    "annotation_id": {"type": "string", "minLength": 1},
+    "annotation_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_version": {"type": "string", "minLength": 1},
+    "items": {"type": "array", "minItems": 1, "maxItems": 10000, "items": {"$ref": "#/$defs/item"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["unit_id", "line_id", "source_layer", "token_id", "reading_group_id", "source_value_ids", "whitespace_semantics", "line_break_semantics"],
+      "properties": {
+        "unit_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"},
+        "line_id": {"type": "string", "minLength": 1},
+        "source_layer": {"enum": ["diplomatic_transliteration", "normalized_token"]},
+        "token_id": {"type": ["string", "null"]},
+        "reading_group_id": {"type": "string", "minLength": 1},
+        "source_value_ids": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "whitespace_semantics": {"enum": ["formatting_only", "token_separator", "significant", "unknown"]},
+        "line_break_semantics": {"enum": ["formatting_only", "significant", "unknown"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"source_layer": {"const": "diplomatic_transliteration"}}, "required": ["source_layer"]}, "then": {"properties": {"token_id": {"type": "null"}}}},
+        {"if": {"properties": {"source_layer": {"const": "normalized_token"}}, "required": ["source_layer"]}, "then": {"properties": {"token_id": {"type": "string", "minLength": 1}}}}
+      ],
+      "additionalProperties": false
+    },
+    "normalizationManifest": {
+      "type": "object",
+      "required": ["schema_version", "normalization_id", "normalization_version_id", "generator", "annotation", "profile", "items", "collisions"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "normalization_id": {"type": "string"},
+        "normalization_version_id": {"type": "string", "pattern": "^ling-[0-9a-f]{64}$"},
+        "generator": {"type": "string"},
+        "annotation": {"type": "object"},
+        "profile": {"type": "object"},
+        "items": {"type": "array", "items": {"type": "object"}},
+        "collisions": {"type": "array", "items": {"type": "object"}}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,33 @@
+profiles_version: "1.0.0"
+profiles:
+  identity:
+    version: "1.0.0"
+    evaluation_profile_id: raw_identity
+    supported_status: supported_encoding_policy
+    rules: [preserve_exact_unicode_code_points_and_whitespace]
+    reversible: true
+    non_reversible_operations: []
+  unicode-nfc:
+    version: "1.0.0"
+    evaluation_profile_id: null
+    supported_status: supported_unicode_normalization
+    rules: [unicode_nfc_only]
+    reversible: false
+    non_reversible_operations: [canonical_composition_may_collapse_distinct_code_point_sequences]
+  translit_diplomatic_v1:
+    version: "1.0.0"
+    evaluation_profile_id: translit_diplomatic_v1
+    evaluation_contract_ref: docs/evaluation/NORMALIZATION_PROFILES.md#translit_diplomatic_v1
+    supported_status: accepted_eval_formatting_profile
+    rules: [unicode_nfc, normalize_line_endings_to_lf, trim_terminal_whitespace]
+    reversible: false
+    non_reversible_operations: [unicode_nfc, terminal_whitespace_trim]
+  translit_compare_v1:
+    version: "1.0.0"
+    evaluation_profile_id: translit_compare_v1
+    evaluation_contract_ref: docs/evaluation/NORMALIZATION_PROFILES.md#translit_compare_v1
+    supported_status: accepted_eval_comparison_profile_conservative_subset
+    rules: [unicode_nfc, normalize_line_endings_to_lf, trim_outer_whitespace, conditional_whitespace_collapse]
+    reversible: false
+    non_reversible_operations: [unicode_nfc, outer_whitespace_trim, declared_formatting_whitespace_collapse]
+    restrictions: [no_case_folding, no_punctuation_rewrite, no_editorial_mark_rewrite, no_lexical_equivalence, no_sign_or_grapheme_substitution, no_tokenization]

@@ -1,0 +1,423 @@
+{
+  "schema_version": "1.0.0",
+  "research_id": "R-021",
+  "as_of": "2026-10-08",
+  "scope": "new and prior institutional primary sources, metadata-only, first authentic image/transliteration pair feasibility",
+  "all_observations_from_public_primary_pages": true,
+  "no_actual_image_bytes_acquired": true,
+  "no_gold_copied": true,
+  "no_owner_outreach": true,
+  "no_production_approvals": true,
+  "all_blocked": true,
+  "physical_support_count_warning": "Leiden five viewer pages represent THREE underlying Louvre papyri (each recto/verso is same physical manuscript)",
+  "cases": [
+    {
+      "id": "R021-AHGP-E7852",
+      "route": "leiden-louvre-dual-license-word-annotations",
+      "institution": "Leiden University Libraries + Musée du Louvre",
+      "supports": [
+        "Louvre E 7852"
+      ],
+      "views": [
+        "E 7852 side in portal"
+      ],
+      "script": "abnormal_hieratic_dyn_25_26",
+      "primary_urls": [
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/papyri/p-louvre-e-7852/",
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/content-and-code-licenses/",
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/search-within-papyri/"
+      ],
+      "evidence": "Published E 7852 displays ten numbered transliteration lines, translations and interactive tagged word positions; official portal attributes papyrus photographs to Louvre and textual annotations to Leiden under CC BY-NC-SA 3.0 NL.",
+      "pixels": "Louvre copyright; permission to Leiden for portal viewing only; not an ML image license",
+      "gold": "Leiden word/line annotations CC BY-NC-SA 3.0 NL; cannot presume commercial reuse, unrestricted checkpoint rights, sublicensing or alignment export",
+      "spatial": "Interactive per-word visual region linking reported, actual coordinates/export unavailable",
+      "risks": [
+        "abnormal Hieratic must be separate domain and not equivalent to regular hieratic",
+        "3 physical papyri/5 views, not 5 independent manuscript documents",
+        "Louvre original image rights and Leiden annotation terms require separate permission",
+        "webpage/published edition may be in foundation-model pretraining; benchmark novelty unresolved"
+      ],
+      "status": "BLOCKED_DUAL_RIGHTS_AND_SOURCE_LEAKAGE",
+      "rank": "1_expert_pair_feasibility",
+      "first_action": "seek written dual authorization and licensed export for one E 7852 line ROI/word annotation; avoid copying site editorial data into Git",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-AHGP-E7851",
+      "route": "leiden-louvre-dual-license-word-annotations",
+      "institution": "Leiden University Libraries + Musée du Louvre",
+      "supports": [
+        "Louvre E 7851"
+      ],
+      "views": [
+        "recto",
+        "verso"
+      ],
+      "script": "abnormal_hieratic_dyn_25_26",
+      "primary_urls": [
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/papyri-with-abnormal-hieratic-script/",
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/content-and-code-licenses/"
+      ],
+      "evidence": "Both E 7851 sides listed among portal's five view objects; word and name annotations on viewer.",
+      "pixels": "Louvre original photo copyrights; no reuse grant verified",
+      "gold": "Leiden text annotations CC BY-NC-SA 3.0 NL",
+      "spatial": "Linked word annotations in viewer but no reusable polygon export verified",
+      "risks": [
+        "recto and verso same physical support",
+        "not manuscript-independent holdout",
+        "foundation model may have seen published reading"
+      ],
+      "status": "BLOCKED_DUAL_RIGHTS_AND_SOURCE_LEAKAGE",
+      "rank": "2_duplicate_support_control",
+      "first_action": "after licence decision, request both side/exposure IDs and one selected text line; reserve both views same partition",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-AHGP-E7856",
+      "route": "leiden-louvre-dual-license-word-annotations",
+      "institution": "Leiden University Libraries + Musée du Louvre",
+      "supports": [
+        "Louvre E 7856"
+      ],
+      "views": [
+        "recto",
+        "verso"
+      ],
+      "script": "abnormal_hieratic_dyn_25_26",
+      "primary_urls": [
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/papyri-with-abnormal-hieratic-script/",
+        "https://lab.library.universiteitleiden.nl/abnormalhieratic/content-and-code-licenses/"
+      ],
+      "evidence": "Both E 7856 sides listed among annotated portal manuscript views.",
+      "pixels": "Louvre rights not cleared for ML/republication",
+      "gold": "Leiden text CC BY-NC-SA 3.0 NL",
+      "spatial": "Tagged viewer but no licensed coordinate archive established",
+      "risks": [
+        "two views of same papyrus",
+        "textual witnesses/edition and original pixels require identity audit"
+      ],
+      "status": "BLOCKED_DUAL_RIGHTS_AND_SOURCE_LEAKAGE",
+      "rank": "2_duplicate_support_control",
+      "first_action": "request site owner metadata and source photo/editorial licence, once intended use decided",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-TPOP-1896",
+      "route": "museoegizio-original-image-plus-editor-rights",
+      "institution": "Museo Egizio Turin",
+      "supports": [
+        "Cat.1896"
+      ],
+      "views": [
+        "recto royal decree",
+        "verso address",
+        "verso bread-ration note"
+      ],
+      "script": "ramesside_hieratic",
+      "primary_urls": [
+        "https://collezionepapiri.museoegizio.it/en-GB/document/259/",
+        "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/"
+      ],
+      "evidence": "Three distinct writings including separate verso ration text. Site allows CC0 of images *provided* on TPOP; editorial information credited at writing-level.",
+      "pixels": "TPOP-provided original images CC0 policy, but actual selected pixel bytes/file identity not acquired",
+      "gold": "existing editor-authored text not automatically CC0 and no machine-readable aligned diplomatic export verified",
+      "spatial": "no original photo side/writing/line polygon hash",
+      "risks": [
+        "recto/verso and distinct writings same physical support",
+        "published edition pretraining contamination",
+        "editor and partner PDF CC BY-NC different rights"
+      ],
+      "status": "BLOCKED_EDITOR_GOLD_AND_EXPOSURE",
+      "rank": "1_core_hieratic_editor_route",
+      "first_action": "written scholarly permission for one source-matched line; choose image only after TPOP verified stable exposure",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-MET-561345",
+      "route": "met-public-domain-image-plus-new-expert-gold",
+      "institution": "The Metropolitan Museum of Art",
+      "supports": [
+        "09.184.703",
+        "object 561345"
+      ],
+      "views": [
+        "original photography view to verify"
+      ],
+      "script": "ramesside_hieratic",
+      "primary_urls": [
+        "https://www.metmuseum.org/art/collection/search/561345",
+        "https://www.metmuseum.org/hubs/open-access",
+        "https://metmuseum.github.io/"
+      ],
+      "evidence": "Official object page public domain; limestone inscription concerning official visit; original 09.184.703.",
+      "pixels": "Met OA eligible originals CC0; item object-API JSON/photo bytes not locally verified by overseer; Luna W6 tasked on actual metadata",
+      "gold": "museum synopsis not line transcription; new paid/volunteer Egyptologist transcription and independent review required",
+      "spatial": "not annotated; commission and independently validate region",
+      "risks": [
+        "published text image pairs may exist under other accession IDs",
+        "Met same accession family not by itself same original manuscript",
+        "original exposure byte hash missing"
+      ],
+      "status": "BLOCKED_REAL_EXPERT_GOLD_AND_ASSET_HASH",
+      "rank": "1_easiest_photo_permission",
+      "first_action": "once owner approves actual image acquisition, verify exact official API image, SHA and original independently licensed scholarly reader",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-MET-561392",
+      "route": "met-public-domain-image-plus-new-expert-gold",
+      "institution": "The Metropolitan Museum of Art",
+      "supports": [
+        "09.184.751",
+        "object 561392"
+      ],
+      "views": [
+        "two views reported in Met gallery"
+      ],
+      "script": "ramesside_hieratic",
+      "primary_urls": [
+        "https://www.metmuseum.org/art/collection/search/561392",
+        "https://www.metmuseum.org/hubs/open-access"
+      ],
+      "evidence": "Official Met original labelled Public Domain; notes on lamps/torches; 2 views on collection page.",
+      "pixels": "Met OA CC0 when exact eligible asset; actual file bytes and per-view IDs not independently acquired",
+      "gold": "no expert line reading from catalog summary",
+      "spatial": "not aligned; hire or collaborate Egyptologist",
+      "risks": [
+        "two views one physical document",
+        "side and exposure IDs unresolved"
+      ],
+      "status": "BLOCKED_REAL_EXPERT_GOLD_AND_ASSET_HASH",
+      "rank": "2_met_fallback",
+      "first_action": "verify two views refer to same support, do not treat as two holdout documents",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-DDD",
+      "route": "diagnostic-deir-el-medina-sign-polygons",
+      "institution": "Crossing Boundaries / Museo Egizio",
+      "supports": [
+        "50 papyrus documents (dataset description)"
+      ],
+      "views": [
+        "159 image records"
+      ],
+      "script": "hieratic_ramesside",
+      "primary_urls": [
+        "https://zenodo.org/records/20553713"
+      ],
+      "evidence": "Zenodo description: 159 images across 50 papyrus documents, 504 characters/groups, partial polygon annotations, not complete transcription.",
+      "pixels": "per-image rights file and noncommercial CC BY-NC-SA4.0 dataset; not automatic unrestricted photo/checkpoint licence",
+      "gold": "only selected grapheme classes/group polygons; no full diplomatic lines",
+      "spatial": "partial grapheme spatial polygons, not full line gold",
+      "risks": [
+        "license NC+SA conflicts with unrestricted release",
+        "fragments and source support overlaps",
+        "likely text-facsimile/benchmark exposure"
+      ],
+      "status": "BLOCKED_NC_AND_INCOMPLETE_LINE_GOLD",
+      "rank": "3_sign_scoped_noncommercial_only",
+      "first_action": "separate scientific noncommercial track and review per-image copyright before any source use",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-DUKE-HIERATIC",
+      "route": "duke-catalogue-papyrus-photo",
+      "institution": "Duke University Libraries",
+      "supports": [
+        "P.Duk.inv. 800",
+        "881",
+        "887 V",
+        "888 V",
+        "648 R/V"
+      ],
+      "views": [
+        "catalogue photo and item pages"
+      ],
+      "script": "hieratic_various",
+      "primary_urls": [
+        "https://library.duke.edu/papyrus/texts/hieratic.html"
+      ],
+      "evidence": "University catalog offers original hieratic papyrus images + descriptive records for specified items.",
+      "pixels": "site offers display images; original-file exact license unresolved",
+      "gold": "item catalogue description not aligned diplomatic reading",
+      "spatial": "not verified",
+      "risks": [
+        "item images not independently cleared",
+        "no source-matched diplomatic gold",
+        "verso/recto and fragments require grouping"
+      ],
+      "status": "BLOCKED_IMAGE_RIGHTS_AND_GOLD",
+      "rank": "4_alternative_photographs",
+      "first_action": "request source IDs and rights+academic edition references, not assume gallery implies ML permission",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "NO_LITERAL_MATCH_ONLY_NOT_CLEARED"
+    },
+    {
+      "id": "R021-TSUKUBA-HDB-ABBOTT",
+      "route": "restricted-academic-database",
+      "institution": "University of Tsukuba + British Museum",
+      "supports": [
+        "BM EA10221 Papyrus Abbott"
+      ],
+      "views": [
+        "full manuscript database restricted to authorized scholars"
+      ],
+      "script": "hieratic",
+      "primary_urls": [
+        "https://wdb.jinsha.tsukuba.ac.jp/en/wdb/hdb/about"
+      ],
+      "evidence": "University HDB says digitized BM EA10221 with museum permission; authorized scholars only; photo copyright remains with British Museum.",
+      "pixels": "British Museum rights not cleared for unrestricted training",
+      "gold": "restricted specialist database may have direct Hieratic sign annotations, but no export licence/review",
+      "spatial": "not publicly evidenced",
+      "risks": [
+        "registration required",
+        "BM photo rights",
+        "potential manuscript pretraining exposure",
+        "direct benchmark support-name exposure confirmed"
+      ],
+      "status": "BLOCKED_RESTRICTED_ACCESS",
+      "rank": "4_unlicensed_research_contact_only",
+      "first_action": "request authorization only after explicit owner approval; do not confuse this HDB with CC BY HPDB metadata",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [
+        "wm-0021"
+      ],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "DIRECT_SOURCE_MANUSCRIPT_IDENTITY_MATCH"
+    },
+    {
+      "id": "R021-HEARST-1905",
+      "route": "historical-open-edition",
+      "institution": "University of California eScholarship / Bancroft Library",
+      "supports": [
+        "Hearst Medical Papyrus manuscript"
+      ],
+      "views": [
+        "17 facsimile plates in 1905 edition"
+      ],
+      "script": "hieratic",
+      "primary_urls": [
+        "https://escholarship.org/uc/item/0131c4js"
+      ],
+      "evidence": "Open 1905 Reisner and Lythgoe publication supplies facsimile plates and vocabulary, not independently verified line coordinate gold.",
+      "pixels": "original historic facsimile reproduction provenance and exact web-scan rights uncertain",
+      "gold": "period 1905 published vocabulary/intro not established complete line-aligned modern gold",
+      "spatial": "plates, no line-box metadata verified",
+      "risks": [
+        "same original support already appears in R017 AKU support records (Berkeley P.Hearst1282)",
+        "public-domain edition rights depend on jurisdiction and scan",
+        "very strong test contamination possibility",
+        "direct benchmark support-name exposure confirmed"
+      ],
+      "status": "BLOCKED_BENCHMARK_SUPPORT_OVERLAP",
+      "rank": "5_reference_only_do_not_train",
+      "first_action": "quarantine as possible same original source as AKU signs until expert source identity review",
+      "original_asset_sha256": null,
+      "authorized_editor_gold_sha256": null,
+      "independent_egyptologist_gold": false,
+      "verified_rights_for_unrestricted_ml": false,
+      "source_alias_and_benchmark_image_audit": false,
+      "admitted_for_training": false,
+      "admitted_for_dev": false,
+      "admitted_for_scientific_eval": false,
+      "r017_literal_metadata_match_ids": [
+        "aku-0032",
+        "aku-0039",
+        "aku-0112",
+        "aku-0139",
+        "aku-0144",
+        "wm-0028"
+      ],
+      "r017_literal_metadata_screen": "official pinned 266 public item identity text; zero literal match is not alias/pixel/text independence",
+      "r017_exclusion_evidence": "DIRECT_SOURCE_MANUSCRIPT_IDENTITY_MATCH"
+    }
+  ]
+}

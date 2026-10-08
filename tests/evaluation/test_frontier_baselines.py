@@ -670,5 +670,100 @@ class OriginalScorerAggregateRedactionTests(unittest.TestCase):
 
 
 
+class W6DocumentaryEvidenceTests(unittest.TestCase):
+    """Negative tests: candidate provider metadata and R017 IDs never authorize an experiment."""
+
+    @classmethod
+    def setUpClass(cls):
+        from eval.baselines import w6_readiness
+        cls.w6 = w6_readiness
+        cls.catalog, cls.suite, cls.rows = w6_readiness.read_snapshot()
+
+    def setup_copy(self):
+        return copy.deepcopy(self.catalog), copy.deepcopy(self.suite), copy.deepcopy(self.rows)
+
+    def reject(self, catalog, suite, rows, needle):
+        issues = self.w6.validate_snapshot(catalog, suite, rows)
+        self.assertTrue(any(needle in x for x in issues), issues)
+
+    def test_w6_actual_documentary_snapshot_passes_without_promoting_rights(self):
+        cat, suite, rows = self.setup_copy()
+        self.assertEqual([], self.w6.validate_snapshot(cat, suite, rows))
+        report = self.w6.build_readiness(cat, rows)
+        self.assertEqual(266, report["metadata_only_public_items"])
+        self.assertEqual(116, report["identify_source_identity_count"])
+        self.assertEqual(150, report["sign_source_identity_count"])
+        self.assertFalse(report["execution_authorized"])
+        self.assertEqual(0, report["eligible_scientific_evaluation_items"])
+        self.assertEqual(0, report["provider_calls_observed"])
+
+    def test_w6_forged_candidate_runtime_proof_rejected(self):
+        c,s,m = self.setup_copy()
+        c["models"][0]["raw_api_execution_occurred"] = True
+        self.reject(c,s,m,"access/execution not independently verified")
+
+    def test_w6_forged_scientific_execution_approval_rejected(self):
+        c,s,m = self.setup_copy()
+        c["externally_authorized"] = True
+        self.reject(c,s,m,"catalogue must not assert execution/permission")
+
+    def test_w6_provider_model_id_drift_rejected(self):
+        c,s,m = self.setup_copy()
+        c["models"][2]["model_id"] = "gemini-flash-latest"
+        self.reject(c,s,m,"candidate model ID/provider mismatch")
+
+    def test_w6_malicious_provider_endpoint_rejected(self):
+        c,s,m = self.setup_copy()
+        c["models"][0]["api_route"] = "https://example.invalid/v1/responses"
+        self.reject(c,s,m,"candidate API route host mismatch")
+
+    def test_w6_suite_authority_tampering_rejected(self):
+        c,s,m = self.setup_copy()
+        s["execution_gate"]["explicit_user_permission_for_paid_inference"] = True
+        self.reject(c,s,m,"forbidden execution authorization")
+
+    def test_w6_suite_does_not_inherit_candidate_model_ids(self):
+        c,s,m = self.setup_copy()
+        s["models"][0]["provider_model_id"] = c["models"][0]["model_id"]
+        self.reject(c,s,m,"must not mutate pre-registered suite IDs")
+
+    def test_w6_public_metadata_gold_leak_rejected(self):
+        c,s,m = self.setup_copy()
+        m[0]["gold"] = "DO-NOT-COPY-BENCHMARK-GOLD"
+        self.reject(c,s,m,"gold-bearing fields")
+
+    def test_w6_public_metadata_sealed_identity_rejected(self):
+        c,s,m = self.setup_copy()
+        m[0]["id"] = "hb-0001"
+        self.reject(c,s,m,"sealed/duplicate/invalid")
+
+    def test_w6_public_metadata_missing_item_rejected(self):
+        c,s,m = self.setup_copy()
+        m.pop()
+        self.reject(c,s,m,"public metadata count")
+
+    def test_w6_public_metadata_rights_promotion_rejected(self):
+        c,s,m = self.setup_copy()
+        m[0]["corpus_status"] = "TRAINING_ALLOWED"
+        self.reject(c,s,m,"incorrectly promoted")
+
+    def test_w6_public_metadata_duplicate_id_rejected(self):
+        c,s,m = self.setup_copy()
+        m[1]["id"] = m[0]["id"]
+        self.reject(c,s,m,"sealed/duplicate/invalid")
+
+    def test_w6_documentary_pins_are_strict_and_offline(self):
+        c,s,m = self.setup_copy()
+        c["benchmark_sha"] = "b" * 40
+        self.reject(c,s,m,"benchmark/version drift")
+        # Auditor uses only stdlib/yaml and contains no HTTP client / credentials.
+        source = self.w6.__file__
+        text = Path(source).read_text(encoding="utf-8")
+        self.assertNotIn("requests.get(", text)
+        self.assertNotIn("urlopen(", text)
+        self.assertNotIn("api_key", text.lower())
+
+
+
 if __name__=="__main__":
     unittest.main()

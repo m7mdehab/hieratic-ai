@@ -35,6 +35,9 @@ jobs:
       - name: Validate baseline suite structure
         run: python -m eval.baselines.baselinectl validate-suite
 
+      - name: Audit W6 public-only metadata and documentary provider candidates (no network)
+        run: python -m eval.baselines.w6_readiness
+
       - name: Assert unapproved paid inference remains blocked
         run: |
           if python -m eval.baselines.baselinectl preflight; then

@@ -254,3 +254,51 @@ This is necessary to complete EVAL-003's requirement that **official scoring be 
 **Important privacy safeguard:** The original benchmark's publicly scored sign labels are present only in the ephemeral upstream checkout; no gold, per-item results, parsed sign guesses, provider raw answers or source images are copied into the project's Git history or aggregate report.
 
 **CI:** The `frontier-baselines.yml` workflow runs a built-in fake-script/fake-sign parity test against *the real pinned official TypeScript source*, then creates a **synthetic 266-attempt full public-manifest fixture** in `runner.temp`. It replays placeholder text/failures through the real scorer and audits the resulting aggregate for exact count and absence of answer-bearing fields. **This is not new frontier-model inference and awards zero EVAL-003 points.** A real provider call and independently accepted scored archive remain required.
+
+
+## W6 — Verified current provider identifiers and actual baseline execution readiness (2026-10-08)
+
+**Additional auditable artifacts:** [W6 candidate catalogue](../../eval/baselines/w6_provider_candidates.json) and [deterministic offline readiness audit](../../eval/baselines/w6_readiness.py). **Preflight status: NOT AUTHORIZED; zero provider API calls/actual Hieratic inference.**
+
+### Three *documentary-verified* image-capable model candidates
+
+| Provider | Official current model ID | Official primary model/vision evidence | Draft direct API route | Verification scope |
+|---|---|---|---|---|
+| OpenAI | `gpt-6-luna` | [model card](https://developers.openai.com/api/docs/models/gpt-6-luna), [image-input guide](https://developers.openai.com/api/docs/guides/images-vision) | `POST https://api.openai.com/v1/responses` | Exact ID+image input documented; user-account access, actual image encoding, context charges and final effort policy NOT tested |
+| Anthropic | `claude-sonnet-5-5` | [model card](https://platform.claude.com/docs/en/models/sonnet-5-5/overview), [vision API guide](https://platform.claude.com/docs/en/build-with-claude/vision) | `POST https://api.anthropic.com/v1/messages` | Exact Claude API ID and image content block documented; user-account entitlements/permissions NOT verified |
+| Google | `gemini-3.8-flash` | [model card](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash), [Gemini 3.8 official model guide](https://ai.google.dev/gemini-api/docs/latest-model) | `POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent` | Stable model ID, image modality, `low/medium/high` thinking documented; actual credential/model access NOT verified |
+
+These are **three candidates for a future owner-authorized comparison**, not default runtime selections or inferred best performers. Dates/specs are point-in-time official website observations; provider models, quota and pricing may change. The Google general model-list page appeared with different crawl snapshot versions; prefer its explicit specific 3.8 Flash model page and live authenticated `models.list` verification before any protocol lock. Claude IDs 4.6+ are version names rather than assumed ever-shifting generic aliases ([official version guidance](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions)); do not claim accessible/account-enabled from public model documentation.
+
+**Reasoning settings are not scientifically equivalent across vendors.** Proposed effort tiers in the candidate catalogue are merely configuration ideas requiring pre-registration, not comparable compute budgets. No empirical performance ranking can be made from published model-family descriptions.
+
+### Frozen public benchmark population and upstream-only official scorer
+
+The independently reviewed R-017 [public-source metadata census](../research/R017_PUBLIC_BENCHMARK_LINEAGE_AUDIT.md) includes **266 unique pinned public item IDs**: **150 AKU isolated-sign items** and **116 script-ID items** (16 Chester Beatty, 37 Met, 61 Wikimedia, 2 Yale). **Two commissioned sealed items excluded.** There is no source-side `gold` or image pixel field in the W6 census. Full 266 × 3 candidate providers × **3 samples** = **2,394 pre-planned attempts**, not 2,394 results or a reasonable cost quote. Original object/support clustering is fewer than 266 (AKU 150 signs may share physical supports), so document-level intervals must not blindly treat each item as independent.
+
+The existing `public_freeze.py` and `official_replay.mjs` already exercise pinned upstream metadata, prompt hashes and **synthetic** original TypeScript scorer parity in hosted CI; these do not mean actual provider images were sent or a new leaderboard has been produced. When genuine inference becomes authorized, preserve **exact official prompt bytes** from pinned upstream; avoid run-time model-dependent prompt improvements, examples, system additions, OCR tools and per-rung denominator selection.
+
+### Offline readiness audit and adversarial tests
+
+Run:
+
+```bash
+python -m eval.baselines.w6_readiness
+python -m eval.baselines.baselinectl validate-suite
+# This MUST fail pending specific execution permission.
+python -m eval.baselines.baselinectl preflight
+python -m unittest tests.evaluation.test_frontier_baselines -v
+```
+
+`w6_readiness` reads only public project-local JSON/metadata, validates official provider documentation domains and proposed exact IDs, pinned 266-source family census, mandatory quarantine, absence of sealed/gold fields, and canonical `suite.yaml` execution-state **planning**. Its output says `execution_authorized: false`, `eligible_scientific_evaluation_items: 0`, `provider_calls_observed: 0`, and no scores. These are **documentary/authorization state**, not a claim that the evaluation-only public benchmark itself could never be legally evaluated. The audit does not access the internet or API credentials, cannot award rights or certificates, and refuses mutated self-authorization flags and image/benchmark contamination.
+
+### Owner authorization, execution and reproducibility gate
+
+Before even one paid image request:
+1. Obtain separately approved API credentials, provider account access and current provider terms for copyrighted/public-domain benchmark images and test outputs. The OpenAI/Claude/Gemini consumer-app subscriptions are **not** interchangeable with research API credentials or billing.
+2. Lock **exact authenticated model IDs, image input format, reasoning effort and provider API route**, prompt bytes, preservation policy, benchmark item set, per-image licence, samples, budget in **USD**, retry rules and capped estimated image tokens. Image token costs depend on resolution/provider; no total quote inferred from text MTok alone.
+3. Validate reproducible private artifact custody and immutable attempted-universe manifest with audited source support group + image hashes; source metadata only in public repository.
+4. Authorize an initial deliberately scoped paired dry-run subset and only then enlarge up to 266 when actual spend and image delivery/accuracy controls pass. **Avoid picking a subset based on outcome.** Do not use official benchmark gold for development or tuning, even if public.
+5. Run actual provider requests and preserve all attempt failures/refusals/timeouts and raw provider receipts; evaluate using pinned official scorer and separately labeled EVAL-001 metrics; independent observer reviews results and provenance before status changes.
+
+**No provider credentials, image acquisition, new API inference, live images or human permission have been provided.** All W6 catalogue entries are documentary candidates, all execution gates remain blocked, `suite.yaml` is unchanged in `planning`, EVAL-003 still active and earns zero new points. This research only removes uncertainty over current *documented* model ID/routes, not experiment access.

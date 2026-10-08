@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W2_DATA_AND_SEALED_POLICY"
+  current_wave: "W3_DATA_RELEASE_VLM_LINGUISTIC_BASELINES"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -75,14 +75,14 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W2 DATA-003/005/006/007 engineering artifacts were independently reviewed,
-  patched for rights/eligibility/provenance/citation/adjudication safeguards,
-  rerun under strict GitHub CI and accepted (+10 verified points). DATA-008,
-  VLM-001 and LING-001 are now dependency-ready but must await the user's
-  explicit W3 approval before overseer starts any new scientific task.
-  Coordinate a dependency-safe three-lane portfolio with a larger Luna package,
-  an independent Anti-Gravity VLM-001 lane and substantial overseer EVAL-003
-  preparatory science; no paid provider inference without separate budget
-  authorization. EVAL-003 remains active/zero credited points. No real rights-
-  cleared manuscript corpus, actual trained model, benchmark run or expert gold
-  is yet accepted. The static dashboard requires rebuild/redeploy for 30.5.
+  User approved W3; overseer EVAL-003 source-rights and byte-frozen frontier
+  evaluation preflight implementation completed in independently CI-verified
+  PR #47, with no model calls or weighted credit. The approved Luna DATA-008
+  and LING-001 briefs and Anti-Gravity VLM-001 brief must be sent to their
+  external agent sessions; do not mark those ready tasks active until real
+  execution/branch evidence is observed. EVAL-003 remains active and unweighted
+  until explicit paid-inference authorization, real original model outputs,
+  independent official scorer reproduction and research review. Source rights,
+  licensed/expert annotated corpus, benchmark independence and appropriate
+  evaluation denominators remain mandatory. Continue independently reviewing
+  future W3 agent PRs as they arrive; do not award points for empty fixtures.

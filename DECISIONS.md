@@ -308,3 +308,21 @@ The overseer publishes a dependency-safe wave assignment and copy-ready dispatch
 **Separate explicit authorization is still required** for paid inference or nontrivial third-party spend, restricted data access/rights changes, revealing secrets, irreversible destructive operations, scientific release/unblinding, or any action explicitly held behind an external/security/legal gate. An ordinary task prompt does not implicitly approve those actions. Execute all safe, independent work and record blockers precisely.
 
 PR acceptance, capability points, protected state transitions, and promotion of claims remain exclusively overseer-reviewed. This decision alters dispatch latency, not integrity or review standards.
+
+
+## ADR-0023 — The user synchronizes the parallel start: prompts first, overseer work after user returns
+
+**Status:** Accepted  
+**Date:** 2026-10-08  
+**Authority:** Mohammed's newer explicit workflow correction; supersedes only the overseer-start timing in ADR-0022 and the corresponding parallel-wave protocol.
+
+A new parallel wave has **two separate visible steps**:
+
+1. **Dispatch response first:** the overseer gives Mohammed (a) complete ready-to-send prompts for Luna and the single Anti-Gravity lane, and (b) a concise statement of the substantial overseer-owned parallel task, scope, and noncollision rationale. The overseer does **not** finish or silently begin that work before presenting the prompts. The user gets the opportunity to forward them to the execution agents.
+2. **Synchronized execution after handoff:** Mohammed sends the prompts to the agents (which authorize them to begin immediately under ADR-0022) and then returns to the overseer chat to say dispatch is complete / to continue. At that point the overseer begins and performs the assigned independent work while execution agents are running.
+
+No second agent approval or redundant confirmation is needed **inside Codex or Anti-Gravity**. The overseer must not demand a separate formal wave approval once Mohammed has returned to continue. The user may explicitly authorize another timing arrangement for a given wave.
+
+This handoff is **a synchronization cue, not a scientific or financial waiver**. Rights, spending, sealed data, irreversible actions, unblinding, agent scope, independent PR acceptance and progress gates remain intact. The overseer must not promise background work while the user is away: the work runs only during the resumed interactive turn.
+
+**Exception at adoption:** after the user explicitly asked the overseer to pick up different work while the agents were already executing, the overseer completed primary-source research R-015 in PR #56. That completed work is not undone by this future-wave sequencing rule.

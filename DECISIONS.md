@@ -326,3 +326,18 @@ No second agent approval or redundant confirmation is needed **inside Codex or A
 This handoff is **a synchronization cue, not a scientific or financial waiver**. Rights, spending, sealed data, irreversible actions, unblinding, agent scope, independent PR acceptance and progress gates remain intact. The overseer must not promise background work while the user is away: the work runs only during the resumed interactive turn.
 
 **Exception at adoption:** after the user explicitly asked the overseer to pick up different work while the agents were already executing, the overseer completed primary-source research R-015 in PR #56. That completed work is not undone by this future-wave sequencing rule.
+
+
+## ADR-0024 — Accept genuinely source-grounded LING-002 interpretation; keep script-reading evidence separate
+
+**Status:** Accepted · **Date:** 2026-10-09 · **Authority:** Independent overseer review of full publisher source licensing, original-source Git blob identity, exact-head PR #88 code/tests and hosted governance CI 37856429995.
+
+The project owner's explicit preference is to exhaust viable public licensed free resources rather than idle while awaiting hired Egyptologists or paid infrastructure. An agent should **not** call a substep exhaustively blocked until lawful and materially different online alternatives have been investigated, tested where accessible and documented. Actual legal/security authorization gates remain real and must not be fabricated away.
+
+**Accepted LING-002 accomplishment (2.0 weighted roadmap points):** Real scholarly Egyptian dictionary/grammar and corpus from AED-TEI and AES (publisher CC BY-SA 4.0, independently registered via PR #85) now power deterministic token-to-lemma/POS/root/gloss and genuine alternative inflection analyses. The runtime validates the source data and licensed text-layer custody. A genuine full-corpus developmental diagnostic holds out each AES text ID's token gold from its AES candidate-generation set and compares model-free exact-form retrieval to published editor lemmas/morphology. The analysis is source-grounded and neither synthetic-only nor inferred from HPDB. It meets LING-002's limited P6 task scope and unblocks LING-003.
+
+**Measured and qualified:** 1,621 of 2,305 published lemma tokens have the correct lemma in returned candidate sets (70.33%); 1,062 of 1,102 uniquely predicted cases match published lemma (96.37% **conditional on unique prediction**); 449/753 morphological bundles match other-text source candidates (59.63%). Report SHA-256 is 26ad977c29fdd8659157cb02bec04323b6b544dc8ca9425a13825ea629acedee; full provenance and evidence in tasks/LING-002.md and EXPERIMENTS.md. Exact-head CI and canonical 15-file write-scope check passed.
+
+**Explicit limits:** AED and AES derive from overlapping published scholarship. Original AES text IDs do not prove independent physical papyri or scribes. No licensed original image, OCR, hand-written recognition, second blind Egyptologist reading, model tuning, sealed benchmark or statistically independent real-model performance was demonstrated. The 2 points acknowledge the **linguistic interpretation milestone only** and do not change DATA-008 production, VLM scientific certification, real-model experiment count, independent gold/benchmark or P4/P5 capability status.
+
+Canonical score: **32.5 → 34.5/100**, P6 **2 → 4/10**; LING-002 status **validated** and LING-003 becomes dependency-ready. Research coverage retains its historic 14% uncalibrated value, validated real model experiments **0**, trained models **0**. Neither publisher source licensing nor a task-oriented weight award is independent of original-image use rights.

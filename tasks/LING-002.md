@@ -40,3 +40,28 @@ The interpreter performs exact normalized-form lookup only. It does not infer le
 ## Rights and limits
 
 Unknown, restricted, noncommercial, evaluation-only and unverified source material cannot be admitted by a lexicon declaration alone. Scholarly candidate entries require a registry source with verified primary status, compatible project rights, citation locator plus verification evidence, stable source-object ID, source content hash and independent rights review. The engine does not itself verify a remote citation or grant rights; its data must already have passed that review. No external lexical source, TLA extraction, benchmark answer, or third-party material is included in this infrastructure task.
+
+
+## Wave 8 real-evidence acceptance package (2026-10-09)
+
+**Substantive task implementation:** PR #88. Prerequisite verified independent scholarly text-layer rights records were accepted in DATA-001 source-registration PR #85. This package is not credited for synthetic fixtures or another already accepted task.
+
+- **Authentic primary scholarly resources:** AED-TEI original CC BY-SA dictionary contains **35,052** distinct Egyptological lemma entries with actual historical orthographies, grammatical type labels and optional root/English gloss; AES contains **445** edited sentences from **311** distinct text record groups, **2,526** tokens, **2,305** editor-provided lemma IDs and genuine morphological tags.
+- **Source-bound identity and rights:** Upstream Git revisions, AED original dictionary.xml Git blob, AES original JSON Git blob, eight byte-identical-pinned *derived* dictionary partitions, publisher citations, share-alike license and real source registry identities. Both resources are official separate open scholarly data releases, not a scrape of the restricted live TLA interface. No underlying manuscript photograph acquired.
+- **Executable lexical layer:** Real Egyptian input forms resolve multiple exact scholarly lemma/POS/root/gloss candidates from AED; other-source textual attestations add real alternative morphology bundles rather than guessing inflection. All alternatives and unknown/unattested cases preserved. Normalization and source text claims are kept distinct.
+- **Real controlled experiment:** Exhaustive text-ID-level holdout for all **311** AES text groups (**309** scoreable, two without any labelled lemma). Each target text's AES labels are removed from its candidate-generation index. Shared AED public dictionary remains openly visible and thus not a sealed independent test. Evaluated on genuine editor-provided metadata only, not images.
+- **Exact-head hosted evaluation measured 2026-10-09:** 1,621/2,305 (70.3254%) have correct published lemma among candidates; 1,062/1,102 (96.3702%) single-candidate cases correct; 449/753 (59.6282%) published morphology bundles appear among candidate bundles; overall candidate coverage 1,709/2,305 (74.1432%). **Conditional single-case correctness must never be misreported as full recall.**
+- **Frozen full-report digest:** 26ad977c29fdd8659157cb02bec04323b6b544dc8ca9425a13825ea629acedee. Generated deterministically by the real code; exact digest verified in unit tests.
+- **Hosted QA:** project-governance, source registry, full data, full linguistics and evaluation suites plus scoped-file contract passed; no non-scoped files, no secrets or third-party image bytes, zero provider spend.
+- **Legitimate scientific limitations:** AED and AES historically share editorial dictionary sources; different AED/AES text IDs are not independently proven distinct physical witnesses and possible pretraining exposure is unknown. Their published labels are *authentic philological references*, not two-reader blind gold. Metrics describe lexical/morphological **scholarly-text diagnostic**, not image recognition/generalization or translation. DATA-008 and VLM-001 scientific production gates remain disabled.
+
+**Independent overseer review required for task status and any 2.0 weighted capability credit.** No automated self-promotion from source ingestion, project file editing, or the publisher's accessible data.
+
+### Reproduce
+
+~~~bash
+python -m tools.lexical_interpretation scholarly-aes verify
+python -m tools.lexical_interpretation scholarly-aes lookup --form ꜣ
+python -m tools.lexical_interpretation scholarly-aes evaluate
+python -m unittest tests.linguistics.test_lexical_interpretation -v
+~~~

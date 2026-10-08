@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hieratic-ai.invalid/schemas/met-original-asset-readiness-1.0.0.json",
+  "title": "Offline Met original-asset readiness assessment",
+  "type": "object",
+  "required": ["schema_version", "assessment_id", "network_used", "image_bytes_read", "candidate_count", "all_candidates_no_go", "selected_candidate", "candidate_matrix", "evidence_boundary", "retrieval_receipt_template"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "assessment_id": {"const": "W7-DATA-003-MET-ORIGINAL-ASSET-READINESS-v1"},
+    "generated_by": {"type": "string"},
+    "network_used": {"const": false},
+    "image_bytes_read": {"const": false},
+    "candidate_count": {"const": 9},
+    "all_candidates_no_go": {"const": true},
+    "selected_candidate": {"type": "object", "required": ["object_id", "accession", "api_response_sha256", "source_packet_sha256", "selected_view", "exact_image_url", "image_byte_sha256", "go_no_go", "download_performed", "download_command_enabled", "blockers"], "properties": {
+      "object_id": {"enum": [561345, 561392, 561361, 561391, 561407, 561409, 561410, 561413, 561621]},
+      "accession": {"type": "string"}, "api_response_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+      "source_packet_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "selected_view": {"type": "string"},
+      "exact_image_url": {"type": "string", "format": "uri", "pattern": "^https://images\\.metmuseum\\.org/CRDImages/eg/original/"},
+      "image_byte_sha256": {"const": null}, "go_no_go": {"const": "NO_GO"},
+      "download_performed": {"const": false}, "download_command_enabled": {"const": false},
+      "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+    }, "additionalProperties": true},
+    "candidate_matrix": {"type": "array", "minItems": 9, "maxItems": 9, "items": {"type": "object", "required": ["object_id", "accession", "api_response_sha256", "source_packet_sha256", "image_byte_sha256", "go_no_go"], "properties": {
+      "object_id": {"type": "integer"}, "accession": {"type": "string"},
+      "api_response_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "source_packet_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+      "image_byte_sha256": {"const": null}, "go_no_go": {"const": "NO_GO"}
+    }, "additionalProperties": true}},
+    "evidence_boundary": {"type": "string"},
+    "retrieval_receipt_template": {"type": "object", "required": ["status", "independent_authority_record_id", "object_id", "accession", "exact_image_url", "permitted_purpose", "approved_vault_id", "approved_by", "approved_at", "evidence_digest", "signature_verification"], "properties": {
+      "status": {"const": "NOT_RECORDED"}, "independent_authority_record_id": {"const": null}, "object_id": {"type": "integer"},
+      "accession": {"type": "string"}, "exact_image_url": {"type": "string", "format": "uri"},
+      "permitted_purpose": {"const": null}, "approved_vault_id": {"const": null}, "approved_by": {"const": null}, "approved_at": {"const": null},
+      "expiry_or_revocation_ref": {"type": ["string", "null"]}, "evidence_digest": {"const": null},
+      "signature_verification": {"type": "string"}
+    }, "additionalProperties": true}
+  },
+  "additionalProperties": true
+}

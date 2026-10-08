@@ -149,6 +149,8 @@ def met_metadata_packet(object_id: int, *, transport: Callable[[str], tuple[int,
             raise AcquisitionError("MET_IMAGE_METADATA_MALFORMED")
         image_urls = [primary, small, *additional]
         for url in image_urls:
+            if not isinstance(url, str):
+                raise AcquisitionError("MET_IMAGE_URL_NOT_STRING")
             parts = urlsplit(url)
             if url and (parts.scheme != "https" or parts.hostname != "images.metmuseum.org" or not parts.path.startswith("/CRDImages/eg/" ) or parts.username or parts.password or parts.query or parts.fragment):
                 raise AcquisitionError("MET_IMAGE_URL_OUTSIDE_ALLOWLIST")
@@ -185,7 +187,13 @@ def build_met_reconciliation(packets: list[dict[str, Any]], crosswalk: dict[str,
         normalized_rows = [row for row in public_rows if accession_key and accession_key in norm(row.get("object_name", ""))]
         object_id = int(candidate["candidate_id"].removeprefix("MET-")) if candidate["candidate_id"].startswith("MET-") else None
         packet = by_id.get(object_id)
-        api_accession = (packet or {}).get("observed", {}).get("accessionNumber")
+        observed = (packet or {}).get("observed")
+        if not isinstance(observed, dict):
+            observed = {}
+        extra_views = observed.get("additionalImages")
+        if not isinstance(extra_views, list):
+            extra_views = []
+        api_accession = observed.get("accessionNumber")
         comparisons.append({
             "candidate_id": candidate["candidate_id"], "institution": candidate["institution"],
             "candidate_accession": accession, "met_api_accession": api_accession,
@@ -195,7 +203,11 @@ def build_met_reconciliation(packets: list[dict[str, Any]], crosswalk: dict[str,
             "normalized_accession_string_matches_in_pinned_R017_public_metadata": [row["id"] for row in normalized_rows],
             "nearby_collection_witness_count_from_R017": candidate["nearby_collection_witness_count"],
             "r017_source_lineage_status": candidate["source_lineage_status"],
-            "image_view_count": len((packet or {}).get("observed", {}).get("additionalImages", [])) + (1 if (packet or {}).get("observed", {}).get("primaryImage") else 0),
+            "image_view_count": len(extra_views) + (1 if observed.get("primaryImage") else 0),
+            "photo_frame_multi_accession_unresolved": bool(
+                object_id == 561345 and any("09.184.728-09.184.703" in url for url in
+                [observed.get("primaryImage"), *extra_views] if isinstance(url, str))
+            ),
             "view_identity_group": f"{candidate['candidate_id']} (all API-listed views remain grouped; no pixel comparison performed)",
             "rights_status": "NOT_CLEARED", "image_equivalence_status": "NOT_TESTED",
             "training_admission": "BLOCKED",

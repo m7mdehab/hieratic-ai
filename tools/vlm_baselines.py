@@ -2,7 +2,8 @@
 
 Enforces suite integrity, prompt SHA-256 verification, quarantined demonstration checks,
 full attempt preservation audits, promotion prevention for synthetic fixtures,
-and dual-channel metric scoring under EVAL-006 document-clustered uncertainty standards.
+independent evaluation universe verification, and dual-channel metric scoring
+under EVAL-006 document-clustered uncertainty standards.
 """
 from __future__ import annotations
 
@@ -11,10 +12,11 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 from typing import Any
 
-import yaml
 from jsonschema import Draft202012Validator, FormatChecker
+import yaml
 
 from eval.vlm.adapter import (
     BaseVLMAdapter,
@@ -25,6 +27,16 @@ from eval.vlm.adapter import (
 )
 from eval.vlm.runner import VLMRunner
 from eval.vlm.scorer import compare_manifests, score_manifest
+from eval.vlm.universe import (
+    DEFAULT_UNIVERSE_PATH,
+    admit_external_items,
+    compute_universe_sha256,
+    get_expected_attempts,
+    get_universe_gold,
+    get_universe_items,
+    load_universe,
+    verify_universe_integrity,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SUITE_PATH = ROOT / "eval/vlm/suite.yaml"
@@ -59,6 +71,22 @@ def load_json(path: Path) -> Any:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
         raise VLMCLIError(f"Cannot read JSON from {path}: {exc}") from exc
+
+
+def write_json_atomic(path: Path, data: Any, indent: int = 2) -> None:
+    """Atomically write JSON data to file to prevent corrupted partial writes."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    serialized = json.dumps(data, indent=indent)
+    temp_file = path.parent / f".tmp_{path.name}_{tempfile.mktemp(dir='')}"
+    try:
+        temp_file.write_text(serialized, encoding="utf-8")
+        temp_file.replace(path)
+    finally:
+        if temp_file.exists():
+            try:
+                temp_file.unlink()
+            except OSError:
+                pass
 
 
 def validate_with_schema(payload: Any, schema: dict[str, Any]) -> list[str]:
@@ -148,35 +176,48 @@ def validate_demonstrations(
         did = d["demo_id"]
         dhash = d.get("image_sha256", "")
 
+        # Check for forbidden HieraticBench identifier prefix leakage
+        forbidden_prefixes = ["AKU-", "CBL-", "HB-", "MET-", "WM-", "YPM-"]
+        if any(pfx in did for pfx in forbidden_prefixes):
+            errors.append(
+                f"Demonstration '{did}' uses reserved HieraticBench prefix. "
+                "Quarantine violation: benchmark items cannot be used as demonstrations."
+            )
+
         if did in eval_set:
-            errors.append(f"Leakage violation: demonstration '{did}' overlaps with evaluation item.")
+            errors.append(f"Leakage violation: Demonstration ID '{did}' overlaps with evaluation split.")
+        if dhash and dhash in hash_set:
+            errors.append(f"Demonstration image hash leakage: '{did}' image hash overlaps with evaluation item.")
 
-        if dhash in hash_set and not d.get("is_synthetic_fixture", False):
-            errors.append(f"Leakage violation: demonstration '{did}' image hash overlaps with evaluation item.")
+    # Strict clearance verification
+    is_synthetic = (status == "synthetic_fixture_only")
+    rights_approved = (rights.get("rights_review_status") == "approved_with_evidence")
+    quarantine_verified = rights.get("quarantine_verified", False)
 
-        benchmark_prefixes = ("AKU-", "CBL-", "HB-", "MET-", "WM-", "YPM-")
-        if did.startswith(benchmark_prefixes) or any(did.startswith(f"DEMO-{p}") for p in benchmark_prefixes):
-            errors.append(f"Demonstration '{did}' uses a reserved HieraticBench prefix; quarantine violated.")
+    if require_authentic and is_synthetic:
+        errors.append(
+            f"Demonstration bank '{demos.get('bank_id')}' is marked synthetic_fixture_only; "
+            "authentic rights-approved demonstrations are required for live evaluation."
+        )
 
-    # Clearance forgery detection: synthetic fixture banks cannot claim approved rights
-    if status == "synthetic_fixture_only":
-        if rights.get("rights_review_status") == "approved_with_evidence":
-            errors.append("Demonstration clearance forgery: 'synthetic_fixture_only' bank cannot assert 'approved_with_evidence'.")
-        if rights.get("quarantine_verified"):
-            errors.append("Demonstration clearance forgery: 'synthetic_fixture_only' bank cannot assert quarantine_verified=true.")
+    # Forgery detection: cannot claim approved clearance on unverified synthetic placeholders
+    if rights_approved and is_synthetic:
+        errors.append(
+            "Demonstration clearance forgery: status is 'synthetic_fixture_only' but rights_review_status "
+            "claims 'approved_with_evidence'. Synthetic placeholders cannot be certified as rights-approved."
+        )
 
-    # Authentic clearance verification
-    if require_authentic or status == "reviewed_authentic" or rights.get("rights_review_status") == "approved_with_evidence":
-        if rights.get("rights_review_status") != "approved_with_evidence":
-            errors.append("Authentic demonstration bank requires rights_review_status='approved_with_evidence'.")
-        if not rights.get("quarantine_verified", False):
-            errors.append("Authentic demonstration bank requires quarantine_verified=true.")
-
+    # Real few-shot inference verification: require genuine image files on disk
+    if require_authentic or (rights_approved and quarantine_verified):
         for d in items:
             img_ref = d.get("image_ref", "")
-            if not img_ref or img_ref.startswith("facsimile://"):
-                errors.append(f"Demonstration '{d['demo_id']}' lacks authentic image file on disk: {img_ref}")
+            if img_ref.startswith("facsimile://"):
+                errors.append(
+                    f"Demonstration '{d['demo_id']}' uses placeholder URI '{img_ref}'. "
+                    "Genuine image files on disk are required for cleared evaluation."
+                )
                 continue
+
             img_path = Path(img_ref)
             if not img_path.is_file():
                 errors.append(f"Demonstration '{d['demo_id']}' image file not found on disk: {img_ref}")
@@ -192,15 +233,23 @@ def validate_demonstrations(
 
 
 def audit_manifest(
-    manifest_path: Path,
-    suite_path: Path = DEFAULT_SUITE_PATH,
-    schema_path: Path = SCHEMA_PATH,
+    manifest_path: Path | str | dict[str, Any],
+    suite_path: Path | str = DEFAULT_SUITE_PATH,
+    schema_path: Path | str | dict[str, Any] = SCHEMA_PATH,
+    universe_path: Path | str | dict[str, Any] = DEFAULT_UNIVERSE_PATH,
     require_certified: bool = False,
-    items_path: Path | None = None,
+    items_path: Path | str | None = None,
 ) -> list[str]:
-    """Audit run manifest completeness, schema compliance, hash stability, and promotion gating."""
-    schema = load_schema(schema_path)
-    manifest = load_json(manifest_path)
+    """Audit run manifest completeness, schema compliance, universe integrity, and promotion gating."""
+    if isinstance(schema_path, dict):
+        schema = schema_path
+    else:
+        schema = load_schema(Path(schema_path))
+
+    if isinstance(manifest_path, dict):
+        manifest = manifest_path
+    else:
+        manifest = load_json(Path(manifest_path))
 
     errors = validate_with_schema(manifest, schema)
     if errors:
@@ -208,43 +257,116 @@ def audit_manifest(
 
     tier = manifest.get("execution_tier")
     validity = manifest.get("scientific_validity")
+    cert_status = manifest.get("certification_status")
+    model_key = manifest.get("model_key")
+    cov = manifest.get("coverage_summary", {})
+    attempts = manifest.get("attempts", [])
 
-    # Promotion prevention: synthetic CI fixtures can NEVER be promoted to certified scientific results
+    # Promotion prevention: fail-closed certification gate
     if require_certified:
-        if tier == "synthetic_ci_fixture" or validity == "non_scientific_test_fixture":
+        if not manifest.get("authorization_receipt_ref"):
             errors.append(
-                f"Promotion rejection: Manifest '{manifest.get('manifest_id')}' is a "
-                f"'{tier}' ({validity}) and cannot be promoted to certified scientific results."
+                f"Promotion rejection / Certification rejection: Manifest '{manifest.get('manifest_id')}' lacks an "
+                "independently verified experiment authorization receipt. "
+                "Self-declared preflight manifests cannot be certified."
+            )
+        if tier not in {"live_local_open_weight", "authorized_external_model"} or validity != "certified_baseline":
+            errors.append(
+                f"Promotion rejection / Certification rejection: Manifest execution tier '{tier}' / validity '{validity}' "
+                "is not an independently certified production execution tier "
+                "('live_local_open_weight' / 'certified_baseline' required)."
+            )
+        if cert_status != "certified":
+            errors.append(
+                f"Promotion rejection / Certification rejection: Manifest certification status '{cert_status}' is not 'certified'."
+            )
+        if model_key == "mock-vision-v1":
+            errors.append(
+                "Promotion rejection / Certification rejection: Mock baseline 'mock-vision-v1' cannot produce certified scientific results."
+            )
+        cov_rate = cov.get("coverage_rate", 0.0)
+        successes = cov.get("success_count", 0)
+        if cov_rate < 0.95 or successes == 0:
+            errors.append(
+                f"Promotion rejection / Certification rejection: Incomplete or failed execution (coverage rate {cov_rate}, "
+                f"success count {successes}); all-failed or barrier-blocked manifests cannot be certified."
+            )
+        univ = manifest.get("universe_manifest", {})
+        if univ.get("items_tier") != "approved_evaluation_cohort":
+            errors.append(
+                f"Promotion rejection / Certification rejection: Items tier '{univ.get('items_tier')}' is not an "
+                "approved evaluation cohort with verified independent rights clearance."
             )
 
-    attempts = manifest.get("attempts", [])
-    cov = manifest.get("coverage_summary", {})
+    # Independent Universe Integrity Verification
+    univ = manifest.get("universe_manifest")
+    if not univ:
+        errors.append("Manifest is missing required 'universe_manifest' block.")
+    else:
+        try:
+            if isinstance(universe_path, dict):
+                universe_data = universe_path
+                target_name = universe_data.get("universe_id", "in_memory_universe")
+            else:
+                target_universe_path = Path(universe_path)
+                universe_data = load_universe(target_universe_path)
+                target_name = target_universe_path.name
+
+            u_errors = verify_universe_integrity(universe_data)
+            if u_errors:
+                errors.extend([f"Independent universe '{target_name}' integrity error: {e}" for e in u_errors])
+            else:
+                expected_u_id = universe_data.get("universe_id")
+                expected_u_sha = universe_data.get("universe_sha256")
+                manifest_u_id = univ.get("universe_id")
+                manifest_u_sha = univ.get("universe_sha256")
+
+                # Match universe identity & hash
+                if manifest_u_id and manifest_u_id != expected_u_id:
+                    errors.append(
+                        f"Independent universe identity mismatch: manifest declares '{manifest_u_id}' "
+                        f"!= independent universe '{expected_u_id}'"
+                    )
+
+                if manifest_u_sha != expected_u_sha:
+                    errors.append(
+                        f"Independent universe hash mismatch: manifest declares {manifest_u_sha[:12] if manifest_u_sha else 'null'} "
+                        f"!= independent universe {expected_u_sha[:12]}"
+                    )
+
+                # Compute expected attempts from the independent universe for the manifest's shot mode
+                expected_attempt_keys = get_expected_attempts(universe_data, manifest.get("shot_mode", "zero_shot"))
+
+                if len(attempts) != len(expected_attempt_keys):
+                    errors.append(
+                        f"Frozen universe violation / Independent universe violation: recorded attempts {len(attempts)} != "
+                        f"expected universe attempts {len(expected_attempt_keys)}. Truncated manifest detected."
+                    )
+
+                actual_attempt_keys = sorted(
+                    f"{a['item_id']}::{a['rung']}::{a.get('shot_mode', 'zero_shot')}::{a.get('sample_index', 0)}"
+                    for a in attempts
+                )
+
+                missing_from_manifest = sorted(set(expected_attempt_keys) - set(actual_attempt_keys))
+                extra_in_manifest = sorted(set(actual_attempt_keys) - set(expected_attempt_keys))
+
+                if missing_from_manifest:
+                    errors.append(
+                        f"Independent universe violation: Manifest is missing {len(missing_from_manifest)} expected attempts "
+                        f"(e.g. {missing_from_manifest[:3]}). Dropped item detected."
+                    )
+                if extra_in_manifest:
+                    errors.append(
+                        f"Independent universe violation: Manifest contains {len(extra_in_manifest)} unregistered attempts "
+                        f"(e.g. {extra_in_manifest[:3]})."
+                    )
+
+        except Exception as exc:
+            errors.append(f"Independent universe audit failed to load {universe_path}: {exc}")
 
     if len(attempts) != cov.get("total_attempts"):
         errors.append(f"Attempt count mismatch: recorded {len(attempts)} != summary {cov.get('total_attempts')}")
-
-    # Frozen universe verification
-    univ = manifest.get("universe_manifest")
-    if univ:
-        expected_cnt = univ.get("expected_attempt_count")
-        if expected_cnt is not None and len(attempts) != expected_cnt:
-            errors.append(
-                f"Frozen universe violation: recorded attempts {len(attempts)} != "
-                f"expected universe attempts {expected_cnt}. Truncated manifest detected."
-            )
-
-        recorded_sha = univ.get("universe_sha256")
-        if recorded_sha and len(attempts) == expected_cnt:
-            attempt_keys = sorted(
-                f"{a['item_id']}::{a['rung']}::{a.get('shot_mode', 'zero_shot')}::{a.get('sample_index', 0)}"
-                for a in attempts
-            )
-            attempt_sha = hashlib.sha256(json.dumps(attempt_keys).encode("utf-8")).hexdigest()
-            if attempt_sha != recorded_sha:
-                errors.append(
-                    f"Frozen universe hash mismatch: attempts hash {attempt_sha[:12]} != "
-                    f"universe manifest {recorded_sha[:12]}"
-                )
 
     # Check composite key uniqueness: (item_id, rung, shot_mode, sample_index)
     seen_composite = set()
@@ -263,97 +385,108 @@ def audit_manifest(
             errors.append(f"Attempt {i} marked {status} but lacks diagnostic error_message")
 
     # Verify suite SHA-256 match if local suite exists
-    if suite_path.is_file():
-        current_suite_sha = hashlib.sha256(suite_path.read_bytes()).hexdigest()
-        if manifest.get("suite_sha256") != current_suite_sha:
-            errors.append(
-                f"Manifest suite hash mismatch: manifest {manifest.get('suite_sha256')[:12]} != "
-                f"current {current_suite_sha[:12]}"
-            )
+    if isinstance(suite_path, (Path, str)):
+        suite_path_obj = Path(suite_path)
+        if suite_path_obj.is_file():
+            current_suite_sha = hashlib.sha256(suite_path_obj.read_bytes()).hexdigest()
+            if manifest.get("suite_sha256") != current_suite_sha:
+                errors.append(
+                    f"Manifest suite hash mismatch: manifest {manifest.get('suite_sha256')[:12]} != "
+                    f"current {current_suite_sha[:12]}"
+                )
 
     return errors
 
 
 def create_synthetic_items() -> list[dict[str, Any]]:
-    """Create reproducible synthetic items across multiple document clusters for offline verification."""
-    return [
-        {
-            "item_id": "SYNTH-DOCA-IDENT-001",
-            "document_id": "DOC-PAPYRUS-A",
-            "rung": "identify",
-            "image_bytes": b"synthetic_palaeography_hieratic_glyph_01",
-        },
-        {
-            "item_id": "SYNTH-DOCA-IDENT-002",
-            "document_id": "DOC-PAPYRUS-A",
-            "rung": "identify",
-            "image_bytes": b"synthetic_palaeography_hieratic_glyph_02",
-        },
-        {
-            "item_id": "SYNTH-DOCB-IDENT-001",
-            "document_id": "DOC-RELIEF-B",
-            "rung": "identify",
-            "image_bytes": b"synthetic_palaeography_hieroglyphic_relief_01",
-        },
-        {
-            "item_id": "SYNTH-DOCB-IDENT-002",
-            "document_id": "DOC-RELIEF-B",
-            "rung": "identify",
-            "image_bytes": b"synthetic_palaeography_hieroglyphic_relief_02",
-        },
-        {
-            "item_id": "SYNTH-DOCA-SIGN-001",
-            "document_id": "DOC-PAPYRUS-A",
-            "rung": "signs",
-            "image_bytes": b"synthetic_sign_isolated_a01",
-        },
-        {
-            "item_id": "SYNTH-DOCB-SIGN-001",
-            "document_id": "DOC-RELIEF-B",
-            "rung": "signs",
-            "image_bytes": b"synthetic_sign_isolated_g43",
-        },
-        {
-            "item_id": "SYNTH-DOCA-XLIT-001",
-            "document_id": "DOC-PAPYRUS-A",
-            "rung": "transliterate",
-            "image_bytes": b"synthetic_phrase_manuscript_line_01",
-        },
-        {
-            "item_id": "SYNTH-DOCB-XLIT-001",
-            "document_id": "DOC-RELIEF-B",
-            "rung": "transliterate",
-            "image_bytes": b"synthetic_phrase_manuscript_line_02",
-        },
-        {
-            "item_id": "SYNTH-DOCA-TRANS-001",
-            "document_id": "DOC-PAPYRUS-A",
-            "rung": "translate",
-            "image_bytes": b"synthetic_passage_inscribed_column_01",
-        },
-        {
-            "item_id": "SYNTH-DOCB-TRANS-001",
-            "document_id": "DOC-RELIEF-B",
-            "rung": "translate",
-            "image_bytes": b"synthetic_passage_inscribed_column_02",
-        },
-    ]
+    """Backwards-compatible convenience helper returning synthetic preflight universe items."""
+    try:
+        universe = load_universe(DEFAULT_UNIVERSE_PATH)
+        return get_universe_items(universe)
+    except Exception:
+        # Fallback if universe.yaml not yet initialized
+        return [
+            {
+                "item_id": "SYNTH-DOCA-IDENT-001",
+                "document_id": "DOC-PAPYRUS-A",
+                "rung": "identify",
+                "image_bytes": b"synthetic_palaeography_hieratic_papyrus_01",
+            },
+            {
+                "item_id": "SYNTH-DOCA-IDENT-002",
+                "document_id": "DOC-PAPYRUS-A",
+                "rung": "identify",
+                "image_bytes": b"synthetic_palaeography_hieratic_papyrus_02",
+            },
+            {
+                "item_id": "SYNTH-DOCB-IDENT-001",
+                "document_id": "DOC-RELIEF-B",
+                "rung": "identify",
+                "image_bytes": b"synthetic_palaeography_hieroglyphic_relief_01",
+            },
+            {
+                "item_id": "SYNTH-DOCB-IDENT-002",
+                "document_id": "DOC-RELIEF-B",
+                "rung": "identify",
+                "image_bytes": b"synthetic_palaeography_hieroglyphic_relief_02",
+            },
+            {
+                "item_id": "SYNTH-DOCA-SIGN-001",
+                "document_id": "DOC-PAPYRUS-A",
+                "rung": "signs",
+                "image_bytes": b"synthetic_sign_isolated_a01",
+            },
+            {
+                "item_id": "SYNTH-DOCB-SIGN-001",
+                "document_id": "DOC-RELIEF-B",
+                "rung": "signs",
+                "image_bytes": b"synthetic_sign_isolated_g43",
+            },
+            {
+                "item_id": "SYNTH-DOCA-XLIT-001",
+                "document_id": "DOC-PAPYRUS-A",
+                "rung": "transliterate",
+                "image_bytes": b"synthetic_phrase_manuscript_line_01",
+            },
+            {
+                "item_id": "SYNTH-DOCB-XLIT-001",
+                "document_id": "DOC-RELIEF-B",
+                "rung": "transliterate",
+                "image_bytes": b"synthetic_phrase_manuscript_line_02",
+            },
+            {
+                "item_id": "SYNTH-DOCA-TRANS-001",
+                "document_id": "DOC-PAPYRUS-A",
+                "rung": "translate",
+                "image_bytes": b"synthetic_passage_inscribed_column_01",
+            },
+            {
+                "item_id": "SYNTH-DOCB-TRANS-001",
+                "document_id": "DOC-RELIEF-B",
+                "rung": "translate",
+                "image_bytes": b"synthetic_passage_inscribed_column_02",
+            },
+        ]
 
 
 def create_synthetic_gold() -> dict[str, dict[str, Any]]:
-    """Create synthetic gold dictionary corresponding to synthetic items."""
-    return {
-        "SYNTH-DOCA-IDENT-001": {"script": "Hieratic"},
-        "SYNTH-DOCA-IDENT-002": {"script": "Hieratic"},
-        "SYNTH-DOCB-IDENT-001": {"script": "Hieroglyphic"},
-        "SYNTH-DOCB-IDENT-002": {"script": "Hieroglyphic"},
-        "SYNTH-DOCA-SIGN-001": {"gardiner": "A1"},
-        "SYNTH-DOCB-SIGN-001": {"gardiner": "G43"},
-        "SYNTH-DOCA-XLIT-001": {"transliteration": "jrj.n=f m mnw=f"},
-        "SYNTH-DOCB-XLIT-001": {"transliteration": "ḏd-mdw jn Wsjr"},
-        "SYNTH-DOCA-TRANS-001": {"translation": "He made it as his monument."},
-        "SYNTH-DOCB-TRANS-001": {"translation": "Words spoken by Osiris."},
-    }
+    """Backwards-compatible convenience helper returning synthetic preflight universe gold."""
+    try:
+        universe = load_universe(DEFAULT_UNIVERSE_PATH)
+        return get_universe_gold(universe)
+    except Exception:
+        return {
+            "SYNTH-DOCA-IDENT-001": {"script": "Hieratic"},
+            "SYNTH-DOCA-IDENT-002": {"script": "Hieratic"},
+            "SYNTH-DOCB-IDENT-001": {"script": "Hieroglyphic"},
+            "SYNTH-DOCB-IDENT-002": {"script": "Hieroglyphic"},
+            "SYNTH-DOCA-SIGN-001": {"gardiner": "A1"},
+            "SYNTH-DOCB-SIGN-001": {"gardiner": "G43"},
+            "SYNTH-DOCA-XLIT-001": {"transliteration": "jrj.n=f m mnw=f"},
+            "SYNTH-DOCB-XLIT-001": {"transliteration": "ḏd-mdw jn Wsjr"},
+            "SYNTH-DOCA-TRANS-001": {"translation": "He made it as his monument."},
+            "SYNTH-DOCB-TRANS-001": {"translation": "Words spoken by Osiris."},
+        }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -373,7 +506,9 @@ def main(argv: list[str] | None = None) -> int:
     p_run = subparsers.add_parser("run", help="Execute evaluation run")
     p_run.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
     p_run.add_argument("--demos", type=Path, default=DEFAULT_DEMOS_PATH)
-    p_run.add_argument("--items", type=Path, default=None, help="Path to evaluation items JSON/YAML")
+    p_run.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH, help="Path to evaluation universe YAML/JSON")
+    p_run.add_argument("--items", type=Path, default=None, help="Path to external evaluation items JSON/YAML")
+    p_run.add_argument("--admission-receipt", type=Path, default=None, help="Path to independent admission receipt for external items")
     p_run.add_argument("--model", type=str, default="mock-vision-v1")
     p_run.add_argument("--shot-mode", type=str, choices=["zero_shot", "few_shot", "both", "zero-shot", "few-shot"], default="both")
     p_run.add_argument("--output", type=Path, required=True, help="Path to save run manifest JSON")
@@ -384,13 +519,15 @@ def main(argv: list[str] | None = None) -> int:
     p_audit = subparsers.add_parser("audit-manifest", help="Audit run manifest completeness and integrity")
     p_audit.add_argument("--manifest", type=Path, required=True)
     p_audit.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
+    p_audit.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH, help="Path to independently pinned universe")
     p_audit.add_argument("--items", type=Path, default=None)
-    p_audit.add_argument("--require-certified", action="store_true", help="Reject synthetic CI fixtures")
+    p_audit.add_argument("--require-certified", action="store_true", help="Reject uncertified preflight manifests")
 
     # score
     p_score = subparsers.add_parser("score", help="Score run manifest and generate report")
     p_score.add_argument("--manifest", type=Path, required=True)
     p_score.add_argument("--gold", type=Path, default=None)
+    p_score.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH)
     p_score.add_argument("--output", type=Path, default=None)
     p_score.add_argument("--allow-incomplete-gold", action="store_true", help="Permit missing gold without failing closed")
 
@@ -401,6 +538,7 @@ def main(argv: list[str] | None = None) -> int:
     p_comp.add_argument("--shot-mode-a", type=str, default=None, help="Condition filter for manifest A")
     p_comp.add_argument("--shot-mode-b", type=str, default=None, help="Condition filter for manifest B")
     p_comp.add_argument("--gold", type=Path, default=None)
+    p_comp.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH)
     p_comp.add_argument("--output", type=Path, default=None)
 
     args = parser.parse_args(argv)
@@ -440,22 +578,38 @@ def main(argv: list[str] | None = None) -> int:
             if model_cfg["model_type"] == "mock":
                 adapter = MockVLMAdapter(model_cfg, simulated_mode=args.simulated_mode)
             else:
-                adapter = OpenWeightVLMAdapter(model_cfg, weights_dir=args.weights_dir)
+                adapter = get_adapter(model_cfg, weights_dir=args.weights_dir)
 
-            runner = VLMRunner(suite, demos, adapter, suite_path=args.suite, demos_path=args.demos)
+            universe_data = None
+            if args.universe and args.universe.is_file():
+                universe_data = load_universe(args.universe)
+
+            runner = VLMRunner(
+                suite,
+                demos,
+                adapter,
+                suite_path=args.suite,
+                demos_path=args.demos,
+                universe_data=universe_data,
+                universe_path=args.universe,
+            )
 
             if args.items and args.items.is_file():
-                items = load_json(args.items) if args.items.suffix == ".json" else load_yaml(args.items)
-                items_tier = "verified_external_items"
+                items, items_tier, adm_errors = admit_external_items(args.items, args.admission_receipt)
+                if adm_errors:
+                    raise VLMCLIError(f"External items admission failed: {'; '.join(adm_errors)}")
             else:
-                items = create_synthetic_items()
-                items_tier = "synthetic_ci_items"
+                if universe_data:
+                    items = get_universe_items(universe_data)
+                    items_tier = universe_data.get("universe_tier", "synthetic_preflight_universe")
+                else:
+                    items = create_synthetic_items()
+                    items_tier = "synthetic_ci_items"
 
             shot_mode = args.shot_mode.replace("-", "_")
             manifest = runner.run_suite(items, shot_mode=shot_mode, items_tier=items_tier)
 
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            write_json_atomic(args.output, manifest)
             print(f"PASS: Evaluation complete. Manifest written to {args.output}")
             print(f"  Execution tier: {manifest['execution_tier']}")
             print(f"  Attempts recorded: {manifest['coverage_summary']['total_attempts']}")
@@ -466,6 +620,7 @@ def main(argv: list[str] | None = None) -> int:
             errors = audit_manifest(
                 args.manifest,
                 args.suite,
+                universe_path=args.universe,
                 require_certified=args.require_certified,
                 items_path=args.items,
             )
@@ -479,7 +634,14 @@ def main(argv: list[str] | None = None) -> int:
 
         elif args.command == "score":
             manifest = load_json(args.manifest)
-            gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
+            if args.gold and args.gold.is_file():
+                gold = load_json(args.gold) if args.gold.suffix.lower() == ".json" else load_yaml(args.gold)
+            elif args.universe and args.universe.is_file():
+                u_data = load_universe(args.universe)
+                gold = get_universe_gold(u_data)
+            else:
+                gold = create_synthetic_gold()
+
             report = score_manifest(
                 manifest,
                 gold,
@@ -487,8 +649,7 @@ def main(argv: list[str] | None = None) -> int:
             )
 
             if args.output:
-                args.output.parent.mkdir(parents=True, exist_ok=True)
-                args.output.write_text(json.dumps(report, indent=2), encoding="utf-8")
+                write_json_atomic(args.output, report)
                 print(f"Report written to {args.output}")
 
             print(f"PASS: Scored manifest '{manifest['manifest_id']}' (Channel: {report['scoring_channel']}):")
@@ -505,7 +666,13 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "paired-compare":
             manifest_a = load_json(args.manifest_a)
             manifest_b = load_json(args.manifest_b)
-            gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
+            if args.gold and args.gold.is_file():
+                gold = load_json(args.gold) if args.gold.suffix.lower() == ".json" else load_yaml(args.gold)
+            elif args.universe and args.universe.is_file():
+                u_data = load_universe(args.universe)
+                gold = get_universe_gold(u_data)
+            else:
+                gold = create_synthetic_gold()
 
             comps = compare_manifests(
                 manifest_a,
@@ -515,8 +682,7 @@ def main(argv: list[str] | None = None) -> int:
                 shot_mode_b=args.shot_mode_b,
             )
             if args.output:
-                args.output.parent.mkdir(parents=True, exist_ok=True)
-                args.output.write_text(json.dumps(comps, indent=2), encoding="utf-8")
+                write_json_atomic(args.output, comps)
                 print(f"Comparison written to {args.output}")
 
             print(f"PASS: Paired comparison ({manifest_a['model_key']} vs {manifest_b['model_key']}):")

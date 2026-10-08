@@ -269,6 +269,12 @@ def score_manifest(
     Strictly separates project-native EVAL-001 metrics from official upstream HieraticBench claims.
     Official replay summary injection is disabled in the offline harness to guarantee scoring integrity.
     """
+    if official_replay_summary is not None:
+        raise ScorerError(
+            "Official HieraticBench replay summary injection is prohibited; "
+            "official channel is NOT_INTEGRATED in this offline preflight harness."
+        )
+
     attempts = manifest.get("attempts", [])
     if not attempts:
         raise ScorerError("Manifest contains no attempts to score.")

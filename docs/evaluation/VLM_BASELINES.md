@@ -122,12 +122,17 @@ $$\text{Composite Identity} = (\text{item\_id}, \text{rung}, \text{shot\_mode}, 
 
 This composite key prevents collisions across multi-mode evaluation runs and guarantees exact 1-to-1 pairing in paired comparisons.
 
-### 4.2 Frozen Evaluation Denominators & Universe Integrity
+### 4.2 Independent Evaluation Universe Contract (`eval/vlm/universe.yaml`)
 
-To ensure that attempt deletion cannot conceal failures or alter denominator totals, the runner and auditor enforce frozen evaluation universes:
-- **`universe_manifest`:** Every run manifest records `expected_universe_count`, `expected_attempt_count`, `items_tier`, and `universe_sha256`. The hash is computed deterministically over the scheduled Cartesian product of items, rungs, shot modes, and samples.
-- **Fail-Closed Universe Audit:** The manifest auditor computes the scheduled universe independently. If attempts were truncated or removed, or if the recorded `universe_sha256` does not match, the audit fails closed immediately.
-- **Gold Eligibility Audit:** All scheduled items must be checked for gold label completeness. Manifests record `gold_eligible_count` and `missing_gold_count`. By default, missing gold fails closed (`require_complete_gold: true`).
+To ensure that attempt deletion cannot conceal failures, drop difficult items, or alter denominator totals, the runner and auditor enforce an independently pinned evaluation universe:
+- **`universe.yaml`:** Canonical evaluation universe specifying exact dataset ID (`hieratic_vlm_synthetic_preflight_universe_v1`), licensed items, scale levels, dimensions, reading directions, and expected attempt Cartesian product.
+- **Canonical SHA-256:** Computed deterministically via `compute_universe_sha256` over the sorted canonical representation of items and scheduled attempts (`fd72f77473b0c07074a18ceafbddc40449f4f9690be99e522100b313e3b0780d`).
+- **Independent Manifest Auditing:** The manifest auditor does not rely solely on self-contained manifest declarations. It compares observed attempt records strictly against `eval/vlm/universe.yaml`. Dropping an item, deleting an attempt, and recalculating in-manifest counts or hashes fails closed with `Independent universe violation`.
+- **Dataset Admission Tiers:**
+  - `synthetic_preflight_universe` / `synthetic_ci_items`: Synthetic test items for pipeline verification. Non-promotable.
+  - `unverified_external_inputs`: Arbitrary external items supplied without an audited admission receipt. Strictly non-promotable to certified scientific baseline results.
+  - `approved_evaluation_cohort`: Genuine palaeographical cohort backed by an independent admission receipt (`rights_review_status: "approved_with_evidence"`, `quarantine_verified: true`, `permitted_cohort_tier: "approved_evaluation_cohort"` with named independent reviewer).
+- **Image Decoding & Integrity Validation:** `validate_image_file` verifies image existence, format (PNG/JPEG magic bytes), dimensions ($\ge 16$ px, $\le 1024$ px), and cryptographic SHA-256 byte hashes.
 
 ### 4.3 Full Denominator Accounting
 
@@ -149,7 +154,7 @@ To prevent misleading claims, scoring channels are strictly separated:
 1. **Official Upstream Benchmark (`official_hieraticbench`):**
    - Authoritative scoring implemented by the pinned TypeScript scorer (`bench/src/score.ts`).
    - In this offline preflight harness, official scoring is explicitly reported with `official_scoring_status: "NOT_INTEGRATED"` and `official_hieraticbench: null`.
-   - Never accepts caller-injected arbitrary score summaries as authoritative evidence.
+   - Never accepts caller-injected arbitrary score summaries as authoritative evidence; supplying `official_replay_summary` to `score_manifest` raises a fatal `ScorerError`.
 2. **Project-Native Diagnostics (`project_native_eval001`):**
    - In-house metrics strictly conforming to `eval/metric_contract.yaml`:
      - Script Identification: `SCRIPT_ACC` (direction: higher, unit: proportion)
@@ -167,21 +172,27 @@ To prevent misleading claims, scoring channels are strictly separated:
 In accordance with `EVAL-006`:
 - **Document Clustering:** Attempts are clustered by `document_id`. Entire documents are resampled with replacement across $B=2,000$ bootstrap iterations.
 - **Support Gate:** When the number of independent document clusters is $\le 1$, the bootstrap confidence interval **must return `null`** (`insufficient_document_clusters`). Fabricating zero-width or single-point confidence intervals is strictly prohibited.
-- **Paired Comparisons:** Paired differences ($\Delta = \text{Score}_B - \text{Score}_A$) are evaluated over aligned composite keys using clustered bootstrap resampling.
+- **Paired Comparisons:** Paired differences ($\Delta = \text{Score}_B - \text{Score}_A$) are evaluated over aligned composite keys using clustered bootstrap resampling, requiring explicit `--shot-mode-a` and `--shot-mode-b` condition filters when comparing multi-mode manifests.
 
 ---
 
 ## 6. Promotion Prevention & Execution Tiers
 
-To safeguard benchmark integrity, artifacts and runs are categorized into explicit tiers:
+To safeguard benchmark integrity, artifacts and runs are categorized into explicit tiers conforming to `schemas/vlm_baselines.schema.json`:
 
-| Execution Tier | Scientific Validity | Certification Status | Promotable to Results? |
+| Execution Tier | Scientific Validity | Certification Status | Promotable to Certified Results? |
 | :--- | :--- | :--- | :--- |
-| `synthetic_ci_fixture` | `synthetic_fixture_only` | `unverified_mock` | **NO** (Strictly blocked) |
-| `local_open_weight_unaccelerated` | `unverified_experimental` | `unverified_experimental` | No |
-| `hardware_accelerated_production` | `certified_scientific_result` | `quarantined_certified` | Yes (upon overseer audit) |
+| `synthetic_ci_fixture` | `non_scientific_test_fixture` | `uncertified_synthetic_only` | **NO** (Strictly blocked) |
+| `live_local_open_weight` (unaccelerated/barrier) | `candidate_baseline` | `preflight_passed_pending_review` | **NO** (Hardware barrier blocked) |
+| `live_local_open_weight` (hardware-accelerated) | `certified_baseline` | `certified` | Yes (requires verified admission receipt & audit) |
 
-The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified`) fails closed if any attempt is made to present a `synthetic_ci_fixture` run as certified empirical evidence.
+The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified`) fails closed with `Promotion rejection` if:
+1. `authorization_receipt_ref` is missing.
+2. `execution_tier` is not `live_local_open_weight` or `authorized_external_model`, or `scientific_validity` is not `certified_baseline`.
+3. `certification_status` is not `certified`.
+4. `model_key` is `mock-vision-v1`.
+5. Coverage rate is $< 0.95$ or success count is 0 (barrier-blocked / all-failed runs).
+6. Items tier is not `approved_evaluation_cohort`.
 
 ---
 
@@ -189,11 +200,15 @@ The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified
 
 ### 7.1 Architecture & Implementation
 
-The harness implements a genuine local image-conditioned execution path via PyTorch and HuggingFace Transformers (`OpenWeightVLMAdapter` in `eval/vlm/adapter.py`):
-1. Loads the specified model architecture (e.g., `Qwen2_5_VLForConditionalGeneration`, `AutoProcessor`).
-2. Validates and preprocesses genuine input image bytes using PIL.
-3. Formats prompt templates with image tokens and runs greedy forward decoding.
-4. Captures memory, latency, and all output tokens.
+The harness implements a modular model-adapter architecture (`eval/vlm/adapter.py`):
+1. **`BaseVLMAdapter`:** Abstract interface defining `preprocess_image`, image conditioning validation, and `check_availability`.
+2. **`MockVLMAdapter`:** Deterministic synthetic test harness for CI pipelines and offline validation.
+3. **`OpenWeightVLMAdapter`:** Base open-weight dispatcher managing GPU detection, model weights on disk, and forward decoding.
+4. **Specialized Multimodal Adapters:**
+   - `Qwen2_5_VLAdapter`: Multimodal chat template with `<|image_pad|>` visual placeholder.
+   - `PixtralVLMAdapter`: Mistral/Pixtral chat format with structured `{"type": "image"}` tokens.
+   - `Llama3_2_VisionAdapter`: Llama 3.2 vision prompt format with `<|image|><|begin_of_text|>` token headers.
+5. **Dependency-Isolated Testing:** Adapters accept `processor_override` and `model_override` injection, enabling exhaustive unit testing of chat templates and OOM exception handling without local GPU weights.
 
 ### 7.2 Hardware & Weight Requirements
 

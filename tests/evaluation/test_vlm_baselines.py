@@ -555,12 +555,349 @@ class VLMBaselinesTests(unittest.TestCase):
 
         manifest = runner.run_suite(items, shot_mode="zero_shot")
 
-        # Injected fake replay summary cannot spoof official leaderboard status
+        # Injected fake replay summary cannot spoof official leaderboard status; must be actively rejected!
         fake_summary = {"item_macro_accuracy": 0.99, "note": "spoofed"}
-        report = score_manifest(manifest, gold, official_replay_summary=fake_summary)
-        self.assertEqual(report["official_scoring_status"], "NOT_INTEGRATED")
-        self.assertIsNone(report["official_hieraticbench"])
+        with self.assertRaises(ScorerError) as ctx:
+            score_manifest(manifest, gold, official_replay_summary=fake_summary)
+        self.assertIn("Official HieraticBench replay summary injection is prohibited", str(ctx.exception))
+
+    # --- 9. Independent Universe & Dataset Admission Adversarial Tests ---
+
+    def test_adversarial_dropping_item_and_rewriting_manifest_rejected_by_independent_universe(self) -> None:
+        """Adversarially drop an item and recalculate in-manifest counts; independent universe must reject."""
+        from eval.vlm.universe import DEFAULT_UNIVERSE_PATH, load_universe
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+        # Ensure it passes audit initially
+        u_data = load_universe(DEFAULT_UNIVERSE_PATH)
+        initial_errs = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, universe_path=DEFAULT_UNIVERSE_PATH)
+        self.assertEqual(initial_errs, [])
+
+        # Tamper: Drop one item's attempt, rewrite self-reported totals
+        dropped_item = manifest["attempts"].pop(0)
+        manifest["coverage_summary"]["total_attempts"] = len(manifest["attempts"])
+        manifest["coverage_summary"]["success_count"] = len(manifest["attempts"])
+
+        tampered_errs = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, universe_path=DEFAULT_UNIVERSE_PATH)
+        self.assertTrue(
+            any("Independent universe violation" in e or "Frozen universe violation" in e for e in tampered_errs),
+            f"Expected independent universe violation but got: {tampered_errs}",
+        )
+        self.assertTrue(any("missing" in e for e in tampered_errs))
+
+    def test_external_items_without_admission_receipt_marked_unverified_and_fails_certification(self) -> None:
+        """Adversarially admit external items without approved receipt; tier must be unverified and reject certification."""
+        from eval.vlm.universe import admit_external_items
+        raw_items = [
+            {"item_id": "EXT-001", "document_id": "EXT-DOC", "rung": "identify"},
+        ]
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            json.dump({"items": raw_items}, tmp)
+            tmp_items = Path(tmp.name)
+
+        try:
+            admitted, tier, errs = admit_external_items(tmp_items)
+            self.assertEqual(tier, "unverified_external_inputs")
+            self.assertEqual(len(admitted), 1)
+            admitted[0]["image_bytes"] = b"synthetic_png_content"
+
+            # Build a manifest claiming these unverified inputs
+            adapter = MockVLMAdapter(self.suite_data["models"][0])
+            runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+            manifest = runner.run_suite(admitted, shot_mode="zero_shot")
+            manifest["universe_manifest"]["items_tier"] = tier
+
+            # Audit requiring certification must fail closed
+            cert_errs = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, require_certified=True)
+            self.assertTrue(
+                any("Promotion rejection" in e and "unverified_external_inputs" in e for e in cert_errs),
+                f"Expected promotion rejection for unverified inputs, got: {cert_errs}",
+            )
+        finally:
+            tmp_items.unlink()
+
+    def test_external_items_with_incomplete_admission_receipt_fails(self) -> None:
+        """Adversarially pass receipt with pending status or missing reviewer; admission must fail closed."""
+        from eval.vlm.universe import admit_external_items
+        raw_items = [{"item_id": "EXT-002", "rung": "signs"}]
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_it:
+            json.dump({"items": raw_items}, tmp_it)
+            tmp_items_path = Path(tmp_it.name)
+
+        receipt_data = {
+            "rights_review_status": "pending_clarification",
+            "quarantine_verified": False,
+            "permitted_cohort_tier": "approved_evaluation_cohort",
+        }
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_rc:
+            json.dump(receipt_data, tmp_rc)
+            tmp_rc_path = Path(tmp_rc.name)
+
+        try:
+            admitted, tier, errs = admit_external_items(tmp_items_path, tmp_rc_path)
+            self.assertEqual(tier, "unverified_external_inputs")
+            self.assertTrue(any("incomplete or unapproved" in e for e in errs))
+        finally:
+            tmp_items_path.unlink()
+            tmp_rc_path.unlink()
+
+    def test_all_failed_open_weight_manifest_fails_certification(self) -> None:
+        """Adversarially attempt to certify an open-weight manifest where all attempts failed due to barriers."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Mutate to all failed
+        for a in manifest["attempts"]:
+            a["status"] = "failed"
+            a["raw_output"] = None
+            a["error_message"] = "Inference blocked by hardware barrier: CUDA device required"
+        manifest["coverage_summary"]["success_count"] = 0
+        manifest["coverage_summary"]["failure_count"] = len(manifest["attempts"])
+        manifest["coverage_summary"]["coverage_rate"] = 0.0
+        manifest["execution_tier"] = "live_local_open_weight"
+        manifest["scientific_validity"] = "certified_baseline"
+        manifest["certification_status"] = "certified"
+        manifest["authorization_receipt_ref"] = "RECEIPT-AUTH-VALID-001"
+        manifest["universe_manifest"]["items_tier"] = "approved_evaluation_cohort"
+
+        cert_errs = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, require_certified=True)
+        self.assertTrue(
+            any("Promotion rejection" in e and "all-failed or barrier-blocked" in e for e in cert_errs),
+            f"Expected barrier-blocked manifest rejection, got: {cert_errs}",
+        )
+
+    def test_forged_mock_manifest_tampering_tier_fails_certification(self) -> None:
+        """Adversarially forge mock manifest fields to claim certification; auditor must fail closed."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Attacker attempts to forge certification
+        manifest["execution_tier"] = "live_local_open_weight"
+        manifest["scientific_validity"] = "certified_baseline"
+        manifest["certification_status"] = "certified"
+        manifest["authorization_receipt_ref"] = "RECEIPT-FORGED-001"
+        manifest["universe_manifest"]["items_tier"] = "approved_evaluation_cohort"
+
+        cert_errs = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, require_certified=True)
+        self.assertTrue(
+            any("Promotion rejection" in e and "Mock baseline" in e for e in cert_errs),
+            f"Expected rejection of forged mock manifest, got: {cert_errs}",
+        )
+
+    # --- 10. Dependency-Isolated Adapter Unit Tests ---
+
+    def test_qwen2_5_vl_adapter_multimodal_chat_formatting(self) -> None:
+        """Verify Qwen 2.5 VL adapter correctly structures multimodal chat messages with visual tokens."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockProcessor:
+            mock_image_tag = True
+            def __init__(self) -> None:
+                self.last_messages = None
+
+            def apply_chat_template(self, messages: Any, tokenize: bool = False, add_generation_prompt: bool = True) -> str:
+                self.last_messages = messages
+                return f"<formatted_chat>{messages}</formatted_chat>"
+
+            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                return {"input_ids": [[1, 2, 3]], "pixel_values": [[0.1, 0.2]], "text": text}
+
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["Hieratic script prediction jrj.n=f"]
+
+        class MockModel:
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                return [[1, 2, 3, 101, 102]]
+
+        proc = MockProcessor()
+        mod = MockModel()
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=proc, model_override=mod)
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image_bytes",
+            prompt="Transliterate this sign line",
+            system_prompt="You are a Hieratic palaeographer",
+            shot_mode="zero_shot",
+            rung="transliterate",
+            item_id="TEST-QWEN-01",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "Hieratic script prediction jrj.n=f")
+        self.assertIsNotNone(proc.last_messages)
+        self.assertEqual(proc.last_messages[0]["role"], "system")
+        self.assertEqual(proc.last_messages[1]["role"], "user")
+        user_content = proc.last_messages[1]["content"]
+        self.assertTrue(any(c.get("type") == "image" for c in user_content))
+        self.assertTrue(any(c.get("type") == "text" for c in user_content))
+
+    def test_pixtral_adapter_multimodal_message_structure(self) -> None:
+        """Verify Pixtral adapter formats multimodal messages according to Mistral/Pixtral chat schema."""
+        from eval.vlm.adapter import PixtralVLMAdapter
+
+        class MockProcessor:
+            mock_image_tag = True
+            def __init__(self) -> None:
+                self.last_messages = None
+
+            def apply_chat_template(self, messages: Any, tokenize: bool = False, add_generation_prompt: bool = True) -> str:
+                self.last_messages = messages
+                return f"<pixtral>{messages}</pixtral>"
+
+            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                return {"input_ids": [[10, 20]], "pixel_values": [[0.5]], "text": text}
+
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["Pixtral Hieratic translation output"]
+
+        class MockModel:
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                return [[10, 20, 201]]
+
+        proc = MockProcessor()
+        mod = MockModel()
+        pixtral_cfg = next(m for m in self.suite_data["models"] if "pixtral" in m["key"])
+        adapter = PixtralVLMAdapter(pixtral_cfg, processor_override=proc, model_override=mod)
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image_bytes",
+            prompt="Translate this line",
+            system_prompt="You are an Egyptologist",
+            shot_mode="zero_shot",
+            rung="translate",
+            item_id="TEST-PIXTRAL-01",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "Pixtral Hieratic translation output")
+        user_content = proc.last_messages[1]["content"]
+        self.assertEqual(user_content[0], {"type": "image"})
+        self.assertEqual(user_content[1], {"type": "text", "text": "Translate this line"})
+
+    def test_llama3_2_vision_adapter_placeholder_formatting(self) -> None:
+        """Verify Llama 3.2 Vision adapter formats text with <|image|> placeholder."""
+        from eval.vlm.adapter import Llama3_2_VisionAdapter
+
+        class MockProcessor:
+            mock_image_tag = True
+            def __init__(self) -> None:
+                self.last_text = None
+
+            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                self.last_text = text
+                return {"input_ids": [[100, 200]], "pixel_values": [[0.8]], "text": text}
+
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["Llama Gardiner sign G43"]
+
+        class MockModel:
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                return [[100, 200, 301]]
+
+        proc = MockProcessor()
+        mod = MockModel()
+        llama_cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
+        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=proc, model_override=mod)
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image_bytes",
+            prompt="Identify Gardiner sign",
+            system_prompt="You are a palaeographer",
+            shot_mode="zero_shot",
+            rung="signs",
+            item_id="TEST-LLAMA-01",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "Llama Gardiner sign G43")
+        self.assertIn("<|image|><|begin_of_text|>", proc.last_text)
+
+    def test_adapter_oom_runtime_exception_handling(self) -> None:
+        """Verify runtime exception / OOM during forward generation produces cleanly recorded failure attempt."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockProcessor:
+            mock_image_tag = True
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1, 2]], "pixel_values": [[0.1]]}
+
+        class MockOOMModel:
+            def generate(self, **kwargs: Any) -> Any:
+                raise RuntimeError("CUDA out of memory. Tried to allocate 24.00 GiB")
+
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=MockProcessor(), model_override=MockOOMModel())
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_image_bytes",
+            prompt="Transliterate",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="transliterate",
+            item_id="TEST-OOM-01",
+        )
+        self.assertEqual(resp.status, "failed")
+        self.assertIsNone(resp.raw_output)
+        self.assertIn("CUDA out of memory", resp.error_message)
+
+    def test_adapter_missing_visual_features_fails_image_conditioning(self) -> None:
+        """Verify that processor outputs lacking visual feature tensors trigger image conditioning error."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockTextOnlyProcessor:
+            # Does not have mock_image_tag, returns no pixel_values or images
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1, 2, 3]]}
+
+        class MockModel:
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                return [[1, 2, 3, 4]]
+
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=MockTextOnlyProcessor(), model_override=MockModel())
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image",
+            prompt="Prompt",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="transliterate",
+            item_id="TEST-NOCOND-01",
+        )
+        self.assertEqual(resp.status, "failed")
+        self.assertIn("ImageConditioningError", resp.error_message)
+        self.assertIn("lacks visual features", resp.error_message)
+
+    # --- 11. Statistical Bootstrap Edge Cases ---
+
+    def test_document_clustered_bootstrap_unequal_clusters_and_single_cluster(self) -> None:
+        """Verify clustered bootstrap handles single clusters with null CI and unequal clusters reliably."""
+        # Single document cluster must yield (None, None)
+        single_cluster = {"DOC-1": [0.8, 0.9, 0.7]}
+        ci_single, count_single, status_single = document_clustered_bootstrap_ci(single_cluster, n_resamples=2000)
+        self.assertIsNone(ci_single)
+        self.assertEqual(status_single, "insufficient_document_clusters")
+
+        # Unequal clusters (e.g. DOC-1 has 20 items, DOC-2 has 2 items)
+        unequal_clusters = {
+            "DOC-1": [1.0] * 20,
+            "DOC-2": [0.0] * 2,
+        }
+        ci_u, count_u, status_u = document_clustered_bootstrap_ci(unequal_clusters, n_resamples=2000)
+        self.assertIsNotNone(ci_u)
+        self.assertEqual(status_u, "valid_clustered_ci")
+        self.assertLessEqual(ci_u[0], ci_u[1])
 
 
 if __name__ == "__main__":
     unittest.main()
+

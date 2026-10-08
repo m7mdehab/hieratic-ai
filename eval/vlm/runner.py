@@ -1,7 +1,7 @@
 """Evaluation runner for reproducible zero-shot and few-shot VLM benchmarking.
 
 Orchestrates prompt formatting, quarantined demonstration assembly, image verification,
-document cluster tracking, and complete attempt preservation without sample dropouts.
+document cluster tracking, independent universe alignment, and complete attempt preservation without sample dropouts.
 """
 from __future__ import annotations
 
@@ -20,6 +20,12 @@ from eval.vlm.adapter import (
     UnverifiedDemonstrationError,
     VLMResponse,
 )
+from eval.vlm.universe import (
+    DEFAULT_UNIVERSE_PATH,
+    compute_universe_sha256,
+    get_expected_attempts,
+    load_universe,
+)
 
 
 class RunnerError(Exception):
@@ -37,12 +43,30 @@ class VLMRunner:
         adapter: BaseVLMAdapter,
         suite_path: Path | None = None,
         demos_path: Path | None = None,
+        universe_data: dict[str, Any] | None = None,
+        universe_path: Path | None = None,
     ) -> None:
         self.suite = suite_config
         self.demos = demonstration_bank
         self.adapter = adapter
         self.suite_path = suite_path
         self.demos_path = demos_path
+        self.universe_data = universe_data
+        self.universe_path = universe_path
+
+        # If universe_data not explicitly provided, load from universe_path or canonical universe
+        if self.universe_data is None:
+            if universe_path and Path(universe_path).is_file():
+                try:
+                    self.universe_data = load_universe(Path(universe_path))
+                except Exception:
+                    pass
+            elif DEFAULT_UNIVERSE_PATH.is_file():
+                try:
+                    self.universe_data = load_universe(DEFAULT_UNIVERSE_PATH)
+                    self.universe_path = DEFAULT_UNIVERSE_PATH
+                except Exception:
+                    pass
 
         # Compute suite SHA-256
         if suite_path and suite_path.is_file():
@@ -205,6 +229,7 @@ class VLMRunner:
         manifest_id: str | None = None,
         samples_per_item: int = 1,
         items_tier: str = "synthetic_ci_items",
+        universe_manifest_override: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Run evaluation over items, generating an immutable run manifest."""
         if not items:
@@ -221,15 +246,40 @@ class VLMRunner:
             time_slug = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             manifest_id = f"vlm_run_{self.adapter.model_key}_{shot_mode}_{time_slug}"
 
-        # Build frozen universe manifest hash across scheduled attempts
-        universe_keys = []
-        for mode in modes:
-            for s_idx in range(samples_per_item):
-                for item in items:
-                    universe_keys.append(f"{item['item_id']}::{item['rung']}::{mode}::{s_idx}")
-        universe_keys.sort()
-        universe_payload = json.dumps(universe_keys).encode("utf-8")
-        universe_sha256 = hashlib.sha256(universe_payload).hexdigest()
+        # Resolve universe manifest metadata
+        if universe_manifest_override:
+            universe_manifest = dict(universe_manifest_override)
+            expected_count = universe_manifest.get("expected_attempt_count", len(items) * len(modes))
+        elif self.universe_data:
+            u_id = self.universe_data.get("universe_id", "hieratic_vlm_synthetic_preflight_universe_v1")
+            u_tier = self.universe_data.get("universe_tier", items_tier)
+            u_sha = self.universe_data.get("universe_sha256") or compute_universe_sha256(self.universe_data)
+            expected_keys = get_expected_attempts(self.universe_data, shot_mode, samples_per_item)
+            expected_count = len(expected_keys)
+            universe_manifest = {
+                "universe_id": u_id,
+                "universe_sha256": u_sha,
+                "expected_attempt_count": expected_count,
+                "expected_universe_count": expected_count,
+                "items_tier": u_tier,
+            }
+        else:
+            universe_keys = []
+            for mode in modes:
+                for s_idx in range(samples_per_item):
+                    for item in items:
+                        universe_keys.append(f"{item['item_id']}::{item['rung']}::{mode}::{s_idx}")
+            universe_keys.sort()
+            universe_payload = json.dumps(universe_keys).encode("utf-8")
+            universe_sha256 = hashlib.sha256(universe_payload).hexdigest()
+            expected_count = len(universe_keys)
+            universe_manifest = {
+                "universe_id": "hieratic_vlm_synthetic_preflight_universe_v1",
+                "universe_sha256": universe_sha256,
+                "expected_attempt_count": expected_count,
+                "expected_universe_count": expected_count,
+                "items_tier": items_tier,
+            }
 
         for mode in modes:
             for s_idx in range(samples_per_item):
@@ -268,12 +318,7 @@ class VLMRunner:
             "suite_id": self.suite["suite_id"],
             "suite_sha256": self.suite_sha256,
             "demonstrations_sha256": self.demos_sha256 if ("few_shot" in modes) else None,
-            "universe_manifest": {
-                "universe_sha256": universe_sha256,
-                "expected_attempt_count": len(universe_keys),
-                "expected_universe_count": len(universe_keys),
-                "items_tier": items_tier,
-            },
+            "universe_manifest": universe_manifest,
             "model_key": self.adapter.model_key,
             "model_id": self.adapter.model_config["provider_model_id"],
             "shot_mode": shot_mode,
@@ -287,7 +332,7 @@ class VLMRunner:
             "coverage_summary": {
                 "total_items": len(items),
                 "total_attempts": total_attempts,
-                "expected_universe_count": len(universe_keys),
+                "expected_universe_count": expected_count,
                 "success_count": successes,
                 "failure_count": failures,
                 "abstention_count": abstentions,

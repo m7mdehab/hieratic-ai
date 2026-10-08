@@ -545,7 +545,8 @@ def run_real_visual_smoke(
 
     # 4. Sensitivity control evaluation
     output_differs = (out_a_text.strip() != out_b_text.strip())
-    sensitivity_observed = output_differs
+    # Text differences from injected/synthetic responses are not model visual evidence.
+    sensitivity_observed = bool(output_differs and not is_simulated)
 
     # 5. Evidence grades
     grades = compute_evidence_grades(
@@ -605,9 +606,10 @@ def run_real_visual_smoke(
             "output_strings_differ": output_differs,
             "sensitivity_observed": sensitivity_observed,
             "interpretation": (
-                "Visual sensitivity confirmed: model generation responded distinctly to different visual inputs "
-                "under constant textual prompt." if sensitivity_observed else
-                "Visual sensitivity indeterminate: model generation remained identical despite image change."
+                "Real model outputs differed under a constant prompt and changed image; repeat controls are "
+                "required before attributing the difference exclusively to visual conditioning." if sensitivity_observed else
+                "No real-model visual sensitivity assessed: outputs came from a synthetic/injected test double." if is_simulated else
+                "Visual sensitivity indeterminate: real model outputs remained identical despite the image change."
             ),
         },
     }

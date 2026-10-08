@@ -1,0 +1,260 @@
+schema_version: "1.0.0"
+research_id: "R-016"
+as_of: "2026-10-08"
+metadata_only: true
+scientific_status: "institutional_catalogue_discovery_only"
+rights_authorization_status: "no_item_or_label_cleared"
+benchmark_version: "alymoursy/hieraticbench@d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+source_roster_review: "37_met_plus_61_wikimedia_public_metadata_ids_only_no_direct_match"
+excluded_benchmark_prefixes_checked: ["met-", "wm-"]
+unreviewed_benchmark_prefixes: ["aku-", "cbl-", "ypm-", "hb-sealed-no-read"]
+no_images_downloaded: true
+no_editor_text_copied: true
+no_messages_sent: true
+common_unresolved_gates:
+  - "independent rights and intended use for each actual image and editorial text/annotation"
+  - "approved acquisition channel, actual image bytes, image hashes, faces and writing IDs"
+  - "all-source benchmark accession/edition/near-duplicate quarantine"
+  - "independent expert line/sign/transliteration gold and uncertainty"
+  - "leakage-resistant nonempty real train/dev/test partitions"
+candidates:
+  - candidate_id: "TPOP-1896"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.1896"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/259/"
+    priority: "A1"
+    primary_catalogue_evidence: "royal decree, verso letter and ration notes"
+    text_pair_evidence: "editor-attributed hieroglyph/partial translation shown; full aligned diplomatic transliteration unverified"
+    document_group_warning: "recto/verso + multiple writing IDs"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "TPOP-1971"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.1971"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/216/"
+    priority: "A2"
+    primary_catalogue_evidence: "Butehamun letter to Djehutymes"
+    text_pair_evidence: "editor references and hieroglyph representation; TLA/Ramses text rights unverified"
+    document_group_warning: "recto and verso; relationship with Cat.2026"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "TPOP-1966"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.1966 (joined CP124 fragments)"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/250/"
+    priority: "A3"
+    primary_catalogue_evidence: "Turin Love Songs and administrative accounts"
+    text_pair_evidence: "editor references and hieroglyph representation; translation in preparation"
+    document_group_warning: "CP124/001–008 joined fragment identity"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "TPOP-2021"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.2021"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/511"
+    priority: "A4"
+    primary_catalogue_evidence: "priest legal statement, letter verso"
+    text_pair_evidence: "editor metadata and bibliography only; no verified line gold"
+    document_group_warning: "two writing sides"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "TPOP-NECROPOLIS-5"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.2083/178 et al. (joined)"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/5/"
+    priority: "B1"
+    primary_catalogue_evidence: "Necropolis Journals Year 17 Ramesses IX"
+    text_pair_evidence: "Martina Landrino editorial metadata; line gold unavailable"
+    document_group_warning: "multiple joined fragments and writings = ONE grouped manuscript"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "TPOP-1880"
+    provider: "Museo Egizio TPOP"
+    object_identity: "Cat.1880"
+    institutional_url: "https://collezionepapiri.museoegizio.it/en-GB/document/131"
+    priority: "C_defer"
+    primary_catalogue_evidence: "Turin Strike Papyrus, many texts"
+    text_pair_evidence: "editors and hieroglyph rendering; English translation in preparation"
+    document_group_warning: "famous and widely published; elevated contamination risk"
+    source_image_rights_basis: "TPOP_CC0_image_policy_not_individual_asset_receipt"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561345"
+    provider: "Met Open Access"
+    object_identity: "561345 / 09.184.703"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561345"
+    priority: "B1"
+    primary_catalogue_evidence: "official visit, Ramesside ostracon"
+    text_pair_evidence: "catalogue synopsis only, no line gold"
+    document_group_warning: "limestone"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561392"
+    provider: "Met Open Access"
+    object_identity: "561392 / 09.184.751"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561392"
+    priority: "B1"
+    primary_catalogue_evidence: "lamps/torches accounts"
+    text_pair_evidence: "catalogue synopsis only, no line gold"
+    document_group_warning: "limestone ink paint"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561361"
+    provider: "Met Open Access"
+    object_identity: "561361 / 09.184.720"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561361"
+    priority: "B1"
+    primary_catalogue_evidence: "names of workmen"
+    text_pair_evidence: "catalogue synopsis only, no line gold"
+    document_group_warning: "limestone"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561391"
+    provider: "Met Open Access"
+    object_identity: "561391 / 09.184.750"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561391"
+    priority: "B2"
+    primary_catalogue_evidence: "incomplete Hieratic lines"
+    text_pair_evidence: "catalogue synopsis only, no line gold"
+    document_group_warning: "limestone ink paint"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561407"
+    provider: "Met Open Access"
+    object_identity: "561407 / 09.184.766"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561407"
+    priority: "B2"
+    primary_catalogue_evidence: "small Hieratic ostracon"
+    text_pair_evidence: "no independently checked line gold"
+    document_group_warning: "limestone ink paint"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561409"
+    provider: "Met Open Access"
+    object_identity: "561409 / 09.184.768"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561409"
+    priority: "B2"
+    primary_catalogue_evidence: "very small Hieratic ostracon"
+    text_pair_evidence: "no independently checked line gold"
+    document_group_warning: "limestone ink paint"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561410"
+    provider: "Met Open Access"
+    object_identity: "561410 / 09.184.769"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561410"
+    priority: "B1"
+    primary_catalogue_evidence: "Hieratic ostracon; pottery medium"
+    text_pair_evidence: "no independently checked line gold"
+    document_group_warning: "pottery ink paint"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561413"
+    provider: "Met Open Access"
+    object_identity: "561413 / 09.184.772"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561413"
+    priority: "B1"
+    primary_catalogue_evidence: "Hieratic ostracon; two museum views"
+    text_pair_evidence: "no independently checked line gold"
+    document_group_warning: "pottery ink paint; both image views need provenance"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"
+  - candidate_id: "MET-561621"
+    provider: "Met Open Access"
+    object_identity: "561621 / 14.1.453"
+    institutional_url: "https://www.metmuseum.org/art/collection/search/561621"
+    priority: "B2"
+    primary_catalogue_evidence: "possible Hieratic literary text"
+    text_pair_evidence: "no independently checked line gold; catalogue question mark retained"
+    document_group_warning: "limestone"
+    source_image_rights_basis: "Met_catalogue_Public_Domain_badge_pending_actual_API_image_verification"
+    image_pixels_verified: false
+    editorial_text_rights_verified: false
+    full_source_lineage_checked: false
+    benchmark_direct_met_wm_source_match: false
+    benchmark_overlap_status: "metadata_only_no_direct_name_match__all_other_checks_pending"
+    expert_gold_verified: false
+    corpus_admission_status: "candidate_only_blocked"

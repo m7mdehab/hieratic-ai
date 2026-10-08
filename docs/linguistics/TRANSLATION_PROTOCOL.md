@@ -33,3 +33,7 @@ The loader validates source revision and Git blob integrity, verified scholarly 
 3. Integrate image-recognition and linguistic outputs once Luna/Gemini's original-image and true model-input pathways provide usable authenticated predictions. Until then, report translation separately from recognition.
 
 Retain canonical scientific points/status until review; the implementation is honest research progress, not automatic task completion.
+
+## Exact other-source whole-sentence translation retrieval
+
+A second production path indexes AES sentence translations by **the complete ordered sequence of Egyptian `written_form` values**. It chooses an actual publisher-translated **German sentence from a different source-text ID**, and retains competing alternatives; no target text's own translation enters the prediction. In this 445-sentence edition it yields **14 actual other-text full-sentence parallels**. It is explicitly labelled `CROSS_TEXT_EXACT_SENTENCE_PARALLEL`. All remaining sources use the word-gloss abstention-aware fallback. These 14 readings reflect shared phrases/formulae and may represent historical editorial or witness overlap; they do **not** constitute proof of generalization or machine-composed fluent translation.

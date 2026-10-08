@@ -1,0 +1,89 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-10-09",
+  "classification": "SCHOLARLY_PUBLISHED_OPEN_SA_TEXT_ONLY",
+  "license": "CC-BY-SA-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "scope": "Published text/lemma/morphology references. No original source image rights, no independent blind expert-gold.",
+  "aed": {
+    "publisher": "Thesaurus Linguae Aegyptiae / Ancient Egyptian Dictionary; conversion by Simon D. Schweitzer",
+    "upstream": "https://github.com/simondschweitzer/aed-tei",
+    "revision": "462c722e0323e05641aea2eee8cdf1e27303d939",
+    "upstream_source_path": "files/dictionary.xml",
+    "upstream_git_blob_sha1": "078f2f7b83bd642b6530ed000dbc68f9aa79c06e",
+    "extracted_fields": [
+      "lemma_id",
+      "form",
+      "pos_source",
+      "root_ref",
+      "english_gloss"
+    ],
+    "extraction": "Per <entry xml:id> preserve first <orth>, first <gramGrp><term>, optional root xref and English sense quote; decode XML character entities; no lemma/root inference.",
+    "expected_entries": 35052,
+    "partitions": [
+      [
+        "aed_lemmas_part01.jsonl",
+        "ccb5250132e970a3d2e9ad9d6a27adc3a0bef63c",
+        5000
+      ],
+      [
+        "aed_lemmas_part02.jsonl",
+        "73fb1452a900a6487109e7ff3e35a3547e8fcb92",
+        5000
+      ],
+      [
+        "aed_lemmas_part03.jsonl",
+        "13c8b90a35e9666cfc1fb7aaaf40630f03f8378f",
+        5000
+      ],
+      [
+        "aed_lemmas_part04.jsonl",
+        "7b9b786d63124b80ce6abdf177acb87d0584d594",
+        5000
+      ],
+      [
+        "aed_lemmas_part05.jsonl",
+        "9c51f59a063aa582965bbc1162ceef96de8b872c",
+        5000
+      ],
+      [
+        "aed_lemmas_part06.jsonl",
+        "2eb6472aa0369f5a3b2ad6152f92e2e1eae52f2f",
+        5000
+      ],
+      [
+        "aed_lemmas_part07.jsonl",
+        "2e8c8404c360885f16f335da02e9336add0792a1",
+        5000
+      ],
+      [
+        "aed_lemmas_part08.jsonl",
+        "12e81a8173b741e64b3f3caee458304be0a13bbe",
+        52
+      ]
+    ]
+  },
+  "aes": {
+    "publisher": "Ancient Egyptian Sentences / TLA-AED; JSON conversion by Simon D. Schweitzer",
+    "upstream": "https://github.com/simondschweitzer/aes",
+    "revision": "35276d2527cca1a055e31ed5f6683e777717170f",
+    "upstream_source_path": "files/aes/_aes_bbawfelsinschriften.json",
+    "file": "aes_felsinschriften_ccby_sa.json",
+    "git_blob_sha1": "7bfcba9678b64c3526a1123996a0714b5f76812f",
+    "expected_sentences": 445,
+    "expected_source_texts": 311,
+    "expected_tokens": 2526,
+    "expected_with_lemma": 2305,
+    "coverage_scope": "Felsinschriften subcorpus; scholarly transcription and labels, not corresponding manuscript image pixels."
+  },
+  "attribution": "Cite scholarly TLA/AED 2018 contributors and Simon D. Schweitzer; modifications are structured extract and held-out testing, data remains CC BY-SA 4.0.",
+  "source_registry_ids": [
+    "SRC-AED-TEI",
+    "SRC-AES-OPEN"
+  ],
+  "scientific_status": "DEVELOPMENT_GRADE_OPEN_SCHOLARLY_REFERENCE_NOT_BLIND_OR_IMAGE_GOLD",
+  "holdout_policy": "No annotations from target AES text ID may contribute to its observed-token exact-form lookup; AED dictionary is independently published shared reference and may overlap historically with AES source. Treat metrics as diagnostic, not independent linguistic model generalization.",
+  "train_dev_release": "not_admitted_DATA008",
+  "verified_expert_gold": "published_editor_annotations_not_new_blind_review",
+  "notes": "Cross-text source IDs may still share publications/editions/pretraining. No claim of a sealed blind test, image-conditioned reading or model calibration."
+}

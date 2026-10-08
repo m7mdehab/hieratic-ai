@@ -141,5 +141,178 @@ class LexicalInterpretationTests(unittest.TestCase):
         self.assertNotEqual(result["items"][0]["readings"][0]["normalized_text"], result["items"][0]["readings"][1]["normalized_text"])
 
 
+
+
+class RealPublishedEgyptianLexicalTests(unittest.TestCase):
+    """Full genuine AED dictionary + AES source-text-held-out test suite."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.lexical import aes_holdout as scholar
+        cls.scholar = scholar
+        cls.bundle = scholar.read_bundle()
+
+    def test_real_source_35k_lemmas_445_sentences_311_text_groups(self):
+        b = self.bundle
+        self.assertEqual(35052, len(b["lemmas"]))
+        self.assertEqual(445, b["manifest"]["aes"]["expected_sentences"])
+        self.assertEqual(2526, len(b["tokens"]))
+        self.assertEqual(311, len(b["texts"]))
+        self.assertEqual(2305, sum(bool(t["lemmaID"]) for t in b["tokens"]))
+        self.assertEqual("CC-BY-SA-4.0", b["manifest"]["license"])
+        self.assertEqual("not_admitted_DATA008", b["manifest"]["train_dev_release"])
+
+    def test_actual_publisher_blob_identifiers_and_manifest_integrity(self):
+        from ling.lexical.aes_holdout import _blob, EXPECTED_AES_SHA, EXPECTED_PART_SHA, DATA
+        p = DATA / "aes_felsinschriften_ccby_sa.json"
+        self.assertGreater(len(_blob(p, EXPECTED_AES_SHA, size_limit=2_000_000)), 1_000_000)
+        for i, sha in enumerate(EXPECTED_PART_SHA, 1):
+            p = DATA / f"aed_lemmas_part{i:02d}.jsonl"
+            self.assertTrue(_blob(p, sha, size_limit=1_500_000))
+
+    def test_real_aed_lemma_identity_and_attested_english_gloss(self):
+        lemma = self.bundle["lemmas"]["tla1"]
+        self.assertEqual("ꜣ", lemma["form"])
+        self.assertEqual("substantive/substantive_masc", lemma["pos_source"])
+        self.assertEqual("tla863246", lemma["root_ref"])
+        self.assertEqual("vulture; bird (gen.)", lemma["english_gloss"])
+
+    def test_actual_scholarly_lookup_returns_lemma_and_alternatives_without_gold(self):
+        s = self.scholar.analyse(self.bundle, "ꜣ")
+        self.assertIn(s["outcome"], {"interpreted", "ambiguous"})
+        self.assertIn("1", {x["lemma_id"] for x in s["candidates"]})
+        candidate = next(x for x in s["candidates"] if x["lemma_id"] == "1")
+        self.assertIn("AED_DICTIONARY_EXACT_LEMMA_FORM", candidate["source_layers"])
+        self.assertEqual("substantive/substantive_masc", candidate["dictionary_pos"])
+        self.assertFalse(s["training_corpus_admitted"])
+        self.assertFalse(s["certified_science"])
+
+    def test_all_311_source_texts_held_out_and_scored_without_fake_accuracy(self):
+        report = self.scholar.evaluate(self.bundle)
+        self.assertEqual(311, report["source_text_groups"])
+        counts = report["metrics"]
+        self.assertEqual(2526, counts["tokens_total"])
+        self.assertEqual(2305, counts["tokens_with_published_lemma"])
+        self.assertGreater(counts["lemma_in_candidates"], 500)
+        self.assertGreater(counts["single_lemma_candidate"], 50)
+        self.assertGreater(counts["tokens_with_published_morphology"], 100)
+        self.assertEqual("BLOCKED", report["training_admission"])
+        self.assertEqual(0, report["scored_blind_gold_evaluations"])
+        self.assertEqual(0, report["certified_hieratic_image_reading_experiments"])
+        self.assertEqual(64, len(report["report_sha256"]))
+        self.assertEqual("26ad977c29fdd8659157cb02bec04323b6b544dc8ca9425a13825ea629acedee", report["report_sha256"])
+        import json
+        print("LING002_REAL_SCHOLARLY_DIAGNOSTIC=" + json.dumps({"source_text_groups": report["source_text_groups"], "scoreable_text_groups": report["source_text_groups_with_scoreable_lemma"], "counts": counts, "ratios": report["ratios"], "report_sha256": report["report_sha256"]}, ensure_ascii=False, sort_keys=True))
+        for ratio in report["ratios"].values():
+            if ratio is not None:
+                self.assertGreaterEqual(ratio, 0)
+                self.assertLessEqual(ratio, 1)
+
+    def test_predictions_are_invariant_to_gold_poison_from_own_text(self):
+        import copy
+        scholar = self.scholar
+        base = copy.deepcopy(self.bundle)
+        form_token = next(t for t in base["tokens"]
+                          if t["written_form"] and t["lemmaID"])
+        base.pop("observations", None)
+        before = scholar.analyse(
+            base, form_token["written_form"], excluded_text_id=form_token["text"])
+        # A leaked target text would make source-gold mutation change the answer.
+        for token in base["tokens"]:
+            if token["text"] == form_token["text"]:
+                token["lemmaID"] = "999999999999"
+                token["pos"] = "FORGED"
+                token["features"] = {"genus": "forged"}
+        base.pop("observations", None)
+        after = scholar.analyse(
+            base, form_token["written_form"], excluded_text_id=form_token["text"])
+        self.assertEqual(before, after)
+
+    def test_do_not_transfer_morphology_from_same_text_to_itself(self):
+        s = self.scholar
+        b = self.bundle
+        tokens_by_form = {}
+        for token in b["tokens"]:
+            if token["written_form"] and token["lemmaID"]:
+                tokens_by_form.setdefault(token["written_form"], []).append(token)
+        selected = next(
+            token for token in b["tokens"]
+            if token["features"] and token["lemmaID"] and token["written_form"]
+            and all(x["text"] == token["text"]
+                    for x in tokens_by_form[token["written_form"]])
+        )
+        result = s.analyse(b, selected["written_form"],
+                           excluded_text_id=selected["text"])
+        self.assertTrue(all(not row["observed_morphology_alternatives"]
+                            for row in result["candidates"]))
+
+    def test_source_publisher_markup_and_morphology_not_inferred(self):
+        for sample in self.bundle["tokens"][:200]:
+            self.assertIsInstance(sample["features"], dict)
+        result = self.scholar.analyse(self.bundle, "NOT-A-SCHOLARLY-EGYPTIAN-FORM")
+        self.assertEqual("unattested", result["outcome"])
+        self.assertEqual([], result["candidates"])
+
+    def test_tampered_lexicon_bytes_and_aes_bytes_fail_closed(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            altered = root / "aed_lemmas_part01.jsonl"
+            original = self.scholar.DATA / altered.name
+            altered.write_bytes(original.read_bytes() + b"\n")
+            with self.assertRaisesRegex(self.scholar.SourceError, "identity mismatch"):
+                self.scholar._blob(
+                    altered, self.scholar.EXPECTED_PART_SHA[0], size_limit=1_500_000)
+            aes = root / "aes.json"
+            aes.write_bytes((self.scholar.DATA /
+                             "aes_felsinschriften_ccby_sa.json").read_bytes() + b" ")
+            with self.assertRaisesRegex(self.scholar.SourceError, "identity mismatch"):
+                self.scholar._blob(
+                    aes, self.scholar.EXPECTED_AES_SHA, size_limit=2_000_000)
+
+    def test_forged_manifest_rights_and_source_revision_are_rejected(self):
+        import tempfile, json
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            mf = json.loads((self.scholar.DATA /
+                             "scholarly_source_manifest.json").read_text("utf-8"))
+            mf["train_dev_release"] = "production_approved"
+            (root / "scholarly_source_manifest.json").write_text(
+                json.dumps(mf), encoding="utf-8")
+            with self.assertRaisesRegex(self.scholar.SourceError,
+                                        "train_dev_release"):
+                self.scholar._load_manifest(root)
+            mf["train_dev_release"] = "not_admitted_DATA008"
+            mf["aed"]["revision"] = "forged"
+            (root / "scholarly_source_manifest.json").write_text(
+                json.dumps(mf), encoding="utf-8")
+            with self.assertRaisesRegex(self.scholar.SourceError,
+                                        "publisher source revision"):
+                self.scholar._load_manifest(root)
+
+    def test_real_cli_verify_lookup_evaluate(self):
+        from tools import lexical_interpretation as cli
+        import contextlib, io, json
+        for argv, key in [
+            (["scholarly-aes", "verify"], "aed_lemmas"),
+            (["scholarly-aes", "lookup", "--form", "ꜣ"], "candidates"),
+            (["scholarly-aes", "evaluate"], "metrics"),
+        ]:
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(0, cli.main(argv))
+            self.assertIn(key, json.loads(output.getvalue()))
+
+    def test_no_network_licensed_scholarly_data_only(self):
+        from pathlib import Path
+        code = Path(self.scholar.__file__).read_text("utf-8")
+        for term in ("requests.get(", "urlopen(", "httpx.get(", "Image.open(",
+                     "torch.load(", "model.generate("):
+            self.assertNotIn(term, code)
+        self.assertNotIn("visual_accuracy", self.scholar.evaluate(self.bundle))
+
+
 if __name__ == "__main__":
     unittest.main()

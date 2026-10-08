@@ -215,14 +215,14 @@ Real open-weight VLM inference requires:
 
 ### 7.3 Wave 6 Technical Verification Status Matrix
 
-Under Wave 6 audit standards, capability claims are broken down strictly into five verifiable states:
+Under Wave 6 audit standards, capability claims are broken down strictly into five verifiable states. **A stubbed loader/processor is not an actual integrated checkpoint test**, and a mock scored against synthetic fixture text is not evaluated Hieratic reading:
 
 | Model Backbone | (1) Implemented Interface | (2) Unit-Tested Formatting | (3) Integration-Tested Loader | (4) Executed Inference | (5) Evaluated Hieratic Reading |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| `mock-vision-v1` | **YES** | **YES** | **YES** | **YES** (synthetic test double) | **YES** (CI test fixture only; non-certifiable) |
-| `qwen2.5-vl-7b-instruct` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
-| `pixtral-12b-2409` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
-| `llama-3.2-11b-vision-instruct` | **YES** | **YES** | **YES** | **NO** (blocked: no weights/GPU) | **NO** (unvalidated) |
+| `mock-vision-v1` | **YES** | **YES** | **YES — synthetic only** | **YES — test-double generation only** | **NO — fixture outputs are not scientific reading evidence** |
+| `qwen2.5-vl-7b-instruct` | **YES** | **YES — doubles** | **NO — loader dispatch checked against synthetic/fake dependency interfaces only** | **NO — no weights/GPU proven** | **NO** |
+| `pixtral-12b-2409` | **YES** | **YES — doubles** | **NO — loader dispatch checked against synthetic/fake dependency interfaces only** | **NO — no weights/GPU proven** | **NO** |
+| `llama-3.2-11b-vision-instruct` | **YES** | **YES — doubles** | **NO — loader dispatch checked against synthetic/fake dependency interfaces only** | **NO — no weights/GPU proven** | **NO** |
 
 ### 7.4 Fail-Closed Barrier Disclosure
 

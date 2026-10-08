@@ -37,3 +37,18 @@ Retain canonical scientific points/status until review; the implementation is ho
 ## Exact other-source whole-sentence translation retrieval
 
 A second production path indexes AES sentence translations by **the complete ordered sequence of Egyptian `written_form` values**. It chooses an actual publisher-translated **German sentence from a different source-text ID**, and retains competing alternatives; no target text's own translation enters the prediction. In this 445-sentence edition it yields **14 actual other-text full-sentence parallels**. It is explicitly labelled `CROSS_TEXT_EXACT_SENTENCE_PARALLEL`. All remaining sources use the word-gloss abstention-aware fallback. These 14 readings reflect shared phrases/formulae and may represent historical editorial or witness overlap; they do **not** constitute proof of generalization or machine-composed fluent translation.
+
+
+## Downstream LING-002 integration
+
+The same real AES German meaning evidence can now enrich **an immutable, schema-validated LING-002 interpretation manifest**, without changing the original item's diplomatic reading, alternative reading IDs, morphological features, lexical version, source identity or existing source ambiguity. Its output is a distinct, SHA-256-versioned translation layer rather than an edit of upstream gold:
+
+~~~bash
+python -m tools.translation_layer from-lexical --interpretation /path/to/LING002.json
+# Mandatory for original AES source items, to prevent the same text's own glosses:
+python -m tools.translation_layer from-lexical --interpretation /path/to/LING002_AES.json --exclude-text-id AES_ORIGINAL_TEXT_ID
+~~~
+
+The adapter verifies the **original LING-002 JSON Schema and canonical interpretation-version digest**, then attaches source-supported exact-form German gloss hypotheses to **each** alternative source reading. Unknown or unmatched readings abstain; multiple alternatives stay multiple, with support counts by **distinct other AES text IDs**. Synthetic source readings stay explicitly synthetic in origin; a German gloss lookup does not convert an upstream synthetic input into historical evidence. Authenticated new manuscripts can use published contextual glosses without falsely asserting the manuscript was found in AES. For an AES source identity, a supplied excluded source text ID is mandatory; the adapter never infers the ID from a different identity namespace.
+
+This is **not** an Egyptological word-sense disambiguator, German grammatical sentence composition or blind image-to-translation evaluation. All versions, inputs and owner-visible ambiguity are traceable. In particular, adding German candidate glosses to a synthetic interpretation does not make them licensed scholarly gold for that synthetic text.

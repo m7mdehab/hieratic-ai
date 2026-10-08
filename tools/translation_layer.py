@@ -83,8 +83,20 @@ def _observations(sentences: dict[str, Any]) -> dict[str, list[tuple[str, str, s
     return {form: sorted(values) for form, values in idx.items()}
 
 
+def _parallel_translations(sentences: dict[str, Any]) -> dict[tuple[str, ...], list[tuple[str, str]]]:
+    """Published whole-sentence parallels, never target source text itself."""
+    groups: dict[tuple[str, ...], set[tuple[str, str]]] = defaultdict(set)
+    for sentence in sentences.values():
+        german = sentence["sentence_translation"].strip()
+        if german and sentence["token"]:
+            key = tuple(token["written_form"] for token in sentence["token"])
+            groups[key].add((sentence["text"], german))
+    return {key: sorted(value) for key, value in groups.items()}
+
+
 def translate_sentence(sentence: dict[str, Any],
-                       observations: dict[str, list[tuple[str, str, str]]]) -> dict[str, Any]:
+                       observations: dict[str, list[tuple[str, str, str]]], *,
+                       parallel_translations: dict[tuple[str, ...], list[tuple[str, str]]] | None = None) -> dict[str, Any]:
     """Produce deterministic *gloss-sequence translation*, never an editorial copy."""
     target_text = sentence["text"]
     units: list[dict[str, Any]] = []
@@ -110,8 +122,26 @@ def translate_sentence(sentence: dict[str, Any],
             "independent_source_text_support": len(by_gloss[candidate]) if candidate else 0,
             "status": "CROSS_TEXT_COTEXT_REFERENCE" if candidate else "ABSTAIN_UNATTESTED",
         })
+    # An identical complete Egyptian token sequence attested in a DIFFERENT
+    # original text ID may supply a genuinely published German full sentence.
+    # This is a retrieval-only literary parallel, not a learned translation.
+    source_words = tuple(token["written_form"] for token in sentence["token"])
+    parallels = [(text_id, translated) for text_id, translated in
+                 (parallel_translations or {}).get(source_words, ())
+                 if text_id != target_text]
+    choices: dict[str, set[str]] = defaultdict(set)
+    for text_id, german in parallels:
+        choices[german].add(text_id)
+    ordered_parallels = sorted(choices, key=lambda text: (-len(choices[text]), text))
+    published_peer_translation = ordered_parallels[0] if ordered_parallels else None
     return {
         "source_text_id": target_text,
+        "translation_mode": ("CROSS_TEXT_EXACT_SENTENCE_PARALLEL" if published_peer_translation
+                             else "ORDERED_COTEXT_GLOSS_FALLBACK"),
+        "publisher_attested_german_sentence": published_peer_translation,
+        "independent_source_text_support_for_sentence": (
+            len(choices[published_peer_translation]) if published_peer_translation else 0),
+        "other_publisher_sentential_alternatives": ordered_parallels[1:12],
         "output_type": "ORDERED_GERMAN_WORD_GLOSS_SEQUENCE_NOT_FLUENT_TRANSLATION",
         "gloss_sequence": " ".join(x["candidate_german_gloss"] if x["candidate_german_gloss"]
                                     else "[?]" for x in units),
@@ -148,6 +178,7 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
     """Score 444 real published sentence translations with text-ID exclusion."""
     sentences = data["sentences"]
     observations = _observations(sentences)
+    parallels = _parallel_translations(sentences)
     counts = Counter()
     per_text: dict[str, dict[str, int]] = defaultdict(lambda: {"sentences": 0, "scored": 0})
     cases = []
@@ -158,7 +189,10 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
         if not sentence["sentence_translation"].strip():
             counts["missing_publisher_reference_translation"] += 1
             continue
-        prediction = translate_sentence(sentence, observations)
+        prediction = translate_sentence(sentence, observations,
+                                        parallel_translations=parallels)
+        if prediction["publisher_attested_german_sentence"]:
+            counts["sentences_with_cross_text_attested_full_german_translation"] += 1
         # Published target is opened ONLY after the independent prediction.
         metric = word_f1(prediction["gloss_sequence"], sentence["sentence_translation"])
         counts["scored_sentences"] += 1
@@ -192,7 +226,7 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
         "source_text_groups_scored": len(per_text),
         "split": "LEAVE_ENTIRE_AES_TEXT_ID_OUT_OF_COTEXT_REFERENCE_CANDIDATES",
         "reference_language": "German",
-        "generated_output": "deterministic_cross_text_word_gloss_sequence",
+        "generated_output": "exact_cross_text_publisher_sentence_where_attested_else_word_gloss_sequence",
         "metrics": dict(sorted(counts.items())),
         "mean_sentence_word_f1": round(sum_f1 / counts["scored_sentences"], 8),
         "corpus_micro_word_precision": round(micro_p, 8),
@@ -240,7 +274,8 @@ def main(argv: list[str] | None = None) -> int:
             if not a.sentence_id or a.sentence_id not in data["sentences"]:
                 raise TranslationError("Exact source sentence ID required")
             out = translate_sentence(
-                data["sentences"][a.sentence_id], _observations(data["sentences"]))
+                data["sentences"][a.sentence_id], _observations(data["sentences"]),
+                parallel_translations=_parallel_translations(data["sentences"]))
         print(json.dumps(out, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
     except (source.SourceError, TranslationError, ValueError, OSError) as exc:

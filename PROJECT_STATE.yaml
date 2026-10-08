@@ -30,9 +30,9 @@ state:
   trained_models: 0
   best_verified_result: null
   last_accepted_task: "LING-002"
-  ready_tasks:
-    - "LING-003"
+  ready_tasks: []
   active_tasks:
+    - "LING-003"
     - "DATA-008"
     - "VLM-001"
     - "EVAL-003"
@@ -41,6 +41,7 @@ state:
     - "DATA-008: no actual image-bytes-and-rights-cleared real training corpus with admissible scholarly gold and clean real train/dev/test partitions."
     - "VLM-001: noncertifiable W7 hardware/weights diagnostics merged; no verified genuine open-weight forward, eligible Hieratic evaluation, authentic few-shot cohort or independent certification."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
+    - "LING-003: real 444-sentence AED/AES source-text-heldout translation diagnostic and LING-002 interpretation integration merged in PRs #91/#92; only 14 complete other-source published parallels and 15.21% corpus micro word F1, not independent fluent semantic adequacy or manuscript-level blind verification."
 
 canonical_files:
   start: "START_HERE.md"
@@ -78,6 +79,17 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
+
+  W8 LING-003 has moved from ready to active following accepted noncertifiable
+  substantial translation engineering. PR #91 provided genuine AES 445 source
+  sentences (444 German translations), source-text-heldout bilingual prediction
+  and scored 15.21% micro word-overlap F1 with 14 other-source exact full
+  sentence translation parallels; PR #92 added immutable LING-002 downstream
+  interpretation integration and alternative-preserving German meaning outputs.
+  Hosted regression and write-scope checks passed. This is real measured
+  linguistic progress but not defensible fluent semantic translation or
+  independent held-out manuscript evaluation. No LING-003 capability points
+  awarded until that gap is genuinely closed; goal progress remains 34.5/100.
   W8 owner directive: use fully lawful free online sources; research and test
   alternatives exhaustively before asserting genuinely terminal blockers.
   Independent R-024 source/edition research and a noncertifiable silver-label

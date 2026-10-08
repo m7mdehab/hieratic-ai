@@ -1,0 +1,61 @@
+{
+  "candidate_id": "MET-561345",
+  "content_type": "application/json",
+  "endpoint": "https://collectionapi.metmuseum.org/public/collection/v1/objects/561345",
+  "error_code": null,
+  "expected_accession_from_R017": "09.184.703",
+  "field_verification": {
+    "accessionNumber": "api_observed",
+    "additionalImages": "api_observed",
+    "isPublicDomain": "api_observed",
+    "objectID": "api_observed",
+    "objectURL": "api_observed",
+    "primaryImage": "api_observed",
+    "primaryImageSmall": "api_observed"
+  },
+  "http_status": 200,
+  "identity_review": {
+    "accession_aliases_adjudicated": false,
+    "caveat": "No direct registered source identity or image-level, alias, edition, side, or pretraining-overlap clearance is inferred.",
+    "face_and_writing_identity_confirmed": false,
+    "physical_support_confirmed": false,
+    "r017_literal_metadata_match_count": null,
+    "source_registry_record": null
+  },
+  "institution": "The Metropolitan Museum of Art",
+  "observed": {
+    "accessionNumber": "09.184.703",
+    "additionalImages": [
+      "https://images.metmuseum.org/CRDImages/eg/original/09.184.728-09.184.703_EGDP017621.jpg"
+    ],
+    "department": "Egyptian Art",
+    "isPublicDomain": true,
+    "medium": "Limestone, ink",
+    "objectDate": "ca. 1200–1080 BCE",
+    "objectID": 561345,
+    "objectName": "Ostracon, hieratic",
+    "objectURL": "https://www.metmuseum.org/art/collection/search/561345",
+    "period": "New Kingdom, Ramesside",
+    "primaryImage": "https://images.metmuseum.org/CRDImages/eg/original/09.184.728-09.184.703_EGDP017620.jpg",
+    "primaryImageSmall": "https://images.metmuseum.org/CRDImages/eg/web-large/09.184.728-09.184.703_EGDP017620.jpg",
+    "title": "Hieratic ostracon"
+  },
+  "packet_schema_version": "1.0.0",
+  "requested_object_id": 561345,
+  "response_body_bytes": 1826,
+  "response_body_sha256": "fd8fe50e7ef12233530e3f2bb4466c13003826b1795b3176a26911dffe6891d3",
+  "retrieved_at": "2026-10-08T20:04:53Z",
+  "rights_assessment": {
+    "api_is_public_domain": true,
+    "benchmark_independence_cleared": false,
+    "diplomatic_hieratic_gold_present": false,
+    "exact_original_image_eligibility": "unresolved_until_exact_view_bytes_and_asset_scope_are_verified",
+    "independent_text_permission_verified": false,
+    "museum_policy_url": "https://www.metmuseum.org/hubs/open-access",
+    "original_image_bytes_obtained": false,
+    "original_image_sha256": null,
+    "policy_scope_observation": "Met states public-domain artwork images and basic collection data are CC0; this is not independent item-rights adjudication",
+    "training_admission": "BLOCKED_METADATA_ONLY"
+  },
+  "verification_status": "verified_api_response_identity_and_schema"
+}

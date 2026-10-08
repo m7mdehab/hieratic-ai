@@ -3,11 +3,20 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
+import http.client
+import ipaddress
 import json
+import os
+import socket
+import ssl
 import sys
+import tempfile
+import secrets
+import stat
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlsplit
 
 import yaml
@@ -17,10 +26,298 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "data" / "sources" / "registry.yaml"
 SCHEMA_PATH = ROOT / "schemas" / "acquisition_manifest.schema.json"
+MET_API_HOST = "collectionapi.metmuseum.org"
+MET_API_PREFIX = "/public/collection/v1/objects/"
+MET_POLICY_URL = "https://www.metmuseum.org/hubs/open-access"
+MET_CANDIDATES = {
+    561345: "09.184.703", 561392: "09.184.751", 561361: "09.184.720",
+    561391: "09.184.750", 561407: "09.184.766", 561409: "09.184.768",
+    561410: "09.184.769", 561413: "09.184.772", 561621: "14.1.453",
+}
+MAX_MET_RESPONSE_BYTES = 256 * 1024
+MET_TIMEOUT_SECONDS = 12
 
 
 class AcquisitionError(Exception):
     """Input or schema error suitable for the CLI."""
+
+
+class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+    """HTTPS connection pinned to a prevalidated public DNS answer."""
+
+    def __init__(self, host: str, pinned_ip: str, timeout: float):
+        super().__init__(host, 443, timeout=timeout, context=ssl.create_default_context())
+        self.pinned_ip = pinned_ip
+
+    def connect(self) -> None:
+        raw = socket.create_connection((self.pinned_ip, self.port), self.timeout)
+        peer_ip = ipaddress.ip_address(raw.getpeername()[0])
+        if not peer_ip.is_global or str(peer_ip) != self.pinned_ip:
+            raw.close()
+            raise OSError("MET_PEER_NOT_PINNED_PUBLIC")
+        self.sock = self._context.wrap_socket(raw, server_hostname=self.host)
+
+
+def _met_get(path: str) -> tuple[int, str, bytes]:
+    """Fetch one fixed-host API path with DNS pinning, no redirects and a hard cap."""
+    answers = socket.getaddrinfo(MET_API_HOST, 443, type=socket.SOCK_STREAM)
+    addresses = sorted({answer[4][0] for answer in answers})
+    if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
+        raise OSError("MET_DNS_NOT_PUBLIC")
+    connection = _PinnedHTTPSConnection(MET_API_HOST, addresses[0], MET_TIMEOUT_SECONDS)
+    try:
+        connection.request("GET", path, headers={
+            "Accept": "application/json", "Accept-Encoding": "identity",
+            "User-Agent": "Hieratic-AI-DATA-002-metadata-evidence/1.0",
+            "Connection": "close",
+        })
+        response = connection.getresponse()
+        content_type = response.getheader("Content-Type", "").split(";", 1)[0].strip().lower()
+        if response.status != 200:
+            raise AcquisitionError(f"MET_HTTP_STATUS_{response.status}")
+        if response.getheader("Content-Encoding", "identity").lower() not in {"", "identity"}:
+            raise AcquisitionError("MET_CONTENT_ENCODING_UNSUPPORTED")
+        content_length = response.getheader("Content-Length")
+        if content_length and int(content_length) > MAX_MET_RESPONSE_BYTES:
+            raise AcquisitionError("MET_RESPONSE_TOO_LARGE")
+        body = response.read(MAX_MET_RESPONSE_BYTES + 1)
+        if len(body) > MAX_MET_RESPONSE_BYTES:
+            raise AcquisitionError("MET_RESPONSE_TOO_LARGE")
+        return response.status, content_type, body
+    finally:
+        connection.close()
+
+
+def met_metadata_packet(object_id: int, *, transport: Callable[[str], tuple[int, str, bytes]] | None = None) -> dict[str, Any]:
+    """Retrieve metadata for one allowlisted Met object; never requests image bytes."""
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    expected_accession = MET_CANDIDATES.get(object_id)
+    packet: dict[str, Any] = {
+        "packet_schema_version": "1.0.0", "retrieved_at": now,
+        "candidate_id": f"MET-{object_id}", "institution": "The Metropolitan Museum of Art",
+        "endpoint": f"https://{MET_API_HOST}{MET_API_PREFIX}{object_id}",
+        "requested_object_id": object_id, "expected_accession_from_R017": expected_accession,
+        "http_status": None, "content_type": None, "response_body_bytes": None,
+        "response_body_sha256": None, "verification_status": "failed", "error_code": None,
+        "observed": None,
+        "field_verification": {key: "not_observed" for key in (
+            "objectID", "accessionNumber", "isPublicDomain", "objectURL", "primaryImage", "primaryImageSmall", "additionalImages"
+        )},
+        "rights_assessment": {
+            "api_is_public_domain": None, "museum_policy_url": MET_POLICY_URL,
+            "policy_scope_observation": "Met states public-domain artwork images and basic collection data are CC0; this is not independent item-rights adjudication",
+            "exact_original_image_eligibility": "unresolved_until_exact_view_bytes_and_asset_scope_are_verified",
+            "original_image_bytes_obtained": False, "original_image_sha256": None,
+            "diplomatic_hieratic_gold_present": False, "independent_text_permission_verified": False,
+            "benchmark_independence_cleared": False, "training_admission": "BLOCKED_METADATA_ONLY",
+        },
+        "identity_review": {
+            "accession_aliases_adjudicated": False, "physical_support_confirmed": False,
+            "face_and_writing_identity_confirmed": False, "source_registry_record": None,
+            "r017_literal_metadata_match_count": None,
+            "caveat": "No direct registered source identity or image-level, alias, edition, side, or pretraining-overlap clearance is inferred.",
+        },
+    }
+    if expected_accession is None:
+        packet["error_code"] = "MET_OBJECT_ID_NOT_ALLOWLISTED"
+        return packet
+    path = f"{MET_API_PREFIX}{object_id}"
+    try:
+        status, content_type, body = (transport or _met_get)(path)
+        packet.update({"http_status": status, "content_type": content_type, "response_body_bytes": len(body), "response_body_sha256": hashlib.sha256(body).hexdigest()})
+        if len(body) > MAX_MET_RESPONSE_BYTES:
+            raise AcquisitionError("MET_RESPONSE_TOO_LARGE")
+        if status != 200:
+            raise AcquisitionError(f"MET_HTTP_STATUS_{status}")
+        if content_type != "application/json":
+            raise AcquisitionError("MET_CONTENT_TYPE_NOT_JSON")
+        try:
+            record = json.loads(body)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise AcquisitionError("MET_JSON_MALFORMED") from exc
+        if not isinstance(record, dict):
+            raise AcquisitionError("MET_JSON_NOT_OBJECT")
+        if record.get("objectID") != object_id:
+            raise AcquisitionError("MET_OBJECT_ID_MISMATCH")
+        if record.get("accessionNumber") != expected_accession:
+            raise AcquisitionError("MET_ACCESSION_MISMATCH")
+        expected_object_url = f"https://www.metmuseum.org/art/collection/search/{object_id}"
+        if record.get("objectURL") != expected_object_url:
+            raise AcquisitionError("MET_OBJECT_URL_MISMATCH")
+        primary = record.get("primaryImage")
+        small = record.get("primaryImageSmall")
+        additional = record.get("additionalImages")
+        if not isinstance(primary, str) or not primary or not isinstance(small, str) or not isinstance(additional, list):
+            raise AcquisitionError("MET_IMAGE_METADATA_MALFORMED")
+        image_urls = [primary, small, *additional]
+        for url in image_urls:
+            if not isinstance(url, str):
+                raise AcquisitionError("MET_IMAGE_URL_NOT_STRING")
+            parts = urlsplit(url)
+            if url and (parts.scheme != "https" or parts.hostname != "images.metmuseum.org" or not parts.path.startswith("/CRDImages/eg/" ) or parts.username or parts.password or parts.query or parts.fragment):
+                raise AcquisitionError("MET_IMAGE_URL_OUTSIDE_ALLOWLIST")
+        observed = {key: record.get(key) for key in (
+            "objectID", "accessionNumber", "isPublicDomain", "objectURL", "department", "objectName",
+            "title", "period", "objectDate", "medium", "primaryImage", "primaryImageSmall", "additionalImages"
+        )}
+        if not isinstance(observed["isPublicDomain"], bool):
+            raise AcquisitionError("MET_RIGHTS_FLAG_MISSING_OR_INVALID")
+        packet["observed"] = observed
+        packet["field_verification"] = {key: "api_observed" for key in packet["field_verification"]}
+        packet["rights_assessment"]["api_is_public_domain"] = observed["isPublicDomain"]
+        packet["verification_status"] = "verified_api_response_identity_and_schema"
+    except AcquisitionError as exc:
+        packet["error_code"] = str(exc)
+    except (OSError, TimeoutError, ssl.SSLError, http.client.HTTPException, ValueError) as exc:
+        packet["error_code"] = f"MET_TRANSPORT_ERROR:{type(exc).__name__}"
+    return packet
+
+
+def build_met_reconciliation(packets: list[dict[str, Any]], crosswalk: dict[str, Any], public_metadata_path: Path) -> dict[str, Any]:
+    """Join API-observed Met candidates conservatively; absence never clears independence."""
+    public_rows = [json.loads(line) for line in public_metadata_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    def norm(value: str) -> str:
+        import re
+        import unicodedata
+        return "".join(ch for ch in unicodedata.normalize("NFKC", value).casefold() if ch.isalnum())
+    by_id = {packet["requested_object_id"]: packet for packet in packets}
+    comparisons = []
+    for candidate in crosswalk["candidates"]:
+        accession = candidate["accession"]
+        accession_key = norm(accession)
+        literal_rows = [row for row in public_rows if accession.casefold() in row.get("object_name", "").casefold()]
+        normalized_rows = [row for row in public_rows if accession_key and accession_key in norm(row.get("object_name", ""))]
+        object_id = int(candidate["candidate_id"].removeprefix("MET-")) if candidate["candidate_id"].startswith("MET-") else None
+        packet = by_id.get(object_id)
+        observed = (packet or {}).get("observed")
+        if not isinstance(observed, dict):
+            observed = {}
+        extra_views = observed.get("additionalImages")
+        if not isinstance(extra_views, list):
+            extra_views = []
+        api_accession = observed.get("accessionNumber")
+        comparisons.append({
+            "candidate_id": candidate["candidate_id"], "institution": candidate["institution"],
+            "candidate_accession": accession, "met_api_accession": api_accession,
+            "api_identity_verified": bool(packet and packet["verification_status"] == "verified_api_response_identity_and_schema"),
+            "r017_crosswalk_exact_public_source_metadata_matches": candidate["exact_public_source_metadata_matches"],
+            "literal_accession_substring_matches_in_pinned_R017_public_metadata": [row["id"] for row in literal_rows],
+            "normalized_accession_string_matches_in_pinned_R017_public_metadata": [row["id"] for row in normalized_rows],
+            "nearby_collection_witness_count_from_R017": candidate["nearby_collection_witness_count"],
+            "r017_source_lineage_status": candidate["source_lineage_status"],
+            "image_view_count": len(extra_views) + (1 if observed.get("primaryImage") else 0),
+            "photo_frame_multi_accession_unresolved": bool(
+                object_id == 561345 and any("09.184.728-09.184.703" in url for url in
+                [observed.get("primaryImage"), *extra_views] if isinstance(url, str))
+            ),
+            "view_identity_group": f"{candidate['candidate_id']} (all API-listed views remain grouped; no pixel comparison performed)",
+            "rights_status": "NOT_CLEARED", "image_equivalence_status": "NOT_TESTED",
+            "training_admission": "BLOCKED",
+            "unresolved": ["aliases", "physical support", "faces/writings", "joined fragments", "edition lineage", "pixel/perceptual duplicates", "pretraining overlap", "sealed benchmark overlap"],
+        })
+    return {
+        "schema_version": "1.0.0", "source_crosswalk": "docs/research/R017_R016_CANDIDATE_SOURCE_CROSSWALK.json",
+        "source_public_metadata": "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl",
+        "public_metadata_rows_read": len(public_rows), "scope": "public metadata strings only; no pixels, gold, restricted/sealed rows, or images",
+        "interpretation": "Literal and punctuation-normalized accession checks cover only object_name strings in this pinned public metadata snapshot; neither establishes source independence. The upstream R-017 crosswalk reported no exact public source metadata matches for all candidates.",
+        "all_15_candidates_preserved": len(comparisons) == 15,
+        "all_candidates_blocked": all(row["training_admission"] == "BLOCKED" for row in comparisons),
+        "candidates": comparisons,
+    }
+
+
+def _validate_metadata_output(output: Path) -> Path:
+    """Resolve a caller path under acquisition evidence and reject every symlink component."""
+    root = (ROOT / "data" / "acquisition").resolve(strict=True)
+    absolute = output.absolute()
+    try:
+        lexical_relative = absolute.relative_to(root)
+    except ValueError as exc:
+        raise AcquisitionError("metadata packet output must be under data/acquisition") from exc
+    if not lexical_relative.parts or any(part in {".", ".."} for part in lexical_relative.parts):
+        raise AcquisitionError("metadata packet output path is invalid")
+    cursor = root
+    for part in lexical_relative.parts[:-1]:
+        cursor = cursor / part
+        if cursor.is_symlink() or (hasattr(cursor, "is_junction") and cursor.is_junction()):
+            raise AcquisitionError("metadata packet output path contains a symlink")
+    resolved_parent = absolute.parent.resolve(strict=True)
+    if resolved_parent != absolute.parent or not resolved_parent.is_dir():
+        raise AcquisitionError("metadata packet output parent must be a real directory")
+    if absolute.is_symlink() or (hasattr(absolute, "is_junction") and absolute.is_junction()) or absolute.exists():
+        raise AcquisitionError("refusing to overwrite existing metadata packet")
+    return absolute
+
+
+def _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
+    """Publish through an anchored directory FD, never through re-resolved parent symlinks.
+
+    The POSIX dirfd + O_NOFOLLOW chain protects against a parent swapped after
+    _validate_metadata_output. On unsupported operating systems fail closed;
+    callers can use the hosted Linux workflow for metadata publication.
+    """
+    if os.name != "posix" or not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise AcquisitionError("MET_SECURE_PUBLICATION_PLATFORM_UNSUPPORTED")
+    root = (ROOT / "data" / "acquisition").resolve(strict=True)
+    try:
+        relative = output.absolute().relative_to(root)
+        if not relative.parts or any(x in {"", ".", ".."} for x in relative.parts):
+            raise AcquisitionError("metadata packet output path is invalid")
+    except ValueError as exc:
+        raise AcquisitionError("metadata packet output must remain under data/acquisition") from exc
+
+    dir_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    parent_fd: int | None = None
+    open_fds: list[int] = []
+    staging_name: str | None = None
+    published = False
+    try:
+        parent_fd = os.open(root, dir_flags)
+        open_fds.append(parent_fd)
+        for segment in relative.parts[:-1]:
+            parent_fd = os.open(segment, dir_flags, dir_fd=parent_fd)
+            open_fds.append(parent_fd)
+        original = os.fstat(parent_fd)
+        if not stat.S_ISDIR(original.st_mode):
+            raise AcquisitionError("MET_OUTPUT_PARENT_NOT_DIRECTORY")
+        if output.is_symlink() or output.exists():
+            raise AcquisitionError("refusing to overwrite existing metadata packet")
+        staging_name = f".met-packet-{secrets.token_hex(16)}.tmp"
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+        fd = os.open(staging_name, flags, 0o600, dir_fd=parent_fd)
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
+            json.dump(packet, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(staging_name, relative.name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd, follow_symlinks=False)
+        published = True
+        # A rename/replacement of the original parent must not report success.
+        try:
+            current = os.stat(output.parent, follow_symlinks=False)
+            if (current.st_dev, current.st_ino) != (original.st_dev, original.st_ino) or not stat.S_ISDIR(current.st_mode):
+                raise AcquisitionError("MET_OUTPUT_PARENT_CHANGED_DURING_PUBLICATION")
+        except OSError as exc:
+            raise AcquisitionError("MET_OUTPUT_PARENT_CHANGED_DURING_PUBLICATION") from exc
+        os.fsync(parent_fd)
+    except FileExistsError as exc:
+        raise AcquisitionError(f"refusing to overwrite metadata packet: {output}") from exc
+    except AcquisitionError:
+        if published and parent_fd is not None:
+            os.unlink(relative.name, dir_fd=parent_fd)
+        raise
+    except OSError as exc:
+        if published and parent_fd is not None:
+            os.unlink(relative.name, dir_fd=parent_fd)
+        raise AcquisitionError(f"cannot securely publish metadata packet: {type(exc).__name__}") from exc
+    finally:
+        if staging_name is not None and parent_fd is not None:
+            try:
+                os.unlink(staging_name, dir_fd=parent_fd)
+            except FileNotFoundError:
+                pass
+        for opened_fd in reversed(open_fds):
+            os.close(opened_fd)
 
 
 def _load_yaml(path: Path) -> Any:
@@ -263,11 +560,24 @@ def load_and_validate(manifest_path: Path, registry_path: Path = REGISTRY_PATH, 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m tools.acquisition")
-    parser.add_argument("command", choices=["plan", "validate"])
+    parser.add_argument("command", choices=["plan", "validate", "metadata-fetch-met"])
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     parser.add_argument("--schema", type=Path, default=SCHEMA_PATH)
+    parser.add_argument("--object-id", type=int, help="one allowlisted Met collection object ID")
     args = parser.parse_args(argv)
+    if args.command == "metadata-fetch-met":
+        if args.object_id is None:
+            parser.error("metadata-fetch-met requires --object-id")
+        try:
+            output = _validate_metadata_output(args.manifest)
+            packet = met_metadata_packet(args.object_id)
+            _publish_metadata_packet(output, packet)
+        except AcquisitionError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps({"output": str(output.relative_to(ROOT)), "verification_status": packet["verification_status"], "error_code": packet["error_code"], "response_body_sha256": packet["response_body_sha256"]}, sort_keys=True))
+        return 0 if packet["verification_status"] == "verified_api_response_identity_and_schema" else 1
     try:
         errors, plans = load_and_validate(args.manifest, args.registry, args.schema)
     except AcquisitionError as exc:

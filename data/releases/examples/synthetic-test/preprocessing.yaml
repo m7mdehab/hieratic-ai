@@ -1,0 +1,29 @@
+schema_version: 1.0.0
+profile_id: synthetic-v1
+acquisition_manifest_id: synthetic:fixture-v1
+items:
+- item_id: synthetic-page-1
+  acquisition_record_id: synthetic:fixture-v1
+  source_id: SRC-REPO-SYNTHETIC
+  source_object_id: fixture:page-1
+  intended_use: training
+  asset_path: fixtures/input.ppm
+  input_sha256: 10ab9d846d5ef2acb95fc67cdba9ba58cf41aac23e9c907085e3b97b33eb13ce
+  rights_class: OPEN-PD
+  training_use: allowed
+  benchmark_quarantine: false
+  benchmark_overlap_review: clear
+  text_input: "A\u030A"
+  operations:
+  - kind: orient
+    orientation: rotate_90_clockwise
+  - kind: convert_mode
+    mode: RGBA
+  - kind: resize
+    width: 4
+    height: 4
+    fit: contain
+    resampling: nearest
+  - kind: text_normalize
+    text_profile: unicode-nfc
+    text_profile_version: 1.0.0

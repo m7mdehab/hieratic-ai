@@ -1,0 +1,73 @@
+inventory_version: "1.0.0"
+assessment_date: "2026-10-08"
+purpose: "Admission readiness only; this inventory grants no rights and includes no source assets."
+source_registry: data/sources/registry.yaml
+production_corpus_status: blocked_no_real_items_admitted
+items:
+  - source_id: SRC-HIERATICBENCH
+    registry_rights_class: EVALUATION-ONLY
+    registry_training_decision: prohibited
+    registry_redistribution_decision: conditional
+    corpus_v1_disposition: excluded_permanent_evaluation_quarantine
+    evidence_refs: [https://github.com/alymoursy/hieraticbench]
+    missing_before_any_non-benchmark-source-admission: [not_applicable; benchmark material remains excluded]
+  - source_id: SRC-DDD
+    registry_rights_class: NONCOMMERCIAL
+    registry_training_decision: conditional
+    registry_redistribution_decision: conditional
+    corpus_v1_disposition: blocked_default_unrestricted_release
+    evidence_refs: [https://zenodo.org/records/20553713]
+    missing_before_admission: [per_image license and rightsholder, acquisition-method approval, item-level attribution, training and redistribution decision, share-alike compatibility review, benchmark-overlap clearance, model-release review]
+  - source_id: SRC-PAPYRUS
+    registry_rights_class: UNKNOWN
+    registry_training_decision: not_approved
+    registry_redistribution_decision: not_approved
+    corpus_v1_disposition: metadata_only
+    evidence_refs: [https://github.com/jtabin/PaPYrus, https://openscience.ub.uni-mainz.de/items/7aef8525-734c-4ab5-a5c3-4fbf312e1397]
+    missing_before_admission: [item-to-facsimile provenance, image and annotation rightsholders, permitted acquisition method, training and redistribution permissions, benchmark-overlap clearance]
+  - source_id: SRC-ISUT
+    registry_rights_class: UNKNOWN
+    registry_training_decision: not_approved
+    registry_redistribution_decision: not_approved
+    corpus_v1_disposition: metadata_only
+    evidence_refs: [https://isut.uliege.be/admin/about, https://github.com/nederhof/isut]
+    missing_before_admission: [item-to-facsimile provenance, rights for backups and image assets, permitted acquisition method, training and redistribution permissions, benchmark-overlap clearance]
+  - source_id: SRC-HIERATICAI
+    registry_rights_class: UNKNOWN
+    registry_training_decision: not_approved
+    registry_redistribution_decision: not_approved
+    corpus_v1_disposition: metadata_only
+    evidence_refs: [https://github.com/MargotBelot/HieraticAI]
+    missing_before_admission: [Westcar image and annotation rights, source-item provenance, training and redistribution permissions, benchmark-overlap clearance]
+  - source_id: SRC-HPDB
+    registry_rights_class: OPEN-BY
+    registry_training_decision: conditional
+    registry_redistribution_decision: conditional
+    corpus_v1_disposition: metadata_possible_images_not_cleared
+    evidence_refs: [https://moeller.jinsha.tsukuba.ac.jp/en/datasets/]
+    missing_before_admission: [exact item and image-layer source, image rightsholder and applicable license, attribution and modification record, permission conditions satisfied, training and redistribution review, benchmark-overlap clearance]
+  - source_id: SRC-AKU-PAL
+    registry_rights_class: PER-ITEM
+    registry_training_decision: conditional
+    registry_redistribution_decision: conditional
+    corpus_v1_disposition: per_item_review_required
+    evidence_refs: [https://aku-pal.uni-mainz.de/, https://aku-pal.uni-mainz.de/faq]
+    missing_before_admission: [stable hieratogram identifier, item URL, displayed license, rightsholder and attribution, accountable permission reviewer, evidence and review date, benchmark-overlap clearance against pinned roster]
+  - source_id: SRC-TLA
+    registry_rights_class: RESTRICTED
+    registry_training_decision: prohibited
+    registry_redistribution_decision: conditional
+    corpus_v1_disposition: no_bulk_ingestion
+    evidence_refs: [https://thesaurus-linguae-aegyptiae.de/info/licenses]
+    missing_before_admission: [separately licensed raw-data release or explicit bulk permission, current access-terms verification, training and redistribution review, item-level provenance]
+global_missing_evidence:
+  - real completed DATA-002 acquisitions with original hashes
+  - matching DATA-003 artifacts for each admitted page
+  - item-level annotation and mapping rights, with training and redistribution permissions
+  - DATA-004 annotations and DATA-005 mappings with auditable scholarly provenance
+  - DATA-006 reviewed, unambiguous alignment coverage and DATA-007 expert review/adjudication
+  - EVAL-004 train/dev/test manifest whose source-object, document, page, image hashes, normalized hashes and reviewed near-duplicate identities do not leak across partitions
+  - independent review of corpus adequacy, subgroup coverage, terms, attribution and final release
+rights_granted: false
+assets_downloaded: false
+production_corpus_exists: false

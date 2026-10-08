@@ -1,0 +1,52 @@
+{
+  "bundle_sha256": "17d552b23b3953677ced39014893fcff5b89a69301c90261cdb8099815901db3",
+  "generator": "hieratic-corpus-release/1.0.0",
+  "inputs": [
+    {
+      "path": "acquisition.yaml",
+      "sha256": "ddeeeafc53a87bac597e65582dacceb7a57b1d791087e7a5531301ecf357aa47",
+      "size_bytes": 1631
+    },
+    {
+      "path": "alignment.yaml",
+      "sha256": "0da7e9e9fff32a0cee10e291fe33b5991849e44ed47de598152edd9fd1347138",
+      "size_bytes": 890
+    },
+    {
+      "path": "annotation.yaml",
+      "sha256": "a8f61eb7db25fdfbafda79fb487111b2130de57beb05ced8458a533bf76523ca",
+      "size_bytes": 5871
+    },
+    {
+      "path": "artifacts/dataset-manifest.json",
+      "sha256": "b837c9416228c45f04a75ffcf809adcb60a5d889b265447b012e025b255e7198",
+      "size_bytes": 3633
+    },
+    {
+      "path": "mapping.yaml",
+      "sha256": "954fff29cd974a1ae9cbab333d61a838f9f44b3f30071f702e1244b6899327fc",
+      "size_bytes": 668
+    },
+    {
+      "path": "preprocessing.yaml",
+      "sha256": "fbdaaada72c6248c008cf58207cf32dd9aea3852a835490f4e946e3c89feab45",
+      "size_bytes": 823
+    },
+    {
+      "path": "review.yaml",
+      "sha256": "b77d927861e697ead199454fc250b75340c56fe2cc0522f1fd1da55a602bef08",
+      "size_bytes": 2445
+    },
+    {
+      "path": "split-metadata.yaml",
+      "sha256": "c567be8ff11147b296f3389e99d2663540963684ba967be588380ad5cdfcfd99",
+      "size_bytes": 1178
+    },
+    {
+      "path": "split.yaml",
+      "sha256": "b3364e94507a87fa25e6d1338c166f35107bd7a075cdf09a542eb4df6fcb2c20",
+      "size_bytes": 2770
+    }
+  ],
+  "release_sha256": "a959ac05f8256e472d12259b3222464f1b85a727a70ddd56187624abb7e226c6"
+}

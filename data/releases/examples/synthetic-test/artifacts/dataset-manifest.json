@@ -1,0 +1,139 @@
+{
+  "acquisition_manifest_id": "synthetic:fixture-v1",
+  "dataset_version_id": "ds-6061803ddda423e09e4f7498e708ff0c6e5ac67eb2cb8bcbec601917df8f1548",
+  "generator": "hieratic-preprocessing/1.0.0",
+  "items": [
+    {
+      "acquisition_record_id": "synthetic:fixture-v1",
+      "input_sha256": "10ab9d846d5ef2acb95fc67cdba9ba58cf41aac23e9c907085e3b97b33eb13ce",
+      "item_id": "synthetic-page-1",
+      "normalized_text": "\u00c5",
+      "output_path": "synthetic-page-1.png",
+      "output_sha256": "6c075549728dc4137a7bbeb42ea1419a9965d54daeba7964622b70709970bd7b",
+      "source_id": "SRC-REPO-SYNTHETIC",
+      "source_object_id": "fixture:page-1",
+      "text_input": "A\u030a",
+      "text_transformations": [
+        {
+          "input_sha256": "446b2da699e20cd17905c4d73147935ffe84e37d2df872fb5c72fcf1838715cc",
+          "output_sha256": "0a94dc9d420d1142d6b71de60f9bf7e2f345a4d62c9f141b091539769ddf3075",
+          "profile": "unicode-nfc",
+          "version": "1.0.0"
+        }
+      ],
+      "transformations": [
+        {
+          "format": "PNG 8-bit non-interlaced or PPM P3/P6",
+          "input_mode": "RGB",
+          "input_size": [
+            2,
+            2
+          ],
+          "kind": "decode",
+          "orientation": "metadata orientation is not inferred; identity until explicitly declared"
+        },
+        {
+          "coordinate_system": "pixel_origin_top_left; crop right/bottom exclusive",
+          "cumulative_input_to_output_matrix": [
+            [
+              0.0,
+              -1.0,
+              2.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "input_size": [
+            2,
+            2
+          ],
+          "operation": {
+            "kind": "orient",
+            "orientation": "rotate_90_clockwise"
+          },
+          "output_size": [
+            2,
+            2
+          ]
+        },
+        {
+          "coordinate_system": "pixel_origin_top_left; crop right/bottom exclusive",
+          "cumulative_input_to_output_matrix": [
+            [
+              0.0,
+              -1.0,
+              2.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "input_size": [
+            2,
+            2
+          ],
+          "operation": {
+            "kind": "convert_mode",
+            "mode": "RGBA"
+          },
+          "output_size": [
+            2,
+            2
+          ]
+        },
+        {
+          "coordinate_system": "pixel_origin_top_left; crop right/bottom exclusive",
+          "cumulative_input_to_output_matrix": [
+            [
+              0.0,
+              -2.0,
+              4.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "input_size": [
+            2,
+            2
+          ],
+          "operation": {
+            "fit": "contain",
+            "height": 4,
+            "kind": "resize",
+            "resampling": "nearest",
+            "width": 4
+          },
+          "output_size": [
+            4,
+            4
+          ]
+        }
+      ]
+    }
+  ],
+  "profile_id": "synthetic-v1",
+  "schema_version": "1.0.0"
+}

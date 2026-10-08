@@ -1,0 +1,28 @@
+schema_version: 1.0.0
+mapping_set_id: synthetic-structure-example-v1
+records:
+- identity_id: SYNTHETIC-OBS-001
+  identity_status: unresolved
+  observed_hieratic:
+    value: null
+    status: unresolved
+    confidence: null
+    qualifiers:
+    - synthetic placeholder; no sign image or historical claim
+    citations: []
+  hieroglyphic_correspondence:
+    value: null
+    status: unresolved
+    confidence: null
+    qualifiers: []
+    citations: []
+  transliteration_value:
+    value: null
+    status: unresolved
+    confidence: null
+    qualifiers: []
+    citations: []
+  historical_context: []
+  variants: []
+  provenance: []
+relations: []

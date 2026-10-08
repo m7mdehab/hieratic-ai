@@ -41,6 +41,9 @@ jobs:
       - name: Run all data tests
         run: python -m unittest discover -s tests/data -v
 
+      - name: Run all linguistic normalization tests
+        run: python -m unittest discover -s tests/linguistics -v
+
       - name: Run all evaluation tests
         run: python -m unittest discover -s tests/evaluation -v
 

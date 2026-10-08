@@ -387,7 +387,7 @@ tasks:
     phase: "P6_INTERPRETATION"
     title: "Add lexical and morphological interpretation"
     weight: 2.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["LING-001"]
     acceptance_summary: "Recognized text is linked to defensible lexical/morphological analyses with alternatives where ambiguous."

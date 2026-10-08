@@ -111,7 +111,7 @@ models:
     name: "Llama 3.2 11B Vision Instruct"
     model_type: "open_weight"
     provider_model_id: "meta-llama/Llama-3.2-11B-Vision-Instruct"
-    revision: "9eb2daaa85"
+    revision: "9eb2daaa8597bf192a8b0e73f848f3a102794df5"
     license: "Llama-3.2-Community"
     context_window: 16384
     requires_cuda: true

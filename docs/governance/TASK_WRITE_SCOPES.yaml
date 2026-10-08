@@ -96,3 +96,10 @@ task_scopes:
     - "tools/lexical_interpretation.py"
     - "tests/linguistics/test_lexical_interpretation.py"
     - "docs/linguistics/LEXICAL_MORPHOLOGICAL_PROTOCOL.md"
+
+  LING-003:
+    - "tasks/LING-003.md"
+    - "ling/translation/**"
+    - "tools/translation_layer.py"
+    - "tests/linguistics/test_translation_layer.py"
+    - "docs/linguistics/TRANSLATION_PROTOCOL.md"

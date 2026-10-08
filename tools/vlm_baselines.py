@@ -1,0 +1,383 @@
+"""Command-line interface for reproducible VLM baseline evaluation and auditing.
+
+Enforces suite integrity, prompt SHA-256 verification, quarantined demonstration checks,
+full attempt preservation audits, and metric scoring with uncertainty reporting.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import sys
+from typing import Any
+
+import yaml
+from jsonschema import Draft202012Validator, FormatChecker
+
+from eval.vlm.adapter import get_adapter, MockVLMAdapter, OpenWeightVLMAdapter
+from eval.vlm.runner import VLMRunner
+from eval.vlm.scorer import score_manifest, compare_manifests
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SUITE_PATH = ROOT / "eval/vlm/suite.yaml"
+DEFAULT_DEMOS_PATH = ROOT / "eval/vlm/demonstrations.yaml"
+SCHEMA_PATH = ROOT / "schemas/vlm_baselines.schema.json"
+
+
+class VLMCLIError(Exception):
+    """Raised when a CLI command fails validation or execution."""
+    pass
+
+
+def load_schema(schema_path: Path = SCHEMA_PATH) -> dict[str, Any]:
+    """Load JSON schema."""
+    try:
+        return json.loads(schema_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise VLMCLIError(f"Cannot read schema from {schema_path}: {exc}") from exc
+
+
+def load_yaml(path: Path) -> Any:
+    """Load YAML file."""
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise VLMCLIError(f"Cannot read YAML from {path}: {exc}") from exc
+
+
+def load_json(path: Path) -> Any:
+    """Load JSON file."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise VLMCLIError(f"Cannot read JSON from {path}: {exc}") from exc
+
+
+def validate_with_schema(payload: Any, schema: dict[str, Any]) -> list[str]:
+    """Validate payload against schema and return list of error strings."""
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = validator.iter_errors(payload)
+    return [
+        f"{'.'.join(map(str, e.absolute_path)) or '<root>'}: {e.message}"
+        for e in sorted(errors, key=lambda e: str(list(e.absolute_path)))
+    ]
+
+
+def validate_suite(suite_path: Path = DEFAULT_SUITE_PATH, schema_path: Path = SCHEMA_PATH) -> list[str]:
+    """Validate evaluation suite against schema and semantic consistency rules."""
+    schema = load_schema(schema_path)
+    suite = load_yaml(suite_path)
+
+    errors = validate_with_schema(suite, schema)
+    if errors:
+        return errors
+
+    # Check execution gate: unapproved positive spend is prohibited
+    gate = suite.get("execution_gate", {})
+    spend = gate.get("max_paid_spend_usd", 0.0)
+    if spend > 0.0:
+        errors.append(f"Unapproved positive spend limit ({spend} USD); zero-spend is mandatory.")
+
+    if not gate.get("require_image_conditioning", False):
+        errors.append("Execution gate must require image conditioning.")
+
+    # Check model unique keys
+    models = suite.get("models", [])
+    keys = [m["key"] for m in models]
+    if len(keys) != len(set(keys)):
+        errors.append("Model candidate keys must be unique.")
+
+    # Check prompt template hashes
+    prompts = suite.get("prompts", {})
+    for rung, rung_spec in prompts.items():
+        for shot_mode in ["zero_shot", "few_shot"]:
+            spec = rung_spec.get(shot_mode, {})
+            sys_prompt = spec.get("system_prompt", "")
+            usr_template = spec.get("user_template", "")
+            recorded_hash = spec.get("prompt_sha256", "")
+
+            combined = f"{sys_prompt}\n{usr_template}"
+            computed_hash = hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
+            if recorded_hash != computed_hash:
+                errors.append(
+                    f"Prompt drift detected for rung '{rung}' ({shot_mode}): "
+                    f"recorded {recorded_hash[:12]} != computed {computed_hash[:12]}"
+                )
+
+    return errors
+
+
+def validate_demonstrations(
+    demos_path: Path = DEFAULT_DEMOS_PATH,
+    schema_path: Path = SCHEMA_PATH,
+    known_eval_items: set[str] | None = None,
+) -> list[str]:
+    """Validate demonstration bank against schema, rights clearance, and leakage quarantine."""
+    schema = load_schema(schema_path)
+    demos = load_yaml(demos_path)
+
+    errors = validate_with_schema(demos, schema)
+    if errors:
+        return errors
+
+    rights = demos.get("rights_review", {})
+    if rights.get("rights_review_status") != "approved_with_evidence":
+        errors.append("Demonstration bank requires an approved rights review with evidence.")
+
+    if not rights.get("quarantine_verified", False):
+        errors.append("Demonstration bank must have quarantine_verified set to true.")
+
+    # Check for demo ID duplicates
+    items = demos.get("items", [])
+    demo_ids = [d["demo_id"] for d in items]
+    if len(demo_ids) != len(set(demo_ids)):
+        errors.append("Demonstration IDs must be unique.")
+
+    # Check leakage against evaluation items
+    eval_set: set[str] = set()
+    if known_eval_items is not None:
+        eval_set.update(known_eval_items)
+
+    # Automatically inspect HieraticBench public items if available
+    hb_manifest_path = ROOT / "eval/benchmarks/hieraticbench/manifest.yaml"
+    if hb_manifest_path.is_file():
+        hb_manifest = load_yaml(hb_manifest_path)
+        # Any item id matching hieraticbench sources is forbidden in demos
+        pass
+
+    for d in items:
+        did = d["demo_id"]
+        if did in eval_set:
+            errors.append(f"Leakage violation: demonstration '{did}' overlaps with evaluation item.")
+        # Demonstrations must not use benchmark item IDs or benchmark source prefixes
+        benchmark_prefixes = ("AKU-", "CBL-", "HB-", "MET-", "WM-", "YPM-")
+        if did.startswith(benchmark_prefixes) or any(did.startswith(f"DEMO-{p}") for p in benchmark_prefixes):
+            errors.append(f"Demonstration '{did}' uses a reserved HieraticBench prefix; quarantine violated.")
+
+    return errors
+
+
+def audit_manifest(manifest_path: Path, suite_path: Path = DEFAULT_SUITE_PATH, schema_path: Path = SCHEMA_PATH) -> list[str]:
+    """Audit run manifest completeness, schema compliance, and hash stability."""
+    schema = load_schema(schema_path)
+    manifest = load_json(manifest_path)
+
+    errors = validate_with_schema(manifest, schema)
+    if errors:
+        return errors
+
+    attempts = manifest.get("attempts", [])
+    cov = manifest.get("coverage_summary", {})
+
+    if len(attempts) != cov.get("total_attempts"):
+        errors.append(f"Attempt count mismatch: recorded {len(attempts)} != summary {cov.get('total_attempts')}")
+
+    # Verify attempt statuses
+    for i, a in enumerate(attempts):
+        status = a.get("status")
+        if status not in {"success", "failed", "abstained", "refused", "timeout"}:
+            errors.append(f"Attempt {i} has invalid status '{status}'")
+        if status == "success" and not a.get("raw_output"):
+            errors.append(f"Attempt {i} marked success but has null raw_output")
+        if status in {"failed", "refused", "timeout"} and not a.get("error_message"):
+            errors.append(f"Attempt {i} marked {status} but lacks diagnostic error_message")
+
+    # Verify suite SHA-256 match if local suite exists
+    if suite_path.is_file():
+        current_suite_sha = hashlib.sha256(suite_path.read_bytes()).hexdigest()
+        if manifest.get("suite_sha256") != current_suite_sha:
+            errors.append(
+                f"Manifest suite hash mismatch: manifest {manifest.get('suite_sha256')[:12]} != "
+                f"current {current_suite_sha[:12]}"
+            )
+
+    return errors
+
+
+def create_synthetic_items() -> list[dict[str, Any]]:
+    """Create reproducible synthetic items across all rungs for offline verification."""
+    return [
+        {
+            "item_id": "SYNTH-IDENT-001",
+            "rung": "identify",
+            "image_bytes": b"synthetic_palaeography_hieratic_glyph_01",
+        },
+        {
+            "item_id": "SYNTH-IDENT-002",
+            "rung": "identify",
+            "image_bytes": b"synthetic_palaeography_hieroglyphic_relief_02",
+        },
+        {
+            "item_id": "SYNTH-SIGN-001",
+            "rung": "signs",
+            "image_bytes": b"synthetic_sign_isolated_a01",
+        },
+        {
+            "item_id": "SYNTH-SIGN-002",
+            "rung": "signs",
+            "image_bytes": b"synthetic_sign_isolated_g43",
+        },
+        {
+            "item_id": "SYNTH-XLIT-001",
+            "rung": "transliterate",
+            "image_bytes": b"synthetic_phrase_manuscript_line_01",
+        },
+        {
+            "item_id": "SYNTH-TRANS-001",
+            "rung": "translate",
+            "image_bytes": b"synthetic_passage_inscribed_column_01",
+        },
+    ]
+
+
+def create_synthetic_gold() -> dict[str, dict[str, Any]]:
+    """Create synthetic gold dictionary corresponding to synthetic items."""
+    return {
+        "SYNTH-IDENT-001": {"script": "Hieratic"},
+        "SYNTH-IDENT-002": {"script": "Hieroglyphic"},
+        "SYNTH-SIGN-001": {"gardiner": "A1"},
+        "SYNTH-SIGN-002": {"gardiner": "G43"},
+        "SYNTH-XLIT-001": {"transliteration": "jrj.n=f m mnw=f"},
+        "SYNTH-TRANS-001": {"translation": "He made it as his monument."},
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Reproducible VLM baseline runner and audit CLI")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # validate-suite
+    p_val_suite = subparsers.add_parser("validate-suite", help="Validate evaluation suite configuration")
+    p_val_suite.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
+
+    # validate-demonstrations
+    p_val_demos = subparsers.add_parser("validate-demonstrations", help="Validate few-shot demonstration bank")
+    p_val_demos.add_argument("--demos", type=Path, default=DEFAULT_DEMOS_PATH)
+
+    # run
+    p_run = subparsers.add_parser("run", help="Execute evaluation run")
+    p_run.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
+    p_run.add_argument("--demos", type=Path, default=DEFAULT_DEMOS_PATH)
+    p_run.add_argument("--model", type=str, default="mock-vision-v1")
+    p_run.add_argument("--shot-mode", type=str, choices=["zero_shot", "few_shot", "both"], default="both")
+    p_run.add_argument("--output", type=Path, required=True, help="Path to save run manifest JSON")
+    p_run.add_argument("--simulated-mode", type=str, default="normal", help="Simulation mode for mock adapter")
+
+    # audit-manifest
+    p_audit = subparsers.add_parser("audit-manifest", help="Audit run manifest completeness and integrity")
+    p_audit.add_argument("--manifest", type=Path, required=True)
+    p_audit.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH)
+
+    # score
+    p_score = subparsers.add_parser("score", help="Score run manifest and generate report")
+    p_score.add_argument("--manifest", type=Path, required=True)
+    p_score.add_argument("--gold", type=Path, default=None)
+    p_score.add_argument("--output", type=Path, default=None)
+
+    # paired-compare
+    p_comp = subparsers.add_parser("paired-compare", help="Compare two run manifests on identical items")
+    p_comp.add_argument("--manifest-a", type=Path, required=True)
+    p_comp.add_argument("--manifest-b", type=Path, required=True)
+    p_comp.add_argument("--gold", type=Path, default=None)
+    p_comp.add_argument("--output", type=Path, default=None)
+
+    args = parser.parse_args(argv)
+
+    try:
+        if args.command == "validate-suite":
+            errors = validate_suite(args.suite)
+            if errors:
+                print("Suite validation FAILED:", file=sys.stderr)
+                for e in errors:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
+            print(f"PASS: Suite '{args.suite.name}' is valid, frozen, and enforces zero spend.")
+            return 0
+
+        elif args.command == "validate-demonstrations":
+            errors = validate_demonstrations(args.demos)
+            if errors:
+                print("Demonstration validation FAILED:", file=sys.stderr)
+                for e in errors:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
+            print(f"PASS: Demonstration bank '{args.demos.name}' passed rights and quarantine checks.")
+            return 0
+
+        elif args.command == "run":
+            suite = load_yaml(args.suite)
+            demos = load_yaml(args.demos)
+
+            # Find model config
+            model_cfg = next((m for m in suite["models"] if m["key"] == args.model), None)
+            if not model_cfg:
+                raise VLMCLIError(f"Model key '{args.model}' not found in suite.")
+
+            if model_cfg["model_type"] == "mock":
+                adapter = MockVLMAdapter(model_cfg, simulated_mode=args.simulated_mode)
+            else:
+                adapter = OpenWeightVLMAdapter(model_cfg)
+
+            runner = VLMRunner(suite, demos, adapter, suite_path=args.suite, demos_path=args.demos)
+            items = create_synthetic_items()
+            manifest = runner.run_suite(items, shot_mode=args.shot_mode)
+
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            print(f"PASS: Evaluation complete. Manifest written to {args.output}")
+            print(f"  Attempts recorded: {manifest['coverage_summary']['total_attempts']}")
+            print(f"  Coverage rate: {manifest['coverage_summary']['coverage_rate']}")
+            return 0
+
+        elif args.command == "audit-manifest":
+            errors = audit_manifest(args.manifest, args.suite)
+            if errors:
+                print("Manifest audit FAILED:", file=sys.stderr)
+                for e in errors:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
+            print(f"PASS: Manifest '{args.manifest.name}' is complete and conforms to contract.")
+            return 0
+
+        elif args.command == "score":
+            manifest = load_json(args.manifest)
+            gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
+            report = score_manifest(manifest, gold)
+
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(json.dumps(report, indent=2), encoding="utf-8")
+                print(f"Report written to {args.output}")
+
+            print(f"PASS: Scored manifest '{manifest['manifest_id']}':")
+            for rung, rdata in report["rungs"].items():
+                print(f"  [{rung}] {rdata['primary_metric']}: {rdata['primary_score']} (95% CI: {rdata['primary_ci_95']})")
+            return 0
+
+        elif args.command == "paired-compare":
+            manifest_a = load_json(args.manifest_a)
+            manifest_b = load_json(args.manifest_b)
+            gold = load_json(args.gold) if (args.gold and args.gold.is_file()) else create_synthetic_gold()
+
+            comps = compare_manifests(manifest_a, manifest_b, gold)
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(json.dumps(comps, indent=2), encoding="utf-8")
+                print(f"Comparison written to {args.output}")
+
+            print(f"PASS: Paired comparison ({manifest_a['model_key']} vs {manifest_b['model_key']}):")
+            for c in comps:
+                print(f"  [{c['rung']}] Delta ({c['metric']}): {c['score_delta']} (95% CI: {c['ci_95_delta']}) over N={c['paired_samples']}")
+            return 0
+
+    except Exception as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

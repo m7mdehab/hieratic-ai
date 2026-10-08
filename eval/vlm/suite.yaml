@@ -1,0 +1,117 @@
+doc_type: "vlm_suite"
+schema_version: "1.0.0"
+suite_id: "vlm-baseline-w3-v1"
+description: "Frozen zero-shot and few-shot multimodal baseline suite for Hieratic reading across open-weight VLMs"
+status: "ready"
+
+execution_gate:
+  max_paid_spend_usd: 0.0
+  require_image_conditioning: true
+  allow_network_inference: false
+  offline_reproducible: true
+
+benchmark_ref:
+  name: "HieraticBench"
+  pinned_commit: "d587dc990013f18007f1e7a8f56f96ff2f7127e2"
+  split: "public"
+  permitted_rungs:
+    - "identify"
+    - "signs"
+    - "transliterate"
+    - "translate"
+
+image_preprocessing:
+  max_dimension_px: 1024
+  min_dimension_px: 64
+  color_mode: "RGB"
+  format: "JPEG"
+  resize_mode: "resize_longest_edge"
+  normalize: true
+
+decoding_parameters:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 256
+  seed: 42
+  stop_sequences:
+    - "\n\n"
+    - "<|im_end|>"
+    - "</s>"
+
+prompts:
+  identify:
+    zero_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian palaeography and scripts."
+      user_template: "Examine the provided image of an ancient Egyptian inscribed artifact.\nIdentify the script used in this text. Select exactly one of: Hieratic, Hieroglyphic, Demotic, Coptic.\nProvide only the script name."
+      prompt_sha256: "157cd45118c683fbd3d9874ba93771fe4e56094ec4de47d9ca59892a1b7e0ada"
+    few_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian palaeography and scripts."
+      user_template: "Examine the provided image of an ancient Egyptian inscribed artifact.\nBelow are exemplar reference demonstrations:\n{demonstrations}\n\nTarget query:\nIdentify the script used in this text. Select exactly one of: Hieratic, Hieroglyphic, Demotic, Coptic.\nProvide only the script name."
+      prompt_sha256: "0dc7417157dbac17ae1fdc58cb62cf3cdaaa082ba58434e8606e6810b7c631a2"
+
+  signs:
+    zero_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian hieratic palaeography."
+      user_template: "Examine the provided image showing an isolated Hieratic sign or sign cluster.\nIdentify the corresponding Gardiner sign code (e.g., A1, G43, M17, O34).\nProvide only the Gardiner code."
+      prompt_sha256: "bcffa49578301c49aca23b0b08be8c45f588ed2f920bffdfc02bf301de6ebc15"
+    few_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian hieratic palaeography."
+      user_template: "Examine the provided image showing an isolated Hieratic sign or sign cluster.\nBelow are exemplar reference demonstrations:\n{demonstrations}\n\nTarget query:\nIdentify the corresponding Gardiner sign code (e.g., A1, G43, M17, O34).\nProvide only the Gardiner code."
+      prompt_sha256: "72b238b0d7900465ef19435bcf13aa2368ee954ec33c107f60deefa52b54329d"
+
+  transliterate:
+    zero_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian hieratic transcription and transliteration."
+      user_template: "Examine the provided image of a Hieratic manuscript passage.\nTransliterate the hieratic text into standard Egyptological transliteration.\nProvide only the transliteration."
+      prompt_sha256: "884c40a8ba28b00a2faa34bfb16f455c6d64cb2d829ffc8565cee5920f4f5396"
+    few_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian hieratic transcription and transliteration."
+      user_template: "Examine the provided image of a Hieratic manuscript passage.\nBelow are exemplar reference demonstrations:\n{demonstrations}\n\nTarget query:\nTransliterate the hieratic text into standard Egyptological transliteration.\nProvide only the transliteration."
+      prompt_sha256: "8c7b0f1b685c24d538905a66522a1604dc1d5c0bbe7cd8c8a9493df42da54b33"
+
+  translate:
+    zero_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian philology and translation."
+      user_template: "Examine the provided image of a Hieratic manuscript passage.\nTranslate the ancient Egyptian inscription into clear, accurate English.\nProvide only the English translation."
+      prompt_sha256: "45cd8e5ba5ded5e934f1b2690ea004209b7f9d72108b3230132e5118657f3ad5"
+    few_shot:
+      system_prompt: "You are an expert Egyptologist specializing in ancient Egyptian philology and translation."
+      user_template: "Examine the provided image of a Hieratic manuscript passage.\nBelow are exemplar reference demonstrations:\n{demonstrations}\n\nTarget query:\nTranslate the ancient Egyptian inscription into clear, accurate English.\nProvide only the English translation."
+      prompt_sha256: "1c7abea20d7cbe3926716dd0f88575b5f45c5ac1d1dca0959e9ce0e1b4146c76"
+
+models:
+  - key: "mock-vision-v1"
+    name: "Deterministic Synthetic Multimodal Baseline"
+    model_type: "mock"
+    provider_model_id: "synthetic://hieratic-mock-v1"
+    revision: "v1.0.0"
+    license: "Apache-2.0"
+    context_window: 4096
+    requires_cuda: false
+
+  - key: "qwen2.5-vl-7b-instruct"
+    name: "Qwen 2.5 VL 7B Instruct"
+    model_type: "open_weight"
+    provider_model_id: "Qwen/Qwen2.5-VL-7B-Instruct"
+    revision: "main"
+    license: "Apache-2.0"
+    context_window: 32768
+    requires_cuda: true
+
+  - key: "pixtral-12b-2409"
+    name: "Mistral Pixtral 12B"
+    model_type: "open_weight"
+    provider_model_id: "mistralai/Pixtral-12B-2409"
+    revision: "main"
+    license: "Apache-2.0"
+    context_window: 16384
+    requires_cuda: true
+
+  - key: "llama-3.2-11b-vision-instruct"
+    name: "Llama 3.2 11B Vision Instruct"
+    model_type: "open_weight"
+    provider_model_id: "meta-llama/Llama-3.2-11B-Vision-Instruct"
+    revision: "main"
+    license: "Llama-3.2-Community"
+    context_window: 16384
+    requires_cuda: true

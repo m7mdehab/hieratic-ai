@@ -1,0 +1,63 @@
+name: VLM Baselines Evaluation Preflight
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tasks/VLM-001.md"
+      - "eval/vlm/**"
+      - "schemas/vlm_baselines.schema.json"
+      - "tools/vlm_baselines.py"
+      - "tests/evaluation/test_vlm_baselines.py"
+      - "docs/evaluation/VLM_BASELINES.md"
+      - ".github/workflows/vlm-baselines.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vlm-baselines-preflight:
+    name: Verify zero/few-shot VLM evaluation harness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+
+      - name: Confirm canonical project state
+        run: python -m tools.projectctl validate
+
+      - name: Validate baseline suite configuration
+        run: python -m tools.vlm_baselines validate-suite
+
+      - name: Validate quarantined few-shot demonstration bank
+        run: python -m tools.vlm_baselines validate-demonstrations
+
+      - name: Run synthetic evaluation and generate immutable manifest
+        env:
+          MANIFEST_PATH: ${{ runner.temp }}/vlm_ci_manifest.json
+          REPORT_PATH: ${{ runner.temp }}/vlm_ci_report.json
+        run: |
+          python -m tools.vlm_baselines run \
+            --model mock-vision-v1 \
+            --shot-mode both \
+            --output "$MANIFEST_PATH"
+          python -m tools.vlm_baselines audit-manifest \
+            --manifest "$MANIFEST_PATH"
+          python -m tools.vlm_baselines score \
+            --manifest "$MANIFEST_PATH" \
+            --output "$REPORT_PATH"
+
+      - name: Run VLM baseline unit and negative tests
+        run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
+
+      - name: Run full evaluation test discovery
+        run: python -m unittest discover -s tests/evaluation -v

@@ -2,13 +2,20 @@
 
 ## 1. Overview & Scientific Purpose
 
-This protocol establishes a scientifically reproducible, untuned zero-shot and few-shot Vision-Language Model (VLM) baseline suite for Hieratic script reading across multiple reading stages:
+This protocol establishes a scientifically reproducible, untuned zero-shot and few-shot Vision-Language Model (VLM) baseline evaluation suite for Ancient Egyptian Hieratic script reading across four canonical reading rungs:
 1. **Script Identification (`identify`):** Classifying ancient Egyptian manuscript fragments into Hieratic, Hieroglyphic, Demotic, or Coptic.
 2. **Isolated Sign Recognition (`signs`):** Identifying individual Hieratic characters and sign clusters into canonical Gardiner sign codes.
 3. **Sequential Transliteration (`transliterate`):** Transcribing continuous line passages into standardized Egyptological transliteration.
 4. **Translation (`translate`):** Translating continuous Hieratic texts into grammatical English.
 
-This suite is developed independently from the overseer's `EVAL-003` frontier proprietary model comparison (`eval/baselines/**`). It focuses on open-weight multimodal architectures, cryptographic prompt contracts, quarantined few-shot demonstration banks, complete attempt accounting, and rigorous uncertainty reporting.
+This suite is developed independently from the overseer's `EVAL-003` frontier proprietary model comparison (`eval/baselines/**`). It focuses on:
+- Open-weight multimodal vision-language architectures (`transformers`, `torch`).
+- Cryptographic prompt contracts with immutable SHA-256 integrity verification.
+- Strictly quarantined few-shot demonstration banks with fail-closed provenance gates.
+- Complete attempt accounting across all outcomes (success, abstention, refusal, timeout, failure).
+- Document-clustered non-parametric bootstrap uncertainty reporting ($B=2,000$) conforming to `EVAL-006`.
+- Explicit separation between upstream official HieraticBench benchmark scoring and project-native `EVAL-001` diagnostic metrics.
+- Promotion prevention mechanisms ensuring synthetic CI fixtures cannot masquerade as certified empirical findings.
 
 ---
 
@@ -16,19 +23,19 @@ This suite is developed independently from the overseer's `EVAL-003` frontier pr
 
 ### 2.1 Model Candidates
 
-| Key | Model Name | Architecture / Provider | License | Modality | Hardware Prerequisite |
+| Key | Model Name | Architecture / Provider | License | Execution Tier | Hardware Prerequisite |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `mock-vision-v1` | Deterministic Synthetic Baseline | Internal synthetic harness | Apache-2.0 | Multimodal (Image + Text) | CPU (Offline) |
-| `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | Alibaba Cloud / Qwen | Apache-2.0 | Multimodal (Vision-Language) | CUDA GPU (>= 16 GB VRAM) |
-| `pixtral-12b-2409` | Pixtral 12B | Mistral AI | Apache-2.0 | Multimodal (Vision-Language) | CUDA GPU (>= 24 GB VRAM) |
-| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | Meta | Llama-3.2-Community | Multimodal (Vision-Language) | CUDA GPU (>= 24 GB VRAM) |
+| `mock-vision-v1` | Deterministic Synthetic Baseline | Internal synthetic harness | Apache-2.0 | `synthetic_ci_fixture` | CPU (Offline) |
+| `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | Alibaba Cloud / Qwen | Apache-2.0 | `hardware_accelerated_production` | CUDA GPU (>= 16 GB VRAM) |
+| `pixtral-12b-2409` | Pixtral 12B | Mistral AI | Apache-2.0 | `hardware_accelerated_production` | CUDA GPU (>= 24 GB VRAM) |
+| `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | Meta | Llama-3.2-Community | `hardware_accelerated_production` | CUDA GPU (>= 24 GB VRAM) |
 
 ### 2.2 Execution Gates
 
-To eliminate unapproved API spending and ensure scientific reproducibility, the evaluation suite enforces strict gates:
-- `max_paid_spend_usd: 0.0`: Unapproved paid external API calls are strictly blocked.
-- `require_image_conditioning: true`: All evaluation runs must provide valid image bytes. Text-only guesses or unconditioned mock shortcuts fail closed.
-- `allow_network_inference: false`: Tests and evaluations default to local, offline-verifiable execution.
+To eliminate unapproved API spending and enforce rigorous scientific constraints:
+- `max_paid_spend_usd: 0.0`: Unapproved paid external API calls are strictly blocked ($0.00 spend cap).
+- `require_image_conditioning: true`: All evaluation runs require valid raw image bytes. Text-only guesses or unconditioned mock shortcuts fail closed.
+- `allow_network_inference: false`: Evaluations default to local, offline-verifiable execution.
 - `offline_reproducible: true`: Artifact generation and metric scoring must be entirely deterministic offline.
 
 ### 2.3 Image Preprocessing Standards
@@ -38,11 +45,11 @@ To ensure consistent model conditioning:
 - **Minimum Dimension:** 64 px.
 - **Color Space:** Standard 3-channel RGB.
 - **Format:** High-quality JPEG or lossless PNG.
-- **Normalization:** Standard RGB channel mean/variance scaling when loaded by neural vision backbones.
+- **Normalization:** Standard RGB channel mean/variance scaling when processed by neural vision encoders.
 
 ### 2.4 Decoding Parameters
 
-All baseline comparisons use deterministic greedy decoding to avoid sampling variance:
+All baseline comparisons use deterministic greedy decoding to eliminate sampling variance:
 - `temperature`: `0.0` (greedy search)
 - `top_p`: `1.0`
 - `max_new_tokens`: `256`
@@ -72,82 +79,143 @@ Any modification to prompt text without updating the recorded hash fails validat
 
 ### 3.1 HieraticBench Quarantine Policy
 
-As established in `DATA_LICENSING_AND_PROVENANCE_POLICY.md` and `eval/benchmarks/hieraticbench/manifest.yaml`:
+As mandated by `DATA_LICENSING_AND_PROVENANCE_POLICY.md` and `eval/benchmarks/hieraticbench/manifest.yaml`:
 - HieraticBench assets are licensed strictly for **external evaluation only**.
 - Public benchmark items, test images, references, and near-duplicates **must never** be used as few-shot demonstrations, prompt optimization examples, or fine-tuning datasets.
 
-### 3.2 Quarantined Demonstration Bank (`eval/vlm/demonstrations.yaml`)
+### 3.2 Demonstration Bank Status (`eval/vlm/demonstrations.yaml`)
 
-To permit scientifically valid few-shot evaluation without test contamination:
-1. **Independent Sourcing:** Demonstrations are drawn exclusively from public domain palaeographical facsimiles:
-   - Georg Möller, *Hieratische Paläographie* (Vols. 1–3, 1909–1912; Public Domain).
-   - Richard Lepsius, *Denkmäler aus Aegypten und Aethiopien* (1849; Public Domain).
-   - Wilhelm Spiegelberg, *Demotische Grammatik* (1925; Public Domain).
-2. **Rights Review:** Formally approved under rights class `OPEN-PD` (`rights_review_status: "approved_with_evidence"`).
-3. **Automated Leakage Checks:** The CLI (`tools/vlm_baselines.py validate-demonstrations`) and test suite verify:
-   - Zero overlap with evaluation items or split manifests.
-   - Prohibition of reserved HieraticBench ID prefixes (`AKU-`, `CBL-`, `HB-`, `MET-`, `WM-`, `YPM-`).
+The canonical demonstration repository `eval/vlm/demonstrations.yaml` is formally classified as:
+- `status`: `"synthetic_fixture_only"`
+- `rights_review_status`: `"synthetic_placeholder_unreviewed"`
+- `quarantine_verified`: `false`
+
+The records contain synthetic facsimile references for CI regression testing. They are **not** cleared for authentic scientific evaluation.
+
+### 3.3 Fail-Closed Few-Shot Clearance Policy
+
+Real few-shot evaluation must **fail closed** (`UnverifiedDemonstrationError`) unless all of the following conditions are satisfied:
+1. **Actual Pixels on Disk:** Demonstration items must point to genuine image files on disk. Pure URI placeholders (`facsimile://...`) fail closed.
+2. **Cryptographic SHA-256 Hash Verification:** On-disk image bytes must match the recorded SHA-256 hash exactly.
+3. **Item-Specific Rights Review:** The demonstration bank must carry `rights_review_status: "approved_with_evidence"` backed by independent provenance review.
+4. **Partition Quarantine:** Image hashes and item identifiers must be verified not to overlap with HieraticBench or any training/evaluation split.
+5. **Forbidden Prefix Rejection:** Reserved HieraticBench ID prefixes (`AKU-`, `CBL-`, `HB-`, `MET-`, `WM-`, `YPM-`) are strictly forbidden.
+
+Synthetic fixtures are permitted **only** in the synthetic CI harness tier (`mock-vision-v1`) when explicitly operating under `synthetic_ci_fixture`.
 
 ---
 
-## 4. Attempt Preservation & Missing-Data Accounting
+## 4. Attempt Preservation & Denominator Accounting
 
-In accordance with empirical benchmarks standards, **every attempted evaluation item must be preserved**:
+In accordance with empirical benchmark standards, **every attempted evaluation item must be preserved**:
 - **Success (`success`):** Model returned a valid completion within latency and resource limits.
 - **Abstention (`abstained`):** Model explicitly declined to predict due to uncertainty (e.g., `[ABSTAIN]`, `UNCERTAIN`).
 - **Refusal (`refused`):** Model safety filters blocked output generation.
 - **Timeout (`timeout`):** Model exceeded inference latency threshold.
 - **Failure (`failed`):** Runtime crash, memory error, or unhandled exception.
 
-### Coverage Rate Calculation
+### 4.1 Composite Attempt Identity
+
+Attempts are identified by the composite tuple:
+$$\text{Composite Identity} = (\text{item\_id}, \text{rung}, \text{shot\_mode}, \text{sample\_index})$$
+
+This composite key prevents collisions across multi-mode evaluation runs and guarantees exact 1-to-1 pairing in paired comparisons.
+
+### 4.2 Full Denominator Accounting
+
+To prevent survivorship bias, the evaluation suite reports two distinct metric variants:
+1. **Intention-to-Test Score (`intention_to_test_score`):**
+   Evaluates all attempted items ($N_{\text{total}}$), assigning a score of $0.0$ to non-successes (failures, timeouts, abstentions, refusals). This is the primary scientific metric.
+2. **Conditional Score (`conditional_score`):**
+   Evaluates only successful completions ($N_{\text{success}}$), reported alongside explicit counts for failures, abstentions, timeouts, and refusals.
 
 $$\text{Coverage Rate} = \frac{N_{\text{success}}}{N_{\text{total attempts}}}$$
 
-The evaluation auditor (`tools/vlm_baselines.py audit-manifest`) rejects any run manifest where:
-- Attempt count does not match the total sample universe.
-- Any failed or abstained attempt has been silently omitted.
-- Raw outputs or error messages are missing.
+---
+
+## 5. Dual-Channel Scoring & Statistical Standards (EVAL-006)
+
+### 5.1 Official HieraticBench vs. Project-Native Metrics
+
+To prevent misleading claims, scoring channels are strictly separated:
+1. **Official Upstream Benchmark (`official_hieraticbench`):**
+   - Authoritative scoring implemented by the pinned TypeScript scorer (`bench/src/score.ts`).
+   - Evaluated via official runner/replay paths.
+2. **Project-Native Diagnostics (`project_native_eval001`):**
+   - Internal diagnostic metrics defined in `eval/metric_contract.yaml`:
+     - Script Identification: `SCRIPT_ACC`
+     - Isolated Sign Recognition: `SIGN_ACC`
+     - Transliteration: `CER_V1` ($\text{CER} = \frac{\text{Levenshtein}(R, H)}{\text{Length}(R)}$)
+     - Translation: `TRANSLATION_BLEU_4`
+   - Clearly labeled as project-native to prevent conflation with official upstream leaderboard scores.
+3. **Adversarial Parity Testing:**
+   - Dedicated adversarial parity tests (`test_adversarial_parity_exposes_differences_with_official_scoring`) demonstrate where in-house metrics diverge from upstream scoring (e.g., conversational framing wrappers, multi-sign Gardiner array matching), preventing unwarranted claims of parity.
+
+### 5.2 Document-Clustered Bootstrap Uncertainty
+
+In accordance with `EVAL-006`:
+- **Document Clustering:** Attempts are clustered by `document_id`. Entire documents are resampled with replacement across $B=2,000$ bootstrap iterations.
+- **Support Gate:** When the number of independent document clusters is $\le 1$, the bootstrap confidence interval **must return `null`** (`insufficient_document_clusters`). Fabricating zero-width or single-point confidence intervals is strictly prohibited.
+- **Paired Comparisons:** Paired differences ($\Delta = \text{Score}_B - \text{Score}_A$) are evaluated over aligned composite keys using clustered bootstrap resampling.
 
 ---
 
-## 5. Scoring & Uncertainty Quantification
+## 6. Promotion Prevention & Execution Tiers
 
-### 5.1 Stage Metrics Aligned with `eval/metric_contract.yaml`
+To safeguard benchmark integrity, artifacts and runs are categorized into explicit tiers:
 
-1. **Script Identification (`identify`):**
-   - **Primary Metric:** Script Classification Accuracy (`SCRIPT_ACC`)
-   - **Selective Reporting:** Abstention rate and selective risk.
-2. **Sign Recognition (`signs`):**
-   - **Primary Metric:** Gardiner Code Exact Match Accuracy (`SIGN_ACC`).
-3. **Transliteration (`transliterate`):**
-   - **Primary Metric:** Character Error Rate ($\text{CER} = \frac{\text{Levenshtein}(R, H)}{\text{Length}(R)}$)
-   - **Secondary Metrics:** Word Error Rate (WER) and Character Accuracy ($\max(0, 1 - \text{CER})$).
-4. **Translation (`translate`):**
-   - **Primary Metric:** Sentence-level BLEU-4 with brevity penalty.
-   - **Secondary Metric:** Character n-gram F-score (chrF++).
+| Execution Tier | Scientific Validity | Certification Status | Promotable to Results? |
+| :--- | :--- | :--- | :--- |
+| `synthetic_ci_fixture` | `synthetic_fixture_only` | `unverified_mock` | **NO** (Strictly blocked) |
+| `local_open_weight_unaccelerated` | `unverified_experimental` | `unverified_experimental` | No |
+| `hardware_accelerated_production` | `certified_scientific_result` | `quarantined_certified` | Yes (upon overseer audit) |
 
-### 5.2 Uncertainty Reporting
-
-- **Non-Parametric Bootstrap:** For every metric, 95% confidence intervals are computed via $B=1000$ bootstrap resamples.
-- **Paired Comparisons:** When comparing two models or contrasting zero-shot against few-shot performance on identical item sets, the paired delta ($\Delta = \text{Score}_B - \text{Score}_A$) and its 95% bootstrap confidence interval are reported.
+The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified`) fails closed if any attempt is made to present a `synthetic_ci_fixture` run as certified empirical evidence.
 
 ---
 
-## 6. CLI Usage Guide
+## 7. Open-Weight Inference Architecture & Hardware Boundaries
 
-The CLI tool (`tools/vlm_baselines.py`) provides controlled operations:
+### 7.1 Architecture & Implementation
+
+The harness implements a genuine local image-conditioned execution path via PyTorch and HuggingFace Transformers (`OpenWeightVLMAdapter` in `eval/vlm/adapter.py`):
+1. Loads the specified model architecture (e.g., `Qwen2_5_VLForConditionalGeneration`, `AutoProcessor`).
+2. Validates and preprocesses genuine input image bytes using PIL.
+3. Formats prompt templates with image tokens and runs greedy forward decoding.
+4. Captures memory, latency, and all output tokens.
+
+### 7.2 Hardware & Weight Requirements
+
+Real open-weight VLM inference requires:
+- Local GPU hardware: NVIDIA CUDA with $\ge 16$ GB VRAM (for 7B models) or $\ge 24$ GB VRAM (for 12B models).
+- Downloaded, approved model weights residing in a verified local cache.
+- Explicit approval for local execution under zero-spend policy ($0.00 spend).
+
+### 7.3 Fail-Closed Barrier Disclosure
+
+When running in environments without dedicated GPU accelerators or downloaded local weights (such as standard CPU CI runners or developer laptops):
+- `OpenWeightVLMAdapter` **fails closed** cleanly, raising `ModelHardwareBarrierError` with a clear explanation of missing prerequisites.
+- It does **not** fabricate synthetic model completions.
+- It does **not** make unapproved paid external API calls.
+- Task `VLM-001` remains **scientifically incomplete** until genuine inference on approved local hardware is conducted and audited.
+
+---
+
+## 8. CLI Reference Guide
+
+The baseline CLI tool (`tools/vlm_baselines.py`) provides controlled, reproducible operations:
 
 ### Validate Suite Configuration
 ```bash
 python -m tools.vlm_baselines validate-suite
 ```
 
-### Validate Demonstration Bank Quarantine
+### Validate Quarantined Demonstration Bank
 ```bash
 python -m tools.vlm_baselines validate-demonstrations
 ```
 
-### Execute Evaluation Run
+### Run Synthetic CI Evaluation
 ```bash
 python -m tools.vlm_baselines run \
   --model mock-vision-v1 \
@@ -155,13 +223,19 @@ python -m tools.vlm_baselines run \
   --output artifacts/vlm_manifest.json
 ```
 
-### Audit Completed Run Manifest
+### Audit Run Manifest (Strict Certification Mode)
 ```bash
+# Standard validation
 python -m tools.vlm_baselines audit-manifest \
   --manifest artifacts/vlm_manifest.json
+
+# Certified results gate (fails closed on synthetic fixtures)
+python -m tools.vlm_baselines audit-manifest \
+  --manifest artifacts/vlm_manifest.json \
+  --require-certified
 ```
 
-### Score Run Manifest
+### Score Run Manifest (Document-Clustered Bootstrap)
 ```bash
 python -m tools.vlm_baselines score \
   --manifest artifacts/vlm_manifest.json \
@@ -175,11 +249,3 @@ python -m tools.vlm_baselines paired-compare \
   --manifest-b artifacts/vlm_manifest_few.json \
   --output artifacts/vlm_comparison.json
 ```
-
----
-
-## 7. Hardware Boundaries & Disclosure
-
-1. **Certified Harness:** This task delivers the complete, audited evaluation harness, schemas, adapters, quarantined few-shot bank, synthetic benchmarks, and CI.
-2. **Hardware Gating for Live Models:** Real inference over large open-weight models (`Qwen2.5-VL-7B`, `Pixtral-12B`, `Llama-3.2-11B`) requires dedicated local GPU hardware (NVIDIA CUDA with $\ge 16$ GB VRAM) and downloaded model weights.
-3. **Zero Falsified Evidence:** In standard developer environments or CI lacking dedicated GPUs, `OpenWeightVLMAdapter` cleanly reports the hardware barrier without generating falsified synthetic model scores or attempting unapproved paid network calls.

@@ -1,7 +1,14 @@
 """Scoring engine and uncertainty quantification for VLM baseline evaluations.
 
-Reuses official HieraticBench and project-stage metric formulas (accuracy, CER, WER, BLEU, chrF)
-with explicit abstention rates, selective risk, and non-parametric bootstrap confidence intervals.
+Implements dual-channel evaluation:
+1. Official HieraticBench Scorer channel (authoritative: upstream TypeScript bench/src/score.ts)
+2. Project-Native EVAL-001 Diagnostics (explicitly labeled in-house metrics from eval/metric_contract.yaml)
+
+Enforces EVAL-006 statistical standards:
+- At least 2,000 document-clustered bootstrap resamples (B=2000).
+- Explicit null confidence intervals for single or zero document clusters (rejects fabricated 0-width CIs).
+- Composite-key pairing across (item_id, rung, sample_index).
+- Full denominator accounting: intention-to-test and conditional scores with explicit failure and abstention rates.
 """
 from __future__ import annotations
 
@@ -93,7 +100,6 @@ def sentence_bleu(ref: str, hyp: str, max_n: int = 4) -> float:
             break
 
         clipped_matches = sum(min(count, ref_ngrams.get(ng, 0)) for ng, count in hyp_ngrams.items())
-        # Add-1 smoothing for zero counts
         smoothed_precision = (clipped_matches + 1.0) / (total_hyp_ngrams + 1.0)
         precisions.append(smoothed_precision)
 
@@ -175,36 +181,56 @@ def clean_sign_prediction(raw: str | None) -> str:
     return raw.strip().upper()
 
 
-def bootstrap_ci(
-    values: list[float],
-    n_resamples: int = 1000,
+def document_clustered_bootstrap_ci(
+    items_by_cluster: dict[str, list[float]],
+    n_resamples: int = 2000,
     alpha: float = 0.05,
     seed: int = 42,
-) -> tuple[float, float]:
-    """Compute non-parametric bootstrap confidence interval."""
-    if not values:
-        return (0.0, 0.0)
-    if len(values) == 1:
-        return (values[0], values[0])
+) -> tuple[tuple[float, float] | None, int, str]:
+    """Compute non-parametric document-clustered bootstrap confidence interval (EVAL-006 standard).
+
+    Returns:
+        (ci_bounds, cluster_count, status_str)
+        If cluster_count <= 1, ci_bounds is None and status is 'insufficient_document_clusters'.
+    """
+    cluster_ids = list(items_by_cluster.keys())
+    cluster_count = len(cluster_ids)
+
+    # Reject fabricated zero-width intervals for single or zero clusters
+    if cluster_count <= 1:
+        return (None, cluster_count, "insufficient_document_clusters")
 
     rng = random.Random(seed)
-    n = len(values)
-    means: list[float] = []
-    for _ in range(n_resamples):
-        sample = [values[rng.randint(0, n - 1)] for _ in range(n)]
-        means.append(sum(sample) / n)
+    resample_means: list[float] = []
 
-    means.sort()
-    lower_idx = int((alpha / 2.0) * n_resamples)
-    upper_idx = int((1.0 - alpha / 2.0) * n_resamples) - 1
-    return (round(means[lower_idx], 4), round(means[upper_idx], 4))
+    for _ in range(n_resamples):
+        sampled_clusters = [cluster_ids[rng.randint(0, cluster_count - 1)] for _ in range(cluster_count)]
+        sampled_values: list[float] = []
+        for cid in sampled_clusters:
+            sampled_values.extend(items_by_cluster[cid])
+
+        if sampled_values:
+            resample_means.append(sum(sampled_values) / len(sampled_values))
+        else:
+            resample_means.append(0.0)
+
+    resample_means.sort()
+    low_idx = int((alpha / 2.0) * n_resamples)
+    high_idx = int((1.0 - alpha / 2.0) * n_resamples) - 1
+
+    return (
+        (round(resample_means[low_idx], 4), round(resample_means[high_idx], 4)),
+        cluster_count,
+        "valid_clustered_ci",
+    )
 
 
 def score_manifest(
     manifest: dict[str, Any],
     gold_items: dict[str, dict[str, Any]],
+    official_replay_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Compute evaluation report from run manifest and gold dictionary."""
+    """Compute structured evaluation report with explicit channel separation and clustered uncertainty."""
     attempts = manifest.get("attempts", [])
     if not attempts:
         raise ScorerError("Manifest contains no attempts to score.")
@@ -212,21 +238,34 @@ def score_manifest(
     manifest_id = manifest["manifest_id"]
     model_key = manifest["model_key"]
     shot_mode = manifest["shot_mode"]
-    coverage_rate = manifest["coverage_summary"]["coverage_rate"]
+    execution_tier = manifest.get("execution_tier", "synthetic_ci_fixture")
+    scientific_validity = manifest.get("scientific_validity", "non_scientific_test_fixture")
+    cert_status = manifest.get("certification_status", "uncertified_synthetic_only")
 
     by_rung: dict[str, list[dict[str, Any]]] = {}
     for a in attempts:
         by_rung.setdefault(a["rung"], []).append(a)
 
-    scored_rungs: dict[str, Any] = {}
+    project_native_rungs: dict[str, Any] = {}
 
     for rung, rung_attempts in by_rung.items():
-        primary_scores: list[float] = []
-        abstained_count = 0
+        total_scheduled = len(rung_attempts)
+        total_attempted = total_scheduled
+
+        success_count = sum(1 for a in rung_attempts if a["status"] == "success")
+        abstention_count = sum(1 for a in rung_attempts if a["status"] == "abstained")
+        failure_count = sum(1 for a in rung_attempts if a["status"] == "failed")
+        timeout_count = sum(1 for a in rung_attempts if a["status"] == "timeout")
+        refusal_count = sum(1 for a in rung_attempts if a["status"] == "refused")
+
+        # Cluster attempts by document_id
+        cluster_intention_scores: dict[str, list[float]] = {}
+        conditional_scores: list[float] = []
         secondary_accum: dict[str, list[float]] = {}
 
         for a in rung_attempts:
             item_id = a["item_id"]
+            doc_id = a.get("document_id") or item_id.rsplit("-", 1)[0]
             gold = gold_items.get(item_id)
             if not gold:
                 continue
@@ -234,66 +273,85 @@ def score_manifest(
             raw_pred = a.get("raw_output")
             status = a.get("status")
 
-            if status == "abstained" or is_abstention(raw_pred):
-                abstained_count += 1
-                primary_scores.append(0.0)
+            # Score computation for project-native metrics
+            if status != "success" or not raw_pred or is_abstention(raw_pred):
+                # Intention-to-test scores failure/abstention as 0.0
+                cluster_intention_scores.setdefault(doc_id, []).append(0.0)
                 continue
 
-            if status != "success" or not raw_pred:
-                primary_scores.append(0.0)
-                continue
-
+            # Valid response scoring
+            score_val = 0.0
             if rung == "identify":
                 gold_script = gold.get("script", "").capitalize()
                 pred_script = clean_script_prediction(raw_pred)
-                acc = 1.0 if (pred_script.lower() == gold_script.lower()) else 0.0
-                primary_scores.append(acc)
+                score_val = 1.0 if (pred_script.lower() == gold_script.lower()) else 0.0
 
             elif rung == "signs":
                 gold_sign = gold.get("gardiner", "").upper()
                 pred_sign = clean_sign_prediction(raw_pred)
-                acc = 1.0 if (pred_sign == gold_sign) else 0.0
-                primary_scores.append(acc)
+                score_val = 1.0 if (pred_sign == gold_sign) else 0.0
 
             elif rung == "transliterate":
                 gold_xlit = gold.get("transliteration", "")
                 pred_xlit = a.get("cleaned_prediction") or raw_pred
                 cer = character_error_rate(gold_xlit, pred_xlit)
                 wer = word_error_rate(gold_xlit, pred_xlit)
-                acc_proxy = max(0.0, 1.0 - cer)
-                primary_scores.append(acc_proxy)
-                secondary_accum.setdefault("cer", []).append(cer)
-                secondary_accum.setdefault("wer", []).append(wer)
+                score_val = max(0.0, 1.0 - cer)
+                secondary_accum.setdefault("cer", []).append(round(cer, 4))
+                secondary_accum.setdefault("wer", []).append(round(wer, 4))
 
             elif rung == "translate":
                 gold_trans = gold.get("translation", "")
                 pred_trans = a.get("cleaned_prediction") or raw_pred
                 bleu = sentence_bleu(gold_trans, pred_trans)
                 chrf = chrf_score(gold_trans, pred_trans)
-                primary_scores.append(bleu)
-                secondary_accum.setdefault("chrf", []).append(chrf)
+                score_val = bleu
+                secondary_accum.setdefault("chrf", []).append(round(chrf, 4))
 
-        sample_count = len(primary_scores)
-        mean_score = round(sum(primary_scores) / sample_count, 4) if sample_count > 0 else 0.0
-        ci_lower, ci_upper = bootstrap_ci(primary_scores) if sample_count > 0 else (0.0, 0.0)
-        abstention_rate = round(abstained_count / sample_count, 4) if sample_count > 0 else 0.0
+            cluster_intention_scores.setdefault(doc_id, []).append(score_val)
+            conditional_scores.append(score_val)
 
-        metric_name = {
-            "identify": "script_accuracy",
-            "signs": "sign_accuracy",
-            "transliterate": "character_accuracy",
-            "translate": "sentence_bleu_4",
-        }.get(rung, "accuracy")
+        # Flat values across all clusters for intention-to-test mean
+        all_intent = [s for cluster_vals in cluster_intention_scores.values() for s in cluster_vals]
+        intent_mean = round(sum(all_intent) / len(all_intent), 4) if all_intent else 0.0
+        cond_mean = round(sum(conditional_scores) / len(conditional_scores), 4) if conditional_scores else None
+
+        # 2,000 document-clustered bootstrap resamples (EVAL-006 standard)
+        ci_bounds, cluster_cnt, ci_status = document_clustered_bootstrap_ci(
+            cluster_intention_scores,
+            n_resamples=2000,
+            alpha=0.05,
+        )
+
+        cov_rate = round(success_count / total_scheduled, 4) if total_scheduled > 0 else 0.0
+        abst_rate = round(abstention_count / total_scheduled, 4) if total_scheduled > 0 else 0.0
+
+        metric_id = {
+            "identify": "SCRIPT_ACC",
+            "signs": "SIGN_ACC",
+            "transliterate": "CER_V1",
+            "translate": "TRANSLATION_BLEU_4",
+        }.get(rung, "ACCURACY")
 
         sec_metrics = {k: round(sum(v) / len(v), 4) for k, v in secondary_accum.items() if v}
 
-        scored_rungs[rung] = {
-            "primary_metric": metric_name,
-            "primary_score": mean_score,
-            "primary_ci_95": [ci_lower, ci_upper],
+        project_native_rungs[rung] = {
+            "primary_metric_id": metric_id,
+            "intention_to_test_score": intent_mean,
+            "conditional_score": cond_mean,
+            "cluster_bootstrap_ci_95": list(ci_bounds) if ci_bounds else None,
+            "cluster_count": cluster_cnt,
+            "cluster_ci_status": ci_status,
+            "total_scheduled": total_scheduled,
+            "total_attempted": total_attempted,
+            "success_count": success_count,
+            "abstention_count": abstention_count,
+            "failure_count": failure_count,
+            "timeout_count": timeout_count,
+            "refusal_count": refusal_count,
+            "coverage_rate": cov_rate,
+            "abstention_rate": abst_rate,
             "secondary_metrics": sec_metrics,
-            "sample_count": sample_count,
-            "abstention_rate": abstention_rate,
         }
 
     report = {
@@ -301,10 +359,15 @@ def score_manifest(
         "schema_version": "1.0.0",
         "report_id": f"report_{manifest_id}",
         "manifest_id": manifest_id,
+        "execution_tier": execution_tier,
+        "scientific_validity": scientific_validity,
+        "certification_status": cert_status,
+        "scoring_channel": "dual_channel_comparison" if official_replay_summary else "project_native_eval001",
+        "official_hieraticbench": official_replay_summary,
         "model_key": model_key,
         "shot_mode": shot_mode,
-        "coverage_rate": coverage_rate,
-        "rungs": scored_rungs,
+        "coverage_rate": manifest["coverage_summary"]["coverage_rate"],
+        "project_native_eval001": project_native_rungs,
     }
     return report
 
@@ -314,37 +377,43 @@ def compare_manifests(
     manifest_b: dict[str, Any],
     gold_items: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Compute paired statistical comparison between two manifests over identical items."""
-    report_a = score_manifest(manifest_a, gold_items)
-    report_b = score_manifest(manifest_b, gold_items)
+    """Compute paired statistical comparison pairing attempts strictly across (item_id, rung, sample_index).
+
+    Follows EVAL-006 clustered resampling over document clusters.
+    """
+    # Key attempts on composite identity: (item_id, rung, sample_index)
+    attempts_a = {(a["item_id"], a["rung"], a.get("sample_index", 0)): a for a in manifest_a.get("attempts", [])}
+    attempts_b = {(b["item_id"], b["rung"], b.get("sample_index", 0)): b for b in manifest_b.get("attempts", [])}
+
+    common_composite_keys = sorted(set(attempts_a.keys()) & set(attempts_b.keys()))
+    by_rung_keys: dict[str, list[tuple[str, str, int]]] = {}
+    for k in common_composite_keys:
+        by_rung_keys.setdefault(k[1], []).append(k)
 
     comparisons: list[dict[str, Any]] = []
 
-    # Map attempts by item_id and rung
-    attempts_a = {(a["item_id"], a["rung"]): a for a in manifest_a.get("attempts", [])}
-    attempts_b = {(b["item_id"], b["rung"]): b for b in manifest_b.get("attempts", [])}
+    for rung, composite_keys in by_rung_keys.items():
+        cluster_deltas: dict[str, list[float]] = {}
+        scores_a_all: list[float] = []
+        scores_b_all: list[float] = []
 
-    common_keys = sorted(set(attempts_a.keys()) & set(attempts_b.keys()))
-    by_rung_keys: dict[str, list[tuple[str, str]]] = {}
-    for k in common_keys:
-        by_rung_keys.setdefault(k[1], []).append(k)
+        metric_id = {
+            "identify": "SCRIPT_ACC",
+            "signs": "SIGN_ACC",
+            "transliterate": "CER_V1",
+            "translate": "TRANSLATION_BLEU_4",
+        }.get(rung, "SCORE")
 
-    for rung, keys in by_rung_keys.items():
-        scores_a: list[float] = []
-        scores_b: list[float] = []
-        deltas: list[float] = []
-
-        metric_name = report_a["rungs"].get(rung, {}).get("primary_metric", "score")
-
-        for item_id, _ in keys:
+        for item_id, _, s_idx in composite_keys:
             gold = gold_items.get(item_id)
             if not gold:
                 continue
 
-            att_a = attempts_a[(item_id, rung)]
-            att_b = attempts_b[(item_id, rung)]
+            att_a = attempts_a[(item_id, rung, s_idx)]
+            att_b = attempts_b[(item_id, rung, s_idx)]
+            doc_id = att_a.get("document_id") or att_b.get("document_id") or item_id.rsplit("-", 1)[0]
 
-            def eval_single(att: dict[str, Any]) -> float:
+            def eval_attempt(att: dict[str, Any]) -> float:
                 if att.get("status") != "success":
                     return 0.0
                 raw = att.get("raw_output")
@@ -360,30 +429,41 @@ def compare_manifests(
                     return sentence_bleu(gold.get("translation", ""), att.get("cleaned_prediction") or raw)
                 return 0.0
 
-            sa = eval_single(att_a)
-            sb = eval_single(att_b)
-            scores_a.append(sa)
-            scores_b.append(sb)
-            deltas.append(sb - sa)
+            sa = eval_attempt(att_a)
+            sb = eval_attempt(att_b)
+            delta = sb - sa
 
-        if not deltas:
+            scores_a_all.append(sa)
+            scores_b_all.append(sb)
+            cluster_deltas.setdefault(doc_id, []).append(delta)
+
+        if not scores_a_all:
             continue
 
-        mean_a = round(sum(scores_a) / len(scores_a), 4)
-        mean_b = round(sum(scores_b) / len(scores_b), 4)
-        delta_mean = round(sum(deltas) / len(deltas), 4)
-        ci_low, ci_high = bootstrap_ci(deltas)
+        mean_a = round(sum(scores_a_all) / len(scores_a_all), 4)
+        mean_b = round(sum(scores_b_all) / len(scores_b_all), 4)
+        all_deltas = [d for dlist in cluster_deltas.values() for d in dlist]
+        delta_mean = round(sum(all_deltas) / len(all_deltas), 4)
+
+        # Clustered bootstrap over document clusters
+        ci_bounds, cluster_cnt, ci_status = document_clustered_bootstrap_ci(
+            cluster_deltas,
+            n_resamples=2000,
+            alpha=0.05,
+        )
 
         comparisons.append({
             "baseline_manifest_id": manifest_a["manifest_id"],
             "comparison_manifest_id": manifest_b["manifest_id"],
             "rung": rung,
-            "metric": metric_name,
+            "metric_id": metric_id,
+            "composite_pairing": True,
             "baseline_score": mean_a,
             "comparison_score": mean_b,
             "score_delta": delta_mean,
-            "paired_samples": len(deltas),
-            "ci_95_delta": [ci_low, ci_high],
+            "paired_samples": len(all_deltas),
+            "delta_cluster_ci_95": list(ci_bounds) if ci_bounds else None,
+            "delta_ci_status": ci_status,
         })
 
     return comparisons

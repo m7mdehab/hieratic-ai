@@ -1,7 +1,7 @@
 """Evaluation runner for reproducible zero-shot and few-shot VLM benchmarking.
 
 Orchestrates prompt formatting, quarantined demonstration assembly, image verification,
-and complete attempt preservation without sample dropouts.
+document cluster tracking, and complete attempt preservation without sample dropouts.
 """
 from __future__ import annotations
 
@@ -13,7 +13,12 @@ import platform
 import sys
 from typing import Any
 
-from eval.vlm.adapter import BaseVLMAdapter, ImageConditioningError, VLMResponse
+from eval.vlm.adapter import (
+    BaseVLMAdapter,
+    ImageConditioningError,
+    UnverifiedDemonstrationError,
+    VLMResponse,
+)
 
 
 class RunnerError(Exception):
@@ -54,13 +59,13 @@ class VLMRunner:
             self.demos_sha256 = None
 
     def build_few_shot_context(self, rung: str, max_demos: int = 3) -> str:
-        """Format quarantined demonstrations into few-shot context for the specified rung."""
+        """Format demonstrations into few-shot context block for the specified rung."""
         if not self.demos:
-            raise RunnerError("Few-shot evaluation requires an approved demonstration bank.")
+            raise RunnerError("Few-shot evaluation requires a demonstration bank.")
 
         relevant = [d for d in self.demos.get("items", []) if d.get("rung") == rung]
         if not relevant:
-            raise RunnerError(f"No quarantined demonstrations available for rung '{rung}'.")
+            raise RunnerError(f"No demonstrations available for rung '{rung}'.")
 
         selected = relevant[:max_demos]
         demo_blocks: list[str] = []
@@ -108,13 +113,13 @@ class VLMRunner:
     ) -> dict[str, Any]:
         """Execute evaluation for a single item attempt, guaranteeing complete attempt record."""
         item_id = item["item_id"]
+        document_id = item.get("document_id") or item.get("source_id") or item_id.rsplit("-", 1)[0]
         rung = item["rung"]
         image_bytes: bytes = item.get("image_bytes", b"")
         timestamp = datetime.now(timezone.utc).isoformat()
 
         # Strict image conditioning validation
         if not image_bytes:
-            # Check if image_path is provided
             img_path = item.get("image_path")
             if img_path and Path(img_path).is_file():
                 image_bytes = Path(img_path).read_bytes()
@@ -136,9 +141,11 @@ class VLMRunner:
                 shot_mode=shot_mode,
                 rung=rung,
                 item_id=item_id,
+                demonstrations_meta=self.demos,
             )
             attempt_record = {
                 "item_id": item_id,
+                "document_id": document_id,
                 "rung": rung,
                 "shot_mode": shot_mode,
                 "sample_index": sample_index,
@@ -152,9 +159,28 @@ class VLMRunner:
                 "token_usage": resp.token_usage,
                 "timestamp": timestamp,
             }
+        except UnverifiedDemonstrationError as exc:
+            # Explicit fail-closed attempt preservation for unverified few-shot fixtures
+            attempt_record = {
+                "item_id": item_id,
+                "document_id": document_id,
+                "rung": rung,
+                "shot_mode": shot_mode,
+                "sample_index": sample_index,
+                "status": "failed",
+                "prompt_sha256": prompt_sha256,
+                "image_sha256": image_sha256,
+                "raw_output": None,
+                "cleaned_prediction": None,
+                "error_message": f"Demonstration clearance failure: {exc}",
+                "latency_ms": None,
+                "token_usage": None,
+                "timestamp": timestamp,
+            }
         except Exception as exc:
             attempt_record = {
                 "item_id": item_id,
+                "document_id": document_id,
                 "rung": rung,
                 "shot_mode": shot_mode,
                 "sample_index": sample_index,
@@ -176,6 +202,7 @@ class VLMRunner:
         items: list[dict[str, Any]],
         shot_mode: str = "zero_shot",
         manifest_id: str | None = None,
+        samples_per_item: int = 1,
     ) -> dict[str, Any]:
         """Run evaluation over items, generating an immutable run manifest."""
         if not items:
@@ -193,9 +220,10 @@ class VLMRunner:
             manifest_id = f"vlm_run_{self.adapter.model_key}_{shot_mode}_{time_slug}"
 
         for mode in modes:
-            for item in items:
-                attempt = self.evaluate_item(item, shot_mode=mode)
-                attempts.append(attempt)
+            for s_idx in range(samples_per_item):
+                for item in items:
+                    attempt = self.evaluate_item(item, shot_mode=mode, sample_index=s_idx)
+                    attempts.append(attempt)
 
         total_attempts = len(attempts)
         successes = sum(1 for a in attempts if a["status"] == "success")
@@ -210,15 +238,26 @@ class VLMRunner:
         cuda_ok = bool(avail.hardware_info.get("cuda_available", False))
         gpu_name = avail.hardware_info.get("device_name")
 
+        tier = getattr(self.adapter, "execution_tier", "synthetic_ci_fixture")
+        validity = getattr(self.adapter, "scientific_validity", "non_scientific_test_fixture")
+        cert_status = (
+            "uncertified_synthetic_only"
+            if tier == "synthetic_ci_fixture"
+            else "preflight_passed_pending_review"
+        )
+
         manifest: dict[str, Any] = {
             "doc_type": "vlm_run_manifest",
             "schema_version": "1.0.0",
             "manifest_id": manifest_id,
+            "execution_tier": tier,
+            "scientific_validity": validity,
+            "certification_status": cert_status,
             "suite_id": self.suite["suite_id"],
             "suite_sha256": self.suite_sha256,
             "demonstrations_sha256": self.demos_sha256 if ("few_shot" in modes) else None,
             "model_key": self.adapter.model_key,
-            "model_id": self.suite["models"][0]["provider_model_id"] if self.adapter.model_key == self.suite["models"][0]["key"] else self.adapter.model_config["provider_model_id"],
+            "model_id": self.adapter.model_config["provider_model_id"],
             "shot_mode": shot_mode,
             "execution_timestamp": now_str,
             "environment": {

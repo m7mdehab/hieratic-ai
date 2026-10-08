@@ -56,6 +56,36 @@ jobs:
             --manifest "$MANIFEST_PATH" \
             --output "$REPORT_PATH"
 
+      - name: Verify promotion prevention on synthetic fixtures
+        env:
+          MANIFEST_PATH: ${{ runner.temp }}/vlm_ci_manifest.json
+        run: |
+          if python -m tools.vlm_baselines audit-manifest --manifest "$MANIFEST_PATH" --require-certified; then
+            echo "Promotion prevention check failed: synthetic fixture was accepted as certified"
+            exit 1
+          else
+            echo "Promotion prevention verified: synthetic fixture was cleanly rejected as certified"
+          fi
+
+      - name: Verify paired comparison execution
+        env:
+          MANIFEST_A: ${{ runner.temp }}/vlm_ci_zero.json
+          MANIFEST_B: ${{ runner.temp }}/vlm_ci_few.json
+          COMPARE_PATH: ${{ runner.temp }}/vlm_ci_comparison.json
+        run: |
+          python -m tools.vlm_baselines run \
+            --model mock-vision-v1 \
+            --shot-mode zero-shot \
+            --output "$MANIFEST_A"
+          python -m tools.vlm_baselines run \
+            --model mock-vision-v1 \
+            --shot-mode few-shot \
+            --output "$MANIFEST_B"
+          python -m tools.vlm_baselines paired-compare \
+            --manifest-a "$MANIFEST_A" \
+            --manifest-b "$MANIFEST_B" \
+            --output "$COMPARE_PATH"
+
       - name: Run VLM baseline unit and negative tests
         run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
 

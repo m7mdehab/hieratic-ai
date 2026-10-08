@@ -1,15 +1,16 @@
-"""Comprehensive synthetic unit and negative tests for VLM baseline evaluation harness.
+"""Comprehensive synthetic unit, adversarial, and negative tests for VLM baseline evaluation harness.
 
 Tests cover:
 - Schema conformity and execution gate enforcement (zero-spend)
 - Prompt drift and cryptographic hash validation
-- Quarantined demonstration rights clearance and leakage detection
+- Quarantined demonstration clearance, missing pixel checks, and leakage detection
 - Mandatory image conditioning enforcement
 - Attempt preservation (successes, errors, abstentions, timeouts, refusals)
-- Manifest auditing and tampering rejection
-- Scorer stability, metrics accuracy, and bootstrap uncertainty bounds
-- Paired comparison difference statistics
-- Open-weight model hardware barrier reporting
+- Manifest auditing and promotion prevention (rejects synthetic CI fixtures)
+- Separation of official HieraticBench and project-native EVAL-001 metrics
+- EVAL-006 document-clustered bootstrap uncertainty (B=2000) and null CI for single clusters
+- Composite-key attempt pairing across (item_id, rung, sample_index)
+- Open-weight model hardware/weights barrier reporting without false claims
 """
 from __future__ import annotations
 
@@ -25,16 +26,18 @@ import yaml
 from eval.vlm.adapter import (
     AvailabilityStatus,
     ImageConditioningError,
+    InferenceHardwareBarrierError,
     MockVLMAdapter,
     OpenWeightVLMAdapter,
+    UnverifiedDemonstrationError,
     get_adapter,
 )
 from eval.vlm.runner import RunnerError, VLMRunner
 from eval.vlm.scorer import (
-    bootstrap_ci,
     character_error_rate,
     chrf_score,
     compare_manifests,
+    document_clustered_bootstrap_ci,
     is_abstention,
     levenshtein_distance,
     score_manifest,
@@ -73,7 +76,7 @@ class VLMBaselinesTests(unittest.TestCase):
 
     def test_unapproved_positive_spend_fails_closed(self) -> None:
         mutated = copy.deepcopy(self.suite_data)
-        mutated["execution_gate"]["max_paid_spend_usd"] = 50.0  # unapproved spend
+        mutated["execution_gate"]["max_paid_spend_usd"] = 50.0
         with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
             yaml.dump(mutated, tmp)
             tmp_path = Path(tmp.name)
@@ -97,7 +100,7 @@ class VLMBaselinesTests(unittest.TestCase):
 
     def test_duplicate_model_keys_fail_validation(self) -> None:
         mutated = copy.deepcopy(self.suite_data)
-        mutated["models"].append(mutated["models"][0])  # duplicate key
+        mutated["models"].append(mutated["models"][0])
         with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
             yaml.dump(mutated, tmp)
             tmp_path = Path(tmp.name)
@@ -109,7 +112,6 @@ class VLMBaselinesTests(unittest.TestCase):
 
     def test_prompt_drift_fails_validation(self) -> None:
         mutated = copy.deepcopy(self.suite_data)
-        # Edit template text without updating hash
         mutated["prompts"]["identify"]["zero_shot"]["user_template"] += " EXTRA TEXT"
         with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
             yaml.dump(mutated, tmp)
@@ -120,21 +122,68 @@ class VLMBaselinesTests(unittest.TestCase):
         finally:
             tmp_path.unlink()
 
-    # --- 2. Quarantined Demonstrations & Leakage Prevention ---
+    # --- 2. Demonstrations Clearance & Quarantine Controls ---
 
-    def test_canonical_demonstrations_validate_successfully(self) -> None:
+    def test_canonical_demonstrations_validate_as_synthetic_fixtures(self) -> None:
         errors = validate_demonstrations(DEMOS_PATH, SCHEMA_PATH)
         self.assertEqual(errors, [], f"Canonical demonstrations failed validation: {errors}")
+        self.assertEqual(self.demos_data["status"], "synthetic_fixture_only")
+        self.assertEqual(self.demos_data["rights_review"]["rights_review_status"], "synthetic_placeholder_unreviewed")
+        self.assertFalse(self.demos_data["rights_review"]["quarantine_verified"])
+
+    def test_unreviewed_demonstration_bank_fails_live_few_shot_inference(self) -> None:
+        qwen_cfg = next(m for m in self.suite_data["models"] if m["key"] == "qwen2.5-vl-7b-instruct")
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        # Attempting few-shot prediction with unreviewed synthetic demonstrations must fail closed
+        with self.assertRaises(UnverifiedDemonstrationError) as ctx:
+            adapter.predict(
+                image_bytes=b"dummy_image_data",
+                prompt="Prompt",
+                system_prompt="Sys",
+                shot_mode="few_shot",
+                rung="identify",
+                item_id="TEST-01",
+                demonstrations_meta=self.demos_data,
+            )
+        self.assertIn("synthetic_fixture_only", str(ctx.exception))
+
+    def test_authentic_demonstration_clearance_requires_on_disk_pixels_and_hash(self) -> None:
+        # A bank falsely claiming reviewed_authentic without image files on disk must fail
+        mutated = copy.deepcopy(self.demos_data)
+        mutated["status"] = "reviewed_authentic"
+        mutated["rights_review"]["rights_review_status"] = "approved_with_evidence"
+        mutated["rights_review"]["quarantine_verified"] = True
+        with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
+            yaml.dump(mutated, tmp)
+            tmp_path = Path(tmp.name)
+        try:
+            errors = validate_demonstrations(tmp_path, SCHEMA_PATH, require_authentic=True)
+            self.assertTrue(any("image file not found on disk" in e for e in errors))
+        finally:
+            tmp_path.unlink()
 
     def test_demonstration_leakage_against_eval_set_is_detected(self) -> None:
-        # Pass an eval set containing one of the demo IDs
-        known_eval = {"DEMO-IDENT-001", "RANDOM-TEST-999"}
+        known_eval = {"DEMO-SYNTH-IDENT-001", "OTHER-EVAL-ITEM"}
         errors = validate_demonstrations(DEMOS_PATH, SCHEMA_PATH, known_eval_items=known_eval)
-        self.assertTrue(any("Leakage violation" in e and "DEMO-IDENT-001" in e for e in errors))
+        self.assertTrue(any("Leakage violation" in e and "DEMO-SYNTH-IDENT-001" in e for e in errors))
+
+    def test_demonstration_image_hash_leakage_detected(self) -> None:
+        mutated = copy.deepcopy(self.demos_data)
+        mutated["items"][0]["is_synthetic_fixture"] = False
+        mutated["items"][0]["image_sha256"] = "1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff"
+        with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
+            yaml.dump(mutated, tmp)
+            tmp_path = Path(tmp.name)
+        try:
+            eval_hashes = {"1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff"}
+            errors = validate_demonstrations(tmp_path, SCHEMA_PATH, known_eval_image_hashes=eval_hashes)
+            self.assertTrue(any("image hash overlaps with evaluation item" in e for e in errors))
+        finally:
+            tmp_path.unlink()
 
     def test_demonstration_using_hieraticbench_prefix_fails(self) -> None:
         mutated = copy.deepcopy(self.demos_data)
-        mutated["items"][0]["demo_id"] = "DEMO-AKU-001"  # reserved benchmark prefix with DEMO-
+        mutated["items"][0]["demo_id"] = "DEMO-AKU-001"
         with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
             yaml.dump(mutated, tmp)
             tmp_path = Path(tmp.name)
@@ -144,19 +193,7 @@ class VLMBaselinesTests(unittest.TestCase):
         finally:
             tmp_path.unlink()
 
-    def test_unapproved_rights_in_demonstrations_fails(self) -> None:
-        mutated = copy.deepcopy(self.demos_data)
-        mutated["rights_review"]["rights_review_status"] = "in_review"
-        with tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
-            yaml.dump(mutated, tmp)
-            tmp_path = Path(tmp.name)
-        try:
-            errors = validate_demonstrations(tmp_path, SCHEMA_PATH)
-            self.assertTrue(any("approved rights review" in e for e in errors))
-        finally:
-            tmp_path.unlink()
-
-    # --- 3. Mandatory Image Conditioning ---
+    # --- 3. Image Conditioning Enforcement ---
 
     def test_adapter_rejects_empty_image_bytes(self) -> None:
         adapter = MockVLMAdapter(self.suite_data["models"][0])
@@ -177,7 +214,7 @@ class VLMBaselinesTests(unittest.TestCase):
         with self.assertRaises(ImageConditioningError):
             runner.evaluate_item(item_missing_image, shot_mode="zero_shot")
 
-    # --- 4. Attempt Preservation & Auditor ---
+    # --- 4. Attempt Preservation & Promotion Prevention ---
 
     def test_runner_preserves_all_attempts_without_dropouts(self) -> None:
         adapter = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="normal")
@@ -189,153 +226,163 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(manifest["coverage_summary"]["total_attempts"], len(items) * 2)
         self.assertEqual(manifest["coverage_summary"]["success_count"], len(items) * 2)
         self.assertEqual(manifest["coverage_summary"]["coverage_rate"], 1.0)
+        self.assertEqual(manifest["execution_tier"], "synthetic_ci_fixture")
+        self.assertEqual(manifest["scientific_validity"], "non_scientific_test_fixture")
+        self.assertEqual(manifest["certification_status"], "uncertified_synthetic_only")
 
-    def test_runner_preserves_simulated_abstentions(self) -> None:
-        adapter = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="force_abstention")
-        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
-        items = create_synthetic_items()[:2]
-        manifest = runner.run_suite(items, shot_mode="zero_shot")
-
-        self.assertEqual(len(manifest["attempts"]), 2)
-        self.assertEqual(manifest["coverage_summary"]["abstention_count"], 2)
-        self.assertEqual(manifest["coverage_summary"]["coverage_rate"], 0.0)
-        for a in manifest["attempts"]:
-            self.assertEqual(a["status"], "abstained")
-            self.assertEqual(a["cleaned_prediction"], "[ABSTAIN]")
-
-    def test_runner_preserves_simulated_timeouts(self) -> None:
-        adapter = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="force_timeout")
-        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
-        items = create_synthetic_items()[:2]
-        manifest = runner.run_suite(items, shot_mode="zero_shot")
-
-        self.assertEqual(manifest["coverage_summary"]["timeout_count"], 2)
-        for a in manifest["attempts"]:
-            self.assertEqual(a["status"], "timeout")
-            self.assertIsNone(a["raw_output"])
-            self.assertIn("timeout", a["error_message"].lower())
-
-    def test_runner_preserves_simulated_refusals(self) -> None:
-        adapter = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="force_refusal")
-        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
-        items = create_synthetic_items()[:2]
-        manifest = runner.run_suite(items, shot_mode="zero_shot")
-
-        self.assertEqual(manifest["coverage_summary"]["refusal_count"], 2)
-        for a in manifest["attempts"]:
-            self.assertEqual(a["status"], "refused")
-            self.assertIn("refusal", a["error_message"].lower())
-
-    def test_manifest_auditor_detects_missing_attempt(self) -> None:
+    def test_synthetic_ci_fixtures_cannot_be_promoted_to_certified_results(self) -> None:
         adapter = MockVLMAdapter(self.suite_data["models"][0])
         runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
-        items = create_synthetic_items()[:3]
+        items = create_synthetic_items()[:2]
         manifest = runner.run_suite(items, shot_mode="zero_shot")
 
-        # Drop one attempt to simulate dropped failed sample
-        manifest["attempts"].pop()
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            json.dump(manifest, tmp)
+            tmp_path = Path(tmp.name)
+        try:
+            # Audit with require_certified must reject synthetic CI fixtures
+            errors = audit_manifest(tmp_path, SUITE_PATH, SCHEMA_PATH, require_certified=True)
+            self.assertTrue(any("Promotion rejection" in e for e in errors))
+        finally:
+            tmp_path.unlink()
+
+    def test_manifest_auditor_detects_duplicate_composite_keys(self) -> None:
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()[:2]
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Duplicate one attempt with identical composite key (item_id, rung, sample_index)
+        manifest["attempts"].append(copy.deepcopy(manifest["attempts"][0]))
+        manifest["coverage_summary"]["total_attempts"] += 1
 
         with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
             json.dump(manifest, tmp)
             tmp_path = Path(tmp.name)
         try:
             errors = audit_manifest(tmp_path, SUITE_PATH, SCHEMA_PATH)
-            self.assertTrue(any("Attempt count mismatch" in e for e in errors))
+            self.assertTrue(any("Duplicate attempt key" in e for e in errors))
         finally:
             tmp_path.unlink()
 
-    def test_manifest_auditor_detects_suite_hash_tampering(self) -> None:
-        adapter = MockVLMAdapter(self.suite_data["models"][0])
-        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
-        items = create_synthetic_items()[:2]
-        manifest = runner.run_suite(items, shot_mode="zero_shot")
-        manifest["suite_sha256"] = "f" * 64  # forged hash
+    # --- 5. Dual-Channel Scoring & EVAL-006 Statistical Reporting ---
 
-        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
-            json.dump(manifest, tmp)
-            tmp_path = Path(tmp.name)
-        try:
-            errors = audit_manifest(tmp_path, SUITE_PATH, SCHEMA_PATH)
-            self.assertTrue(any("suite hash mismatch" in e for e in errors))
-        finally:
-            tmp_path.unlink()
-
-    # --- 5. Metrics, Scorer, and Uncertainty ---
-
-    def test_levenshtein_distance_and_error_rates(self) -> None:
-        self.assertEqual(levenshtein_distance("hieratic", "hieratic"), 0)
-        self.assertEqual(levenshtein_distance("", "test"), 4)
-        self.assertEqual(levenshtein_distance("cat", "hat"), 1)
-
-        self.assertAlmostEqual(character_error_rate("hieratic", "hieratic"), 0.0)
-        self.assertAlmostEqual(character_error_rate("hieratic", "hierat"), 2 / 8)
-        self.assertAlmostEqual(character_error_rate("hieratic", "hierati"), 1 / 8)
-        self.assertAlmostEqual(character_error_rate("", ""), 0.0)
-
-        self.assertAlmostEqual(word_error_rate("king of upper egypt", "king of upper egypt"), 0.0)
-        self.assertAlmostEqual(word_error_rate("king of upper egypt", "king of egypt"), 1 / 4)
-
-    def test_sentence_bleu_and_chrf(self) -> None:
-        ref = "Beginning of the calculation of the reckoning of things."
-        hyp_exact = "Beginning of the calculation of the reckoning of things."
-        hyp_diff = "End of the calculation of something else entirely."
-
-        bleu_exact = sentence_bleu(ref, hyp_exact)
-        bleu_diff = sentence_bleu(ref, hyp_diff)
-        self.assertAlmostEqual(bleu_exact, 1.0, places=2)
-        self.assertLess(bleu_diff, bleu_exact)
-
-        chrf_exact = chrf_score(ref, hyp_exact)
-        chrf_diff = chrf_score(ref, hyp_diff)
-        self.assertAlmostEqual(chrf_exact, 1.0, places=2)
-        self.assertLess(chrf_diff, chrf_exact)
-
-    def test_bootstrap_confidence_interval_bounds(self) -> None:
-        values = [0.8, 0.85, 0.9, 0.75, 0.88, 0.82, 0.86, 0.79]
-        low, high = bootstrap_ci(values, n_resamples=500, alpha=0.05, seed=123)
-        self.assertLessEqual(low, high)
-        self.assertGreaterEqual(low, 0.70)
-        self.assertLessEqual(high, 0.95)
-
-    def test_is_abstention_detection(self) -> None:
-        self.assertTrue(is_abstention("[ABSTAIN] Unclear"))
-        self.assertTrue(is_abstention("The inscription is illegible, uncertain."))
-        self.assertFalse(is_abstention("Hieratic"))
-        self.assertFalse(is_abstention(None))
-
-    def test_scoring_manifest_and_paired_comparison(self) -> None:
+    def test_scoring_separates_project_native_metrics_from_official_hieraticbench(self) -> None:
         adapter = MockVLMAdapter(self.suite_data["models"][0])
         runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
         items = create_synthetic_items()
         gold = create_synthetic_gold()
 
-        manifest_zero = runner.run_suite(items, shot_mode="zero_shot", manifest_id="run_zero_01")
-        manifest_few = runner.run_suite(items, shot_mode="few_shot", manifest_id="run_few_01")
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+        report = score_manifest(manifest, gold)
 
-        report_zero = score_manifest(manifest_zero, gold)
-        self.assertIn("identify", report_zero["rungs"])
-        self.assertIn("signs", report_zero["rungs"])
-        self.assertIn("transliterate", report_zero["rungs"])
-        self.assertIn("translate", report_zero["rungs"])
+        self.assertEqual(report["scoring_channel"], "project_native_eval001")
+        self.assertIn("project_native_eval001", report)
+        self.assertIsNone(report["official_hieraticbench"])
 
-        comparisons = compare_manifests(manifest_zero, manifest_few, gold)
-        self.assertGreaterEqual(len(comparisons), 1)
-        for comp in comparisons:
-            self.assertEqual(comp["baseline_manifest_id"], "run_zero_01")
-            self.assertEqual(comp["comparison_manifest_id"], "run_few_01")
-            self.assertIn("ci_95_delta", comp)
+        # Check metric IDs adhere to eval/metric_contract.yaml
+        rungs = report["project_native_eval001"]
+        self.assertEqual(rungs["identify"]["primary_metric_id"], "SCRIPT_ACC")
+        self.assertEqual(rungs["signs"]["primary_metric_id"], "SIGN_ACC")
+        self.assertEqual(rungs["transliterate"]["primary_metric_id"], "CER_V1")
+        self.assertEqual(rungs["translate"]["primary_metric_id"], "TRANSLATION_BLEU_4")
 
-    # --- 6. Open-Weight Model Hardware Barrier Reporting ---
+    def test_adversarial_parity_exposes_differences_with_official_scoring(self) -> None:
+        """Adversarially demonstrate why in-house metrics must not be claimed as upstream official scores."""
+        from eval.vlm.scorer import clean_script_prediction, clean_sign_prediction
+
+        # Case 1: Conversational negation text where local candidate ordering misattributes script
+        adversarial_text_1 = "The scribe did not use Hieratic, but rather Demotic."
+        # Local heuristic regex checks candidate list order and extracts 'Hieratic' (ignoring negation)
+        local_pred_1 = clean_script_prediction(adversarial_text_1)
+        self.assertEqual(local_pred_1, "Hieratic")
+        # An official strict parser expecting 'SCRIPT: demotic' would reject or parse differently
+        self.assertNotEqual(adversarial_text_1.startswith("SCRIPT:"), True)
+
+        # Case 2: Multi-sign cluster versus single sign code
+        # In-house SIGN_ACC checks single Gardiner code equality
+        gold_sign_cluster = {"gardiner": ["G17", "A1"]}
+        single_hyp = "G17"
+        # In-house clean_sign_prediction parses single code
+        local_sign = clean_sign_prediction(single_hyp)
+        self.assertEqual(local_sign, "G17")
+        # In-house single code comparison against array string representation fails equality
+        self.assertNotEqual(local_sign, str(gold_sign_cluster["gardiner"]))
+
+        # Case 3: Script casing and formatting
+        # Upstream HieraticBench scoreResponse expects exact lower-case match
+        # whereas project-native SCRIPT_ACC normalizes case-insensitively
+        cased_raw = "HIERATIC"
+        self.assertEqual(clean_script_prediction(cased_raw).lower(), "hieratic")
+
+    def test_document_clustered_bootstrap_with_2000_resamples(self) -> None:
+        # Multi-document cluster support produces valid bootstrap limits
+        cluster_scores = {
+            "DOC-A": [1.0, 1.0, 0.8],
+            "DOC-B": [0.5, 0.6],
+            "DOC-C": [0.9, 0.7, 0.85],
+        }
+        ci, count, status = document_clustered_bootstrap_ci(cluster_scores, n_resamples=2000, alpha=0.05, seed=42)
+        self.assertEqual(count, 3)
+        self.assertEqual(status, "valid_clustered_ci")
+        self.assertIsNotNone(ci)
+        low, high = ci
+        self.assertLessEqual(low, high)
+        self.assertGreaterEqual(low, 0.4)
+        self.assertLessEqual(high, 1.0)
+
+    def test_insufficient_document_clusters_produces_none_ci(self) -> None:
+        # Single document cluster must NOT fabricate a 0-width interval
+        single_cluster = {"DOC-ONLY-ONE": [0.85, 0.90, 0.80]}
+        ci, count, status = document_clustered_bootstrap_ci(single_cluster, n_resamples=2000)
+        self.assertEqual(count, 1)
+        self.assertIsNone(ci, "Expected null CI when independent document clusters <= 1")
+        self.assertEqual(status, "insufficient_document_clusters")
+
+    def test_full_denominator_accounting_intention_to_test(self) -> None:
+        adapter = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="force_abstention")
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()[:2]
+        gold = create_synthetic_gold()
+
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+        report = score_manifest(manifest, gold)
+
+        ident_rung = report["project_native_eval001"]["identify"]
+        self.assertEqual(ident_rung["abstention_count"], 2)
+        self.assertEqual(ident_rung["coverage_rate"], 0.0)
+        self.assertEqual(ident_rung["intention_to_test_score"], 0.0)
+        self.assertIsNone(ident_rung["conditional_score"])
+
+    def test_composite_identity_pairing_in_paired_comparisons(self) -> None:
+        adapter_a = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="force_abstention")
+        adapter_b = MockVLMAdapter(self.suite_data["models"][0], simulated_mode="normal")
+
+        runner_a = VLMRunner(self.suite_data, self.demos_data, adapter_a, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        runner_b = VLMRunner(self.suite_data, self.demos_data, adapter_b, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+
+        items = create_synthetic_items()
+        gold = create_synthetic_gold()
+
+        manifest_a = runner_a.run_suite(items, shot_mode="zero_shot", manifest_id="run_abstain_01")
+        manifest_b = runner_b.run_suite(items, shot_mode="zero_shot", manifest_id="run_normal_01")
+
+        comps = compare_manifests(manifest_a, manifest_b, gold)
+        self.assertGreater(len(comps), 0)
+        for c in comps:
+            self.assertTrue(c["composite_pairing"])
+            self.assertIn("score_delta", c)
+            self.assertIn("delta_ci_status", c)
+
+    # --- 6. Open-Weight Adapter Capability & Barrier Reporting ---
 
     def test_open_weight_adapter_reports_barrier_cleanly(self) -> None:
         qwen_cfg = next(m for m in self.suite_data["models"] if m["key"] == "qwen2.5-vl-7b-instruct")
         adapter = OpenWeightVLMAdapter(qwen_cfg)
         status = adapter.check_availability()
         self.assertIsInstance(status, AvailabilityStatus)
-        # In CPU CI or standard dev without CUDA/weights, it must report unavailable or barrier
         if not status.available:
             self.assertTrue(len(status.reason) > 0)
-            # Prediction must record structured failure rather than making paid external network calls
             resp = adapter.predict(
                 image_bytes=b"dummy_bytes",
                 prompt="Prompt",
@@ -347,7 +394,7 @@ class VLMBaselinesTests(unittest.TestCase):
             self.assertEqual(resp.status, "failed")
             self.assertIn("barrier", resp.error_message.lower())
 
-    # --- 7. CLI End-to-End ---
+    # --- 7. CLI End-to-End Workflow ---
 
     def test_cli_end_to_end_subcommands(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

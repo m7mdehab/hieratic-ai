@@ -24,11 +24,13 @@ Also state:
 - expected infrastructure/gate movement if it is unweighted;
 - what becomes newly unblocked if the task succeeds.
 
-## Approval gate
+## Prompt-as-authorization dispatch rule
 
-The overseer waits for Mohammed's approval before beginning the overseer-owned task.
+**Receiving Mohammed's concrete continuation/task prompt is authorization for that agent to execute the bounded task immediately.** Luna, the selected Anti-Gravity agent or another provider must not ask for another approval, postpone implementation for a wave sign-off, or reply with only a plan when it can act.
 
-Already-dispatched execution agents may continue while that approval is pending.
+The overseer supplies the assignment table and copy-ready prompts before dispatch, and begins its own independent safe work without an additional waiting checkpoint. The user remains free to override or stop the wave. This rule supersedes the old separate wave-approval hold from ADR-0010.
+
+No ordinary dispatch authorizes paid inference/spending, access to restricted data, unblinding sealed benchmarks, exposing secrets, destructive external actions, or changing protected canonical status/metrics. Those have separate evidence and permission gates. When blocked, agents complete all otherwise safe work and report the exact dependency instead of waiting idly.
 
 ## Overseer task-selection priority
 
@@ -61,7 +63,7 @@ When Mohammed returns agent feedback, the overseer combines:
 - newly unblocked tasks;
 - unresolved blockers.
 
-The next response should end with the next proposed parallel wave and the overseer assignment awaiting approval.
+The next response should end with the next dependency-safe parallel wave, the overseer assignment, and ready-to-send execution prompts. Once Mohammed forwards a prompt, that agent executes immediately; do not append a redundant request for permission.
 
 
 ## Execution-lane topology

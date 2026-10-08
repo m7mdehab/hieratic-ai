@@ -202,6 +202,10 @@ def build(manifest: Any, lexicon: Any, registry: Any, schema: dict[str, Any] | N
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "scholarly-aes":
+        from ling.lexical.aes_holdout import main as real_scholar_main
+        return real_scholar_main(argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
     subs = parser.add_subparsers(dest="command", required=True)
     for name in ("validate", "interpret"):

@@ -1,0 +1,15 @@
+schema_version: "1.0.0"
+normalization_id: synthetic-transliteration-example
+annotation_id: SYNTH-ANNOTATION-AMBIGUOUS
+annotation_sha256: a69b3596da252176471237f44c4f19e30fb05102f9efb66ca1c2a825574fe77d
+profile_id: translit_compare_v1
+profile_version: "1.0.0"
+items:
+  - unit_id: synthetic-line-2-diplomatic
+    line_id: line-2
+    source_layer: diplomatic_transliteration
+    token_id: null
+    reading_group_id: synthetic-line-2-reading-alternatives
+    source_value_ids: [transliteration-a, transliteration-b]
+    whitespace_semantics: unknown
+    line_break_semantics: unknown

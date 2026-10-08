@@ -33,7 +33,17 @@ class SourceRegistryTests(unittest.TestCase):
     def test_canonical_registry_validates(self) -> None:
         errors, registry = source_registry.validate_files(REGISTRY_PATH, SCHEMA_PATH)
         self.assertEqual([], errors)
-        self.assertEqual(8, len(registry["sources"]))
+        self.assertEqual(10, len(registry["sources"]))
+
+    def test_open_scholarly_text_sources_do_not_inherit_image_rights(self) -> None:
+        aed = self.record("SRC-AED-TEI")
+        aes = self.record("SRC-AES-OPEN")
+        for source in (aed, aes):
+            self.assertEqual("OPEN-SA", source["rights_class"])
+            self.assertEqual("allowed", source["development_use"])
+            self.assertEqual("conditional", source["training_use"])
+            self.assertIn("SHARE-ALIKE-REVIEW", source["project_review_markers"])
+            self.assertIn("manuscript", source["provenance_notes"].lower()) if source is aed else self.assertIn("photograph", source["provenance_notes"].lower())
 
     def test_duplicate_source_ids_fail(self) -> None:
         registry = copy.deepcopy(self.registry)

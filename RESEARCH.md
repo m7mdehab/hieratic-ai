@@ -192,3 +192,12 @@ All four merged following independent negative-test review, targeted fixes and f
 Official evidence audit `eval/baselines/SOURCE_RIGHTS_READINESS.md` (primary sources as of audit date): HPDB data CC BY with distinct underlying source imaging rights; AKU-PAL per-image; DDD noncommercial/share-alike plus individual image copyright; TLA limits mass copying; PaPYrus, HieraticAI, Isut software rights not equal to images. HieraticBench quarantined externally for evaluation only. No unrestricted corpus admission from these observations.
 
 W3's EVAL-003 remains active and earns zero until real inference, frozen run/cost/rights record, official scores, independent reproduction and human scientific review. No change to 30.5/100 progress, 14% coverage or 0 experiment/model counts.
+
+
+### R-014 — W3 linguistic normalization acceptance and official-score parity preflight
+
+**2026-10-08.** LING-001 accepted as a versioned, deterministic Unicode/transliteration normalization **technical layer** preserving DATA-004 source alternatives and uncertainties, without fabricated Egyptian lexical interpretation. Independent regression tests include annotation hash drift, collision preservation, token provenance, and concurrent immutable-output protection. PR #51 accepted after governance CI was extended in PR #53, including all 8 linguistic tests. **+2 earned capability points**, P6 2/10.
+
+EVAL-003 PR #50 integrated actual *pinned upstream official TypeScript scorer* into redacted private-capture replay. Native scorer parity exercised on 266 synthetic items, with failure and abstention accounting, but no model output was generated. EVAL-003 remains active, unearned +0/1.5.
+
+Current project milestone 32.5/100. No licensed production manuscript dataset, real VLM run, actual expert annotation or training experiments have been verified. Research coverage remains 14%.

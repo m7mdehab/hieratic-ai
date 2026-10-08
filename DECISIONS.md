@@ -283,3 +283,13 @@ After independent source inspection, CI and critical hardening, DATA-003/005/006
 Required boundaries: input usage and manifest-local asset containment; verified scholarly citation metadata for supported sign assertions; no gold-score eligibility for synthetic even if superficially resolved/reviewed; real source item rights/admission and benchmark novelty independently validated; reviewer consensus only after two independent decisions with dated evidence. The source registry and admission rules remain conservative: a declared approval is not independent rights proof.
 
 Remaining real-world limitations include missing JPEG/TIFF/EXIF support, absent licensed manuscript datasets and real scholarly sign mappings, and absent external expert adjudication. W3 candidates DATA-008, VLM-001 and LING-001 are dependency-ready only.
+
+
+## ADR-0021 — Normalization infrastructure accepted with immutable source preservation
+
+**Status:** Accepted  
+**Date:** 2026-10-08
+
+LING-001 PR #51 receives its 2.0 roadmap points following source review and independent hosted testing. EVAL-001-aligned technical normalization may adjust declared Unicode/formatting distinctions but cannot invent linguistic equivalences, displace source readings, or coerce uncertain alternatives to certainty. Exact DATA-004 annotation bytes are pinned in the request by SHA-256; stale fixture hashes fail closed. Output publishing must not overwrite another writer's file even under a concurrent creation race. The final tested implementation uses atomic same-directory hard-link creation and rejects existing targets.
+
+The governance test suite now includes tests/linguistics, PR #53. DATA-008's right to 3 points requires a real source-cleared training/dev/test corpus, not only a synthetic assembly engine. VLM-001 requires actual scientific VLM runs, verified demonstrations and pinned correct scoring, not only mock tests. Canonical capability 30.5→32.5, P6 interpretation 2/10; model training/validated experiments remain 0.

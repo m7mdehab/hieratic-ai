@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 30.5
+  goal_progress: 32.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -29,11 +29,11 @@ state:
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "DATA-003"
+  last_accepted_task: "LING-001"
   ready_tasks:
     - "DATA-008"
     - "VLM-001"
-    - "LING-001"
+    - "LING-002"
   active_tasks:
     - "EVAL-003"
   review_tasks: []
@@ -75,14 +75,18 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  User approved W3; overseer EVAL-003 source-rights and byte-frozen frontier
-  evaluation preflight implementation completed in independently CI-verified
-  PR #47, with no model calls or weighted credit. The approved Luna DATA-008
-  and LING-001 briefs and Anti-Gravity VLM-001 brief must be sent to their
-  external agent sessions; do not mark those ready tasks active until real
-  execution/branch evidence is observed. EVAL-003 remains active and unweighted
-  until explicit paid-inference authorization, real original model outputs,
-  independent official scorer reproduction and research review. Source rights,
-  licensed/expert annotated corpus, benchmark independence and appropriate
-  evaluation denominators remain mandatory. Continue independently reviewing
-  future W3 agent PRs as they arrive; do not award points for empty fixtures.
+  LING-001 independently accepted and merged in PR #51 after reviewer-patched
+  immutable file publishing and exact DATA-004 annotation-hash provenance;
+  independent CI now requires the 8/8 linguistic tests (governance PR #53).
+  Verified goal 32.5/100, P6 2/10, other phases unchanged, 0 models/real
+  inference. LING-002 becomes ready but must not start without next approved
+  wave and verified scholarly lexical/morphological source rights. DATA-008 PR
+  #49 has a correct blocked production corpus release assessment: do not award
+  its 3 points absent real licensed, independently reviewed train/dev/test
+  material. Anti-Gravity VLM-001 PR #52 requires revisions: fake demonstration
+  rights/hash evidence, unavailable model execution, and nonofficial
+  statistics prevent baseline validation. EVAL-003 PR #50 native official
+  TypeScript score-replay infrastructure merged with 180 evaluation tests but
+  no authentic paid provider calls or official new scores; remain active/0
+  EVAL-003 credit. Continue review of DATA-008 and revised VLM-001 without
+  inflating task progression or confusing synthetic tests with experiments.

@@ -85,3 +85,12 @@ All passed final GitHub Actions runs with strict write scopes after rebasing ont
 **Current status:** 30.5/100 (69.5 remaining); P1 5/5, P2 8.5/10, P3 17/20; P4–P8 0, research coverage 14%, control-plane gate 5/5, validated experiments and models 0. Last accepted task DATA-003.
 
 **Next dependency-ready, not dispatched:** DATA-008 (+3), VLM-001 (+2), LING-001 (+2). EVAL-003 remains active (+0/1.5) with provider calls/budget/outputs pending. Propose next three-lane wave and obtain user authorization before starting overseer-owned work. Real provider spending requires separate explicit approval.
+
+
+## W3 concurrent follow-on and linguistic acceptance — 2026-10-08
+
+- **EVAL-003 original upstream score replay:** [PR #50](https://github.com/m7mdehab/hieratic-ai/pull/50) merged after governance/frontier/error CI; **180 evaluation tests** and a pinned upstream TypeScript `scoreResponse` replay across 266 **synthetic attempts**. Outputs only aggregated public-rung scores and failure/coverage counts; no new real model results or points, EVAL-003 still active.
+- **LING-001 normalization accepted:** [PR #51](https://github.com/m7mdehab/hieratic-ai/pull/51) merged after independent review and two fixes: atomic no-overwrite hardlink semantics, synthetic DATA-004 annotation SHA-256 aligned with canonical fixture. [PR #53](https://github.com/m7mdehab/hieratic-ai/pull/53) added mandatory linguistic tests to governance pipeline. Final PR CI: 34 governance, 80 data, **8 linguistic**, 180 evaluation tests, exact six-file scope.
+- **VLM-001 PR #52:** detailed **REVISION REQUIRED** comment posted, no points. Demo bank falsely declares approved rights/zero overlap despite placeholder facsimile references/hash strings; real open-weight adapter cannot execute a model; stage scoring differs from exact upstream official scorer and 1,000 attempt bootstrap violates accepted 2,000 document-clustered protocol. Keep as preflight until corrected and genuine runs available.
+- **DATA-008 PR #49:** corpus assembly infrastructure and synthetic example are substantive; no approved full real dataset, blocked-release assessment explicitly says not to award 3 points. Review its final immutable-output and rights gate before merging as infrastructure only.
+- **Verified capability 32.5/100, 67.5 remaining; research coverage 14%, control plane 5/5, 0 trained models/actual experiments.** P6 interpretation now 2/10; LING-002 becomes dependency-ready, not dispatched.

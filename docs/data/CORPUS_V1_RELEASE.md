@@ -25,7 +25,7 @@ The exact canonical serialization is UTF-8 JSON with sorted keys, no insignifica
 
 Published artifacts omit authorization-envelope contents, permission-document paths and signatures, reviewer identities, rationales, and reviewer-level evidence. They retain canonical payload digests, an explicit unverified status, public aggregate review states, and necessary source/item lineage. A digest does not publish or validate private source documents.
 
-The checked-in fixture and deterministic output are under `data/releases/examples/synthetic-test/`; `demo-output-v4/` is synthetic test evidence, not a corpus release or training dataset.
+The checked-in fixture and deterministic output are under `data/releases/examples/synthetic-test/`; `demo-output-v5/` is the current synthetic test evidence. The prior `demo-output-v4/` remains an immutable historical synthetic artifact. Neither is a corpus release or training dataset.
 
 ## Blocked production assessment
 

@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "source_name": "Hieratische Paläographie DB official GitHub published index",
+  "publisher": "Hieratische Paläographie DB Project, University of Tsukuba / University of Tokyo",
+  "publisher_index_url": "https://moeller.jinsha.tsukuba.ac.jp/data/index.json",
+  "published_repo": "hp-db/hp-db.github.io",
+  "pinned_repository_commit": "a8cfcf52632487cf1d61a5793d84c9b2f7192d5a",
+  "pinned_repo_default_branch_at_intake": "master",
+  "source_path": "public/data/index.json",
+  "source_git_blob_sha1": "6efc36471b47255cfc03f6ba8cf9c887a293bb89",
+  "source_sha256_unavailable": null,
+  "licence_proof": "https://moeller.jinsha.tsukuba.ac.jp/en/datasets/",
+  "metadata_license": "CC-BY-4.0",
+  "licensed_material": "publisher sign-index metadata and data-catalogue fields only",
+  "original_palaeography_scans_provider": "University of Tokyo Asian Research Library IIIF service",
+  "underlying_scans_license_verified": false,
+  "underlying_scans_downloaded": false,
+  "source_original_manuscripts_identified": false,
+  "source_witness_independence_verified": false,
+  "gold_expert_verified": false,
+  "corpus_training_admission": "BLOCKED_REFERENCE_METADATA_ONLY",
+  "scientific_evaluation_admission": "BLOCKED_REFERENCE_METADATA_ONLY",
+  "as_of": "2026-10-09",
+  "total_sign_records": 2065,
+  "volume_counts": {
+    "1": 738,
+    "2": 670,
+    "3": 657
+  },
+  "item_type_counts": {
+    "Main": 1626,
+    "Number": 251,
+    "Ligature": 188
+  },
+  "moller_book_page_groups": 214,
+  "unambiguous_single_gardiner": 1439,
+  "ambiguous_or_compound_not_single_label": 626,
+  "files": [
+    "moller_v1_ccby4_metadata.jsonl",
+    "moller_v2_ccby4_metadata.jsonl",
+    "moller_v3_ccby4_metadata.jsonl"
+  ],
+  "citation": "Masakatsu Nagai, Toshihito Waki, Yona Takahashi, and Satoru Nakamura, Hieratische Paläographie DB, https://moeller.jinsha.tsukuba.ac.jp/",
+  "notes": "This is a licensed metadata-reference inventory of Georg Möller's printed facsimile index, NOT actual source manuscript images or authenticated line-level diplomatic gold; source Git revision and blob pin identify published upstream data. 626 mixed/compound/unresolved Gardiner not used as single class. Real image rights and provenance must be independently checked."
+}

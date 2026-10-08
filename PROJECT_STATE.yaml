@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W3_DATA_RELEASE_VLM_LINGUISTIC_BASELINES"
+  current_wave: "W6_REAL_SOURCE_EVIDENCE_AND_MODEL_RUNTIME"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -79,22 +79,23 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W4 review: Luna LING-002 PR #59 exact head
-  d76763c19f4671200afe31ef083ed8ff406cb793 passed all hosted
-  governance/data/linguistic/evaluation CI and was accepted/merged as
-  synthetic-only lexical interpretation infrastructure (squash SHA
-  6ec6205bcab28e0db07aefc70d50527e8d47f83e); LING-002 remains
-  active/unvalidated 0/2 until independently verified Egyptological lexical
-  sources and expert-reviewed morphological analyses/evaluation exist.
-  Gemini VLM-001 PR #52 head 971a0d9017bcd926922340959dbd4b3e6bc8b09f
-  has corrected metric directions, official-channel naming and real few-shot
-  blocking but remains unmerged: review #6064094725 identifies independently
-  unaudited self-asserted frozen universe, arbitrary --items classified as
-  verified_external_items, and --require-certified accepting all-failed
-  unapproved live-open-weight manifests. Demand fail-closed revisions and
-  exact-head hosted CI before merging synthetic VLM preflight at zero credit.
-  DATA-008 real gold/rights bottleneck persists; R-016 acquired no pixels,
-  scholarly gold or rights. Goal 32.5/100, research coverage 14%, P6 2/10,
-  zero trained models or validated real experiments. ADR-0023: next-wave
-  prompts first, overseer executes next independent task only after the user
-  dispatches them and returns.
+  W6 R-021/EVAL-003 overseer primary-source and provider-readiness work
+  merged at 53f29b82fe6ab4514e3f7302cc587c1bdee05d22 after three
+  successful exact-head GitHub workflows. The Leiden/Louvre Abnormal
+  Hieratic portal pairs manuscript views with expert source-linked
+  readings but image copyright belongs to Louvre and annotations
+  are CC BY-NC-SA 3.0 NL; commercial-compatible corpus use remains
+  blocked. The public benchmark metadata directly includes Abbott
+  and Hearst original support witnesses. EVAL-003 has documented
+  three official image-capable provider model IDs, but no API calls,
+  original run, approved spend, or newly validated real result.
+  W6 Luna DATA-002 museum-source evidence and Gemini VLM-001 true
+  architecture-specific runtime implementation have been dispatched,
+  and their current PRs require independent exact-head CI review
+  before merging. DATA-008 production remains hard-disabled and
+  VLM-001 scientific certification disabled pending external rights
+  and authentic model/image/gold evidence. Canonical weighted
+  capability remains 32.5/100, research coverage 14, zero trained
+  models or actual validated model experiments. Review agent PR
+  deliverables, maintain safe provenance and rights, and prepare
+  the next dependent tasks without inventing experiment scores.

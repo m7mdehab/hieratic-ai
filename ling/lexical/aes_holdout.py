@@ -199,7 +199,7 @@ def analyse(bundle: dict[str, Any], form: str, *,
         observations = _observed_by_form(bundle["tokens"])
     candidates: dict[str, dict[str, Any]] = {}
     for row in bundle["forms"].get(form, []):
-        lemma_id = row["lemma_id"]
+        lemma_id = row["lemma_id"].removeprefix("tla")
         candidates[lemma_id] = {
             "lemma_id": lemma_id, "lemma_form": row["form"],
             "dictionary_pos": row["pos_source"], "root_ref": row["root_ref"],

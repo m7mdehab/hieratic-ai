@@ -1,0 +1,654 @@
+{
+  "schema_version": "1.0.0",
+  "as_of": "2026-10-08",
+  "research_id": "R-017",
+  "upstream_revision": "alymoursy/hieraticbench@d587dc990013f18007f1e7a8f56f96ff2f7127e2",
+  "public_sources_screened": 266,
+  "excluded_sealed_files_count": 2,
+  "comparison_scope": "public source object names, accession-text substrings, source URLs; no benchmark gold nor pixels",
+  "strong_caveat": "There is no demonstrated absence of alias, manuscript, edition, near-duplicate, pretraining or future-version overlap. All candidates remain blocked.",
+  "candidates": [
+    {
+      "candidate_id": "TPOP-1896",
+      "institution": "turin",
+      "accession": "Cat.1896",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "TPOP-1971",
+      "institution": "turin",
+      "accession": "Cat.1971",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "TPOP-1966",
+      "institution": "turin",
+      "accession": "Cat.1966",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "TPOP-2021",
+      "institution": "turin",
+      "accession": "Cat.2021",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "TPOP-NECROPOLIS-5",
+      "institution": "turin",
+      "accession": "Cat.2083/178 and joins",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "TPOP-1880",
+      "institution": "turin",
+      "accession": "Cat.1880",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 18,
+      "nearby_collection_witness_examples": [
+        {
+          "benchmark_id": "aku-0023",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0083",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0128",
+          "source_object_name": "Turin, Museo Egizio, CGT 54050"
+        },
+        {
+          "benchmark_id": "aku-0129",
+          "source_object_name": "Turin, Museo Egizio, CGT 57036"
+        },
+        {
+          "benchmark_id": "aku-0132",
+          "source_object_name": "Turin, Museo Egizio, CGT 54051"
+        },
+        {
+          "benchmark_id": "aku-0136",
+          "source_object_name": "Turin, Museo Egizio, S. 17507/2"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561345",
+      "institution": "met",
+      "accession": "09.184.703",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561392",
+      "institution": "met",
+      "accession": "09.184.751",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561361",
+      "institution": "met",
+      "accession": "09.184.720",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561391",
+      "institution": "met",
+      "accession": "09.184.750",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561407",
+      "institution": "met",
+      "accession": "09.184.766",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561409",
+      "institution": "met",
+      "accession": "09.184.768",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561410",
+      "institution": "met",
+      "accession": "09.184.769",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561413",
+      "institution": "met",
+      "accession": "09.184.772",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0030",
+          "upstream_path": "data/items/met-0030.json",
+          "object_name": "Ostracon With a Sketch for a Mereseger Stela (Met 09.184.705)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/561347",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/DP-33589-001.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    },
+    {
+      "candidate_id": "MET-561621",
+      "institution": "met",
+      "accession": "14.1.453",
+      "exact_public_source_metadata_matches": [],
+      "matching_method": "literal accession/title/source URL only, not cryptographic image or alias verification",
+      "nearby_collection_witness_count": 12,
+      "nearby_collection_witness_examples": [
+        {
+          "id": "met-0037",
+          "upstream_path": "data/items/met-0037.json",
+          "object_name": "Ostracon (Met 14.1.446)",
+          "object_holder": "The Metropolitan Museum of Art, New York",
+          "source_url": "https://www.metmuseum.org/art/collection/search/564886",
+          "source_file_url": "https://images.metmuseum.org/CRDImages/eg/original/LC-14_1_446_EGDP039635.jpg",
+          "license_claim": "CC0 (Met Open Access)",
+          "source_group": "met",
+          "provenance_review": "metadata_only",
+          "corpus_status": "QUARANTINE_EVAL_ONLY"
+        },
+        {
+          "benchmark_id": "aku-0013",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0019",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        },
+        {
+          "benchmark_id": "aku-0041",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.517"
+        },
+        {
+          "benchmark_id": "aku-0053",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.518"
+        },
+        {
+          "benchmark_id": "aku-0082",
+          "source_object_name": "New York City, Metropolitan Museum of Art, 22.3.516"
+        }
+      ],
+      "source_lineage_status": "NO_DIRECT_METADATA_MATCH__ALIAS_IMAGE_EDITION_REVIEW_PENDING",
+      "rights_status": "NOT_CLEARED",
+      "image_equivalence_status": "NOT_TESTED",
+      "training_admission": "BLOCKED"
+    }
+  ]
+}

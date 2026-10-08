@@ -80,7 +80,7 @@ def normalize_item(item: Any) -> dict[str, Any]:
     gardiner = _one_string(item, "Hieroglyph No")
     # Gardiner combinations and uncertainty are preserved as source notation,
     # but only unambiguous single-token signs are machine-labelled.
-    canonical = gardiner.upper() if GARDINER_TOKEN.fullmatch(gardiner) and "?" not in gardiner else None
+    canonical = gardiner if GARDINER_TOKEN.fullmatch(gardiner) and "?" not in gardiner else None
     ref = {
         "item_id": item_id,
         "source_item_url": persistent_uri,

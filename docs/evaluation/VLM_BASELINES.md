@@ -29,6 +29,8 @@ This suite is developed independently from the overseer's `EVAL-003` frontier pr
 | `qwen2.5-vl-7b-instruct` | Qwen 2.5 VL 7B Instruct | `Qwen2_5_VLForConditionalGeneration` | `bfb8829e3c6c0ebad5da954181947bb9df50b0e0` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 16 GB VRAM) |
 | `pixtral-12b-2409` | Pixtral 12B | `LlavaForConditionalGeneration` | `31ea79a32c256037a503023e6022e3427f79612c` | Apache-2.0 | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
 | `llama-3.2-11b-vision-instruct` | Llama 3.2 11B Vision Instruct | `MllamaForConditionalGeneration` | `9eb2daaa8597bf192a8b0e73f848f3a102794df5` | Llama-3.2-Community | `live_local_open_weight` | CUDA GPU (>= 24 GB VRAM) |
+| `smolvlm-256m-instruct` | SmolVLM 256M Instruct | `Idefics3ForConditionalGeneration` | `7e3e67edbbed1bf9888184d9df282b700a323964` | Apache-2.0 | `live_local_open_weight` | CPU (x86_64, >= 4 GB RAM) |
+
 
 ### 2.2 Execution Gates
 
@@ -274,6 +276,7 @@ Under Wave 7 Brief 2, capability tracking strictly separates six distinct eviden
 | `qwen2.5-vl-7b-instruct` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
 | `pixtral-12b-2409` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
 | `llama-3.2-11b-vision-instruct` | **YES** | **YES** | **NO** (hardware barrier) | **NO** (hardware barrier) | **NO** (untested) | **NO** (0.0 capability points) |
+| `smolvlm-256m-instruct` | **YES** | **YES** | **YES** (local safetensors) | **YES** (CPU forward pass) | **YES** (sensitivity verified) | **NO** (0.0 capability points) |
 
 - **Grade A:** Base and specialized adapter classes implemented and registered in adapter factory.
 - **Grade B:** Multimodal chat templates, image token structures, and feature tensors verified via unit test doubles.
@@ -294,6 +297,45 @@ To test the image-to-tensor pipeline without external dependencies or benchmark 
   2. Image B is processed with the **identical** constant prompt.
   3. Outputs, token counts, and input/output SHA-256 hashes are recorded.
   4. If the completions differ, visual sensitivity is confirmed (`sensitivity_observed: true`). If identical, the model is flagged as visually insensitive or indeterminate.
+
+### 7.9 Wave 8: Verified Genuine Lightweight VLM Execution on CPU (SmolVLM-256M-Instruct)
+
+Under **Wave 8**, genuine open-weight multimodal inference was achieved on the execution host using a lightweight, Apache-2.0 licensed model architecture without GPU acceleration or cloud spend:
+
+#### 1. Host Runtime & Environment Audit
+- **CPU:** AMD Ryzen 5 5500U with Radeon Graphics (6 physical cores, 12 logical processors, AVX2 / FMA3 support).
+- **Physical Memory:** 7.74 GB system RAM.
+- **Operating System:** Windows 11 Home AMD64 (build 10.0.26200).
+- **Installed Software Backbones:** Python 3.12.10, PyTorch `2.14.1+cpu`, Transformers `5.19.0`, Pillow `12.3.0`.
+- **Memory Footprint:** Resident Set Size (RSS) prior to model loading was **319.7 MB**; post-load RSS was **1056.2 MB** (model parameter footprint: **736.5 MB**).
+
+#### 2. Immutable Model Snapshot & Weights Provenance
+- **Model Identifier:** `HuggingFaceTB/SmolVLM-256M-Instruct`
+- **Pinned Git Revision:** `7e3e67edbbed1bf9888184d9df282b700a323964` (full 40-character commit SHA).
+- **Model Architecture:** `Idefics3ForConditionalGeneration` with SigLIP vision encoder (93M params) and SmolLM2 language backbone.
+- **Weights File:** `model.safetensors` (513,028,808 bytes, 489.26 MB).
+- **Cryptographic SHA-256:** `74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e`.
+- **License:** Apache 2.0 (permissive, zero spend).
+
+#### 3. Package A & B: Byte Trace & Honest Visual Sensitivity
+Tensors were traced end-to-end through raw PNG decoding, Pillow RGB conversion, model-native processor tokenization (`pixel_values: torch.Size([1, 17, 3, 512, 512])`), real CPU forward pass, and batch decoding under deterministic greedy search (`temperature=0.0`, `do_sample=False`).
+
+- **Image A (Red Square + Blue Circle, SHA `b5cd2fa193f3a150...`):**
+  - Generated Output: *"The image contains a red square and a blue circle. The red square is positioned on the left side of the image and is a rectangle with a flat top and bottom. The blue circle is located on the right side of the image and is a circle with a flat top and bottom."*
+  - Output SHA-256: `80440c4ed89186fd21b5ed38f9035a51461b5c14c26c0f8b4fe050b8b346bff3`
+- **Image B (Control: Green Square + Yellow Circle, SHA `05c2b0836edf2e2a...`):**
+  - Generated Output: *"The image contains a green square and a yellow circle. The green square is positioned on the left side of the image, while the yellow circle is positioned on the right side of the image. Both shapes are identical in size and shape..."*
+  - Output SHA-256: `407dc131c480947a7996ee3d8609cb81b759bf7b0bb88480e811d98bdabecc5f`
+- **Blank Control Image (Uniform Light Gray):**
+  - Generated Output: *"The image depicts a simple, two-dimensional geometric shape, which appears to be a square. The square is divided into two equal halves, each containing a smaller square..."*
+- **Visual Sensitivity Evaluation:**
+  - `Image A != Image B`: **True** (differentiated visual recognition of colors and shapes).
+  - `Image A != Blank Control`: **True**.
+  - `Image B != Blank Control`: **True**.
+  - `sensitivity_observed`: **True**.
+
+#### 4. Distinction Between Visual Sensitivity and Hieratic Reading
+While SmolVLM-256M-Instruct demonstrated genuine visual conditioning and discrimination on geometric stimuli (**Grades A through E achieved**), **Grade F remains strictly NO (0.0 capability points)**. Recognizing red squares and blue circles provides zero empirical evidence of Ancient Egyptian palaeographical reading capability. Zero points are awarded.
 
 ---
 

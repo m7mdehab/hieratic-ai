@@ -114,14 +114,11 @@ def get_reproducible_provisioning_spec(model_config: dict[str, Any]) -> dict[str
     model_id = model_config.get("provider_model_id", "")
     revision = model_config.get("revision", "")
 
-    min_vram = 16.0 if "7b" in model_key else 24.0
-    recommended_gpu = "NVIDIA RTX 4090 (24 GB) or NVIDIA A100 (40/80 GB)"
-
-    return {
-        "target_model_key": model_key,
-        "provider_model_id": model_id,
-        "pinned_revision_sha": revision,
-        "hardware_requirements": {
+    requires_cuda = model_config.get("requires_cuda", True)
+    if requires_cuda:
+        min_vram = 16.0 if "7b" in model_key else 24.0
+        recommended_gpu = "NVIDIA RTX 4090 (24 GB) or NVIDIA A100 (40/80 GB)"
+        hw_reqs = {
             "recommended_os": "Linux x86_64 (Ubuntu 22.04 LTS or 24.04 LTS)",
             "min_system_ram_gb": 32.0,
             "gpu_architecture": "NVIDIA CUDA GPU with Tensor Cores",
@@ -129,13 +126,27 @@ def get_reproducible_provisioning_spec(model_config: dict[str, Any]) -> dict[str
             "recommended_gpu": recommended_gpu,
             "cuda_toolkit_min": "12.1",
             "nvidia_driver_min": "535.54.03",
-        },
+        }
+    else:
+        hw_reqs = {
+            "recommended_os": "Linux x86_64 or Windows 11 AMD64",
+            "min_system_ram_gb": 4.0,
+            "cpu_architecture": "x86_64 with AVX2 instruction set",
+            "accelerator_required": False,
+            "target_device": "cpu",
+        }
+
+    return {
+        "target_model_key": model_key,
+        "provider_model_id": model_id,
+        "pinned_revision_sha": revision,
+        "hardware_requirements": hw_reqs,
         "python_environment": {
             "python_version_range": ">=3.10, <=3.12",
             "required_packages": [
-                {"name": "torch", "min_version": "2.4.0", "cuda_build": "cu121"},
+                {"name": "torch", "min_version": "2.4.0", "cuda_build": "cu121" if requires_cuda else "cpu"},
                 {"name": "torchvision", "min_version": "0.19.0"},
-                {"name": "transformers", "min_version": "4.49.0"},
+                {"name": "transformers", "min_version": "4.46.0"},
                 {"name": "accelerate", "min_version": "0.26.0"},
                 {"name": "pillow", "min_version": "10.0.0"},
                 {"name": "safetensors", "min_version": "0.4.0"},

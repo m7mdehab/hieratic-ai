@@ -115,6 +115,16 @@ jobs:
             --output "$SMOKE_REPORT_PATH"
           python -c 'import json,os; r=json.load(open(os.environ["SMOKE_REPORT_PATH"],encoding="utf-8")); assert r["simulated_double_smoke"] is True and r["sensitivity_control"]["sensitivity_observed"] is False and r["evidence_grades"]["grade_e_visual_sensitivity_control_verified"] is False, "Synthetic output was promoted into visual-sensitivity evidence"'
 
+      - name: Verify SmolVLM real-smoke diagnostic with simulated double
+        env:
+          SMOL_REPORT_PATH: ${{ runner.temp }}/vlm_smol_report.json
+        run: |
+          python -m tools.vlm_baselines real-smoke \
+            --model smolvlm-256m-instruct \
+            --allow-simulated \
+            --output "$SMOL_REPORT_PATH"
+          python -c 'import json,os; r=json.load(open(os.environ["SMOL_REPORT_PATH"],encoding="utf-8")); assert r["simulated_double_smoke"] is True and r["sensitivity_control"]["sensitivity_observed"] is False and r["evidence_grades"]["grade_e_visual_sensitivity_control_verified"] is False, "Synthetic output was promoted into visual-sensitivity evidence"'
+
       - name: Run VLM baseline unit and negative tests
         run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
 

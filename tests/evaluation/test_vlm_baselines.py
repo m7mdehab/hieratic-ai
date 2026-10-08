@@ -1491,6 +1491,166 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(spec["provider_model_id"], "Qwen/Qwen2.5-VL-7B-Instruct")
         self.assertEqual(spec["pinned_revision_sha"], "bfb8829e3c6c0ebad5da954181947bb9df50b0e0")
 
+    # --- 14. Lightweight CPU VLM & SmolVLM Architecture Tests (Wave 8) ---
+
+    def test_smolvlm_adapter_factory_and_properties(self) -> None:
+        """Verify SmolVLM adapter factory creates SmolVLMAdapter with Idefics3 loader and CPU support."""
+        from eval.vlm.adapter import SmolVLMAdapter, get_adapter
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        self.assertFalse(smol_cfg["requires_cuda"])
+        self.assertEqual(smol_cfg["revision"], "7e3e67edbbed1bf9888184d9df282b700a323964")
+
+        adapter = get_adapter(smol_cfg)
+        self.assertIsInstance(adapter, SmolVLMAdapter)
+        self.assertEqual(adapter.loader_class_name, "Idefics3ForConditionalGeneration")
+        self.assertEqual(adapter.processor_class_name, "AutoProcessor")
+        self.assertEqual(adapter.runtime_verification, "cpu_lightweight_open_weight_verified")
+
+    def test_smolvlm_multimodal_message_formatting(self) -> None:
+        """Verify SmolVLM adapter correctly structures messages for Idefics3 processor."""
+        from eval.vlm.adapter import SmolVLMAdapter
+
+        class MockSmolProcessor:
+            def __init__(self) -> None:
+                self.last_messages = None
+                self.last_images = None
+
+            def apply_chat_template(self, messages: Any, add_generation_prompt: bool = True, tokenize: bool = True) -> str:
+                self.last_messages = messages
+                self.last_tokenize = tokenize
+                return "<idefics3_chat>"
+
+            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                self.last_images = images
+                return {"input_ids": [[101, 102]], "pixel_values": [[0.3, 0.4]]}
+
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                return ["SmolVLM Hieratic observation"]
+
+        class MockSmolModel:
+            device = "cpu"
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                return [[101, 102, 201]]
+
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        proc = MockSmolProcessor()
+        mod = MockSmolModel()
+        adapter = SmolVLMAdapter(smol_cfg, processor_override=proc, model_override=mod)
+
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image_bytes",
+            prompt="Identify script",
+            system_prompt="You are an Egyptologist",
+            shot_mode="zero_shot",
+            rung="identify",
+            item_id="TEST-SMOL-01",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "SmolVLM Hieratic observation")
+        self.assertEqual(len(proc.last_messages), 2)
+        self.assertEqual(proc.last_messages[0]["role"], "system")
+        self.assertEqual(proc.last_messages[1]["role"], "user")
+        self.assertEqual(proc.last_messages[1]["content"][0]["type"], "image")
+        self.assertEqual(proc.last_messages[1]["content"][1]["type"], "text")
+        self.assertIsNotNone(proc.last_images)
+        self.assertIs(proc.last_tokenize, False)
+
+    def test_smolvlm_real_adapter_rejects_synthetic_marker_before_forward(self) -> None:
+        """No placeholder image may be accepted as genuine open-weight vision."""
+        from eval.vlm.adapter import SmolVLMAdapter, ImageConditioningError
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        adapter = SmolVLMAdapter(smol_cfg)
+        with self.assertRaisesRegex(ImageConditioningError, "prohibited for real"):
+            adapter.preprocess_image(b"synthetic_valid_image_bytes")
+
+    def test_smolvlm_requires_string_chat_template_not_pretokenized_ids(self) -> None:
+        """Processor must return formatted text, not token IDs or a zero-shot shortcut."""
+        from eval.vlm.adapter import SmolVLMAdapter, ImageConditioningError
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        class IncorrectProcessor:
+            def apply_chat_template(self, *args: Any, **kwargs: Any) -> list[int]:
+                return [101, 102]
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                raise AssertionError("invalid template must not reach image processor")
+        adapter = SmolVLMAdapter(smol_cfg, processor_override=IncorrectProcessor())
+        with self.assertRaisesRegex(ImageConditioningError, "did not return a nonempty text prompt"):
+            adapter.format_multimodal_inputs("System", "Prompt", pil_image=None)
+
+    def test_smolvlm_missing_chat_template_fails_closed(self) -> None:
+        """Verify SmolVLM adapter fails closed if processor lacks apply_chat_template."""
+        from eval.vlm.adapter import SmolVLMAdapter, ImageConditioningError
+
+        class NoTemplateProcessor:
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1]], "pixel_values": [[0.1]]}
+
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        adapter = SmolVLMAdapter(smol_cfg, processor_override=NoTemplateProcessor())
+        with self.assertRaisesRegex(ImageConditioningError, "lacks apply_chat_template"):
+            adapter.format_multimodal_inputs("Sys", "Prompt", pil_image=None)
+
+    def test_smolvlm_omitted_pixel_values_fails_conditioning(self) -> None:
+        """Verify SmolVLM adapter raises ImageConditioningError if visual tokens/pixels are missing."""
+        from eval.vlm.adapter import SmolVLMAdapter
+
+        class OmittedPixelProcessor:
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1, 2, 3]]}
+
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        adapter = SmolVLMAdapter(smol_cfg, processor_override=OmittedPixelProcessor(), model_override=mock.MagicMock())
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image",
+            prompt="Prompt",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="identify",
+            item_id="TEST-NO-PIXELS",
+        )
+        self.assertEqual(resp.status, "failed")
+        self.assertIn("lacks visual features", resp.error_message)
+
+    def test_smolvlm_absent_weights_availability_check(self) -> None:
+        """Verify check_availability() fails closed with clean barrier reason when weights are absent."""
+        from eval.vlm.adapter import SmolVLMAdapter
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        fake_empty_dir = Path(tempfile.mkdtemp(prefix="empty_smol_weights_"))
+        try:
+            adapter = SmolVLMAdapter(smol_cfg, weights_dir=fake_empty_dir)
+            status = adapter.check_availability()
+            self.assertFalse(status.available)
+            self.assertIn("not found locally", status.reason)
+            self.assertFalse(status.hardware_info["weights_found"])
+        finally:
+            fake_empty_dir.rmdir()
+
+    def test_smolvlm_cpu_provisioning_spec_does_not_require_cuda(self) -> None:
+        """Verify CPU environment provisioning spec specifies CPU target device and no accelerator requirement."""
+        from eval.vlm.smoke import get_reproducible_provisioning_spec
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        spec = get_reproducible_provisioning_spec(smol_cfg)
+        hw = spec["hardware_requirements"]
+        self.assertFalse(hw["accelerator_required"])
+        self.assertEqual(hw["target_device"], "cpu")
+        self.assertIn("AVX2", hw["cpu_architecture"])
+        self.assertEqual(spec["scientific_spend_boundary"]["max_authorized_spend_usd"], 0.0)
+
+    def test_smolvlm_real_evidence_grade_matrix_conforms(self) -> None:
+        """Verify compute_evidence_grades generates Grades A through E for real execution with Grade F False."""
+        from eval.vlm.smoke import compute_evidence_grades
+        smol_cfg = next(m for m in self.suite_data["models"] if "smolvlm" in m["key"])
+        grades = compute_evidence_grades(smol_cfg, is_real_inference=True, sensitivity_verified=True)
+
+        self.assertTrue(grades["grade_a_interface_implemented"])
+        self.assertTrue(grades["grade_b_processor_format_fixture_tested"])
+        self.assertTrue(grades["grade_c_real_weights_loaded_from_disk"])
+        self.assertTrue(grades["grade_d_actual_image_conditioned_forward_executed"])
+        self.assertTrue(grades["grade_e_visual_sensitivity_control_verified"])
+        self.assertFalse(grades["grade_f_authentic_hieratic_gold_evaluated"])
+        self.assertEqual(grades["scientific_capability_points_awarded"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

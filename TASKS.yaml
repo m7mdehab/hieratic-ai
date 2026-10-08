@@ -512,7 +512,7 @@ tasks:
 rules:
   progress:
     capability_total: 100.0
-    validated_weighted_tasks_expected: 32.5
+    validated_weighted_tasks_expected: 34.5
     control_plane_tasks_are_unweighted: true
     only_validated_tasks_earn_points: true
   concurrency:

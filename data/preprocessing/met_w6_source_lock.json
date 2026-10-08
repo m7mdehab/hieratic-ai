@@ -1,0 +1,97 @@
+{
+  "basis": "Exact observations from merged DATA-002 W6 packets. This read-only lock is source-reference integrity, not independent rights or download authorization.",
+  "lock_version": "1.0.0",
+  "objects": [
+    {
+      "accession": "09.184.703",
+      "api_response_sha256": "fd8fe50e7ef12233530e3f2bb4466c13003826b1795b3176a26911dffe6891d3",
+      "object_id": 561345,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561345",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/09.184.728-09.184.703_EGDP017620.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/09.184.728-09.184.703_EGDP017621.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.720",
+      "api_response_sha256": "6cac9d2f0993b149ea9ce17f9f76630b3642c1d5f1218448417fe66121cff5fc",
+      "object_id": 561361,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561361",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_720_EGDP027783.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.750",
+      "api_response_sha256": "2be3abb91c82cac50e85d4ec2987b3e2940e64a81bf2324fe75baa90522de656",
+      "object_id": 561391,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561391",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_750_EGDP035885.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_750_EGDP035886.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.751",
+      "api_response_sha256": "6b9499da2e3f704ba949899a15465f90775f9eaf84bfd081452c6da5f60df424",
+      "object_id": 561392,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561392",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_751_EGDP035862.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_751_EGDP035863.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.766",
+      "api_response_sha256": "09aad51e939a374a2bcadd01cda1fcf57781733943bda4e2a06b3ba035daa1cd",
+      "object_id": 561407,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561407",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_766_EGDP035993.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_766_EGDP035996.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.768",
+      "api_response_sha256": "5cbbb9a35283e6656181bc368c0f2d0793663f3b71c8e384a4de1f58b21e380f",
+      "object_id": 561409,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561409",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_768_EGDP036013.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_768_EGDP036010.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.769",
+      "api_response_sha256": "4dce17c39b8e125e586b75b002069a8ac87bd6399c1ccca516852fd725c72877",
+      "object_id": 561410,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561410",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_769_EGDP035866.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_769_EGDP035867.jpg"
+      ]
+    },
+    {
+      "accession": "09.184.772",
+      "api_response_sha256": "67facc5ef2331eae34e02dc84a496812e2109052b99645ea92035cae666089bc",
+      "object_id": 561413,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561413",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_772_EGDP036006.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_772_EGDP036009.jpg"
+      ]
+    },
+    {
+      "accession": "14.1.453",
+      "api_response_sha256": "aef4095acc53e48ce4f59539190f9db86b1a4b2a9e055dd6200dea3e2ce09b46",
+      "object_id": 561621,
+      "object_page": "https://www.metmuseum.org/art/collection/search/561621",
+      "original_image_urls": [
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-14_1_453_EGDP034697.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-14_1_453_EGDP034699.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-14_1_453_EGDP034698.jpg",
+        "https://images.metmuseum.org/CRDImages/eg/original/LC-14_1_453_EGDP034700.jpg"
+      ]
+    }
+  ]
+}

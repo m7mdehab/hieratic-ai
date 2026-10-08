@@ -1,6 +1,8 @@
-import hashlib, json, shutil, tempfile, unittest
+import hashlib, json, os, shutil, socket, struct, tempfile, threading, unittest
+from unittest import mock
 from pathlib import Path
 import yaml
+from tools import preprocessing as pp
 from tools.preprocessing import ROOT, _read, run, validate_request, transform_image, decode_ppm
 
 FIXTURE = ROOT / "data/preprocessing/fixtures/synthetic-2x2.ppm"
@@ -57,6 +59,159 @@ class PreprocessingTests(unittest.TestCase):
         image=decode_ppm(binary);self.assertEqual("RGB",image.mode);self.assertEqual((255,0,0),image.at(0,0));self.assertEqual((0,136,255),image.at(1,0))
         png, _=transform_image(FIXTURE,[]);bad=self.base/"bad.png";bad.write_bytes(png[:-5]+b"xxxxx")
         with self.assertRaises(ValueError):transform_image(bad,[])
+
+    def test_met_readiness_is_offline_metadata_only_and_fails_closed(self):
+        with mock.patch.object(socket,"create_connection",side_effect=AssertionError("network must not be used")):
+            result=pp.assess_met_original_asset_readiness(561392,"primaryImage")
+        self.assertFalse(result["network_used"]);self.assertFalse(result["image_bytes_read"])
+        self.assertEqual(9,result["candidate_count"]);self.assertTrue(result["all_candidates_no_go"])
+        selected=result["selected_candidate"]
+        self.assertEqual("https://images.metmuseum.org/CRDImages/eg/original/LC-09_184_751_EGDP035862.jpg",selected["exact_image_url"])
+        self.assertIsNone(selected["image_byte_sha256"]);self.assertFalse(selected["download_performed"])
+        self.assertEqual("NOT_RECORDED",result["retrieval_receipt_template"]["status"])
+        self.assertTrue(selected["blockers"])
+
+    def test_met_561345_multiaccession_filename_is_warning_not_identity_decision(self):
+        result=pp.assess_met_original_asset_readiness(561345,"primaryImage")
+        selected=result["selected_candidate"]
+        self.assertIn("second accession-like identifier",selected["source_identity_warning"])
+        self.assertEqual("09.184.703",selected["accession"])
+        self.assertEqual("NO_GO",selected["go_no_go"])
+        self.assertEqual(2,len(selected["available_original_views"]))
+        self.assertIn("aliases, editions",selected["r021_direct_collision_screen"])
+        self.assertIn("Abbott and Hearst",result["r021_global_collision_warning"])
+
+    def test_forged_or_mutated_met_packet_image_url_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            shutil.copytree(ROOT/"data/acquisition/met/objects",root/"data/acquisition/met/objects")
+            shutil.copytree(ROOT/"data/preprocessing",root/"data/preprocessing")
+            shutil.copytree(ROOT/"data/acquisition/met",root/"data/acquisition/met-copy",ignore=shutil.ignore_patterns("objects"))
+            shutil.copy2(ROOT/"data/acquisition/met/metadata_packet.schema.json",root/"data/acquisition/met/metadata_packet.schema.json")
+            shutil.copy2(ROOT/"data/acquisition/met/r017_reconciliation.json",root/"data/acquisition/met/r017_reconciliation.json")
+            original_root,original_schema,original_lock=pp.ROOT,pp.MET_PACKET_SCHEMA,pp.MET_REFERENCE_LOCK
+            try:
+                pp.ROOT=root;pp.MET_PACKET_SCHEMA=root/"data/acquisition/met/metadata_packet.schema.json";pp.MET_REFERENCE_LOCK=root/"data/preprocessing/met_w6_source_lock.json"
+                packet_path=root/"data/acquisition/met/objects/561392.json"
+                pristine=json.loads(packet_path.read_text(encoding="utf-8"))
+                mutations=(
+                    ("altered CDN URL",lambda value:value["observed"].update(primaryImage="https://images.metmuseum.org/CRDImages/eg/original/attacker.jpg"),"URL metadata differs"),
+                    ("altered identity",lambda value:value["observed"].update(objectID=1),"object ID mismatch"),
+                    ("revoked public-domain flag",lambda value:value["observed"].update(isPublicDomain=False),"public-domain flag is not true"),
+                    ("submitter-created production clearance",lambda value:value.update(rights_assessment={**value["rights_assessment"],"training_admission":"ALLOWED"}),"BLOCKED_METADATA_ONLY"),
+                )
+                for label,mutate,error in mutations:
+                    with self.subTest(label=label):
+                        altered=json.loads(json.dumps(pristine));mutate(altered)
+                        packet_path.write_text(json.dumps(altered),encoding="utf-8")
+                        with self.assertRaisesRegex(ValueError,error):pp.assess_met_original_asset_readiness(561392,"primaryImage")
+                packet_path.write_text(json.dumps(pristine),encoding="utf-8")
+                with self.assertRaisesRegex(ValueError,"view must be"):
+                    pp.assess_met_original_asset_readiness(561392,"primaryImageSmall")
+            finally:
+                pp.ROOT,pp.MET_PACKET_SCHEMA,pp.MET_REFERENCE_LOCK=original_root,original_schema,original_lock
+
+    def test_exact_view_selector_rejects_small_or_nonexistent_alternate_urls(self):
+        with self.assertRaisesRegex(ValueError,"view must be"):
+            pp.assess_met_original_asset_readiness(561392,"primaryImageSmall")
+        with self.assertRaisesRegex(ValueError,"does not exist"):
+            pp.assess_met_original_asset_readiness(561361,"additionalImages:0")
+
+    def test_original_image_header_inspection_checks_hash_magic_dimensions_and_mime(self):
+        png,_=transform_image(FIXTURE,[])
+        record=pp.inspect_original_image_bytes(png,expected_sha256=hashlib.sha256(png).hexdigest(),declared_mime="image/png")
+        self.assertEqual("image/png",record["mime_type_from_magic"]);self.assertEqual([2,2],record["pixel_dimensions"])
+        self.assertFalse(record["pixel_decode_verified"]);self.assertFalse(record["visual_content_reviewed"])
+        with self.assertRaisesRegex(ValueError,"SHA-256 mismatch"):
+            pp.inspect_original_image_bytes(png,expected_sha256="0"*64)
+        with self.assertRaisesRegex(ValueError,"MIME"):
+            pp.inspect_original_image_bytes(png,declared_mime="image/jpeg")
+        with self.assertRaisesRegex(ValueError,"magic"):
+            pp.inspect_original_image_bytes(b"not an image")
+
+    def test_bounded_jpeg_header_reports_exif_without_claiming_pixel_decode(self):
+        # Repository-authored marker fixture; it is a metadata test, not a photograph.
+        tiff=b"II"+(42).to_bytes(2,"little")+(8).to_bytes(4,"little")+(1).to_bytes(2,"little")
+        tiff+=(0x0112).to_bytes(2,"little")+(3).to_bytes(2,"little")+(1).to_bytes(4,"little")+(6).to_bytes(2,"little")+b"\x00\x00"+b"\x00"*4
+        exif=b"Exif\x00\x00"+tiff;app1=b"\xff\xe1"+(len(exif)+2).to_bytes(2,"big")+exif
+        sof=bytes([8])+(10).to_bytes(2,"big")+(20).to_bytes(2,"big")+bytes([3,1,0x11,0,2,0x11,0,3,0x11,0])
+        jpeg=b"\xff\xd8"+app1+b"\xff\xc0"+(len(sof)+2).to_bytes(2,"big")+sof
+        result=pp.inspect_original_image_bytes(jpeg,declared_mime="image/jpeg")
+        self.assertEqual("image/jpeg",result["mime_type_from_magic"]);self.assertEqual([20,10],result["pixel_dimensions"])
+        self.assertEqual(6,result["exif_orientation"]);self.assertFalse(result["pixel_decode_verified"])
+
+    def test_oversized_and_truncated_image_headers_fail_before_decode(self):
+        with mock.patch.object(pp,"MAX_INPUT_BYTES",4):
+            with self.assertRaisesRegex(ValueError,"byte-size"):
+                pp.inspect_original_image_bytes(b"12345")
+        oversized_ihdr=struct.pack(">IIBBBBB",pp.MAX_IMAGE_PIXELS+1,1,8,6,0,0,0)
+        bomb=b"\x89PNG\r\n\x1a\n"+pp._png_chunk(b"IHDR",oversized_ihdr)+pp._png_chunk(b"IDAT",b"\x78\x01\x03\x00\x00\x00\x00\x01")+pp._png_chunk(b"IEND",b"")
+        with self.assertRaisesRegex(ValueError,"pixel dimensions exceed"):
+            pp.inspect_original_image_bytes(bomb)
+        with self.assertRaisesRegex(ValueError,"dimensions are missing"):
+            pp.inspect_original_image_bytes(b"\xff\xd8\xff\xd9")
+
+    def test_png_decompressor_rejects_unbounded_dimensions(self):
+        ihdr=struct.pack(">IIBBBBB",pp.MAX_IMAGE_PIXELS+1,1,8,6,0,0,0)
+        png=b"\x89PNG\r\n\x1a\n"+pp._png_chunk(b"IHDR",ihdr)+pp._png_chunk(b"IDAT",b"\x78\x01\x03\x00\x00\x00\x00\x01")+pp._png_chunk(b"IEND",b"")
+        path=self.base/"dimension-bomb.png";path.write_bytes(png)
+        with self.assertRaisesRegex(ValueError,"pixel dimensions exceed"):
+            pp.decode_png(path)
+
+    def test_readiness_writer_is_concurrent_no_clobber_and_cleans_failure(self):
+        if os.name!="posix":self.skipTest("secure dirfd publisher is POSIX-only; unsupported hosts fail closed")
+        with tempfile.TemporaryDirectory(dir=ROOT/"data/preprocessing") as directory:
+            output=Path(directory)/"assessment.json";payload={"winner":"one"};outcomes=[]
+            def writer(value):
+                try:pp._publish_readiness_output(output,{"winner":value});outcomes.append("published")
+                except ValueError:outcomes.append("refused")
+            workers=[threading.Thread(target=writer,args=(value,)) for value in ("one","two")]
+            for worker in workers:worker.start()
+            for worker in workers:worker.join()
+            self.assertCountEqual(["published","refused"],outcomes)
+            self.assertIn(json.loads(output.read_text(encoding="utf-8"))["winner"],{"one","two"})
+            failed=Path(directory)/"failed.json"
+            with mock.patch.object(pp.os,"link",side_effect=OSError("synthetic publish failure")):
+                with self.assertRaisesRegex(ValueError,"atomically published"):
+                    pp._publish_readiness_output(failed,payload)
+            self.assertFalse(failed.exists());self.assertEqual([],list(Path(directory).glob(".readiness-*.tmp")))
+
+    def test_readiness_writer_detects_late_parent_swap_and_rolls_back(self):
+        if os.name!="posix":self.skipTest("dirfd publication and symlink swaps require POSIX")
+        with tempfile.TemporaryDirectory(dir=ROOT/"data/preprocessing") as directory:
+            base=Path(directory)
+            parent=base/"validated-parent"; parent.mkdir()
+            decoy=base/"decoy"; decoy.mkdir()
+            moved=base/"parent-moved"
+            output=parent/"result.json"
+            original_link=os.link
+            swaps=[]
+            def late_parent_swap(src,dst,**kwargs):
+                parent.rename(moved)
+                parent.symlink_to(decoy,target_is_directory=True)
+                swaps.append(True)
+                return original_link(src,dst,**kwargs)
+            try:
+                with mock.patch.object(pp.os,"link",side_effect=late_parent_swap):
+                    with self.assertRaisesRegex(ValueError,"parent moved"):
+                        pp._publish_readiness_output(output,{"source":"trusted"})
+                self.assertTrue(swaps)
+                self.assertFalse((decoy/"result.json").exists(),"must not write to replacement destination")
+                self.assertFalse((moved/"result.json").exists(),"must roll back a renamed parent commit")
+                self.assertFalse(list(moved.glob(".readiness-*.tmp")),"must clean private staging")
+            finally:
+                if parent.is_symlink():parent.unlink()
+                if moved.exists():moved.rename(parent)
+
+    def test_readiness_writer_rejects_path_escape_and_symlink(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/"data/preprocessing") as directory:
+            folder=Path(directory);target=folder/"real";target.mkdir();link=folder/"link"
+            with self.assertRaisesRegex(ValueError,"under data/preprocessing"):
+                pp._publish_readiness_output(ROOT/"tools/outside.json",{})
+            try:link.symlink_to(target,target_is_directory=True)
+            except (OSError,NotImplementedError):self.skipTest("symlinks unavailable on this host")
+            with self.assertRaisesRegex(ValueError,"symlink"):
+                pp._publish_readiness_output(link/"escape.json",{})
 
 def run_from_payload(payload, base, out):
     manifest=base/"manifest.yaml"; manifest.write_text(yaml.safe_dump(payload, sort_keys=True), encoding="utf-8")

@@ -1,12 +1,20 @@
 """Deterministic, dependency-free preprocessing for provenance-cleared images."""
 from __future__ import annotations
-import argparse, binascii, hashlib, json, math, struct, sys, zlib
+import argparse, binascii, hashlib, json, math, os, re, struct, sys, tempfile, zlib
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 import yaml
 from jsonschema import Draft202012Validator
 
 ROOT=Path(__file__).resolve().parents[1]; SCHEMA=ROOT/"schemas/preprocessing_manifest.schema.json"; REGISTRY=ROOT/"data/sources/registry.yaml"
+MET_PACKET_SCHEMA=ROOT/"data/acquisition/met/metadata_packet.schema.json"
+MET_REFERENCE_LOCK=ROOT/"data/preprocessing/met_w6_source_lock.json"
+MET_READINESS_SCHEMA=ROOT/"data/preprocessing/met_original_asset_readiness.schema.json"
+MAX_INPUT_BYTES=64*1024*1024
+MAX_IMAGE_PIXELS=1_000_000
+# Resolve feature support before test monkeypatches replace os.link with a mock callable.
+SECURE_DIRFD_PUBLISH_AVAILABLE=all(fn in os.supports_dir_fd for fn in (os.open,os.link,os.unlink))
 
 class PreprocessingError(ValueError): pass
 
@@ -19,6 +27,199 @@ def _read(path:Path)->Any:
     try:return yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError,UnicodeError,yaml.YAMLError) as exc:raise PreprocessingError(f"{path}: {exc}") from exc
 def _digest(data:bytes)->str:return hashlib.sha256(data).hexdigest()
+
+def _jpeg_header(data:bytes)->tuple[int,int,int|None]:
+    """Read bounded JPEG frame dimensions and EXIF orientation; never decodes pixels."""
+    if not data.startswith(b"\xff\xd8"):raise PreprocessingError("JPEG magic is missing")
+    pos=2;width=height=None;orientation=None;segments=0
+    sof={0xC0,0xC1,0xC2,0xC3,0xC5,0xC6,0xC7,0xC9,0xCA,0xCB,0xCD,0xCE,0xCF}
+    while pos<len(data) and segments<4096:
+        if data[pos]!=0xff:raise PreprocessingError("invalid JPEG marker sequence")
+        while pos<len(data) and data[pos]==0xff:pos+=1
+        if pos>=len(data):break
+        marker=data[pos];pos+=1;segments+=1
+        if marker in {0xD8,0x01,*range(0xD0,0xD8)}:continue
+        if marker==0xD9:break
+        if marker==0xDA:break
+        if pos+2>len(data):raise PreprocessingError("truncated JPEG segment length")
+        length=int.from_bytes(data[pos:pos+2],"big")
+        if length<2 or pos+length>len(data):raise PreprocessingError("truncated or invalid JPEG segment")
+        segment=data[pos+2:pos+length];pos+=length
+        if marker in sof:
+            if len(segment)<6:raise PreprocessingError("truncated JPEG frame header")
+            height=int.from_bytes(segment[1:3],"big");width=int.from_bytes(segment[3:5],"big")
+        elif marker==0xE1 and segment.startswith(b"Exif\x00\x00"):
+            orientation=_exif_orientation(segment[6:])
+    if width is None or height is None or width<1 or height<1:raise PreprocessingError("JPEG frame dimensions are missing")
+    if width*height>MAX_IMAGE_PIXELS:raise PreprocessingError("JPEG pixel dimensions exceed inspection safety limit")
+    return width,height,orientation
+
+def _exif_orientation(tiff:bytes)->int|None:
+    if len(tiff)<8:return None
+    endian=tiff[:2]
+    if endian==b"II":order="little"
+    elif endian==b"MM":order="big"
+    else:return None
+    if int.from_bytes(tiff[2:4],order)!=42:return None
+    offset=int.from_bytes(tiff[4:8],order)
+    if offset+2>len(tiff):return None
+    count=int.from_bytes(tiff[offset:offset+2],order)
+    if count>256 or offset+2+count*12>len(tiff):return None
+    for index in range(count):
+        entry=offset+2+index*12;tag=int.from_bytes(tiff[entry:entry+2],order);kind=int.from_bytes(tiff[entry+2:entry+4],order);items=int.from_bytes(tiff[entry+4:entry+8],order)
+        if tag==0x0112:
+            if kind!=3 or items!=1:return None
+            value=int.from_bytes(tiff[entry+8:entry+10],order)
+            return value if 1<=value<=8 else None
+    return None
+
+def inspect_original_image_bytes(data:bytes,*,expected_sha256:str|None=None,declared_mime:str|None=None)->dict[str,Any]:
+    """Bounded source-byte identity/header inspection; deliberately does not assert pixel decoding or rights."""
+    if len(data)>MAX_INPUT_BYTES:raise PreprocessingError("original image exceeds byte-size limit")
+    if not data:raise PreprocessingError("original image is empty")
+    digest=_digest(data)
+    if expected_sha256 is not None and digest.lower()!=expected_sha256.lower():raise PreprocessingError("original image SHA-256 mismatch")
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        if len(data)<33 or int.from_bytes(data[8:12],"big")!=13 or data[12:16]!=b"IHDR":raise PreprocessingError("PNG header is truncated or malformed")
+        width,height,depth,color,compression,filter_method,interlace=struct.unpack(">IIBBBBB",data[16:29])
+        crc=int.from_bytes(data[29:33],"big")
+        if (binascii.crc32(b"IHDR"+data[16:29])&0xffffffff)!=crc:raise PreprocessingError("PNG IHDR CRC mismatch")
+        if not width or not height or depth!=8 or color not in {0,2,6} or compression or filter_method or interlace:raise PreprocessingError("unsupported PNG header")
+        if width*height>MAX_IMAGE_PIXELS:raise PreprocessingError("PNG pixel dimensions exceed inspection safety limit")
+        mime="image/png";orientation=None
+    elif data.startswith(b"\xff\xd8"):
+        width,height,orientation=_jpeg_header(data);mime="image/jpeg"
+    else:raise PreprocessingError("original image magic is not supported PNG or JPEG")
+    if declared_mime and declared_mime.split(";",1)[0].strip().lower()!=mime:raise PreprocessingError("declared MIME does not match image magic")
+    return {"byte_sha256":digest,"byte_size":len(data),"mime_type_from_magic":mime,"pixel_dimensions":[width,height],"exif_orientation":orientation,"inspection_level":"bounded_container_header_only","pixel_decode_verified":False,"visual_content_reviewed":False,"source_side_or_exposure":"unresolved"}
+
+def _load_met_packet(object_id:int)->tuple[dict[str,Any],dict[str,Any],str]:
+    """Check the committed W6 packet against an independent fixed reference lock."""
+    lock=json.loads(MET_REFERENCE_LOCK.read_text(encoding="utf-8"))
+    entry=next((item for item in lock["objects"] if item["object_id"]==object_id),None)
+    if entry is None:raise PreprocessingError(f"Met object {object_id} is not allowlisted")
+    path=ROOT/"data/acquisition/met/objects"/f"{object_id}.json"
+    if path.is_symlink() or not path.is_file():raise PreprocessingError("Met source packet is missing or is a symlink")
+    resolved=path.resolve(strict=True)
+    if not resolved.is_relative_to((ROOT/"data/acquisition/met/objects").resolve()):raise PreprocessingError("Met source packet escapes its evidence directory")
+    raw=path.read_bytes()
+    if len(raw)>MAX_INPUT_BYTES:raise PreprocessingError("Met source packet exceeds size limit")
+    packet=json.loads(raw)
+    packet_schema=json.loads(MET_PACKET_SCHEMA.read_text(encoding="utf-8"))
+    errors=list(Draft202012Validator(packet_schema).iter_errors(packet))
+    if errors:raise PreprocessingError(f"Met source packet schema failure: {errors[0].message}")
+    observed=packet["observed"]
+    if packet["verification_status"]!="verified_api_response_identity_and_schema":raise PreprocessingError("Met API response was not verified")
+    if packet["requested_object_id"]!=entry["object_id"] or observed["objectID"]!=entry["object_id"]:raise PreprocessingError("Met API object ID mismatch")
+    if observed["accessionNumber"]!=entry["accession"]:raise PreprocessingError("Met accession differs from fixed W6 source identity")
+    if observed["objectURL"]!=entry["object_page"]:raise PreprocessingError("Met object page differs from fixed W6 source identity")
+    if packet["response_body_sha256"]!=entry["api_response_sha256"]:raise PreprocessingError("Met API response body hash differs from fixed W6 evidence")
+    if not observed["isPublicDomain"]:raise PreprocessingError("Met API public-domain flag is not true")
+    expected_views=entry["original_image_urls"]
+    actual_views=[observed["primaryImage"],*observed["additionalImages"]]
+    if actual_views!=expected_views:raise PreprocessingError("Met original image URL metadata differs from fixed W6 source evidence")
+    if packet["rights_assessment"]["original_image_bytes_obtained"] or packet["rights_assessment"]["original_image_sha256"] is not None:
+        raise PreprocessingError("W6 metadata packet unexpectedly claims acquired image bytes")
+    for url in actual_views:
+        parts=urlsplit(url)
+        if parts.scheme!="https" or parts.hostname!="images.metmuseum.org" or not parts.path.startswith("/CRDImages/eg/original/") or parts.username or parts.password or parts.query or parts.fragment:
+            raise PreprocessingError("Met original-image reference outside exact HTTPS CDN policy")
+    return entry,packet,_digest(raw)
+
+def assess_met_original_asset_readiness(object_id:int=561392,view:str="primaryImage")->dict[str,Any]:
+    """Offline exact-view selection and fail-closed intake readiness; never accesses the network."""
+    lock=json.loads(MET_REFERENCE_LOCK.read_text(encoding="utf-8"));reconciliation=json.loads((ROOT/"data/acquisition/met/r017_reconciliation.json").read_text(encoding="utf-8"))
+    all_candidates=[];selected=None
+    for entry in lock["objects"]:
+        _,packet,packet_sha=_load_met_packet(entry["object_id"])
+        obs=packet["observed"]
+        filename_accessions=[]
+        filename=Path(obs["primaryImage"].split("?",1)[0]).name
+        filename_accessions=re.findall(r"\d{2}[._]\d{3}[._]\d{3}",filename)
+        filename_accessions=[re.sub(r"[._]",".",value) for value in filename_accessions]
+        r017=next((candidate for candidate in reconciliation["candidates"] if candidate["candidate_id"]==f"MET-{entry['object_id']}"),None)
+        direct_screen=("R-021 reports zero direct accession-string hits for this candidate; aliases, editions, facsimiles, image similarity and pretraining remain unresolved" if entry["object_id"] in {561345,561392} else "R-021 does not document an individual direct-hit result for this candidate")
+        source_identity_warning=("image filename includes a second accession-like identifier" if len(set(filename_accessions))>1 else "physical support, view side and publication identity remain independently unverified")
+        row={
+            "object_id":entry["object_id"],"accession":entry["accession"],"api_response_sha256":entry["api_response_sha256"],
+            "source_packet_sha256":packet_sha,"is_public_domain_api_flag":obs["isPublicDomain"],
+            "official_object_page":entry["object_page"],"available_original_views":entry["original_image_urls"],
+            "image_byte_sha256":None,"source_identity_status":"METADATA_VERIFIED_ONLY",
+            "source_identity_warning":source_identity_warning,"r017_literal_match_ids":(r017 or {}).get("literal_accession_substring_matches_in_pinned_R017_public_metadata",[]),
+            "r017_normalized_match_ids":(r017 or {}).get("normalized_accession_string_matches_in_pinned_R017_public_metadata",[]),
+            "r021_direct_collision_screen":direct_screen,
+            "benchmark_independence":"NOT_ESTABLISHED","rights_status":"CC0_POLICY_AND_API_FLAG_OBSERVED; EXACT_ASSET_RETRIEVAL_NOT_AUTHORIZED_OR_VERIFIED",
+            "expert_gold":"MISSING","data008_status":"BLOCKED","go_no_go":"NO_GO",
+        }
+        all_candidates.append(row)
+        if entry["object_id"]==object_id:
+            if view=="primaryImage":view_index=0
+            elif re.fullmatch(r"additionalImages:[0-9]+",view):view_index=int(view.split(":",1)[1])+1
+            else:raise PreprocessingError("view must be primaryImage or additionalImages:<zero-based-index>")
+            if not 0<=view_index<len(entry["original_image_urls"]):raise PreprocessingError("selected image view does not exist in the fixed source metadata")
+            selected_url=entry["original_image_urls"][view_index]
+            selected={**row,"selected_view":view,"exact_image_url":selected_url,
+                "retrieval_authorization":{"status":"NOT_RECORDED","independent_authority_record_id":None,"approved_by":None,"approved_at":None,"approval_digest":None},
+                "download_performed":False,"download_command_enabled":False,
+                "blockers":["No independent owner-approved retrieval record for this exact object/view/purpose is present.","No DATA-001 Met source record or completed DATA-002 exact-image acquisition record exists.","No original image bytes, byte hash, MIME/magic result, file size, dimensions, decoder/EXIF result or side/exposure determination exists.","Physical support and publication/edition aliases are not independently reviewed; do not infer a separate manuscript from API views.","R-017/R-021 benchmark, facsimile, edition and perceptual overlap remains unresolved.","No independently authored and dual-reviewed scholarly line gold or associated rights evidence exists.","Production trust-root/admission remains disabled by DATA-008."],
+                "source_identity_warning":source_identity_warning}
+    if selected is None:raise PreprocessingError(f"Met object {object_id} is not in the fixed source lock")
+    return {"schema_version":"1.0.0","assessment_id":"W7-DATA-003-MET-ORIGINAL-ASSET-READINESS-v1","generated_by":"hieratic-preprocessing/1.1.0","network_used":False,"image_bytes_read":False,"candidate_count":len(all_candidates),"all_candidates_no_go":all(row["go_no_go"]=="NO_GO" for row in all_candidates),"selected_candidate":selected,"candidate_matrix":all_candidates,"r021_global_collision_warning":"R-021 identifies direct benchmark source support collisions for Abbott and Hearst. Met candidate string-screen results do not establish benchmark independence; alias, edition, facsimile, pixel-level and pretraining review remain open.","evidence_boundary":"API metadata and image URL references are not image bytes, item-specific retrieval approval, independently determined rights, scholarly gold, benchmark clearance, or corpus admission.","retrieval_receipt_template":{"record_version":"1.0.0","status":"NOT_RECORDED","independent_authority_record_id":None,"authority_registry_ref":None,"object_id":object_id,"accession":selected["accession"],"exact_image_url":selected["exact_image_url"],"permitted_purpose":None,"approved_vault_id":None,"approved_by":None,"approved_at":None,"expiry_or_revocation_ref":None,"evidence_digest":None,"signature_verification":"must be independently checked outside this task-writable repository; a submitter-entered receipt is not authority"}}
+
+def _publish_readiness_output(path:Path,payload:dict[str,Any])->None:
+    """Commit immutable metadata using pinned POSIX dirfds; never follow a swapped parent."""
+    import secrets, stat
+    root=(ROOT/"data/preprocessing").resolve(strict=True)
+    absolute=path.absolute()
+    try:relative=absolute.relative_to(root)
+    except ValueError as exc:raise PreprocessingError("readiness output must remain under data/preprocessing") from exc
+    if not relative.parts or any(part in {".","..",""} for part in relative.parts):
+        raise PreprocessingError("readiness output contains an invalid or escaping component")
+    if os.name!="posix" or not all(hasattr(os,flag) for flag in ("O_DIRECTORY","O_NOFOLLOW")) or not SECURE_DIRFD_PUBLISH_AVAILABLE:
+        raise PreprocessingError("secure readiness publication requires POSIX no-follow directory handles")
+    flags=os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW
+    directory_fd=None
+    temporary=None
+    published=False
+    name=relative.parts[-1]
+    try:
+        directory_fd=os.open(root,flags)
+        for component in relative.parts[:-1]:
+            next_fd=os.open(component,flags,dir_fd=directory_fd)
+            os.close(directory_fd)
+            directory_fd=next_fd
+        # Path inspection alone never authorizes publication: compare it to the held handle.
+        def parent_is_still_pinned()->bool:
+            current=os.stat(absolute.parent,follow_symlinks=False)
+            pinned=os.fstat(directory_fd)
+            return stat.S_ISDIR(current.st_mode) and (current.st_dev,current.st_ino)==(pinned.st_dev,pinned.st_ino)
+        if not parent_is_still_pinned():
+            raise PreprocessingError("readiness output parent was replaced")
+        temporary=f".readiness-{secrets.token_hex(12)}.tmp"
+        staged_fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory_fd)
+        with os.fdopen(staged_fd,"w",encoding="utf-8",newline="\n") as stream:
+            json.dump(payload,stream,ensure_ascii=False,sort_keys=True,indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        # Both source and destination resolve relative to the *same pinned directory*.
+        # The link is atomic/no-clobber even for pre-existing empty files or symlinks.
+        os.link(temporary,name,src_dir_fd=directory_fd,dst_dir_fd=directory_fd,follow_symlinks=False)
+        published=True
+        os.fsync(directory_fd)
+        if not parent_is_still_pinned():
+            raise PreprocessingError("readiness output parent moved during commit")
+    except (OSError,PreprocessingError) as exc:
+        if published and directory_fd is not None:
+            try:os.unlink(name,dir_fd=directory_fd)
+            except OSError:pass
+        if isinstance(exc,PreprocessingError):raise
+        raise PreprocessingError("readiness output could not be atomically published (no-clobber or unsafe symlink/parent traversal)") from exc
+    finally:
+        if temporary and directory_fd is not None:
+            try:os.unlink(temporary,dir_fd=directory_fd)
+            except FileNotFoundError:pass
+        if directory_fd is not None:os.close(directory_fd)
 
 def validate_request(payload:Any,registry:dict[str,Any],base:Path,acquisition:dict[str,Any]|None=None)->list[str]:
     errors=[e.message for e in Draft202012Validator(_read(SCHEMA)).iter_errors(payload)]
@@ -89,6 +290,7 @@ def _ppm_tokens(data:bytes):
         yield token,i+len(delim),delim
 
 def decode_ppm(path:Path)->Raster:
+    if path.stat().st_size>MAX_INPUT_BYTES:raise PreprocessingError("image input exceeds byte-size limit")
     data=path.read_bytes();tokens=iter(_ppm_tokens(data));header=[]
     try:
         for _ in range(4):header.append(next(tokens))
@@ -96,7 +298,7 @@ def decode_ppm(path:Path)->Raster:
     if header[0][0] not in {b"P3",b"P6"}:raise PreprocessingError("only P3/P6 PPM input is supported by the standard-library decoder")
     try:w,h,mx=(int(header[i][0]) for i in range(1,4))
     except ValueError as exc:raise PreprocessingError("invalid PPM dimensions/max value") from exc
-    if w<1 or h<1 or not 1<=mx<=65535:raise PreprocessingError("invalid PPM dimensions or max value")
+    if w<1 or h<1 or w*h>MAX_IMAGE_PIXELS or not 1<=mx<=65535:raise PreprocessingError("invalid PPM dimensions, pixel budget, or max value")
     count=w*h*3
     if header[0][0]==b"P3":
         values_tokens=list(tokens)
@@ -120,6 +322,7 @@ def decode_ppm(path:Path)->Raster:
     return Raster(w,h,"RGB",[tuple(values[i:i+3]) for i in range(0,count,3)])
 
 def decode_png(path:Path)->Raster:
+    if path.stat().st_size>MAX_INPUT_BYTES:raise PreprocessingError("image input exceeds byte-size limit")
     data=path.read_bytes();signature=b"\x89PNG\r\n\x1a\n"
     if not data.startswith(signature):raise PreprocessingError("invalid PNG signature")
     pos=len(signature);width=height=depth=color=None;compressed=bytearray();ended=False
@@ -131,13 +334,21 @@ def decode_png(path:Path)->Raster:
             if length!=13:raise PreprocessingError("invalid PNG IHDR")
             width,height,depth,color,compression,filter_method,interlace=struct.unpack(">IIBBBBB",chunk)
             if not width or not height or depth!=8 or color not in {0,2,6} or compression or filter_method or interlace:raise PreprocessingError("PNG requires 8-bit grayscale/RGB/RGBA, standard compression/filter, non-interlaced layout")
-        elif kind==b"IDAT":compressed.extend(chunk)
+            if width*height>MAX_IMAGE_PIXELS:raise PreprocessingError("PNG pixel dimensions exceed decoder safety limit")
+        elif kind==b"IDAT":
+            compressed.extend(chunk)
+            if len(compressed)>MAX_INPUT_BYTES:raise PreprocessingError("PNG compressed stream exceeds byte-size limit")
         elif kind==b"IEND":ended=True;break
     if not ended or width is None:raise PreprocessingError("PNG is missing IHDR or IEND")
     channels={0:1,2:3,6:4}[color];bpp=channels;stride=width*channels
-    try:raw=zlib.decompress(bytes(compressed))
+    expected_raw_size=(stride+1)*height
+    if expected_raw_size>MAX_IMAGE_PIXELS*5:raise PreprocessingError("PNG decompressed pixel data exceeds decoder safety limit")
+    try:
+        decoder=zlib.decompressobj()
+        raw=decoder.decompress(bytes(compressed),expected_raw_size+1)
+        if decoder.unconsumed_tail or not decoder.eof or decoder.unused_data:raise PreprocessingError("PNG decompressed stream exceeds bounds or has trailing data")
     except zlib.error as exc:raise PreprocessingError(f"invalid PNG deflate stream: {exc}") from exc
-    if len(raw)!=(stride+1)*height:raise PreprocessingError("PNG decompressed size does not match dimensions")
+    if len(raw)!=expected_raw_size:raise PreprocessingError("PNG decompressed size does not match dimensions")
     rows=[];prior=bytearray(stride);offset=0
     for _ in range(height):
         filter_type=raw[offset];offset+=1;encoded=raw[offset:offset+stride];offset+=stride;row=bytearray(stride)
@@ -159,6 +370,7 @@ def decode_png(path:Path)->Raster:
     return Raster(width,height,mode,pixels)
 
 def decode_image(path:Path)->Raster:
+    if path.stat().st_size>MAX_INPUT_BYTES:raise PreprocessingError("image input exceeds byte-size limit")
     with path.open("rb") as stream:signature=stream.read(8)
     return decode_png(path) if signature==b"\x89PNG\r\n\x1a\n" else decode_ppm(path)
 
@@ -272,8 +484,20 @@ def run(manifest_path:Path,out_dir:Path,acquisition:dict[str,Any]|None=None)->di
     (out_dir/"dataset-manifest.json").write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8");return result
 
 def main(argv=None)->int:
-    parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest="command",required=True);check=sub.add_parser("validate");check.add_argument("manifest",type=Path);check.add_argument("--acquisition",type=Path);execute=sub.add_parser("run");execute.add_argument("manifest",type=Path);execute.add_argument("--acquisition",type=Path);execute.add_argument("--output",type=Path,required=True);args=parser.parse_args(argv)
+    parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest="command",required=True)
+    check=sub.add_parser("validate");check.add_argument("manifest",type=Path);check.add_argument("--acquisition",type=Path)
+    execute=sub.add_parser("run");execute.add_argument("manifest",type=Path);execute.add_argument("--acquisition",type=Path);execute.add_argument("--output",type=Path,required=True)
+    readiness=sub.add_parser("met-readiness",help="offline, no-go preflight for an exact W6 Met image view")
+    readiness.add_argument("--object-id",type=int,default=561392);readiness.add_argument("--view",default="primaryImage",help="primaryImage or additionalImages:<zero-based-index>");readiness.add_argument("--output",type=Path)
+    args=parser.parse_args(argv)
     try:
+        if args.command=="met-readiness":
+            result=assess_met_original_asset_readiness(args.object_id,args.view)
+            schema=json.loads(MET_READINESS_SCHEMA.read_text(encoding="utf-8"));errors=list(Draft202012Validator(schema).iter_errors(result))
+            if errors:raise PreprocessingError(f"readiness output schema failure: {errors[0].message}")
+            if args.output:_publish_readiness_output(args.output,result)
+            print(json.dumps({"assessment_id":result["assessment_id"],"selected_object":args.object_id,"accession":result["selected_candidate"]["accession"],"view":args.view,"image_url":result["selected_candidate"]["exact_image_url"],"go_no_go":result["selected_candidate"]["go_no_go"],"download_performed":False,"blocker_count":len(result["selected_candidate"]["blockers"]),"output":str(args.output) if args.output else None},ensure_ascii=False,sort_keys=True))
+            return 0
         if args.command=="validate":
             acquisition=_read(args.acquisition) if args.acquisition else None;errors=validate_request(_read(args.manifest),_read(REGISTRY),args.manifest.parent,acquisition)
             if errors:raise PreprocessingError("\n".join(errors))

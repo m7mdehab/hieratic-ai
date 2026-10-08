@@ -259,9 +259,109 @@ def evaluate(data: dict[str, Any], *, include_examples: bool = False) -> dict[st
     return report
 
 
+
+
+def translate_interpretation_manifest(
+    interpretation: dict[str, Any], observations: dict[str, list[tuple[str, str, str]]],
+    *, excluded_text_id: str | None = None,
+) -> dict[str, Any]:
+    """Chain authentic LING-002 interpreted readings into German gloss hypotheses.
+
+    The original LING-002 manifest is retained intact; each alternative reading
+    receives a separately sourced glossary candidate. No invented morphology,
+    no inferred source text ID, no claims that Egyptian text was recognized
+    from original image bytes, and no scoring against a target reference.
+    """
+    from tools import lexical_interpretation as lexical
+    if not isinstance(interpretation, dict):
+        raise TranslationError("LING-002 interpretation must be an object")
+    try:
+        schema = json.loads(lexical.SCHEMA_PATH.read_text("utf-8"))
+        errors = lexical.definition_errors(
+            interpretation, schema, "interpretationManifest", "interpretation")
+    except (ValueError, OSError, TypeError, KeyError) as exc:
+        raise TranslationError(f"LING-002 interpretation validation failed: {exc}") from exc
+    if errors:
+        raise TranslationError("Invalid LING-002 interpretation: " + "; ".join(errors[:4]))
+    identity = {k: v for k, v in interpretation.items()
+                if k not in ("schema_version", "interpretation_version_id")}
+    if interpretation["interpretation_version_id"] != (
+        "lex-" + sha256(_canonical(identity)).hexdigest()
+    ):
+        raise TranslationError("LING-002 version hash drift: lexical source modified")
+    reg = interpretation["interpretation_input"]["source_registry_id"]
+    if reg == "SRC-AES-OPEN" and not excluded_text_id:
+        raise TranslationError(
+            "AES source text requires independent excluded_text_id to prevent label leakage")
+    if excluded_text_id is not None and (
+        not isinstance(excluded_text_id, str) or len(excluded_text_id) > 256
+        or not excluded_text_id.strip()
+    ):
+        raise TranslationError("Invalid excluded source text ID")
+    items = []
+    for item in interpretation["items"]:
+        readings = []
+        for reading in item["readings"]:
+            form = reading["normalized_text"]
+            if form is None:
+                readings.append({
+                    "source_value_id": reading["source_value_id"], "normalized_text": None,
+                    "source_outcome": reading["outcome"], "german_gloss_candidates": [],
+                    "translation_status": "UNKNOWN_SOURCE_READING",
+                    "translations_blind_certified": False,
+                })
+                continue
+            if len(form) > 512:
+                raise TranslationError("Unbounded LING-002 source form")
+            by_gloss: dict[str, set[str]] = defaultdict(set)
+            for text_id, gloss, _ in observations.get(form, []):
+                if text_id != excluded_text_id:
+                    by_gloss[gloss].add(text_id)
+            alternatives = sorted(by_gloss, key=lambda x: (-len(by_gloss[x]), x))
+            readings.append({
+                "source_value_id": reading["source_value_id"],
+                "normalized_text": form,
+                "source_outcome": reading["outcome"],
+                "german_gloss_candidates": [
+                    {"text": g, "other_source_texts_support": len(by_gloss[g])}
+                    for g in alternatives[:25]
+                ],
+                "remaining_gloss_alternatives": max(0, len(alternatives) - 25),
+                "translation_status": (
+                    "AMBIGUOUS_GERMAN_GLOSS" if len(alternatives) > 1
+                    else "GERMAN_GLOSS_CANDIDATE" if alternatives
+                    else "NO_CROSS_TEXT_GLOSS_ABSTAIN"
+                ),
+                "translations_blind_certified": False,
+            })
+        items.append({
+            "unit_id": item["unit_id"], "line_id": item["line_id"],
+            "token_id": item["token_id"], "original_outcome": item["outcome"],
+            "readings": readings,
+        })
+    result = {
+        "version": VERSION,
+        "input_ling002_interpretation_id": interpretation["interpretation_version_id"],
+        "input_ling002_source": interpretation["interpretation_input"],
+        "excluded_aes_source_text_id": excluded_text_id,
+        "source_language": "Ancient Egyptian transliteration",
+        "target_language": "German",
+        "output_type": "LAYERED_TOKEN_MEANING_GLOSSES_WITH_ALTERNATIVES",
+        "items": items,
+        "ling002_original_not_modified": True,
+        "publisher_source_layer": "AES_CC_BY_SA_CROSS_TEXT_EDITORIAL_GLOSSES",
+        "source_original_hieratic_image_observed": False,
+        "certified_sentence_translation": False,
+    }
+    result["translation_version_sha256"] = sha256(_canonical(result)).hexdigest()
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("action", choices=("verify", "evaluate", "predict"))
+    p.add_argument("action", choices=("verify", "evaluate", "predict", "from-lexical"))
+    p.add_argument("--interpretation", type=Path, default=None)
+    p.add_argument("--exclude-text-id", default=None)
     p.add_argument("--sentence-id", default=None)
     p.add_argument("--examples", action="store_true")
     a = p.parse_args(argv)
@@ -278,6 +378,16 @@ def main(argv: list[str] | None = None) -> int:
             }
         elif a.action == "evaluate":
             out = evaluate(data, include_examples=a.examples)
+        elif a.action == "from-lexical":
+            if not a.interpretation or not a.interpretation.is_file() or a.interpretation.stat().st_size > 8_000_000:
+                raise TranslationError("An existing bounded --interpretation JSON is required")
+            try:
+                imported = json.loads(a.interpretation.read_text("utf-8"))
+            except (ValueError, UnicodeError, OSError) as exc:
+                raise TranslationError(f"Invalid LING-002 interpretation: {exc}") from exc
+            out = translate_interpretation_manifest(
+                imported, _observations(data["sentences"]),
+                excluded_text_id=a.exclude_text_id)
         else:
             if not a.sentence_id or a.sentence_id not in data["sentences"]:
                 raise TranslationError("Exact source sentence ID required")

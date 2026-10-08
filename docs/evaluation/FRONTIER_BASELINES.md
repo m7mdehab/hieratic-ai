@@ -186,3 +186,51 @@ The tool fails closed on mismatched Git commit, missing prompt-source bytes, une
 - External checkout in CI is ephemeral and must not upload public gold, model responses or images.
 - The new receipt is not automatically inserted into `suite.yaml` because the suite remains `planning` until explicit provider/budget approval.
 - No model calls, metric scores or accepted EVAL-003 points are created.
+
+
+## 11. W3: byte-verified model attempt freeze and external rights evidence (PR candidate)
+
+The `eval/baselines/run_freeze.py` validator and `eval/baselines/run_freeze.schema.json` add **per-model** preregistration independent of EVAL-006's future truly sealed corpus releases. The frozen metadata records one exact provider model/version, route, benchmark revision, original scorer and prompt source SHA-256, accepted EVAL-001 metric contract, configuration, run environment, inference commit, budget cap, and identity of the human authorizing use/spending.
+
+The private `prompt-attempts.jsonl` must enumerate every `(item_id, rung, sample_index)` in the actual pinned public set. Each row points to *external, restricted* rendered prompt bytes and evaluation-only image bytes and includes independent SHA-256 checksums. The preflight reads those bytes only to confirm hashes; it never publishes their content, scores, or answers. It refuses inconsistent prompt/image copies, changed official scorer source, incomplete 116/150 public coverage, missing attempts, extra sealed IDs, unknown aliases, path traversal or evidence inside the public Git repository.
+
+**Difference from earlier `public_freeze.py`:** that prior tool hashes upstream **prompt source code** and permitted item IDs; it does not prove what item-specific rendered text or image was actually supplied to a provider. The new audit binds each planned attempt to real private bytes and the exact official scorer. This is *necessary* before honest paid inference but is still only preregistration. It does not validate that a provider later used the approved prompt bytes or faithfully returned an output; that requires separate immutable provider request/response receipts and scorer replay.
+
+```bash
+# Public, intentionally incomplete and non-executable synthetic draft:
+python -m eval.baselines.run_freeze validate-draft
+
+# A run that claims to be locked must not pass without separate human
+# authorization, immutable evidence and externally reviewed rights.
+# This read-only CLI intentionally refuses user approval via a fake toggle.
+python -m eval.baselines.run_freeze verify-locked \
+  --record /private/run-freeze.json \
+  --suite /private/suite.yaml \
+  --items /private/public-item-rungs.jsonl \
+  --attempts /private/prompt-attempts.jsonl \
+  --vault /private/evaluation-vault \
+  --upstream-checkout /private/hieraticbench
+```
+
+### Preserve per-attempt prompt and response identity
+
+The older `baselinectl.audit-capture` checks a single suite-level prompt-bundle digest and is **not sufficient for an original run with item-specific rendered prompts**. It can remain as a preliminary legacy integrity check, but it cannot certify W3 model runs.
+
+The new `run_freeze.audit_original_capture(...)` pairs every private raw-response record with its unique frozen item/rung/sample prompt SHA-256 and its actual input image bytes. It separately checks the capture archive hash, exact model identity and complete attempt universe. Successful answers must retain original provider response IDs; failures, abstentions, timeouts and refusals must all remain in the denominator. It emits only status tallies, never model outputs or hidden answer keys.
+
+This audit must still be accompanied by authenticated provider request logs, independently verified permission receipts, source rights and replay of the pinned upstream official scorer before EVAL-003 can earn capability points. The code deliberately makes `scoring_reproduced=False` and `scientific_experiment_validated=False` for any metadata audit result.
+
+**Authorization control:** No automation, chat response or Boolean in the record substitutes for explicit user budget approval. A qualified operator can invoke `validate_locked(... actual_approval_confirmed=True)` programmatically only after checking the genuine human authorization and item rights outside the repo. This intentionally avoids any runnable paid inference in GitHub CI.
+
+**A synthetic "passing locked record" in unit tests is not actual authorized execution or rights clearance**. The tests mock an upstream audit and use harmless fake bytes outside the checkout to verify fail-closed logic. Do not cite their success as evidence of real model coverage or official scores.
+
+## 12. Primary-source rights audit and corpus/evaluation interfaces
+
+See `eval/baselines/SOURCE_RIGHTS_READINESS.md` for the 2026-10-08 evidence audit, including current HPDB, AKU-PAL, DDD, TLA, PaPYrus, HieraticAI, Isut and HieraticBench policy distinctions. No source was newly cleared for unrestricted training, no external item downloaded or inserted into an ML corpus, and no real expert gold found.
+
+The W3 task boundaries are deliberate:
+- DATA-008 releases a train/dev/test corpus **only when actual item rights and expert adjudication exist**; otherwise only a synthetic demonstration and a blocked-release report are honest outputs.
+- VLM-001 measures an actual zero/few-shot image-conditioned baseline only after approved runtime/model access and non-benchmark, licensed few-shot examples; benchmark public items never become training/dev prompts.
+- EVAL-003 focuses on untuned vendor frontier models with identical, predeclared official public item/rung surface and no image-based prompt tuning.
+
+No accepted scientific capability points accrue from this W3 methodology work alone. The canonical goal remains **30.5/100** pending actual independently accepted weighted tasks.

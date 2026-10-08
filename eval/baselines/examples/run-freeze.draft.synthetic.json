@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "state": "draft",
+  "run_id": "FRONTIER-SYNTHETIC-NO-INFERENCE",
+  "suite_id": "HIERATIC-FRONTIER-UNTUNED-V1",
+  "model_key": "openai-frontier",
+  "provider_model_id": null,
+  "provider_route": null,
+  "official_benchmark_commit": "d587dc990013f18007f1e7a8f56f96ff2f7127e2",
+  "official_prompt_source_sha256": null,
+  "public_item_manifest_sha256": null,
+  "prompt_attempts_manifest_sha256": null,
+  "model_settings_sha256": null,
+  "model_checkpoint_or_version": null,
+  "inference_code_commit": null,
+  "inference_runtime_sha256": null,
+  "scorer_source_sha256": null,
+  "metric_contract_sha256": null,
+  "samples_per_item": 3,
+  "attempts_planned": 798,
+  "budget_cap_usd": null,
+  "approval": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "evidence_ref": null
+  },
+  "archive": {
+    "external_private_store": false,
+    "access_restricted": false,
+    "raw_response_retention": "no_raw_results",
+    "append_only": false,
+    "encryption_at_rest": false
+  },
+  "benchmark_rights": {
+    "evaluation_only": true,
+    "sealed_items_excluded": true,
+    "used_for_training_or_dev": false,
+    "few_shot_uses_benchmark": false,
+    "image_rights_reviewed": false,
+    "item_overlap_reviewed": false,
+    "rights_review_ref": null,
+    "overlap_review_ref": null
+  }
+}

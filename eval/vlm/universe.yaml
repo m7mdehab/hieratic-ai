@@ -1,0 +1,192 @@
+doc_type: vlm_evaluation_universe
+schema_version: 1.0.0
+universe_id: hieratic_vlm_synthetic_preflight_universe_v1
+universe_version: 1.0.0
+universe_tier: synthetic_preflight_universe
+dataset_id: SYNTH-PREFLIGHT-V1
+description: Canonical independently pinned synthetic preflight universe for offline
+  CI testing and contract validation.
+declared_conditions:
+  target_rungs:
+  - identify
+  - signs
+  - transliterate
+  - translate
+  shot_modes:
+  - zero_shot
+  - few_shot
+  samples_per_item: 1
+  missing_gold_policy: refuse_score
+items:
+- item_id: SYNTH-DOCA-IDENT-001
+  source_id: DOC-PAPYRUS-A
+  document_id: DOC-PAPYRUS-A
+  scale_level: image_level
+  reading_direction: right_to_left
+  rung: identify
+  image_sha256: ab622eac8b8f1b8253390e6bc4270f4cc7e25716064c0ae6be803a48c4a16c8d
+  image_ref: synthetic://DOC-PAPYRUS-A/ident/001
+  pixel_dimensions:
+  - 512
+  - 512
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    script: Hieratic
+- item_id: SYNTH-DOCA-IDENT-002
+  source_id: DOC-PAPYRUS-A
+  document_id: DOC-PAPYRUS-A
+  scale_level: image_level
+  reading_direction: right_to_left
+  rung: identify
+  image_sha256: d060d9c57f639f22a9c3a0e10f53bca3f3202cb5256851acf7d24c3148218c58
+  image_ref: synthetic://DOC-PAPYRUS-A/ident/002
+  pixel_dimensions:
+  - 512
+  - 512
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    script: Hieratic
+- item_id: SYNTH-DOCB-IDENT-001
+  source_id: DOC-RELIEF-B
+  document_id: DOC-RELIEF-B
+  scale_level: image_level
+  reading_direction: right_to_left
+  rung: identify
+  image_sha256: ae2dbc468480e4b820997f2d700fb26919700270f5f6a464016ed76f8d0801bd
+  image_ref: synthetic://DOC-RELIEF-B/ident/001
+  pixel_dimensions:
+  - 512
+  - 512
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    script: Hieroglyphic
+- item_id: SYNTH-DOCB-IDENT-002
+  source_id: DOC-RELIEF-B
+  document_id: DOC-RELIEF-B
+  scale_level: image_level
+  reading_direction: right_to_left
+  rung: identify
+  image_sha256: 78feb4afa2e0fe77bc454e9f1f96b43a68375b293c9968bb461ab61d97c634b8
+  image_ref: synthetic://DOC-RELIEF-B/ident/002
+  pixel_dimensions:
+  - 512
+  - 512
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    script: Hieroglyphic
+- item_id: SYNTH-DOCA-SIGN-001
+  source_id: DOC-PAPYRUS-A
+  document_id: DOC-PAPYRUS-A
+  scale_level: sign_level
+  reading_direction: right_to_left
+  rung: signs
+  image_sha256: 685c02e3a4bf163530cf0bd3664b1b968976446d951466f8e61bd82875c4daf6
+  image_ref: synthetic://DOC-PAPYRUS-A/sign/001
+  pixel_dimensions:
+  - 256
+  - 256
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    gardiner: A1
+- item_id: SYNTH-DOCB-SIGN-001
+  source_id: DOC-RELIEF-B
+  document_id: DOC-RELIEF-B
+  scale_level: sign_level
+  reading_direction: right_to_left
+  rung: signs
+  image_sha256: 2aac7af78a53cdebdb127e57d27f45af1b33ef2127ba35dec70a1be53e0eb73e
+  image_ref: synthetic://DOC-RELIEF-B/sign/001
+  pixel_dimensions:
+  - 256
+  - 256
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    gardiner: G43
+- item_id: SYNTH-DOCA-XLIT-001
+  source_id: DOC-PAPYRUS-A
+  document_id: DOC-PAPYRUS-A
+  scale_level: line_level
+  reading_direction: right_to_left
+  rung: transliterate
+  image_sha256: 71be6f464c62470807d99baea7e1f2055aae7aebc6bd8a52c247b33477a34823
+  image_ref: synthetic://DOC-PAPYRUS-A/xlit/001
+  pixel_dimensions:
+  - 1024
+  - 256
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    transliteration: jrj.n=f m mnw=f
+- item_id: SYNTH-DOCB-XLIT-001
+  source_id: DOC-RELIEF-B
+  document_id: DOC-RELIEF-B
+  scale_level: line_level
+  reading_direction: right_to_left
+  rung: transliterate
+  image_sha256: 17bca5c3ab0b74ce3d353a52c045662eb83396d9d793cf527b71bf58515ee83c
+  image_ref: synthetic://DOC-RELIEF-B/xlit/001
+  pixel_dimensions:
+  - 1024
+  - 256
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    transliteration: "\u1E0Fd-mdw jn Wsjr"
+- item_id: SYNTH-DOCA-TRANS-001
+  source_id: DOC-PAPYRUS-A
+  document_id: DOC-PAPYRUS-A
+  scale_level: page_level
+  reading_direction: right_to_left
+  rung: translate
+  image_sha256: c11863c739cd92abbccadf669db357cd8212124eedb061488e192a4147d5c816
+  image_ref: synthetic://DOC-PAPYRUS-A/trans/001
+  pixel_dimensions:
+  - 1024
+  - 768
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    translation: He made it as his monument.
+- item_id: SYNTH-DOCB-TRANS-001
+  source_id: DOC-RELIEF-B
+  document_id: DOC-RELIEF-B
+  scale_level: page_level
+  reading_direction: right_to_left
+  rung: translate
+  image_sha256: 4d189fbc65413fb3de4b478c59fbab152602347a231c779f5b0555d65368d6b2
+  image_ref: synthetic://DOC-RELIEF-B/trans/001
+  pixel_dimensions:
+  - 1024
+  - 768
+  rights_status: synthetic_ci_fixture
+  admission_status: synthetic_mock
+  gold:
+    translation: Words spoken by Osiris.
+expected_attempts:
+- SYNTH-DOCA-IDENT-001::identify::few_shot::0
+- SYNTH-DOCA-IDENT-001::identify::zero_shot::0
+- SYNTH-DOCA-IDENT-002::identify::few_shot::0
+- SYNTH-DOCA-IDENT-002::identify::zero_shot::0
+- SYNTH-DOCA-SIGN-001::signs::few_shot::0
+- SYNTH-DOCA-SIGN-001::signs::zero_shot::0
+- SYNTH-DOCA-TRANS-001::translate::few_shot::0
+- SYNTH-DOCA-TRANS-001::translate::zero_shot::0
+- SYNTH-DOCA-XLIT-001::transliterate::few_shot::0
+- SYNTH-DOCA-XLIT-001::transliterate::zero_shot::0
+- SYNTH-DOCB-IDENT-001::identify::few_shot::0
+- SYNTH-DOCB-IDENT-001::identify::zero_shot::0
+- SYNTH-DOCB-IDENT-002::identify::few_shot::0
+- SYNTH-DOCB-IDENT-002::identify::zero_shot::0
+- SYNTH-DOCB-SIGN-001::signs::few_shot::0
+- SYNTH-DOCB-SIGN-001::signs::zero_shot::0
+- SYNTH-DOCB-TRANS-001::translate::few_shot::0
+- SYNTH-DOCB-TRANS-001::translate::zero_shot::0
+- SYNTH-DOCB-XLIT-001::transliterate::few_shot::0
+- SYNTH-DOCB-XLIT-001::transliterate::zero_shot::0
+universe_sha256: fd72f77473b0c07074a18ceafbddc40449f4f9690be99e522100b313e3b0780d

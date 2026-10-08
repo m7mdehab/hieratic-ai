@@ -1,0 +1,73 @@
+doc_type: "vlm_demonstration_bank"
+schema_version: "1.0.0"
+bank_id: "vlm-demos-synthetic-fixture-v1"
+status: "synthetic_fixture_only"
+description: "SYNTHETIC FIXTURE ONLY: Unverified placeholder demonstrations for CI pipeline testing. Real few-shot inference requires authentic image files, verified item rights, and full quarantine clearance."
+
+rights_review:
+  license: "SYNTHETIC-FIXTURE-UNVERIFIED"
+  rights_class: "SYNTHETIC-PERMISSIVE"
+  rights_review_status: "synthetic_placeholder_unreviewed"
+  quarantine_verified: false
+  notes: "SYNTHETIC FIXTURE ONLY: These records contain synthetic placeholder URIs (facsimile://...), unverified mock hashes, and illustrative palaeographical citations. They are exclusively for local testing and CI pipeline validation. They do not constitute authentic rights-cleared image evidence or vetted few-shot demonstrations. Real few-shot model inference must fail closed until authentic image files, verified item-specific provenance, cryptographic file hashes, and exact/near-duplicate quarantine clearance against benchmark and training partitions are provided."
+
+items:
+  - demo_id: "DEMO-SYNTH-IDENT-001"
+    rung: "identify"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Möller Hieratische Paläographie Vol. 1, Plate I; unverified placeholder)"
+    image_ref: "synthetic-fixture://moeller-vol1-pl01-item01"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000001"
+    prompt_instruction: "Identify the script used in this text. Select exactly one of: Hieratic, Hieroglyphic, Demotic, Coptic."
+    exemplar_output: "Hieratic"
+    commentary: "Synthetic demonstration fixture for script identification pipeline validation."
+
+  - demo_id: "DEMO-SYNTH-IDENT-002"
+    rung: "identify"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Lepsius Denkmäler Abth. II; unverified placeholder)"
+    image_ref: "synthetic-fixture://lepsius-abth2-bl123"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000002"
+    prompt_instruction: "Identify the script used in this text. Select exactly one of: Hieratic, Hieroglyphic, Demotic, Coptic."
+    exemplar_output: "Hieroglyphic"
+    commentary: "Synthetic demonstration fixture for script identification pipeline validation."
+
+  - demo_id: "DEMO-SYNTH-SIGN-001"
+    rung: "signs"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Möller Vol. 2 No. 1; unverified placeholder)"
+    image_ref: "synthetic-fixture://moeller-vol2-sign-a01"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000003"
+    prompt_instruction: "Identify the corresponding Gardiner sign code (e.g., A1, G43, M17, O34)."
+    exemplar_output: "A1"
+    commentary: "Synthetic demonstration fixture for isolated sign recognition pipeline validation."
+
+  - demo_id: "DEMO-SYNTH-SIGN-002"
+    rung: "signs"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Möller Vol. 2 No. 202; unverified placeholder)"
+    image_ref: "synthetic-fixture://moeller-vol2-sign-g43"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000004"
+    prompt_instruction: "Identify the corresponding Gardiner sign code (e.g., A1, G43, M17, O34)."
+    exemplar_output: "G43"
+    commentary: "Synthetic demonstration fixture for isolated sign recognition pipeline validation."
+
+  - demo_id: "DEMO-SYNTH-XLIT-001"
+    rung: "transliterate"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Ebers Papyrus Tafel 1; unverified placeholder)"
+    image_ref: "synthetic-fixture://ebers-facs-tafel01"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000005"
+    prompt_instruction: "Transliterate the hieratic text into standard Egyptological transliteration."
+    exemplar_output: "ḥꜣ.t-ꜥ m sšr"
+    commentary: "Synthetic demonstration fixture for transliteration pipeline validation."
+
+  - demo_id: "DEMO-SYNTH-TRANS-001"
+    rung: "translate"
+    is_synthetic_fixture: true
+    source_provenance: "Synthetic fixture (illustrative reference: Rhind Mathematical Papyrus; unverified placeholder)"
+    image_ref: "synthetic-fixture://rhind-peet-plate-a"
+    image_sha256: "0000000000000000000000000000000000000000000000000000000000000006"
+    prompt_instruction: "Translate the ancient Egyptian inscription into clear, accurate English."
+    exemplar_output: "Beginning of the calculation of the reckoning of things."
+    commentary: "Synthetic demonstration fixture for translation pipeline validation."

@@ -1,0 +1,36 @@
+name: Autonomous Scholarly Reference Integrity
+on:
+  push:
+    paths:
+      - 'tools/hpdb_reference.py'
+      - 'tests/research/test_hpdb_reference.py'
+      - 'docs/research/R023_AUTONOMOUS_HIERATIC_ONLINE_DATA_PATH.md'
+      - '.github/workflows/scholarly-references.yml'
+  pull_request:
+    paths:
+      - 'tools/hpdb_reference.py'
+      - 'tests/research/test_hpdb_reference.py'
+      - 'docs/research/R023_AUTONOMOUS_HIERATIC_ONLINE_DATA_PATH.md'
+      - '.github/workflows/scholarly-references.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-integrity:
+    name: Verify offline HPDB metadata reference boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate offline contracts and prohibited image ingress
+        run: python -m unittest tests.research.test_hpdb_reference -v
+      - name: Verify no downloaded image assets in research PR
+        run: |
+          git ls-files | grep -Ei '^(data/(research|references)/.*\.(jpg|jpeg|png|tif|tiff)|data/.*hpdb.*index\.json)$' && exit 1 || exit 0

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/dataset_release.schema.json",
+  "title": "Hieratic AI corpus release assembly bundle",
+  "type": "object",
+  "required": ["schema_version", "release_id", "release_kind", "split_metadata_path", "split_manifest_path", "items"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "release_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "release_kind": {"enum": ["synthetic_test_release", "corpus_v1_release"]},
+    "split_metadata_path": {"type": "string", "minLength": 1},
+    "split_manifest_path": {"type": "string", "minLength": 1},
+    "items": {"type": "array", "minItems": 1, "maxItems": 1000, "items": {"$ref": "#/$defs/item"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["item_id", "document_id", "page_id", "split_item_id", "acquisition_path", "preprocessing_request_path", "preprocessing_artifact_manifest_path", "preprocessing_artifact_root", "annotation_path", "mapping_path", "alignment_path", "review_path", "preprocessing_item_id", "alignment_ids", "review_case_ids", "annotation_training_permission", "annotation_redistribution_permission", "annotation_rights_evidence_ref", "mapping_training_permission", "mapping_redistribution_permission", "mapping_rights_evidence_ref"],
+      "properties": {
+        "item_id": {"type": "string", "minLength": 1},
+        "document_id": {"type": "string", "minLength": 1},
+        "page_id": {"type": "string", "minLength": 1},
+        "split_item_id": {"type": "string", "minLength": 1},
+        "acquisition_path": {"type": "string", "minLength": 1},
+        "preprocessing_request_path": {"type": "string", "minLength": 1},
+        "preprocessing_artifact_manifest_path": {"type": "string", "minLength": 1},
+        "preprocessing_artifact_root": {"type": "string", "minLength": 1},
+        "annotation_path": {"type": "string", "minLength": 1},
+        "mapping_path": {"type": "string", "minLength": 1},
+        "alignment_path": {"type": "string", "minLength": 1},
+        "review_path": {"type": "string", "minLength": 1},
+        "preprocessing_item_id": {"type": "string", "minLength": 1},
+        "alignment_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "review_case_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "annotation_training_permission": {"enum": ["allowed", "conditional", "prohibited", "unknown"]},
+        "annotation_redistribution_permission": {"enum": ["allowed", "conditional", "prohibited", "unknown"]},
+        "annotation_rights_evidence_ref": {"type": "string", "minLength": 1},
+        "mapping_training_permission": {"enum": ["allowed", "conditional", "prohibited", "unknown"]},
+        "mapping_redistribution_permission": {"enum": ["allowed", "conditional", "prohibited", "unknown"]},
+        "mapping_rights_evidence_ref": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "releaseManifest": {
+      "type": "object",
+      "required": ["schema_version", "release_id", "release_kind", "generator", "inputs", "items", "excluded_items", "split_statistics", "split_warnings", "split_version", "split_profile_id", "dataset_version_id", "partition_counts"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "release_id": {"type": "string", "minLength": 1},
+        "release_kind": {"enum": ["synthetic_test_release", "corpus_v1_release"]},
+        "generator": {"type": "string", "minLength": 1},
+        "inputs": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "size_bytes"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "size_bytes": {"type": "integer", "minimum": 0}}, "additionalProperties": false}},
+        "excluded_items": {"type": "array", "items": {"type": "object", "required": ["item_id", "reason"], "properties": {"item_id": {"type": "string"}, "reason": {"type": ["string", "null"]}}, "additionalProperties": false}},
+        "split_statistics": {"type": "object"},
+        "split_warnings": {"type": "array", "items": {"type": "string"}},
+        "items": {"type": "array", "items": {"type": "object", "required": ["item_id", "document_id", "page_id", "partition", "source_id", "source_object_id", "rights_class", "training_permission", "redistribution_permission", "intended_use", "required_attribution", "source_rights_evidence_urls", "annotation_training_permission", "annotation_redistribution_permission", "annotation_rights_evidence_ref", "mapping_training_permission", "mapping_redistribution_permission", "mapping_rights_evidence_ref", "original_sha256", "preprocessed_sha256", "annotation_id", "mapping_set_id", "alignment_set_id", "review_set_id", "gold_alignment_ids", "target_annotations", "review_cases", "review_disagreement_count", "synthetic"], "properties": {"item_id": {"type": "string"}, "document_id": {"type": "string"}, "page_id": {"type": "string"}, "partition": {"enum": ["train", "dev", "test"]}, "source_id": {"type": "string"}, "source_object_id": {"type": "string"}, "rights_class": {"type": "string"}, "training_permission": {"type": "string"}, "redistribution_permission": {"type": "string"}, "intended_use": {"type": "string"}, "required_attribution": {"type": "string"}, "source_rights_evidence_urls": {"type": "array", "items": {"type": "string"}}, "annotation_training_permission": {"type": "string"}, "annotation_redistribution_permission": {"type": "string"}, "annotation_rights_evidence_ref": {"type": "string"}, "mapping_training_permission": {"type": "string"}, "mapping_redistribution_permission": {"type": "string"}, "mapping_rights_evidence_ref": {"type": "string"}, "original_sha256": {"type": ["string", "null"]}, "preprocessed_sha256": {"type": ["string", "null"]}, "annotation_id": {"type": "string"}, "mapping_set_id": {"type": "string"}, "alignment_set_id": {"type": "string"}, "review_set_id": {"type": "string"}, "gold_alignment_ids": {"type": "array", "items": {"type": "string"}}, "target_annotations": {"type": "array", "items": {"type": "object"}}, "review_cases": {"type": "array", "items": {"type": "object"}}, "review_disagreement_count": {"type": "integer", "minimum": 0}, "synthetic": {"type": "boolean"}}, "additionalProperties": true}},
+        "split_version": {"type": ["string", "null"]},
+        "split_profile_id": {"type": ["string", "null"]},
+        "dataset_version_id": {"type": "string", "pattern": "^corpus-[0-9a-f]{64}$"},
+        "partition_counts": {"type": "object", "required": ["train", "dev", "test", "excluded"], "properties": {"train": {"type": "integer", "minimum": 0}, "dev": {"type": "integer", "minimum": 0}, "test": {"type": "integer", "minimum": 0}, "excluded": {"type": "integer", "minimum": 0}}, "additionalProperties": false}
+      },
+      "additionalProperties": false
+    }
+  }
+}

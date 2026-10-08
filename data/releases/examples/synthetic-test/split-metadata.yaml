@@ -1,0 +1,45 @@
+metadata_version: synthetic-split-fixture/1.1.0
+synthetic_fixture: true
+quarantined_source_ids: []
+quarantined_object_ids: []
+defaults:
+  source_object_id: null
+  institution: null
+  scribe_group: null
+  period: null
+  material_support: null
+  genre_register: null
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: not_assessed
+    reviewer_id: null
+    evidence_ref: null
+    overlap_check_version: null
+    roster_version: null
+    reviewed_at: null
+items:
+- source_object_id: SYNTHETIC-OBJECT-002
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-a
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: not_assessed
+    reviewer_id: null
+    evidence_ref: null
+    overlap_check_version: null
+    roster_version: null
+    reviewed_at: null
+  item_id: release-item-1
+  source_id: SRC-HPDB
+  document_id: synthetic-doc-2
+  page_id: page-2
+near_duplicate_candidates: []

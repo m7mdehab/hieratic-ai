@@ -1,0 +1,34 @@
+schema_version: 1.0.0
+alignment_set_id: synthetic-alignment-v1
+acquisition_manifest_id: synthetic-alignment-acquisition
+acquisition_item_source_object_id: SYNTHETIC-OBJECT-002
+annotation_id: SYNTH-ANNOTATION-AMBIGUOUS
+alignments:
+- alignment_id: alignment-line-1
+  page_id: page-2
+  region_ids:
+  - region-2-line-block
+  targets:
+  - target_type: line
+    target_id: line-2
+  relation: one_to_one
+  status: unresolved
+  confidence: null
+  hypotheses: []
+  review_state: unreviewed
+  reviewer_id: null
+  provenance_ref: synthetic:fixture
+  depends_on_alignment_ids: []
+- alignment_id: alignment-region-2
+  page_id: page-2
+  region_ids:
+  - region-2
+  targets: []
+  relation: unresolved
+  status: unresolved
+  confidence: null
+  hypotheses: []
+  review_state: unreviewed
+  reviewer_id: null
+  provenance_ref: synthetic:fixture
+  depends_on_alignment_ids: []

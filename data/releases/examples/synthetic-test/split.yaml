@@ -1,0 +1,113 @@
+split_version: 1.1.0
+generator_version: split-system/1.1.0
+seed: 7
+profile_id: PROFILE-DOC-HOLDOUT
+benchmark_overlap_policy:
+  policy_version: 1.0.0
+  risk_authority: data/sources/registry.yaml:benchmark_overlap_risk
+  high_risk_action: exclude_unreviewed_or_overlapping
+  roster:
+    version: hieraticbench-d587dc9-inventory-268-v1
+    manifest_path: eval/benchmarks/hieraticbench/manifest.yaml
+    pinned_commit: d587dc990013f18007f1e7a8f56f96ff2f7127e2
+    total_items: 268
+    public_items: 266
+    sealed_items: 2
+    item_ids_embedded: false
+    coverage: aggregate_counts_only
+source_metadata_version: synthetic-split-fixture/1.1.0
+source_metadata_sha256: e43097cd1597da0b9249e7583228bb59d851f8cea32f00fa86af97b1a98f1099
+generation_timestamp: '2026-10-08T00:00:00Z'
+grouping_keys_used:
+- document_id
+- page_id
+- source_id
+- source_object_id
+- image_sha256
+- normalized_sha256
+holdout_values: []
+assignments:
+- document_id: synthetic-doc-2
+  page_id: page-2
+  source_id: SRC-HPDB
+  source_object_id: SYNTHETIC-OBJECT-002
+  institution: Synthetic-Archive-A
+  scribe_group: scribe-a
+  period: early
+  material_support: papyrus
+  genre_register: administrative
+  image_sha256: null
+  normalized_sha256: null
+  perceptual_hash: null
+  benchmark_quarantine: false
+  benchmark_overlap_review:
+    status: not_assessed
+    reviewer_id: null
+    evidence_ref: null
+    overlap_check_version: null
+    roster_version: null
+    reviewed_at: null
+  item_id: release-item-1
+  partition: train
+  exclusion_reason: null
+  atomic_group_id: 944647c56ddf30d0
+near_duplicate_review_queue: []
+statistics:
+  item_counts:
+    train: 1
+    dev: 0
+    test: 0
+    excluded: 0
+  document_counts:
+    train: 1
+    dev: 0
+    test: 0
+    excluded: 0
+  dimension_counts:
+    source_id:
+      SRC-HPDB:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+    institution:
+      Synthetic-Archive-A:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+    scribe_group:
+      scribe-a:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+    period:
+      early:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+    material_support:
+      papyrus:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+    genre_register:
+      administrative:
+        train: 1
+        dev: 0
+        test: 0
+        excluded: 0
+  warning_count: 1
+  known_scribe_counts:
+    train: 1
+    dev: 0
+    test: 0
+    excluded: 0
+  excluded_or_quarantined_count: 0
+warnings:
+- 'low_sample_stratum (''SRC-HPDB'',): 1 atomic groups for 3 requested partitions;
+  one or more partitions may be empty'
+sealed_test_policy: null

@@ -1,0 +1,82 @@
+schema_version: 1.0.0
+review_set_id: synthetic-independent-review-v1
+annotation_id: SYNTH-ANNOTATION-AMBIGUOUS
+blinding:
+  enabled: true
+  predictions_visible: false
+  peer_decisions_visible: false
+reviewers:
+- reviewer_id: reviewer-a
+  role: reviewer
+  independence_group: institution-a
+  conflict_of_interest: false
+  assignment_status: completed
+- reviewer_id: reviewer-b
+  role: reviewer
+  independence_group: institution-b
+  conflict_of_interest: false
+  assignment_status: completed
+- reviewer_id: adjudicator-c
+  role: adjudicator
+  independence_group: institution-c
+  conflict_of_interest: false
+  assignment_status: assigned
+cases:
+- case_id: synthetic-case-1
+  target_type: line
+  target_id: line-2
+  annotation_layer: grapheme_sequence
+  annotation_gold_status: uncertain_with_alternatives
+  issue_flags:
+  - disputed_reading
+  case_state: needs_adjudication
+  decisions:
+  - decision_id: decision-a-1
+    reviewer_id: reviewer-a
+    outcome: certain_reading
+    selected_reading_id: grapheme-reading-a
+    acceptable_reading_ids:
+    - grapheme-reading-a
+    uncertainty_flags: []
+    confidence: 0.7
+    rationale: Synthetic disagreement example.
+    evidence_ref: synthetic:evidence-a
+    submitted_at: '2026-10-08T12:00:00Z'
+    supersedes_decision_id: null
+  - decision_id: decision-b-1
+    reviewer_id: reviewer-b
+    outcome: uncertain
+    selected_reading_id: null
+    acceptable_reading_ids:
+    - grapheme-reading-a
+    - grapheme-reading-b
+    uncertainty_flags:
+    - ambiguous_sign
+    confidence: 0.6
+    rationale: Synthetic unresolved alternative example.
+    evidence_ref: synthetic:evidence-b
+    submitted_at: '2026-10-08T12:05:00Z'
+    supersedes_decision_id: null
+  adjudication: null
+  state_history:
+  - event_id: event-1
+    from_state: draft
+    to_state: assigned
+    event_type: assign_reviewers
+    actor_id: coordinator
+    evidence_ref: synthetic:assignment
+    occurred_at: '2026-10-08T11:00:00Z'
+  - event_id: event-2
+    from_state: assigned
+    to_state: in_review
+    event_type: start_review
+    actor_id: coordinator
+    evidence_ref: synthetic:start
+    occurred_at: '2026-10-08T11:05:00Z'
+  - event_id: event-3
+    from_state: in_review
+    to_state: needs_adjudication
+    event_type: submit_disagreement
+    actor_id: coordinator
+    evidence_ref: synthetic:disagreement
+    occurred_at: '2026-10-08T12:06:00Z'

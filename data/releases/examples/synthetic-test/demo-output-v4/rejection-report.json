@@ -1,0 +1,4 @@
+{
+  "excluded_split_items": [],
+  "reason": "excluded items retain EVAL-004 exclusion reasons and are absent from train/dev/test exports"
+}

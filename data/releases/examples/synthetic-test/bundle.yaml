@@ -1,0 +1,30 @@
+schema_version: 1.0.0
+release_id: synthetic-release-test
+release_kind: synthetic_test_release
+split_metadata_path: split-metadata.yaml
+split_manifest_path: split.yaml
+items:
+- item_id: release-item-1
+  document_id: synthetic-doc-2
+  page_id: page-2
+  split_item_id: release-item-1
+  acquisition_path: acquisition.yaml
+  preprocessing_request_path: preprocessing.yaml
+  preprocessing_artifact_manifest_path: artifacts/dataset-manifest.json
+  preprocessing_artifact_root: artifacts
+  annotation_path: annotation.yaml
+  mapping_path: mapping.yaml
+  alignment_path: alignment.yaml
+  review_path: review.yaml
+  preprocessing_item_id: synthetic-page-1
+  alignment_ids:
+  - alignment-line-1
+  - alignment-region-2
+  review_case_ids:
+  - synthetic-case-1
+  annotation_training_permission: unknown
+  annotation_redistribution_permission: unknown
+  annotation_rights_evidence_ref: synthetic:fixture-only
+  mapping_training_permission: unknown
+  mapping_redistribution_permission: unknown
+  mapping_rights_evidence_ref: synthetic:fixture-only

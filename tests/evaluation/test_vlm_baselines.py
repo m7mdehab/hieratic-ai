@@ -20,6 +20,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -1358,9 +1359,14 @@ class VLMBaselinesTests(unittest.TestCase):
     def test_real_smoke_fails_closed_without_hardware_or_weights(self) -> None:
         """Verify real visual smoke test fails closed with exit code 1 when hardware/weights are absent."""
         qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
-        report, success = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
+        simulated_missing = {
+            "missing_resources": ["nvidia_cuda_gpu_absent", "model_weights_not_found_on_disk"],
+            "barrier_summary": "Controlled test: hardware and weights deliberately absent.",
+        }
+        with mock.patch("eval.vlm.smoke.audit_host_resources", return_value=simulated_missing):
+            report, success = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
 
-        # In this Windows/no-CUDA environment, it must be cleanly blocked
+        # This negative test must remain deterministic on a future GPU-equipped host.
         self.assertFalse(success)
         self.assertEqual(report["status"], "blocked")
         self.assertEqual(report["classification"], "noncertifiable_diagnostic")
@@ -1371,7 +1377,8 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertFalse(report["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluated"])
 
         # CLI invocation without --allow-simulated must return 1
-        ret = cli_main(["real-smoke", "--model", "qwen2.5-vl-7b-instruct"])
+        with mock.patch("eval.vlm.smoke.audit_host_resources", return_value=simulated_missing):
+            ret = cli_main(["real-smoke", "--model", "qwen2.5-vl-7b-instruct"])
         self.assertEqual(ret, 1)
 
     def test_real_smoke_with_allow_simulated_evaluates_visual_sensitivity(self) -> None:
@@ -1391,7 +1398,9 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertTrue(sens["constant_prompt_preserved"])
         self.assertTrue(sens["image_bytes_differ"])
         self.assertTrue(sens["output_strings_differ"])
-        self.assertTrue(sens["sensitivity_observed"])
+        self.assertFalse(sens["sensitivity_observed"])
+        self.assertFalse(report["evidence_grades"]["grade_e_visual_sensitivity_control_verified"])
+        self.assertIn("test double", sens["interpretation"])
 
         # Check token usage and hashes recorded
         fwd_a = report["forward_test_image"]
@@ -1454,7 +1463,12 @@ class VLMBaselinesTests(unittest.TestCase):
         from tools.vlm_baselines import validate_with_schema
         qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
 
-        report_blocked, _ = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
+        simulated_missing = {
+            "missing_resources": ["nvidia_cuda_gpu_absent", "model_weights_not_found_on_disk"],
+            "barrier_summary": "Controlled test: hardware and weights deliberately absent.",
+        }
+        with mock.patch("eval.vlm.smoke.audit_host_resources", return_value=simulated_missing):
+            report_blocked, _ = run_real_visual_smoke(qwen_cfg, allow_simulated=False)
         errs_b = validate_with_schema(report_blocked, self.schema)
         self.assertEqual(errs_b, [])
 

@@ -167,6 +167,76 @@ class RealPublishedTranslationTests(unittest.TestCase):
                             out["publisher_attested_german_sentence"])
         self.assertFalse(out["publisher_target_translation_used_for_generation"])
 
+
+    def test_ling002_immutable_interpretation_chain_preserves_alternatives(self):
+        from tools import lexical_interpretation as lex
+        from tools import linguistic_normalization as norm
+        from tools.source_registry import load_yaml
+        import hashlib
+        root = Path(lex.ROOT)
+        annotation, raw = norm.read(root / "data/examples/annotation_ambiguous.yaml")
+        request, _ = norm.read(root / "ling/normalization/examples/synthetic.yaml")
+        request["annotation_sha256"] = hashlib.sha256(raw).hexdigest()
+        registry = load_yaml(root / "data/sources/registry.yaml")
+        normal = norm.build(request, annotation, raw, registry)
+        lexical_data, _ = lex.read_data(root / "ling/lexical/examples/synthetic.yaml")
+        interpretation = lex.build(normal, lexical_data, registry)
+        original = copy.deepcopy(interpretation)
+        result = tr.translate_interpretation_manifest(
+            interpretation, tr._observations(self.dataset["sentences"]))
+        self.assertEqual(original, interpretation)
+        self.assertEqual(interpretation["interpretation_version_id"],
+                         result["input_ling002_interpretation_id"])
+        self.assertEqual(len(interpretation["items"]), len(result["items"]))
+        self.assertEqual(
+            [x["source_value_id"] for x in interpretation["items"][0]["readings"]],
+            [x["source_value_id"] for x in result["items"][0]["readings"]])
+        self.assertTrue(result["ling002_original_not_modified"])
+        self.assertFalse(result["certified_sentence_translation"])
+        self.assertEqual(64, len(result["translation_version_sha256"]))
+        self.assertEqual(result, tr.translate_interpretation_manifest(
+            interpretation, tr._observations(self.dataset["sentences"])))
+
+    def test_ling002_source_identity_hash_tamper_rejected(self):
+        from tools import lexical_interpretation as lex
+        from tools import linguistic_normalization as norm
+        from tools.source_registry import load_yaml
+        import hashlib
+        root = Path(lex.ROOT)
+        annotation, raw = norm.read(root / "data/examples/annotation_ambiguous.yaml")
+        request, _ = norm.read(root / "ling/normalization/examples/synthetic.yaml")
+        request["annotation_sha256"] = hashlib.sha256(raw).hexdigest()
+        reg = load_yaml(root / "data/sources/registry.yaml")
+        data, _ = lex.read_data(root / "ling/lexical/examples/synthetic.yaml")
+        interpretation = lex.build(norm.build(request, annotation, raw, reg), data, reg)
+        interpretation["items"][0]["readings"][0]["normalized_text"] = "FORGED"
+        with self.assertRaisesRegex(tr.TranslationError, "hash drift"):
+            tr.translate_interpretation_manifest(interpretation, {})
+
+    def test_german_gloss_adapter_preserves_ambiguous_readings_and_abstentions(self):
+        from tools import lexical_interpretation as lex
+        from tools import linguistic_normalization as norm
+        from tools.source_registry import load_yaml
+        import hashlib
+        root = Path(lex.ROOT)
+        ann, raw = norm.read(root / "data/examples/annotation_ambiguous.yaml")
+        request, _ = norm.read(root / "ling/normalization/examples/synthetic.yaml")
+        request["annotation_sha256"] = hashlib.sha256(raw).hexdigest()
+        reg = load_yaml(root / "data/sources/registry.yaml")
+        data, _ = lex.read_data(root / "ling/lexical/examples/synthetic.yaml")
+        interpretation = lex.build(norm.build(request, ann, raw, reg), data, reg)
+        forms = [r["normalized_text"] for i in interpretation["items"]
+                 for r in i["readings"] if r["normalized_text"]]
+        x = forms[0]
+        entries = {x: [("another-source", "GLOSS1", ""), ("different-source", "GLOSS2", "")]}
+        results = tr.translate_interpretation_manifest(interpretation, entries)
+        readings = [r for i in results["items"] for r in i["readings"]]
+        found = next(r for r in readings if r["normalized_text"] == x)
+        self.assertEqual("AMBIGUOUS_GERMAN_GLOSS", found["translation_status"])
+        self.assertEqual(2, len(found["german_gloss_candidates"]))
+        self.assertTrue(any(r["translation_status"] == "NO_CROSS_TEXT_GLOSS_ABSTAIN"
+                            for r in readings if r["normalized_text"] != x))
+
     def test_no_network_and_no_image_claim(self):
         src = Path(tr.__file__).read_text("utf-8")
         for banned in ("requests.get(", "urlopen(", "model.generate(", "torch.load("):

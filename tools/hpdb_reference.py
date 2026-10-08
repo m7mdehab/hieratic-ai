@@ -44,8 +44,12 @@ def _safe_image_reference(url: Any) -> bool:
     """Check shape of an untrusted IIIF reference; do not fetch any bytes."""
     if not isinstance(url, str) or len(url) > 1024:
         return False
-    parts = urlsplit(url)
-    if (parts.scheme != "https" or parts.hostname != IMAGE_HOST or parts.port not in (None, 443)
+    try:
+        parts = urlsplit(url)
+        safe_port = parts.port in (None, 443)
+    except ValueError:
+        return False
+    if (parts.scheme != "https" or parts.hostname != IMAGE_HOST or not safe_port
             or parts.username or parts.password or parts.query or parts.fragment
             or not parts.path.startswith(IMAGE_PATH_PREFIX)):
         return False

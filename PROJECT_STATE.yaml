@@ -38,8 +38,8 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "DATA-008: no actual image-bytes-and-rights-cleared real training corpus with admissible scholarly gold and clean real train/dev/test partitions."
-    - "VLM-001: noncertifiable W7 hardware/weights diagnostics merged; no verified genuine open-weight forward, eligible Hieratic evaluation, authentic few-shot cohort or independent certification."
+    - "DATA-008: one source-pinned CC0 Cat.2044 original is now acquired for quarantined private nontraining inspection, but no rights-and-scholarship-admitted trainable Hieratic image/text corpus or clean physical-support train/dev/test splits exist."
+    - "VLM-001: W8 CPU SmolVLM-256M local real image-conditioned forward and shape/control visual sensitivity reported with pinned open weights; no eligible Hieratic manuscript gold evaluation, certified reading result, independently verified few-shot cohort or authentic benchmark generalization (Grade F NO)."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
     - "LING-003: real 444-sentence AED/AES source-text-heldout translation diagnostic and LING-002 interpretation integration merged in PRs #91/#92; only 14 complete other-source published parallels and 15.21% corpus micro word F1, not independent fluent semantic adequacy or manuscript-level blind verification."
 

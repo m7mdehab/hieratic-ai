@@ -404,7 +404,7 @@ class MetMetadataEvidenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=ROOT / "data/acquisition") as temp:
             path = Path(temp) / "packet.json"
             with unittest.mock.patch.object(acquisition.json, "dump", side_effect=OSError("fixture write failure")):
-                with self.assertRaisesRegex(acquisition.AcquisitionError, "cannot atomically publish"):
+                with self.assertRaisesRegex(acquisition.AcquisitionError, "cannot securely publish metadata packet"):
                     acquisition._publish_metadata_packet(path, {"complete": True})
             self.assertFalse(path.exists())
             self.assertEqual([], list(Path(temp).glob(".met-packet-*.tmp")))

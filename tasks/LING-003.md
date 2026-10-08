@@ -38,3 +38,7 @@ python -m unittest tests.linguistics.test_translation_layer -v
 ~~~
 
 **Attribution:** Simon D. Schweitzer and AES/AED text editors, https://github.com/simondschweitzer/aes, licensed CC BY-SA 4.0. Raw corpus source SHA-1 `7bfcba9678b64c3526a1123996a0714b5f76812f`, revision `35276d2527cca1a055e31ed5f6683e777717170f`. Different physical supports, provenance and image release are separately governed.
+
+## Authentic sentence-level parallel extension
+
+The publisher's 445 original AES sentences include **14 cases with an identical full Egyptian source token sequence in a different source-text ID**. The implemented pipeline can retrieve a genuine **other-text, publisher-authored German whole-sentence translation** for those cases (and preserves all alternate translation strings). The reference translation from the target text ID remains excluded, including any within-text duplicates; this is not self-leakage or a model hallucination. For the rest it abstains from claiming fluent translation and explicitly falls back to gloss sequences. Count of actual cross-source published full-sentence parallels is fixed in source-verified tests. This is real and substantial coverage of a limited domain, not general compositional translation competence.

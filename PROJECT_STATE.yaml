@@ -15,7 +15,7 @@ project:
     and appropriate specialist baselines.
 
 progress:
-  goal_progress: 32.5
+  goal_progress: 34.5
   goal_total: 100.0
   research_coverage: 14.0
   semantics:
@@ -24,24 +24,23 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W7_ORIGINAL_IMAGE_REFERENCE_DATA_AND_REAL_VISUAL_SMOKE"
+  current_wave: "W8_AUTHENTIC_CC0_IMAGES_LIGHT_VLM_AND_REAL_SCHOLARLY_LINGUISTICS"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
   best_verified_result: null
-  last_accepted_task: "LING-001"
-  ready_tasks: []
+  last_accepted_task: "LING-002"
+  ready_tasks:
+    - "LING-003"
   active_tasks:
     - "DATA-008"
     - "VLM-001"
     - "EVAL-003"
-    - "LING-002"
   review_tasks: []
   blockers:
     - "DATA-008: no actual image-bytes-and-rights-cleared real training corpus with admissible scholarly gold and clean real train/dev/test partitions."
     - "VLM-001: noncertifiable W7 hardware/weights diagnostics merged; no verified genuine open-weight forward, eligible Hieratic evaluation, authentic few-shot cohort or independent certification."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
-    - "LING-002: synthetic interpretation preflight merged; no independently licensed Egyptological lexical attestations, expert analyses or gold-backed morphology evaluation."
 
 canonical_files:
   start: "START_HERE.md"
@@ -79,27 +78,35 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W7 source, original-image-readiness, and noncertifiable runtime engineering
-  integrations are completed. PR #76 and #77 added an offline HPDB importer and
-  2,065 real CC BY 4.0 source-metadata records, not protected original scan
-  pixels. PR #78 merged after independent review, simulated visual-sensitivity
-  integrity corrections and successful exact-head CI; no real weights loaded,
-  image-conditioned forward or actual Hieratic benchmark result was verified.
-  PR #75 merged at 6683cc1568873489533a9751c04d4537defaff55 following
-  pinned no-follow POSIX directory publication, parent-swap regression tests,
-  clean latest-main branch reconstruction and successful exact-head Project
-  Governance workflow 37850346081. All nine recorded Met objects remain
-  offline metadata-only NO_GO candidates; no original image bytes or SHA,
-  item-specific retrieval approval, expert-reviewed licensed readings or real
-  corpus admission has been established. Met 561392 remains the preferred
-  first-pair candidate; related Met 561345/561369 remain grouped for source
-  overlap review. The owner prioritizes lawful online-only autonomous research
-  and defers institutional or paid Egyptologist outreach. DATA-008 production
-  and VLM-001 scientific certification remain disabled. Next advance a
-  concrete owner-approved CC0 image acquisition with private provenance and
-  independently sourced scholarly line material where licensable; scope
-  genuine zero-cost model image inference only when actual hardware and
-  weights exist, or obtain separate provider/budget authorization for EVAL-003.
-  Stage any new external-agent wave through the approved parallel-handoff
-  protocol. Preserve canonical 32.5/100 capability, 14% uncalibrated research
-  coverage, zero validated real experiments and zero trained models.
+  W8 owner directive: use fully lawful free online sources; research and test
+  alternatives exhaustively before asserting genuinely terminal blockers.
+  Independent R-024 source/edition research and a noncertifiable silver-label
+  protocol merged in PR #82. Additional DATA-005 real 937-row HPDB concordance
+  metadata integration merged in PR #84 with zero duplicate capability credit.
+  The completed pending LING-002 milestone was accepted in PR #88 (source
+  provenance prerequisite PR #85), satisfying defensible real published
+  Egyptological lexical and morphological candidate analysis on 35,052
+  AED-TEI dictionary entries plus 445 genuine AES sentences, 2,526 tokens,
+  311 original source text IDs, and 2,305 published lemma gold labels.
+  Strict original-source Git blob pinning, publisher CC BY-SA 4.0 text rights,
+  source-text-held-out diagnostic and full exact-head GitHub CI are verified.
+  Cross-text publisher editorial reference metrics: 1,621/2,305 correct
+  lemma contained in candidate set, 1,062/1,102 correct when one candidate
+  returned, and 449/753 observed morphology bundles recovered in candidates.
+  Evidence digest 26ad977c29fdd8659157cb02bec04323b6b544dc8ca9425a13825ea629acedee.
+  These are authentic published text diagnostics, NOT blind two-reader gold,
+  source-independent manuscript reading, real image recognition, heldout
+  model evaluation, training or translation. LING-002 has earned its original
+  2.0/2.0 roadmap points once, so overall capability is 34.5/100 and P6 is
+  4.0/10; historical research coverage 14% remains unrecalibrated; no
+  validated real model experiment and no trained model. LING-003 translation
+  layer is now dependency-ready and may work with the open licensed Egyptian
+  English-gloss and published sentence translation resources under separate
+  benchmark/publication rights. Current user-dispatched Luna W8 source-image
+  lane and Gemini 3.8 Flash W8 lightweight real VLM lane are still independent
+  and await returned PR evidence; no premature completion claim or file
+  collision. DATA-008 production admission and VLM-001 certification stay
+  hard-disabled; EVAL-003 remains active and requires approved access/budget
+  for actual proprietary provider inference. Next independently inspect and
+  integrate exact heads from Luna/Gemini, patch bounded defects, and plan
+  LING-003 as a genuine separately-scored task.

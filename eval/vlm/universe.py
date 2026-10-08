@@ -237,7 +237,11 @@ def admit_external_items(
             if not img_errs:
                 it["image_bytes"] = raw_bytes
 
-    # Check admission receipt
+    # External cohort scientific admission is HARD-DISABLED in this preflight.
+    # A local JSON/YAML "receipt" is a self-issued claim: it has no signature,
+    # no pinned reviewer identity, no binding to exact item IDs / image hashes,
+    # no source-registry record and no DATA-008 verification. It can therefore
+    # never promote a cohort. The tier is always unverified_external_inputs.
     admission_tier = "unverified_external_inputs"
     if admission_receipt_path and admission_receipt_path.is_file():
         try:
@@ -246,19 +250,37 @@ def admit_external_items(
                 if admission_receipt_path.suffix.lower() == ".json"
                 else yaml.safe_load(admission_receipt_path.read_text(encoding="utf-8"))
             )
-            if (
+        except Exception as exc:
+            errors.append(f"Cannot read admission receipt {admission_receipt_path}: {exc}")
+            rcpt = None
+        if isinstance(rcpt, dict):
+            looks_approved = (
                 rcpt.get("rights_review_status") == "approved_with_evidence"
                 and rcpt.get("quarantine_verified") is True
                 and rcpt.get("permitted_cohort_tier") == "approved_evaluation_cohort"
-                and rcpt.get("independent_reviewer")
-            ):
-                admission_tier = "approved_evaluation_cohort"
+                and bool(rcpt.get("independent_reviewer"))
+            )
+            if looks_approved:
+                errors.append(
+                    f"{NOTICE_PREFIX}Admission receipt {admission_receipt_path.name} is self-declared and cannot be "
+                    "independently verified (no signature, pinned reviewer identity, item/image-hash binding, "
+                    "source-registry record or DATA-008 check is integrated); cohort stays "
+                    "unverified_external_inputs and is non-promotable."
+                )
             else:
                 errors.append(
                     f"Admission receipt {admission_receipt_path.name} is incomplete or unapproved; "
                     "cannot grant approved_evaluation_cohort tier."
                 )
-        except Exception as exc:
-            errors.append(f"Cannot read admission receipt {admission_receipt_path}: {exc}")
+        elif rcpt is not None:
+            errors.append(f"Admission receipt {admission_receipt_path.name} is not a mapping.")
 
     return items_list, admission_tier, errors
+
+
+NOTICE_PREFIX = "NOTICE: "
+
+
+def fatal_admission_errors(errors: list[str]) -> list[str]:
+    """Return admission errors that must abort a run (notices are informational)."""
+    return [e for e in errors if not e.startswith(NOTICE_PREFIX)]

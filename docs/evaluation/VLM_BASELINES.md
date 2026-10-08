@@ -186,13 +186,9 @@ To safeguard benchmark integrity, artifacts and runs are categorized into explic
 | `live_local_open_weight` (unaccelerated/barrier) | `candidate_baseline` | `preflight_passed_pending_review` | **NO** (Hardware barrier blocked) |
 | `live_local_open_weight` (hardware-accelerated) | `certified_baseline` | `certified` | Yes (requires verified admission receipt & audit) |
 
-The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified`) fails closed with `Promotion rejection` if:
-1. `authorization_receipt_ref` is missing.
-2. `execution_tier` is not `live_local_open_weight` or `authorized_external_model`, or `scientific_validity` is not `certified_baseline`.
-3. `certification_status` is not `certified`.
-4. `model_key` is `mock-vision-v1`.
-5. Coverage rate is $< 0.95$ or success count is 0 (barrier-blocked / all-failed runs).
-6. Items tier is not `approved_evaluation_cohort`.
+The manifest auditor (`tools/vlm_baselines.py audit-manifest --require-certified`) fails closed with `Promotion rejection` unconditionally for all preflight runs because user-editable manifest fields and self-declared receipt references cannot establish certification without an integrated external authorization authority (signed DATA-008 receipt, source evidence, and model-inference receipt).
+
+Furthermore, manifest publication uses atomic no-clobber semantics (`write_json_no_clobber`, `write_bytes_no_clobber`), preventing overwrite of existing artifacts. Scoring and paired-comparison commands pre-audit all inputs against the code-pinned universe anchor, refuse unaudited inputs without `--diagnostic-only`, and wrap all outputs in an immutable `noncertifiable_diagnostic` classification envelope with an explicit `audit_receipt`.
 
 ---
 

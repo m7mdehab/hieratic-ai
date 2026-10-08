@@ -288,6 +288,10 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
 
     execution_tier = "live_local_open_weight"
     scientific_validity = "candidate_baseline"
+    # Hugging Face class used to load this family, or None when no verified loader exists.
+    loader_class_name: str | None = None
+    # Honest status: nothing here has been exercised against real weights, a GPU and a real image.
+    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
     def __init__(
         self,
@@ -304,13 +308,27 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
         self._transformers_available = importlib.util.find_spec("transformers") is not None
         self._model = model_override
         self._processor = processor_override
+        if processor_override is not None or model_override is not None:
+            # A test double is not a live model: never label its output as live inference.
+            self.execution_tier = "synthetic_ci_fixture"
+            self.scientific_validity = "non_scientific_test_fixture"
 
     def check_availability(self) -> AvailabilityStatus:
         if self._processor_override is not None and self._model_override is not None:
             return AvailabilityStatus(
                 available=True,
-                reason="Adapter configured with verified injected processor and model interface (unit test harness).",
+                reason="Adapter configured with injected processor/model test doubles (unit-test harness; not real inference).",
                 hardware_info={"mode": "injected_test_interface", "promotable": False},
+            )
+
+        if self.loader_class_name is None:
+            return AvailabilityStatus(
+                available=False,
+                reason=(
+                    f"Unsupported architecture path for model '{self.model_key}': no verified Hugging Face loader is "
+                    f"registered for this family ({type(self).__name__}). Runtime status: {self.runtime_verification}."
+                ),
+                hardware_info={"loader_class": None, "runtime_verification": self.runtime_verification},
             )
 
         if not self._torch_available:
@@ -537,6 +555,9 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
 class Qwen2_5_VLAdapter(OpenWeightVLMAdapter):
     """Specialized adapter for Alibaba Qwen 2.5 VL architecture."""
 
+    loader_class_name = "Qwen2_5_VLForConditionalGeneration"
+    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
+
     def format_multimodal_inputs(
         self,
         system_prompt: str,
@@ -554,13 +575,21 @@ class Qwen2_5_VLAdapter(OpenWeightVLMAdapter):
             },
         ]
         if hasattr(self._processor, "apply_chat_template"):
-            formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            return self._processor(images=pil_image, text=formatted, return_tensors="pt")
+            try:
+                formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                return self._processor(images=pil_image, text=formatted, return_tensors="pt")
+            except Exception as exc:
+                raise ImageConditioningError(
+                    f"Chat template application failed for Qwen2.5-VL: {exc}. Multimodal conditioning cannot proceed."
+                ) from exc
         return self._processor(images=pil_image, text=f"{system_prompt}\n{prompt}", return_tensors="pt")
 
 
 class PixtralVLMAdapter(OpenWeightVLMAdapter):
     """Specialized adapter for Mistral Pixtral 12B architecture."""
+
+    loader_class_name = "LlavaForConditionalGeneration"
+    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
     def format_multimodal_inputs(
         self,
@@ -579,13 +608,21 @@ class PixtralVLMAdapter(OpenWeightVLMAdapter):
             },
         ]
         if hasattr(self._processor, "apply_chat_template"):
-            formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            return self._processor(images=pil_image, text=formatted, return_tensors="pt")
+            try:
+                formatted = self._processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+                return self._processor(images=pil_image, text=formatted, return_tensors="pt")
+            except Exception as exc:
+                raise ImageConditioningError(
+                    f"Chat template application failed for Pixtral: {exc}. Multimodal conditioning cannot proceed."
+                ) from exc
         return self._processor(images=pil_image, text=f"{system_prompt}\n{prompt}", return_tensors="pt")
 
 
 class Llama3_2_VisionAdapter(OpenWeightVLMAdapter):
     """Specialized adapter for Meta Llama 3.2 11B Vision architecture."""
+
+    loader_class_name = "MllamaForConditionalGeneration"
+    runtime_verification = "untested_blocked_no_weights_gpu_runtime_smoke"
 
     def format_multimodal_inputs(
         self,

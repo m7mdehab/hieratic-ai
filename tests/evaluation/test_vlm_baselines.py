@@ -897,7 +897,166 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(status_u, "valid_clustered_ci")
         self.assertLessEqual(ci_u[0], ci_u[1])
 
+    # --- 12. Wave 5 Adversarial Trust Boundary and Integrity Regressions ---
+
+    def test_adversarial_self_issued_approved_receipt_rejected(self) -> None:
+        """Adversarially pass a self-declared 'approved_with_evidence' receipt; external promotion must fail closed."""
+        from eval.vlm.universe import admit_external_items
+        raw_items = [{"item_id": "EXT-CLAIM-001", "rung": "identify"}]
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_it:
+            json.dump({"items": raw_items}, tmp_it)
+            tmp_it_path = Path(tmp_it.name)
+
+        receipt = {
+            "receipt_id": "RECEIPT-SELF-ISSUED-001",
+            "rights_review_status": "approved_with_evidence",
+            "quarantine_verified": True,
+            "independent_reviewer": "self-declared-agent",
+            "permitted_cohort_tier": "approved_evaluation_cohort",
+        }
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_rc:
+            json.dump(receipt, tmp_rc)
+            tmp_rc_path = Path(tmp_rc.name)
+
+        try:
+            admitted, tier, notices = admit_external_items(tmp_it_path, tmp_rc_path)
+            self.assertEqual(tier, "unverified_external_inputs")
+            self.assertTrue(
+                any("cannot be independently verified" in n or "unverified_external_inputs" in n for n in notices),
+                f"Expected notice disabling external cohort promotion, got: {notices}",
+            )
+        finally:
+            tmp_it_path.unlink()
+            tmp_rc_path.unlink()
+
+    def test_adversarial_relabeled_mock_model_fails_require_certified(self) -> None:
+        """Adversarially relabel mock model to a fake live model with all-success attempts; certification must fail."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Attacker re-labels model_key, tier, validity, cert_status and provides fake authorization receipt ref
+        manifest["model_key"] = "fake-open-weight-vlm-7b"
+        manifest["execution_tier"] = "live_local_open_weight"
+        manifest["scientific_validity"] = "certified_baseline"
+        manifest["certification_status"] = "certified"
+        manifest["authorization_receipt_ref"] = "RECEIPT-AUTH-FORGED-001"
+        manifest["universe_manifest"]["items_tier"] = "approved_evaluation_cohort"
+
+        errors = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, require_certified=True)
+        self.assertTrue(
+            any("Certification disabled" in e or "no trusted external authorization authority" in e for e in errors),
+            f"Expected fail-closed certification refusal, got: {errors}",
+        )
+
+    def test_adversarial_altered_universe_with_recomputed_hash_rejected_by_anchor(self) -> None:
+        """Adversarially alter items in universe and recompute internal hash; code anchor must detect tampering."""
+        from eval.vlm.integrity import verify_universe_anchor
+        from eval.vlm.universe import DEFAULT_UNIVERSE_PATH, compute_universe_sha256, load_universe
+        universe = copy.deepcopy(load_universe(DEFAULT_UNIVERSE_PATH))
+
+        # Alter an item in the universe and recompute universe_sha256 in place
+        universe["items"][0]["rung"] = "translate"
+        universe["universe_sha256"] = compute_universe_sha256(universe)
+
+        anchor_errs = verify_universe_anchor(universe)
+        self.assertTrue(
+            any("does not match the code-pinned anchor" in e for e in anchor_errs),
+            f"Expected code-pinned anchor violation, got: {anchor_errs}",
+        )
+
+    def test_adversarial_image_swap_under_same_item_id_detected(self) -> None:
+        """Adversarially swap an attempt's image under the same item ID; auditor must detect hash mismatch."""
+        from eval.vlm.universe import DEFAULT_UNIVERSE_PATH
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Swap image_sha256 on the first attempt
+        original_hash = manifest["attempts"][0]["image_sha256"]
+        manifest["attempts"][0]["image_sha256"] = hashlib.sha256(b"swapped_image_bytes").hexdigest()
+
+        errors = audit_manifest(manifest, suite_path=SUITE_PATH, schema_path=SCHEMA_PATH, universe_path=DEFAULT_UNIVERSE_PATH)
+        self.assertTrue(
+            any("image swap under same item ID" in e for e in errors),
+            f"Expected image swap detection, got: {errors}",
+        )
+
+    def test_adversarial_score_and_paired_compare_refuse_corrupted_inputs_without_diagnostic_only(self) -> None:
+        """Score and paired-compare must refuse corrupted/unaudited inputs unless --diagnostic-only is passed."""
+        adapter = MockVLMAdapter(self.suite_data["models"][0])
+        runner = VLMRunner(self.suite_data, self.demos_data, adapter, suite_path=SUITE_PATH, demos_path=DEMOS_PATH)
+        items = create_synthetic_items()
+        manifest = runner.run_suite(items, shot_mode="zero_shot")
+
+        # Corrupt manifest attempts by dropping one attempt (violating frozen universe)
+        manifest["attempts"].pop(0)
+        manifest["coverage_summary"]["total_attempts"] = len(manifest["attempts"])
+
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_m:
+            json.dump(manifest, tmp_m)
+            tmp_manifest_path = Path(tmp_m.name)
+
+        try:
+            # 1. score CLI invocation without --diagnostic-only must fail (return non-zero)
+            ret_score = cli_main(["score", "--manifest", str(tmp_manifest_path)])
+            self.assertEqual(ret_score, 1)
+
+            # 2. score CLI invocation with --diagnostic-only must succeed and emit noncertifiable envelope
+            with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp_out:
+                tmp_out_path = Path(tmp_out.name)
+            # Remove tmp_out so write_json_atomic (no-clobber) can write it
+            tmp_out_path.unlink()
+
+            ret_diag = cli_main([
+                "score",
+                "--manifest", str(tmp_manifest_path),
+                "--diagnostic-only",
+                "--output", str(tmp_out_path),
+            ])
+            self.assertEqual(ret_diag, 0)
+            score_report = json.loads(tmp_out_path.read_text(encoding="utf-8"))
+            self.assertEqual(score_report.get("classification"), "noncertifiable_diagnostic")
+            self.assertFalse(score_report["audit_receipt"]["audit_passed"])
+            self.assertGreater(score_report["audit_receipt"]["audit_error_count"], 0)
+            tmp_out_path.unlink()
+
+            # 3. paired-compare CLI invocation without --diagnostic-only must fail
+            ret_comp = cli_main([
+                "paired-compare",
+                "--manifest-a", str(tmp_manifest_path),
+                "--manifest-b", str(tmp_manifest_path),
+            ])
+            self.assertEqual(ret_comp, 1)
+
+        finally:
+            if tmp_manifest_path.exists():
+                tmp_manifest_path.unlink()
+
+    def test_adversarial_no_clobber_atomic_writer_refuses_overwrite(self) -> None:
+        """Verify write_json_no_clobber and write_bytes_no_clobber refuse overwriting existing files."""
+        from eval.vlm.integrity import ImmutableOutputError, write_bytes_no_clobber, write_json_no_clobber
+
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp.write("original_content")
+            tmp_path = Path(tmp.name)
+
+        try:
+            with self.assertRaises(ImmutableOutputError):
+                write_bytes_no_clobber(tmp_path, b"new_content")
+
+            with self.assertRaises(ImmutableOutputError):
+                write_json_no_clobber(tmp_path, {"new": "content"})
+
+            # Verify original content is intact
+            self.assertEqual(tmp_path.read_text(encoding="utf-8"), "original_content")
+        finally:
+            tmp_path.unlink()
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

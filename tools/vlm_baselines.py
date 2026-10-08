@@ -12,7 +12,6 @@ import hashlib
 import json
 from pathlib import Path
 import sys
-import tempfile
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -25,12 +24,20 @@ from eval.vlm.adapter import (
     UnverifiedDemonstrationError,
     get_adapter,
 )
+from eval.vlm.integrity import (
+    NONCERTIFIABLE_CLASSIFICATION,
+    verify_attempts_against_universe,
+    verify_external_authorization,
+    verify_universe_anchor,
+    write_json_no_clobber,
+)
 from eval.vlm.runner import VLMRunner
 from eval.vlm.scorer import compare_manifests, score_manifest
 from eval.vlm.universe import (
     DEFAULT_UNIVERSE_PATH,
     admit_external_items,
     compute_universe_sha256,
+    fatal_admission_errors,
     get_expected_attempts,
     get_universe_gold,
     get_universe_items,
@@ -74,19 +81,12 @@ def load_json(path: Path) -> Any:
 
 
 def write_json_atomic(path: Path, data: Any, indent: int = 2) -> None:
-    """Atomically write JSON data to file to prevent corrupted partial writes."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    serialized = json.dumps(data, indent=indent)
-    temp_file = path.parent / f".tmp_{path.name}_{tempfile.mktemp(dir='')}"
-    try:
-        temp_file.write_text(serialized, encoding="utf-8")
-        temp_file.replace(path)
-    finally:
-        if temp_file.exists():
-            try:
-                temp_file.unlink()
-            except OSError:
-                pass
+    """Publish JSON with exclusive no-clobber semantics (never replaces an existing output).
+
+    Name kept for compatibility; delegates to ``write_json_no_clobber`` (exclusive temp
+    file, fsync, hard-link commit). Raises ImmutableOutputError if the target exists.
+    """
+    write_json_no_clobber(Path(path), data, indent=indent)
 
 
 def validate_with_schema(payload: Any, schema: dict[str, Any]) -> list[str]:
@@ -262,8 +262,20 @@ def audit_manifest(
     cov = manifest.get("coverage_summary", {})
     attempts = manifest.get("attempts", [])
 
-    # Promotion prevention: fail-closed certification gate
+    # Promotion prevention: fail-closed certification gate.
+    # Every field checked below lives in the editable manifest, so none of them can ever
+    # *establish* certification. Certification requires externally anchored evidence
+    # (verified authorization authority, source evidence, model-inference receipt).
+    # Until that exists, --require-certified fails unconditionally.
     if require_certified:
+        auth_ok, auth_msg = verify_external_authorization(manifest)
+        if not auth_ok:
+            errors.append(f"Promotion rejection / Certification disabled: {auth_msg}")
+        errors.append(
+            "Promotion rejection / Certification disabled: no actual model-inference receipt, externally anchored "
+            "source evidence or independently verified cohort authorization is available; manifest tier, model key, "
+            "status, receipt reference and success counts are user-editable and are not evidence."
+        )
         if not manifest.get("authorization_receipt_ref"):
             errors.append(
                 f"Promotion rejection / Certification rejection: Manifest '{manifest.get('manifest_id')}' lacks an "
@@ -313,9 +325,11 @@ def audit_manifest(
                 target_name = target_universe_path.name
 
             u_errors = verify_universe_integrity(universe_data)
+            errors.extend([f"Universe anchor violation: {e}" for e in verify_universe_anchor(universe_data)])
             if u_errors:
                 errors.extend([f"Independent universe '{target_name}' integrity error: {e}" for e in u_errors])
             else:
+                errors.extend(verify_attempts_against_universe(manifest, universe_data))
                 expected_u_id = universe_data.get("universe_id")
                 expected_u_sha = universe_data.get("universe_sha256")
                 manifest_u_id = univ.get("universe_id")
@@ -489,6 +503,27 @@ def create_synthetic_gold() -> dict[str, dict[str, Any]]:
         }
 
 
+def make_audit_receipt(audit_errors: list[str], universe_path: Path | str | dict[str, Any]) -> dict[str, Any]:
+    """Describe what was (and was not) audited. Outputs are never certifiable in this preflight."""
+    try:
+        udata = universe_path if isinstance(universe_path, dict) else load_universe(Path(universe_path))
+        universe_id = udata.get("universe_id")
+        universe_sha = compute_universe_sha256(udata)
+    except Exception:
+        universe_id, universe_sha = None, None
+    return {
+        "audit_passed": not audit_errors,
+        "audit_error_count": len(audit_errors),
+        "audit_errors": list(audit_errors),
+        "universe_id": universe_id,
+        "universe_sha256_computed": universe_sha,
+        "universe_trust": "code_pinned_synthetic_preflight_self_check_only",
+        "external_authorization": "not_integrated",
+        "certifiable": False,
+        "scope": "attempted universe of the audited manifest(s); not a benchmark-complete scientific result",
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Reproducible VLM baseline runner and audit CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -530,6 +565,7 @@ def main(argv: list[str] | None = None) -> int:
     p_score.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH)
     p_score.add_argument("--output", type=Path, default=None)
     p_score.add_argument("--allow-incomplete-gold", action="store_true", help="Permit missing gold without failing closed")
+    p_score.add_argument("--diagnostic-only", action="store_true", help="Score even if the input audit fails; output is stamped noncertifiable with the audit errors")
 
     # paired-compare
     p_comp = subparsers.add_parser("paired-compare", help="Compare two run manifests on identical items")
@@ -540,6 +576,7 @@ def main(argv: list[str] | None = None) -> int:
     p_comp.add_argument("--gold", type=Path, default=None)
     p_comp.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE_PATH)
     p_comp.add_argument("--output", type=Path, default=None)
+    p_comp.add_argument("--diagnostic-only", action="store_true", help="Compare even if an input audit fails; output is stamped noncertifiable with the audit errors")
 
     args = parser.parse_args(argv)
 
@@ -596,8 +633,12 @@ def main(argv: list[str] | None = None) -> int:
 
             if args.items and args.items.is_file():
                 items, items_tier, adm_errors = admit_external_items(args.items, args.admission_receipt)
-                if adm_errors:
-                    raise VLMCLIError(f"External items admission failed: {'; '.join(adm_errors)}")
+                for note in adm_errors:
+                    if note not in fatal_admission_errors(adm_errors):
+                        print(note, file=sys.stderr)
+                fatal = fatal_admission_errors(adm_errors)
+                if fatal:
+                    raise VLMCLIError(f"External items admission failed: {'; '.join(fatal)}")
             else:
                 if universe_data:
                     items = get_universe_items(universe_data)
@@ -634,6 +675,15 @@ def main(argv: list[str] | None = None) -> int:
 
         elif args.command == "score":
             manifest = load_json(args.manifest)
+            audit_errors = audit_manifest(
+                args.manifest, DEFAULT_SUITE_PATH, universe_path=args.universe
+            )
+            if audit_errors and not args.diagnostic_only:
+                print("Score REFUSED: input manifest failed independent audit (use --diagnostic-only for a "
+                      "noncertifiable diagnostic):", file=sys.stderr)
+                for e in audit_errors:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
             if args.gold and args.gold.is_file():
                 gold = load_json(args.gold) if args.gold.suffix.lower() == ".json" else load_yaml(args.gold)
             elif args.universe and args.universe.is_file():
@@ -647,12 +697,18 @@ def main(argv: list[str] | None = None) -> int:
                 gold,
                 require_complete_gold=(not args.allow_incomplete_gold),
             )
+            report["audit_receipt"] = make_audit_receipt(audit_errors, args.universe)
+            report["classification"] = NONCERTIFIABLE_CLASSIFICATION
 
             if args.output:
                 write_json_atomic(args.output, report)
                 print(f"Report written to {args.output}")
 
-            print(f"PASS: Scored manifest '{manifest['manifest_id']}' (Channel: {report['scoring_channel']}):")
+            print(
+                f"PASS: Scored manifest '{manifest['manifest_id']}' (Channel: {report['scoring_channel']}; "
+                f"classification: {NONCERTIFIABLE_CLASSIFICATION}; input audit "
+                f"{'passed' if not audit_errors else 'FAILED (diagnostic-only)'}):"
+            )
             for rung, rdata in report["project_native_eval001"].items():
                 ci_str = str(rdata['cluster_bootstrap_ci_95']) if rdata['cluster_bootstrap_ci_95'] else f"[{rdata['cluster_ci_status']}]"
                 print(
@@ -666,6 +722,15 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "paired-compare":
             manifest_a = load_json(args.manifest_a)
             manifest_b = load_json(args.manifest_b)
+            audit_errors = audit_manifest(
+                args.manifest_a, DEFAULT_SUITE_PATH, universe_path=args.universe
+            ) + audit_manifest(args.manifest_b, DEFAULT_SUITE_PATH, universe_path=args.universe)
+            if audit_errors and not args.diagnostic_only:
+                print("Paired comparison REFUSED: an input manifest failed independent audit (use "
+                      "--diagnostic-only for a noncertifiable diagnostic):", file=sys.stderr)
+                for e in audit_errors:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
             if args.gold and args.gold.is_file():
                 gold = load_json(args.gold) if args.gold.suffix.lower() == ".json" else load_yaml(args.gold)
             elif args.universe and args.universe.is_file():
@@ -681,11 +746,19 @@ def main(argv: list[str] | None = None) -> int:
                 shot_mode_a=args.shot_mode_a,
                 shot_mode_b=args.shot_mode_b,
             )
+            envelope = {
+                "classification": NONCERTIFIABLE_CLASSIFICATION,
+                "audit_receipt": make_audit_receipt(audit_errors, args.universe),
+                "comparisons": comps,
+            }
             if args.output:
-                write_json_atomic(args.output, comps)
+                write_json_atomic(args.output, envelope)
                 print(f"Comparison written to {args.output}")
 
-            print(f"PASS: Paired comparison ({manifest_a['model_key']} vs {manifest_b['model_key']}):")
+            print(
+                f"PASS: Paired comparison ({manifest_a['model_key']} vs {manifest_b['model_key']}; "
+                f"classification: {NONCERTIFIABLE_CLASSIFICATION}):"
+            )
             for c in comps:
                 ci_str = str(c['delta_cluster_ci_95']) if c['delta_cluster_ci_95'] else f"[{c['delta_ci_status']}]"
                 print(

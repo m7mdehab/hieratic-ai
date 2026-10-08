@@ -1,0 +1,32 @@
+schema_version: 1.0.0
+lexicon_id: synthetic-lexicon-fixture
+lexicon_version: 1.0.0
+scientific_status: illustrative_synthetic
+entries:
+- entry_id: synthetic-analysis-a
+  form: SYNTHETIC-READING-A
+  form_sha256: 61c55605eb90ed0160a87514e0bc0097c396007b7a81ddad03f7a479bcd9a79e
+  lemma:
+    lemma_id: synthetic-lemma-a
+    value: SYNTHETIC-LEMMA-A
+  root:
+    root_id: synthetic-root-a
+    value: SYNTHETIC-ROOT-A
+    status: unresolved
+  part_of_speech: unknown
+  grammatical_features: {}
+  inflection:
+    paradigm_id: null
+    features: {}
+    analysis_status: unresolved
+  historical_period: null
+  attestations: []
+  confidence: 0.2
+  uncertainty:
+  - fabricated placeholder; no scholarly attestation
+  scientific_status: illustrative_synthetic
+  rights:
+    rights_class: SYNTHETIC
+    intended_use: synthetic_only
+    attribution: repository-authored fixture
+    review_status: not_applicable_synthetic

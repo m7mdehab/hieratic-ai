@@ -1,0 +1,853 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/lexical_interpretation.schema.json",
+  "title": "Hieratic AI lexical and morphological interpretation contract",
+  "type": "object",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$"
+    },
+    "featureValue": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "person": {
+          "enum": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        "number": {
+          "enum": [
+            "singular",
+            "dual",
+            "plural"
+          ]
+        },
+        "gender": {
+          "enum": [
+            "masculine",
+            "feminine",
+            "common",
+            "unknown"
+          ]
+        },
+        "case": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "tense": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "aspect": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "mood": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "voice": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "state": {
+          "$ref": "#/$defs/featureValue"
+        },
+        "polarity": {
+          "enum": [
+            "positive",
+            "negative"
+          ]
+        },
+        "determination": {
+          "$ref": "#/$defs/featureValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "citation": {
+      "type": "object",
+      "required": [
+        "citation_id",
+        "bibliographic_reference",
+        "locator",
+        "url",
+        "verification_evidence_url",
+        "verified_by",
+        "verified_at"
+      ],
+      "properties": {
+        "citation_id": {
+          "$ref": "#/$defs/id"
+        },
+        "bibliographic_reference": {
+          "type": "string",
+          "minLength": 8
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "verification_evidence_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "verified_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceIdentity": {
+      "type": "object",
+      "required": [
+        "source_registry_id",
+        "source_object_id",
+        "source_content_sha256"
+      ],
+      "properties": {
+        "source_registry_id": {
+          "type": "string",
+          "pattern": "^SRC-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "source_object_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_content_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "attestation": {
+      "type": "object",
+      "required": [
+        "citation",
+        "source_identity",
+        "historical_period",
+        "context",
+        "confidence",
+        "uncertainty"
+      ],
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/citation"
+        },
+        "source_identity": {
+          "$ref": "#/$defs/sourceIdentity"
+        },
+        "historical_period": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "rights": {
+      "type": "object",
+      "required": [
+        "rights_class",
+        "intended_use",
+        "attribution",
+        "review_status"
+      ],
+      "properties": {
+        "rights_class": {
+          "enum": [
+            "SYNTHETIC",
+            "OPEN-PD",
+            "OPEN-BY",
+            "OPEN-SA",
+            "NONCOMMERCIAL",
+            "PER-ITEM",
+            "EVALUATION-ONLY",
+            "RESTRICTED",
+            "UNKNOWN"
+          ]
+        },
+        "intended_use": {
+          "enum": [
+            "synthetic_only",
+            "research",
+            "development",
+            "evaluation",
+            "not_approved"
+          ]
+        },
+        "attribution": {
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "not_applicable_synthetic",
+            "independently_verified",
+            "pending",
+            "rejected"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "entry_id",
+        "form",
+        "form_sha256",
+        "lemma",
+        "root",
+        "part_of_speech",
+        "grammatical_features",
+        "inflection",
+        "historical_period",
+        "attestations",
+        "confidence",
+        "uncertainty",
+        "scientific_status",
+        "rights"
+      ],
+      "properties": {
+        "entry_id": {
+          "$ref": "#/$defs/id"
+        },
+        "form": {
+          "type": "string",
+          "minLength": 1
+        },
+        "form_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "lemma": {
+          "type": "object",
+          "required": [
+            "lemma_id",
+            "value"
+          ],
+          "properties": {
+            "lemma_id": {
+              "$ref": "#/$defs/id"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "root": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "root_id": {
+              "$ref": "#/$defs/id"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "enum": [
+                "proposed",
+                "attested",
+                "disputed",
+                "unresolved"
+              ]
+            }
+          },
+          "required": [
+            "root_id",
+            "value",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "part_of_speech": {
+          "enum": [
+            "noun",
+            "verb",
+            "adjective",
+            "adverb",
+            "pronoun",
+            "preposition",
+            "particle",
+            "conjunction",
+            "interjection",
+            "unknown"
+          ]
+        },
+        "grammatical_features": {
+          "$ref": "#/$defs/features"
+        },
+        "inflection": {
+          "type": "object",
+          "required": [
+            "paradigm_id",
+            "features",
+            "analysis_status"
+          ],
+          "properties": {
+            "paradigm_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "features": {
+              "$ref": "#/$defs/features"
+            },
+            "analysis_status": {
+              "enum": [
+                "attested",
+                "candidate",
+                "unresolved",
+                "not_applicable"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "historical_period": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attestations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/attestation"
+          },
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scientific_status": {
+          "enum": [
+            "illustrative_synthetic",
+            "scholarly_candidate"
+          ]
+        },
+        "rights": {
+          "$ref": "#/$defs/rights"
+        }
+      },
+      "additionalProperties": false
+    },
+    "lexicon": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "lexicon_id",
+        "lexicon_version",
+        "scientific_status",
+        "entries"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "lexicon_id": {
+          "$ref": "#/$defs/id"
+        },
+        "lexicon_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "scientific_status": {
+          "enum": [
+            "illustrative_synthetic",
+            "scholarly_candidate"
+          ]
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entry"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "normalizationManifest": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "normalization_id",
+        "normalization_version_id",
+        "generator",
+        "annotation",
+        "profile",
+        "items",
+        "collisions"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "normalization_id": {
+          "type": "string"
+        },
+        "normalization_version_id": {
+          "type": "string",
+          "pattern": "^ling-[a-f0-9]{64}$"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "annotation": {
+          "type": "object",
+          "required": [
+            "annotation_id",
+            "sha256",
+            "source_registry_id",
+            "source_object_id",
+            "rights_provenance_ref",
+            "source_url"
+          ],
+          "properties": {
+            "source_url": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "profile": {
+          "type": "object"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "unit_id",
+              "line_id",
+              "source_layer",
+              "gold_status",
+              "acceptable_reading_ids",
+              "values",
+              "diplomatic_transliteration",
+              "normalized_representation",
+              "linguistic_analysis"
+            ],
+            "properties": {
+              "unit_id": {
+                "type": "string"
+              },
+              "line_id": {
+                "type": "string"
+              },
+              "token_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "source_layer": {
+                "enum": [
+                  "diplomatic_transliteration",
+                  "normalized_token"
+                ]
+              },
+              "gold_status": {
+                "enum": [
+                  "certain",
+                  "uncertain_with_alternatives",
+                  "illegible_unscorable",
+                  "missing_annotation",
+                  "adjudication_pending"
+                ]
+              },
+              "acceptable_reading_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "source_value_id",
+                    "diplomatic_text",
+                    "normalized_text",
+                    "source_sha256",
+                    "normalized_sha256"
+                  ]
+                }
+              },
+              "diplomatic_transliteration": {
+                "type": "object"
+              },
+              "normalized_representation": {
+                "type": "object"
+              },
+              "linguistic_analysis": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "collisions": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
+    },
+    "interpretationManifest": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "interpretation_version_id",
+        "interpretation_input",
+        "lexicon",
+        "generator",
+        "items",
+        "metrics"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "interpretation_version_id": {
+          "type": "string",
+          "pattern": "^lex-[a-f0-9]{64}$"
+        },
+        "interpretation_input": {
+          "type": "object",
+          "required": [
+            "normalization_version_id",
+            "annotation_sha256",
+            "source_registry_id",
+            "source_object_id"
+          ],
+          "properties": {
+            "normalization_version_id": {
+              "type": "string",
+              "pattern": "^ling-[a-f0-9]{64}$"
+            },
+            "annotation_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "source_registry_id": {
+              "type": "string"
+            },
+            "source_object_id": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "lexicon": {
+          "type": "object",
+          "required": [
+            "lexicon_id",
+            "lexicon_version",
+            "lexicon_sha256",
+            "scientific_status"
+          ],
+          "properties": {
+            "lexicon_id": {
+              "$ref": "#/$defs/id"
+            },
+            "lexicon_version": {
+              "type": "string"
+            },
+            "lexicon_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "scientific_status": {
+              "enum": [
+                "illustrative_synthetic",
+                "scholarly_candidate"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "generator": {
+          "const": "hieratic-lexical-interpretation/1.0.0"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interpretationItem"
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "required": [
+            "computed",
+            "reason"
+          ],
+          "properties": {
+            "computed": {
+              "const": false
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "analysisCandidate": {
+      "type": "object",
+      "required": [
+        "entry_id",
+        "lemma",
+        "root",
+        "part_of_speech",
+        "grammatical_features",
+        "inflection",
+        "historical_period",
+        "attestations",
+        "confidence",
+        "uncertainty",
+        "scientific_status"
+      ],
+      "properties": {
+        "lemma": {
+          "type": "object"
+        },
+        "root": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "grammatical_features": {
+          "$ref": "#/$defs/features"
+        },
+        "inflection": {
+          "type": "object"
+        },
+        "entry_id": {
+          "$ref": "#/$defs/id"
+        },
+        "part_of_speech": {
+          "enum": [
+            "noun",
+            "verb",
+            "adjective",
+            "adverb",
+            "pronoun",
+            "preposition",
+            "particle",
+            "conjunction",
+            "interjection",
+            "unknown"
+          ]
+        },
+        "historical_period": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attestations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/attestation"
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scientific_status": {
+          "enum": [
+            "illustrative_synthetic",
+            "scholarly_candidate"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "readingResult": {
+      "type": "object",
+      "required": [
+        "source_value_id",
+        "normalized_text",
+        "analyses",
+        "outcome",
+        "reason"
+      ],
+      "properties": {
+        "source_value_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "normalized_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "normalized_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "analyses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/analysisCandidate"
+          }
+        },
+        "outcome": {
+          "enum": [
+            "interpreted",
+            "ambiguous",
+            "unattested",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "interpretationItem": {
+      "type": "object",
+      "required": [
+        "unit_id",
+        "line_id",
+        "token_id",
+        "source_layer",
+        "source_gold_status",
+        "source_value_ids",
+        "diplomatic_transliteration",
+        "normalized_representation",
+        "readings",
+        "outcome",
+        "source_analysis_preserved",
+        "gold_scoring_eligible"
+      ],
+      "properties": {
+        "unit_id": {
+          "type": "string"
+        },
+        "line_id": {
+          "type": "string"
+        },
+        "token_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_layer": {
+          "enum": [
+            "diplomatic_transliteration",
+            "normalized_token"
+          ]
+        },
+        "source_gold_status": {
+          "enum": [
+            "certain",
+            "uncertain_with_alternatives",
+            "illegible_unscorable",
+            "missing_annotation",
+            "adjudication_pending"
+          ]
+        },
+        "source_value_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diplomatic_transliteration": {
+          "type": "object"
+        },
+        "normalized_representation": {
+          "type": "object"
+        },
+        "readings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/readingResult"
+          }
+        },
+        "outcome": {
+          "enum": [
+            "interpreted",
+            "ambiguous",
+            "unattested",
+            "unknown"
+          ]
+        },
+        "source_analysis_preserved": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "gold_scoring_eligible": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

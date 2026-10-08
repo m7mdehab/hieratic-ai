@@ -107,16 +107,30 @@ class BaseVLMAdapter(ABC):
     ) -> Any:
         """Decode, convert to RGB, and enforce aspect-ratio preserving dimensions."""
         self.validate_image_input(image_bytes)
+        is_png = image_bytes.startswith(b"\x89PNG\r\n\x1a\n")
+        is_jpeg = image_bytes.startswith(b"\xff\xd8\xff")
+        is_synth = image_bytes.startswith(b"synthetic_")
+
+        if not (is_png or is_jpeg or is_synth):
+            raise ImageConditioningError(
+                f"Corrupted or invalid image input for model {self.model_key}: "
+                "bytes do not match PNG or JPEG signature."
+            )
+
+        if is_synth:
+            # Never allow a fabricated placeholder to enter a real-weight
+            # inference run. Synthetic markers are supported solely by
+            # explicitly injected CI test doubles, which are non-scientific.
+            if self.scientific_validity != "non_scientific_test_fixture":
+                raise ImageConditioningError(
+                    "Synthetic image marker is prohibited for real open-weight inference."
+                )
+            if Image is not None:
+                return Image.new("RGB", (min_dim, min_dim), color=(128, 128, 128))
+            return None
+
         if Image is None:
             # Fallback binary magic byte and dimension checks when PIL is absent
-            is_png = image_bytes.startswith(b"\x89PNG\r\n\x1a\n")
-            is_jpeg = image_bytes.startswith(b"\xff\xd8\xff")
-            is_synth = image_bytes.startswith(b"synthetic_")
-            if not (is_png or is_jpeg or is_synth):
-                raise ImageConditioningError(
-                    f"Corrupted or invalid image input for model {self.model_key}: "
-                    "bytes do not match PNG or JPEG signature."
-                )
             if is_png and len(image_bytes) >= 24:
                 import struct
                 w, h = struct.unpack(">II", image_bytes[16:24])
@@ -125,6 +139,7 @@ class BaseVLMAdapter(ABC):
                         f"Image dimensions ({w}x{h}) smaller than minimum allowed {min_dim}px."
                     )
             return None
+
         try:
             pil_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         except Exception as exc:
@@ -519,8 +534,9 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
         device_count = torch.cuda.device_count() if cuda_ok else 0
         device_name = torch.cuda.get_device_name(0) if cuda_ok else None
 
+        requires_cuda = self.model_config.get("requires_cuda", True)
         min_vram_gb = 16.0 if "7b" in self.model_key else 24.0
-        if self.model_config.get("requires_cuda", True) and not cuda_ok:
+        if requires_cuda and not cuda_ok:
             info = dict(base_hw_info)
             info.update({
                 "cuda_available": False,
@@ -540,9 +556,14 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
             "device_name": device_name,
             "weights_found": True,
         })
+        reason = (
+            "Local runtime meets GPU acceleration and offline weights prerequisites."
+            if cuda_ok
+            else "Local runtime meets CPU execution and offline weights prerequisites."
+        )
         return AvailabilityStatus(
             available=True,
-            reason="Local runtime meets GPU acceleration and offline weights prerequisites.",
+            reason=reason,
             hardware_info=info,
         )
 
@@ -926,6 +947,56 @@ class Llama3_2_VisionAdapter(OpenWeightVLMAdapter):
         )
 
 
+class SmolVLMAdapter(OpenWeightVLMAdapter):
+    """Specialized adapter for HuggingFace SmolVLM lightweight vision-language models."""
+
+    loader_class_name = "Idefics3ForConditionalGeneration"
+    processor_class_name = "AutoProcessor"
+    min_transformers_version = "4.46.0"
+    min_torch_version = "2.4.0"
+    runtime_verification = "cpu_lightweight_open_weight_verified"
+
+    def format_multimodal_inputs(
+        self,
+        system_prompt: str,
+        prompt: str,
+        pil_image: Any,
+    ) -> dict[str, Any]:
+        """Format inputs for SmolVLM using official Idefics3 chat template structure."""
+        messages: list[dict[str, Any]] = []
+        if system_prompt:
+            messages.append({
+                "role": "system",
+                "content": [{"type": "text", "text": system_prompt}],
+            })
+        messages.append({
+            "role": "user",
+            "content": [
+                {"type": "image"},
+                {"type": "text", "text": prompt},
+            ],
+        })
+        if hasattr(self._processor, "apply_chat_template"):
+            try:
+                formatted = self._processor.apply_chat_template(
+                    messages, tokenize=False, add_generation_prompt=True,
+                )
+                if not isinstance(formatted, str) or not formatted.strip():
+                    raise ImageConditioningError(
+                        "SmolVLM chat template did not return a nonempty text prompt."
+                    )
+                return self._processor(images=[pil_image], text=formatted, return_tensors="pt")
+            except Exception as exc:
+                raise ImageConditioningError(
+                    f"Chat template application failed for SmolVLM: {exc}. Multimodal conditioning cannot proceed."
+                ) from exc
+
+        raise ImageConditioningError(
+            f"Processor for '{self.model_key}' lacks apply_chat_template. "
+            "Cannot establish trusted SmolVLM image conditioning."
+        )
+
+
 def get_adapter(model_config: dict[str, Any], **kwargs: Any) -> BaseVLMAdapter:
     """Factory creating an appropriate adapter based on model configuration and architecture."""
     model_type = model_config.get("model_type")
@@ -940,6 +1011,8 @@ def get_adapter(model_config: dict[str, Any], **kwargs: Any) -> BaseVLMAdapter:
             return PixtralVLMAdapter(model_config, **kwargs)
         elif "llama" in key:
             return Llama3_2_VisionAdapter(model_config, **kwargs)
+        elif "smolvlm" in key:
+            return SmolVLMAdapter(model_config, **kwargs)
         return OpenWeightVLMAdapter(model_config, **kwargs)
     else:
         raise VLMAdapterError(f"Unsupported model type '{model_type}' for model '{model_config.get('key')}'")

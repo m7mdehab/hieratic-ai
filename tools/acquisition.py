@@ -245,7 +245,11 @@ def _validate_metadata_output(output: Path) -> Path:
     if resolved_parent != absolute.parent or not resolved_parent.is_dir():
         raise AcquisitionError("metadata packet output parent must be a real directory")
     if absolute.is_symlink() or (hasattr(absolute, "is_junction") and absolute.is_junction()) or absolute.exists():
-        raise AcquisitionError("refusing to overwrite existing metadata packdef _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
+        raise AcquisitionError("refusing to overwrite existing metadata packet")
+    return absolute
+
+
+def _publish_metadata_packet(output: Path, packet: dict[str, Any]) -> None:
     """Publish through an anchored directory FD, never through re-resolved parent symlinks.
 
     The POSIX dirfd + O_NOFOLLOW chain protects against a parent swapped after
@@ -314,9 +318,6 @@ def _validate_metadata_output(output: Path) -> Path:
                 pass
         for opened_fd in reversed(open_fds):
             os.close(opened_fd)
-
-ror:
-                pass
 
 
 def _load_yaml(path: Path) -> Any:

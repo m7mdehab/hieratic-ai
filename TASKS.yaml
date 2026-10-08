@@ -387,7 +387,7 @@ tasks:
     phase: "P6_INTERPRETATION"
     title: "Add lexical and morphological interpretation"
     weight: 2.00
-    status: "active"
+    status: "validated"
     owner_role: "execution_agent"
     depends_on: ["LING-001"]
     acceptance_summary: "Recognized text is linked to defensible lexical/morphological analyses with alternatives where ambiguous."
@@ -396,7 +396,7 @@ tasks:
     phase: "P6_INTERPRETATION"
     title: "Add translation layer"
     weight: 2.00
-    status: "blocked"
+    status: "ready"
     owner_role: "execution_agent"
     depends_on: ["LING-002"]
     acceptance_summary: "System produces meaning/translation evaluated separately from recognition/transliteration accuracy."

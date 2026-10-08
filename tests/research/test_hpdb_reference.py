@@ -111,5 +111,67 @@ class HPDBReferenceTests(unittest.TestCase):
             self.assertNotIn(snippet,source)
 
 
+class RealPublishedHPDBMetadataTests(unittest.TestCase):
+    """Full 2,065-entry real CC BY metadata snapshot, never Tokyo IIIF pixels."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).resolve().parents[2] / "data" / "references" / "hpdb"
+        cls.manifest = json.loads((cls.root/"metadata_manifest.json").read_text(encoding="utf-8"))
+        cls.rows = []
+        for volume in (1, 2, 3):
+            path = cls.root / f"moller_v{volume}_ccby4_metadata.jsonl"
+            cls.rows.extend(json.loads(s) for s in path.read_text(encoding="utf-8").splitlines() if s.strip())
+
+    def test_real_source_population_and_pinned_provenance(self):
+        self.assertEqual(2065, len(self.rows))
+        self.assertEqual(2065, self.manifest["total_sign_records"])
+        self.assertEqual("6efc36471b47255cfc03f6ba8cf9c887a293bb89", self.manifest["source_git_blob_sha1"])
+        self.assertEqual("a8cfcf52632487cf1d61a5793d84c9b2f7192d5a", self.manifest["pinned_repository_commit"])
+        self.assertEqual("CC-BY-4.0", self.manifest["metadata_license"])
+        self.assertFalse(self.manifest["underlying_scans_license_verified"])
+        self.assertFalse(self.manifest["underlying_scans_downloaded"])
+        self.assertEqual("BLOCKED_REFERENCE_METADATA_ONLY", self.manifest["corpus_training_admission"])
+
+    def test_real_all_ids_unique_and_exact_source_pointers(self):
+        ids = [x["id"] for x in self.rows]
+        self.assertEqual(len(ids), len(set(ids)))
+        for x in self.rows:
+            self.assertEqual("https://w3id.org/hpdb/item/"+x["id"], x["item_url"])
+            self.assertTrue(ref._safe_image_reference(x["iiif_ref"]))
+            self.assertIn(x["kind"], {"Main","Number","Ligature"})
+            self.assertIn(x["vol"], {1,2,3})
+            self.assertGreater(x["page"], 0)
+            self.assertLessEqual(x["page"], 250)
+
+    def test_real_source_groups_types_and_uncertainties(self):
+        from collections import Counter
+        self.assertEqual(Counter({1:738,2:670,3:657}),Counter(x["vol"] for x in self.rows))
+        self.assertEqual(Counter({"Main":1626,"Number":251,"Ligature":188}),Counter(x["kind"] for x in self.rows))
+        self.assertEqual(214,len({(x["vol"],x["page"]) for x in self.rows}))
+        self.assertEqual(1439,sum(x["single_sign"] is not None for x in self.rows))
+        self.assertEqual(626,sum(x["single_sign"] is None for x in self.rows))
+        for x in self.rows:
+            if x["single_sign"] is not None:
+                self.assertEqual(x["gardiner_printed"], x["single_sign"])
+
+    def test_actual_bundle_cannot_be_converted_into_source_gold(self):
+        for x in self.rows:
+            self.assertNotIn("image_bytes", x)
+            self.assertNotIn("gold", x)
+            self.assertNotIn("transcription", x)
+            self.assertNotIn("reading_verified", x)
+            self.assertNotIn("training_admission", x)
+        self.assertFalse(self.manifest["source_original_manuscripts_identified"])
+        self.assertFalse(self.manifest["gold_expert_verified"])
+        self.assertFalse(self.manifest["source_witness_independence_verified"])
+        self.assertEqual("BLOCKED_REFERENCE_METADATA_ONLY",self.manifest["scientific_evaluation_admission"])
+
+    def test_mixed_case_gardiner_labels_are_not_corrupted(self):
+        original=source_item(**{"Hieroglyph No":["Aa1"]})
+        item=ref.normalize_item(original)
+        self.assertEqual("Aa1",item["unambiguous_single_gardiner_label"])
+
+
 if __name__ == "__main__":
     unittest.main()

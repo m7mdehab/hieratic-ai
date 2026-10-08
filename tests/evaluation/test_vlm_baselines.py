@@ -781,30 +781,29 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(user_content[1], {"type": "text", "text": "Translate this line"})
 
     def test_llama3_2_vision_adapter_placeholder_formatting(self) -> None:
-        """Verify Llama 3.2 Vision adapter formats text with <|image|> placeholder."""
+        """Llama chat template is mandatory; no hand-written image token fallback."""
         from eval.vlm.adapter import Llama3_2_VisionAdapter
 
         class MockProcessor:
-            mock_image_tag = True
             def __init__(self) -> None:
                 self.last_text = None
-
-            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                self.last_messages = None
+            def apply_chat_template(self, messages, tokenize=False, add_generation_prompt=True):
+                self.last_messages = messages
+                return "<|begin_of_text|><|image|><|assistant|>"
+            def __call__(self, images=None, text="", return_tensors="pt"):
                 self.last_text = text
                 return {"input_ids": [[100, 200]], "pixel_values": [[0.8]], "text": text}
-
-            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+            def batch_decode(self, token_ids, **kwargs):
                 return ["Llama Gardiner sign G43"]
 
         class MockModel:
-            def generate(self, **kwargs: Any) -> list[list[int]]:
+            def generate(self, **kwargs):
                 return [[100, 200, 301]]
 
         proc = MockProcessor()
-        mod = MockModel()
         llama_cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
-        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=proc, model_override=mod)
-
+        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=proc, model_override=MockModel())
         resp = adapter.predict(
             image_bytes=b"synthetic_valid_image_bytes",
             prompt="Identify Gardiner sign",
@@ -813,9 +812,53 @@ class VLMBaselinesTests(unittest.TestCase):
             rung="signs",
             item_id="TEST-LLAMA-01",
         )
-        self.assertEqual(resp.status, "success")
-        self.assertEqual(resp.cleaned_prediction, "Llama Gardiner sign G43")
-        self.assertIn("<|image|><|begin_of_text|>", proc.last_text)
+        self.assertEqual("success", resp.status)
+        self.assertEqual("Llama Gardiner sign G43", resp.cleaned_prediction)
+        self.assertIn("<|image|>", proc.last_text)
+        self.assertEqual("user", proc.last_messages[1]["role"])
+
+    def test_llama_missing_chat_template_fails_closed(self):
+        from eval.vlm.adapter import Llama3_2_VisionAdapter, ImageConditioningError
+        class UnstructuredProcessor:
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1]], "pixel_values": [[0.5]]}
+        cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
+        adapter = Llama3_2_VisionAdapter(cfg, processor_override=UnstructuredProcessor())
+        with self.assertRaisesRegex(ImageConditioningError, "lacks apply_chat_template"):
+            adapter.format_multimodal_inputs("Sys", "Prompt", pil_image=None)
+
+    def test_forged_processor_image_tag_with_text_only_features_is_rejected(self):
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+        class ForgedTagProcessor:
+            mock_image_tag = True
+            def apply_chat_template(self, messages, **kwargs):
+                return "<fake>"
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1, 2]], "text": "no actual image tensor"}
+        class Model:
+            def generate(self, **kwargs):
+                raise AssertionError("Should not generate with text-only inputs")
+        cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(cfg, processor_override=ForgedTagProcessor(), model_override=Model())
+        response = adapter.predict(b"synthetic_valid_image_bytes", "Prompt", "Sys", "zero_shot", "identify", "FOREGED-TAG-1")
+        self.assertEqual("failed", response.status)
+        self.assertIn("ImageConditioningError", response.error_message)
+
+    def test_empty_visual_tensor_is_rejected_before_model_generate(self):
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+        class EmptyTensorProcessor:
+            def apply_chat_template(self, messages, **kwargs):
+                return "<formatted>"
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1, 2]], "pixel_values": []}
+        class Model:
+            def generate(self, **kwargs):
+                raise AssertionError("should not execute")
+        cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(cfg, processor_override=EmptyTensorProcessor(), model_override=Model())
+        response = adapter.predict(b"synthetic_valid_image_bytes", "Prompt", "Sys", "zero_shot", "identify", "EMPTY-PX")
+        self.assertEqual("failed", response.status)
+        self.assertIn("ImageConditioningError", response.error_message)
 
     def test_adapter_oom_runtime_exception_handling(self) -> None:
         """Verify runtime exception / OOM during forward generation produces cleanly recorded failure attempt."""

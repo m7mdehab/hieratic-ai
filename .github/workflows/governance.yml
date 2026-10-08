@@ -41,6 +41,14 @@ jobs:
       - name: Run all data tests
         run: python -m unittest discover -s tests/data -v
 
+      - name: Run all linguistic normalization tests
+        run: |
+          if test -d tests/linguistics; then
+            python -m unittest discover -s tests/linguistics -v
+          else
+            echo "Linguistics suite is not yet on main; it activates when LING-001 is merged."
+          fi
+
       - name: Run all evaluation tests
         run: python -m unittest discover -s tests/evaluation -v
 

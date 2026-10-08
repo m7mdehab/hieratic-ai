@@ -1,6 +1,6 @@
 schema_version: "0.2.0"
 roadmap_version: "0.1.0"
-updated_at: "2026-10-08"
+updated_at: "2026-10-09"
 
 project:
   name: "Hieratic AI"
@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W6_REAL_SOURCE_EVIDENCE_AND_MODEL_RUNTIME"
+  current_wave: "W7_ORIGINAL_IMAGE_REFERENCE_DATA_AND_REAL_VISUAL_SMOKE"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,8 +38,8 @@ state:
     - "LING-002"
   review_tasks: []
   blockers:
-    - "DATA-008: no item-rights-cleared real corpus with independently reviewed gold and clean real train/dev/test partitions."
-    - "VLM-001: incomplete authentic-image few-shot and pinned correct official/native evaluation integration; no verified actual open-weight inference."
+    - "DATA-008: no actual image-bytes-and-rights-cleared real training corpus with admissible scholarly gold and clean real train/dev/test partitions."
+    - "VLM-001: noncertifiable W7 hardware/weights diagnostics merged; no verified genuine open-weight forward, eligible Hieratic evaluation, authentic few-shot cohort or independent certification."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
     - "LING-002: synthetic interpretation preflight merged; no independently licensed Egyptological lexical attestations, expert analyses or gold-backed morphology evaluation."
 
@@ -79,23 +79,24 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W6 R-021/EVAL-003 overseer primary-source and provider-readiness work
-  merged at 53f29b82fe6ab4514e3f7302cc587c1bdee05d22 after three
-  successful exact-head GitHub workflows. The Leiden/Louvre Abnormal
-  Hieratic portal pairs manuscript views with expert source-linked
-  readings but image copyright belongs to Louvre and annotations
-  are CC BY-NC-SA 3.0 NL; commercial-compatible corpus use remains
-  blocked. The public benchmark metadata directly includes Abbott
-  and Hearst original support witnesses. EVAL-003 has documented
-  three official image-capable provider model IDs, but no API calls,
-  original run, approved spend, or newly validated real result.
-  W6 Luna DATA-002 museum-source evidence and Gemini VLM-001 true
-  architecture-specific runtime implementation have been dispatched,
-  and their current PRs require independent exact-head CI review
-  before merging. DATA-008 production remains hard-disabled and
-  VLM-001 scientific certification disabled pending external rights
-  and authentic model/image/gold evidence. Canonical weighted
-  capability remains 32.5/100, research coverage 14, zero trained
-  models or actual validated model experiments. Review agent PR
-  deliverables, maintain safe provenance and rights, and prepare
-  the next dependent tasks without inventing experiment scores.
+  W7 is active. Latest independently integrated research: PR #76 (public
+  scholarly-source inventory and offline HPDB importer) and PR #77 (all 2,065
+  CC BY 4.0 HPDB source-metadata rows, excluding underlying licensed scan
+  pixels) merged. W7 VLM real-smoke preflight PR #78 merged after overseer
+  fixes to simulated sensitivity reporting, deterministic missing-resource
+  tests and CI barrier verification; exact-head workflows passed. No actual
+  checkpoint loaded or real image-conditioned forward was verified; keep
+  VLM-001 active with zero of its 2 points. W7 DATA-003 PR #75 remains open
+  and requires a pinned-parent directory-publication correction following
+  overseer review comment 6069753279, then exact-head Linux CI and
+  integration. The Met API records for nine public-domain-flagged objects
+  are metadata-only; no original image bytes, exact retrieval authorization,
+  gold annotation or corpus admission is established. The linked Met
+  561345/561369 accession group is not yet resolved; 561392 is the preferred
+  first-pair candidate. The owner prioritizes autonomous lawful research
+  using online resources and defers institutional/paid Egyptologist outreach.
+  Advance permitted public references, provenance and safe first-image
+  acquisition separately from rights/annotation promotion. EVAL-003 remains
+  an unexecuted model baseline pending independent provider/budget/rights
+  authorization. Maintain 32.5/100 weighted capability, 14% uncalibrated
+  research coverage, zero validated real experiments and zero trained models.

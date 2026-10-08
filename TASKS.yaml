@@ -396,7 +396,7 @@ tasks:
     phase: "P6_INTERPRETATION"
     title: "Add translation layer"
     weight: 2.00
-    status: "ready"
+    status: "active"
     owner_role: "execution_agent"
     depends_on: ["LING-002"]
     acceptance_summary: "System produces meaning/translation evaluated separately from recognition/transliteration accuracy."

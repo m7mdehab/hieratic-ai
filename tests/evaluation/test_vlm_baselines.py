@@ -781,30 +781,29 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(user_content[1], {"type": "text", "text": "Translate this line"})
 
     def test_llama3_2_vision_adapter_placeholder_formatting(self) -> None:
-        """Verify Llama 3.2 Vision adapter formats text with <|image|> placeholder."""
+        """Llama chat template is mandatory; no hand-written image token fallback."""
         from eval.vlm.adapter import Llama3_2_VisionAdapter
 
         class MockProcessor:
-            mock_image_tag = True
             def __init__(self) -> None:
                 self.last_text = None
-
-            def __call__(self, images: Any = None, text: str = "", return_tensors: str = "pt") -> dict[str, Any]:
+                self.last_messages = None
+            def apply_chat_template(self, messages, tokenize=False, add_generation_prompt=True):
+                self.last_messages = messages
+                return "<|begin_of_text|><|image|><|assistant|>"
+            def __call__(self, images=None, text="", return_tensors="pt"):
                 self.last_text = text
                 return {"input_ids": [[100, 200]], "pixel_values": [[0.8]], "text": text}
-
-            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+            def batch_decode(self, token_ids, **kwargs):
                 return ["Llama Gardiner sign G43"]
 
         class MockModel:
-            def generate(self, **kwargs: Any) -> list[list[int]]:
+            def generate(self, **kwargs):
                 return [[100, 200, 301]]
 
         proc = MockProcessor()
-        mod = MockModel()
         llama_cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
-        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=proc, model_override=mod)
-
+        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=proc, model_override=MockModel())
         resp = adapter.predict(
             image_bytes=b"synthetic_valid_image_bytes",
             prompt="Identify Gardiner sign",
@@ -813,9 +812,53 @@ class VLMBaselinesTests(unittest.TestCase):
             rung="signs",
             item_id="TEST-LLAMA-01",
         )
-        self.assertEqual(resp.status, "success")
-        self.assertEqual(resp.cleaned_prediction, "Llama Gardiner sign G43")
-        self.assertIn("<|image|><|begin_of_text|>", proc.last_text)
+        self.assertEqual("success", resp.status)
+        self.assertEqual("Llama Gardiner sign G43", resp.cleaned_prediction)
+        self.assertIn("<|image|>", proc.last_text)
+        self.assertEqual("user", proc.last_messages[1]["role"])
+
+    def test_llama_missing_chat_template_fails_closed(self):
+        from eval.vlm.adapter import Llama3_2_VisionAdapter, ImageConditioningError
+        class UnstructuredProcessor:
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1]], "pixel_values": [[0.5]]}
+        cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
+        adapter = Llama3_2_VisionAdapter(cfg, processor_override=UnstructuredProcessor())
+        with self.assertRaisesRegex(ImageConditioningError, "lacks apply_chat_template"):
+            adapter.format_multimodal_inputs("Sys", "Prompt", pil_image=None)
+
+    def test_forged_processor_image_tag_with_text_only_features_is_rejected(self):
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+        class ForgedTagProcessor:
+            mock_image_tag = True
+            def apply_chat_template(self, messages, **kwargs):
+                return "<fake>"
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1, 2]], "text": "no actual image tensor"}
+        class Model:
+            def generate(self, **kwargs):
+                raise AssertionError("Should not generate with text-only inputs")
+        cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(cfg, processor_override=ForgedTagProcessor(), model_override=Model())
+        response = adapter.predict(b"synthetic_valid_image_bytes", "Prompt", "Sys", "zero_shot", "identify", "FOREGED-TAG-1")
+        self.assertEqual("failed", response.status)
+        self.assertIn("ImageConditioningError", response.error_message)
+
+    def test_empty_visual_tensor_is_rejected_before_model_generate(self):
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+        class EmptyTensorProcessor:
+            def apply_chat_template(self, messages, **kwargs):
+                return "<formatted>"
+            def __call__(self, **kwargs):
+                return {"input_ids": [[1, 2]], "pixel_values": []}
+        class Model:
+            def generate(self, **kwargs):
+                raise AssertionError("should not execute")
+        cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(cfg, processor_override=EmptyTensorProcessor(), model_override=Model())
+        response = adapter.predict(b"synthetic_valid_image_bytes", "Prompt", "Sys", "zero_shot", "identify", "EMPTY-PX")
+        self.assertEqual("failed", response.status)
+        self.assertIn("ImageConditioningError", response.error_message)
 
     def test_adapter_oom_runtime_exception_handling(self) -> None:
         """Verify runtime exception / OOM during forward generation produces cleanly recorded failure attempt."""
@@ -876,6 +919,122 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(resp.status, "failed")
         self.assertIn("ImageConditioningError", resp.error_message)
         self.assertIn("lacks visual features", resp.error_message)
+
+    def test_qwen_chat_template_failure_fails_closed_without_text_fallback(self) -> None:
+        """Verify Qwen chat template exception raises ImageConditioningError and never falls back to text."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class BrokenTemplateProcessor:
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                raise ValueError("Jinja template syntax error: invalid token")
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1]], "pixel_values": [[0.5]]}
+
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=BrokenTemplateProcessor(), model_override=None)
+
+        with self.assertRaises(ImageConditioningError) as ctx:
+            adapter.format_multimodal_inputs("System prompt", "User prompt", pil_image=None)
+        self.assertIn("Chat template application failed for Qwen2.5-VL", str(ctx.exception))
+
+    def test_pixtral_chat_template_failure_fails_closed(self) -> None:
+        """Verify Pixtral chat template exception fails closed without text-only guessing."""
+        from eval.vlm.adapter import PixtralVLMAdapter
+
+        class BrokenTemplateProcessor:
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                raise RuntimeError("Corrupted Pixtral template format")
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1]], "pixel_values": [[0.5]]}
+
+        pixtral_cfg = next(m for m in self.suite_data["models"] if "pixtral" in m["key"])
+        adapter = PixtralVLMAdapter(pixtral_cfg, processor_override=BrokenTemplateProcessor(), model_override=None)
+
+        with self.assertRaises(ImageConditioningError) as ctx:
+            adapter.format_multimodal_inputs("System prompt", "User prompt", pil_image=None)
+        self.assertIn("Chat template application failed for Pixtral", str(ctx.exception))
+
+    def test_llama_chat_template_failure_fails_closed(self) -> None:
+        """Verify Llama 3.2 Vision chat template exception fails closed without text-only guessing."""
+        from eval.vlm.adapter import Llama3_2_VisionAdapter
+
+        class BrokenTemplateProcessor:
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                raise ValueError("Mllama template formatting exception")
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[1]], "pixel_values": [[0.5]]}
+
+        llama_cfg = next(m for m in self.suite_data["models"] if "llama" in m["key"])
+        adapter = Llama3_2_VisionAdapter(llama_cfg, processor_override=BrokenTemplateProcessor(), model_override=None)
+
+        with self.assertRaises(ImageConditioningError) as ctx:
+            adapter.format_multimodal_inputs("System prompt", "User prompt", pil_image=None)
+        self.assertIn("Chat template application failed for Llama 3.2 Vision", str(ctx.exception))
+
+    def test_prospective_few_shot_formatting_blocks_live_execution(self) -> None:
+        """Verify prospective few-shot formatting raises LiveFewShotBlockedError on all adapters."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        with self.assertRaises(LiveFewShotBlockedError):
+            adapter.format_few_shot_multimodal_inputs("Sys", "User", pil_image=None, demonstration_items=[])
+
+    def test_runtime_metadata_structure_and_no_path_leakage(self) -> None:
+        """Verify get_runtime_metadata returns expected structure without absolute path leakage."""
+        qwen_cfg = next(m for m in self.suite_data["models"] if "qwen" in m["key"])
+        adapter = OpenWeightVLMAdapter(qwen_cfg)
+        meta = adapter.get_runtime_metadata()
+        self.assertEqual(meta["model_key"], "qwen2.5-vl-7b-instruct")
+        self.assertEqual(meta["provider_model_id"], "Qwen/Qwen2.5-VL-7B-Instruct")
+        self.assertEqual(meta["revision"], "bfb8829e3c6c0ebad5da954181947bb9df50b0e0")
+        self.assertEqual(meta["runtime_verification"], "untested_blocked_no_weights_gpu_runtime_smoke")
+        self.assertIn("weights_status", meta)
+        # Verify no local user home paths are leaked
+        meta_str = json.dumps(meta)
+        self.assertNotIn("Users", meta_str)
+        self.assertNotIn("home", meta_str)
+
+    def test_prompt_token_stripping_and_stop_string_configuration(self) -> None:
+        """Verify prompt tokens are stripped and stop sequences are properly configured."""
+        from eval.vlm.adapter import Qwen2_5_VLAdapter
+
+        class MockProcessor:
+            mock_image_tag = True
+            def apply_chat_template(self, messages: Any, **kwargs: Any) -> str:
+                return "<chat/>"
+            def __call__(self, **kwargs: Any) -> dict[str, Any]:
+                return {"input_ids": [[10, 20, 30]], "pixel_values": [[0.1]]}
+            def batch_decode(self, token_ids: Any, **kwargs: Any) -> list[str]:
+                # Check that input prompt tokens were stripped (token_ids should only contain completion)
+                if token_ids and len(token_ids[0]) == 2 and token_ids[0] == [99, 100]:
+                    return ["Clean completion"]
+                return [f"Unstripped tokens: {token_ids}"]
+
+        class MockGenModel:
+            device = "cpu"
+            def __init__(self) -> None:
+                self.last_kwargs = {}
+            def generate(self, **kwargs: Any) -> list[list[int]]:
+                self.last_kwargs = kwargs
+                # Returns input_ids ([10, 20, 30]) + completion ([99, 100])
+                return [[10, 20, 30, 99, 100]]
+
+        mod = MockGenModel()
+        proc = MockProcessor()
+        qwen_cfg = copy.deepcopy(next(m for m in self.suite_data["models"] if "qwen" in m["key"]))
+        qwen_cfg["stop_sequences"] = ["\n\n", "</s>"]
+
+        adapter = Qwen2_5_VLAdapter(qwen_cfg, processor_override=proc, model_override=mod)
+        resp = adapter.predict(
+            image_bytes=b"synthetic_valid_image",
+            prompt="Prompt",
+            system_prompt="Sys",
+            shot_mode="zero_shot",
+            rung="identify",
+            item_id="TEST-STRIP-01",
+        )
+        self.assertEqual(resp.status, "success")
+        self.assertEqual(resp.cleaned_prediction, "Clean completion")
+        self.assertEqual(mod.last_kwargs.get("stop_strings"), ["\n\n", "</s>"])
 
     # --- 11. Statistical Bootstrap Edge Cases ---
 

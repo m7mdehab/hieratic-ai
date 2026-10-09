@@ -2216,6 +2216,137 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(RIME_FIG6_BYTE_SIZE, 36023444)
         self.assertEqual(RIME_FIG8_VERSO_BYTE_SIZE, 41686648)
 
+    def test_w20_media_metadata_and_rights_integrity(self) -> None:
+        """Verify 15 pinned publisher media items, licensing, and 6 physical witness supports."""
+        from eval.vlm.signs import W19_PINNED_MEDIA, MATCHED_5_SAME_SIGN_IDS, DERIVED_OUTLINE_SIGN_IDS
+        self.assertEqual(len(W19_PINNED_MEDIA), 15)
+        signs = {m["sign_id"] for m in W19_PINNED_MEDIA}
+        self.assertEqual(len(signs), 8)
+        witnesses = {m["physical_witness"] for m in W19_PINNED_MEDIA}
+        self.assertEqual(len(witnesses), 6)
+        self.assertEqual(len(MATCHED_5_SAME_SIGN_IDS), 5)
+        self.assertEqual(len(DERIVED_OUTLINE_SIGN_IDS), 2)
+        for m in W19_PINNED_MEDIA:
+            self.assertTrue(m["publisher_media_url"].startswith("https://aku-pal.uni-mainz.de/"))
+            self.assertEqual(len(m["expected_sha256"]), 64)
+            self.assertGreater(m["expected_byte_size"], 0)
+            self.assertIn(m["content_type"], ("image/svg+xml", "image/webp"))
+            self.assertEqual(m.get("rights_status", "CC BY 4.0"), "CC BY 4.0")
+            self.assertIn(m["media_classification"], ("publisher_sign_svg_facsimile", "publication_scan_reproduction", "svg_outline_derivative"))
+
+    def test_w20_dual_prompts_and_hash_anchors(self) -> None:
+        """Verify neutral and leading prompt text and cryptographic hash constants."""
+        from eval.vlm.signs import (
+            FROZEN_NEUTRAL_SIGN_PROMPT,
+            FROZEN_NEUTRAL_PROMPT_SHA256,
+            FROZEN_LEADING_SIGN_PROMPT,
+            FROZEN_LEADING_PROMPT_SHA256,
+            compute_sign_protocol_hash,
+        )
+        self.assertEqual(hashlib.sha256(FROZEN_NEUTRAL_SIGN_PROMPT.encode("utf-8")).hexdigest(), FROZEN_NEUTRAL_PROMPT_SHA256)
+        self.assertEqual(hashlib.sha256(FROZEN_LEADING_SIGN_PROMPT.encode("utf-8")).hexdigest(), FROZEN_LEADING_PROMPT_SHA256)
+        self.assertNotEqual(FROZEN_NEUTRAL_PROMPT_SHA256, FROZEN_LEADING_PROMPT_SHA256)
+        proto_hash = compute_sign_protocol_hash()
+        self.assertEqual(len(proto_hash), 64)
+
+    def test_w20_controls_generation_and_distinct_hashes(self) -> None:
+        """Verify 8 negative/material controls generate valid 256x256 images with distinct hashes."""
+        import struct
+        from eval.vlm.signs import (
+            generate_geometric_marks_control,
+            generate_photo_negative_control,
+            generate_identity_mark_control,
+            generate_manuscript_photo_positive,
+        )
+        from eval.vlm.hieratic import (
+            generate_blank_control,
+            generate_natural_nontext_control,
+            generate_scrambled_control,
+            generate_inverted_control,
+        )
+
+        c_blank = generate_blank_control(256, 256)
+        c_tex = generate_natural_nontext_control(256, 256, seed=42)
+        c_geom = generate_geometric_marks_control((256, 256))
+        c_pneg = generate_photo_negative_control((256, 256), seed=101)
+        c_scram = generate_scrambled_control(c_pneg, tile_size=32, seed=42)
+        c_inv = generate_inverted_control(c_pneg)
+        c_ident = generate_identity_mark_control((256, 256))
+        c_pos = generate_manuscript_photo_positive((256, 256))
+
+        controls = [c_blank, c_tex, c_geom, c_pneg, c_scram, c_inv, c_ident, c_pos]
+        self.assertEqual(len(controls), 8)
+        hashes = set()
+        for c in controls:
+            self.assertTrue(c.startswith(b"\x89PNG\r\n\x1a\n"))
+            w, h = struct.unpack(">II", c[16:24])
+            self.assertEqual((w, h), (256, 256))
+            hashes.add(hashlib.sha256(c).hexdigest())
+        # All 8 controls must have distinct hashes
+        self.assertEqual(len(hashes), 8)
+
+    def test_w20_accounting_equation_and_attempt_ledger(self) -> None:
+        """Verify 46 planned attempts invariant: planned == attempted + skipped."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_sign_replay_experiment(adapter, allow_simulated=True)
+
+        counts = report["attempt_counts"]
+        self.assertEqual(counts["planned_forward_passes"], 46)
+        self.assertEqual(counts["total_attempts_recorded"], 46)
+        self.assertEqual(counts["successful_actual_passes"], 46)
+        self.assertEqual(counts["failed_attempts"], 0)
+        self.assertEqual(counts["skipped_attempts"], 0)
+        self.assertEqual(counts["by_prompt_variant"]["neutral"], 23)
+        self.assertEqual(counts["by_prompt_variant"]["leading"], 23)
+        self.assertEqual(counts["by_category"]["controls"], 16)
+        self.assertEqual(len(report["attempt_ledger"]), 46)
+
+    def test_w20_paired_scans_and_derivative_outlines(self) -> None:
+        """Verify matched 5 same-sign comparisons and 2 derivative outlines."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_sign_replay_experiment(adapter, allow_simulated=True)
+
+        psc = report["paired_scan_comparisons"]
+        self.assertEqual(psc["matched_pairs_evaluated"], 5)
+        self.assertEqual(len(psc["pairs"]), 5)
+        pair_signs = {p["sign_id"] for p in psc["pairs"]}
+        self.assertEqual(pair_signs, {2448, 6066, 56377, 5862, 5447})
+
+        doa = report["derivative_outline_analysis"]
+        self.assertEqual(doa["outlines_evaluated"], 2)
+        self.assertEqual(len(doa["outlines"]), 2)
+        outline_signs = {o["sign_id"] for o in doa["outlines"]}
+        self.assertEqual(outline_signs, {6036, 23466})
+
+        sla = report["support_level_analysis"]
+        self.assertEqual(sla["unique_physical_witnesses_count"], 6)
+        self.assertEqual(len(sla["supports"]), 6)
+
+    def test_w20_fail_closed_gates_and_cli(self) -> None:
+        """Verify simulated rejection without --allow-simulated and no-network enforcement."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        with self.assertRaises(ImageConditioningError):
+            execute_sign_replay_experiment(adapter, allow_simulated=False)
+
+        # CLI sign-replay schema validation with --allow-simulated
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+        tmp_path.unlink()
+        try:
+            ret = cli_main(["sign-replay", "--allow-simulated", "--output", str(tmp_path)])
+            self.assertEqual(ret, 0)
+            self.assertTrue(tmp_path.is_file())
+            rep = json.loads(tmp_path.read_text(encoding="utf-8"))
+            self.assertEqual(rep["doc_type"], "vlm_sign_replay_report")
+            self.assertEqual(rep["scientific_capability_points"], 0.0)
+            self.assertFalse(rep["hieratic_reading_claim"])
+        finally:
+            if tmp_path.is_file():
+                tmp_path.unlink()
+
 
 if __name__ == "__main__":
     unittest.main()

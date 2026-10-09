@@ -668,3 +668,99 @@ Executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA GPUs, float32, $0.0
 | **Silver Diagnostic** | **RECORDED** | S0 bibliographic citations (TPOP 173 and RIME 2022); `NO_LINE_ALIGNMENT`. |
 | **Grade F** | **STRICTLY NO (0.0 / 2.0)** | Zero capability points claimed; held-out gold benchmark not evaluated. |
 
+---
+
+## 12. Wave 20 Authentic Sign Replay and Paired Controls (AKU-PAL Source Media)
+
+### 12.1 Scientific Mission & Objective
+Wave 20 advances VLM-001 evaluation to sign-level analysis using authentic publisher-licensed palaeographic media from the Altägyptische Kursivschriften (AKU-PAL) project (Akademie der Wissenschaften und der Literatur Mainz).
+
+The objective is to determine whether open-weight visual language models (SmolVLM-256M-Instruct on CPU) exhibit genuine visual sign discrimination across authentic publisher media, specifically testing:
+1. **Modality Sensitivity:** Comparing 5 matched same-sign pairs between high-resolution vector Hieratogram SVG tracings and retro-digitized publication scan WebP rasters.
+2. **Derivative Outline Controls:** Testing whether outer boundary SVG outlines yield consistent interpretations compared to filled Hieratogram tracings.
+3. **Physical Witness Grouping:** Analyzing sign interpretation across 6 distinct physical manuscript witnesses rather than conflating distinct papyri into a single homogeneous set.
+4. **Visual Sensitivity Falsification:** Evaluating an 8-condition balanced negative and material control suite under dual-prompt ablation (Frozen Neutral vs Frozen Leading prompts).
+5. **Complete Attempt Preservation:** Preserving an immutable 46-attempt ledger adhering strictly to `#planned = #attempted + #skipped` and `#attempted = #succeeded + #failed`.
+
+### 12.2 Media Acquisition, Rights, & Scholarly Provenance
+All 15 media files are acquired under Creative Commons Attribution 4.0 International (CC BY 4.0) in accordance with the AKU-PAL terms of service (`https://aku-pal.uni-mainz.de/faq`):
+- **Total Media Items:** 15 distinct binary files (8 sign SVGs, 5 publication scan WebPs, 2 derived outline SVGs).
+- **Physical Witnesses (6 distinct supports):**
+  1. *Petrie Museum UC 32782* (Signs 6036, 2448) — Kahun / Gurob Middle Kingdom papyrus.
+  2. *IFAO Cairo 66* (Sign 23466) — Deir el-Medina Ramesside administrative ostracon/papyrus.
+  3. *Berlin Papyrussammlung P 9785* (Sign 6066) — Middle Kingdom administrative document.
+  4. *British Museum EA 50728* (Sign 32833) — New Kingdom literary/administrative text.
+  5. *Brooklyn Museum 47.218.3* (Sign 56377) — Late Period papyrus.
+  6. *Louvre E 3226 A + B* (Signs 5862, 5447) — New Kingdom administrative record.
+- **Publisher Grapheme Labels as Diagnostic Only:** Grapheme labels provided by the publisher (e.g. Gardiner D58, A1, M17, G43, N35, Y1, O4, D21) represent provisional catalog metadata, not certified independent held-out evaluation gold.
+
+### 12.3 Modality Evaluation: Matched 5 Same-Sign SVG vs WebP Pairs
+Five signs possess both an authoritative modern vector facsimile SVG and a retro-digitized publication scan WebP:
+- Sign 2448 (Petrie UC 32782, Möller A1)
+- Sign 6066 (Berlin P 9785, Möller G43)
+- Sign 56377 (Brooklyn 47.218.3, Verhoeven Y1)
+- Sign 5862 (Louvre E 3226, Möller O4)
+- Sign 5447 (Louvre E 3226, Möller D21)
+
+Both representations were rasterized or padded into standard $256 \times 256$ sRGB PNGs on pure white background (`(255, 255, 255)`) with LANCZOS resampling, forbidding external web fonts or remote references.
+
+### 12.4 Balanced 8-Condition Negative & Material Control Suite
+To measure baseline model tendencies and detect prompt priming, 8 standardized controls are evaluated:
+1. `control_blank`: Uniform neutral-gray $256 \times 256$ canvas.
+2. `control_procedural_texture`: Pure-Python multi-scale sinusoidal noise simulating papyrus fibers without characters.
+3. `control_geometric_marks`: Concentric circle, crosshair, and framing strokes.
+4. `control_photo_negative`: Photographic paper grain texture without characters.
+5. `control_scrambled_sign`: Spatially shuffled $32 \times 32$ tiles of Sign 2448 SVG facsimile.
+6. `control_inverted_sign`: Photometric inverse of Sign 2448 SVG facsimile.
+7. `control_identity_mark`: Artisan / mason / potter identity mark (hard non-script negative).
+8. `control_manuscript_photo_positive`: Authentic photographic papyrus ductus crop from Turin Cat.2044/013.
+
+### 12.5 Dual Prompt Protocol & Preregistration Fingerprint
+All stimuli are evaluated under two frozen prompt regimes:
+- **Frozen Neutral Prompt (Primary Contract, SHA-256 `0487d6e6...`):**
+  *"Examine this image carefully. Describe what visual marks or characters are visible. State whether this image shows an ancient Egyptian script sign, modern typography/drawing, or a non-textual graphic. If a hieratic sign is shown, give any candidate identification or state [UNCERTAIN] if indistinct. If no writing is present, state that clearly."*
+- **Frozen Leading Prompt (Ablation Condition, SHA-256 `a82980fa...`):**
+  *"Examine this ancient Egyptian hieratic sign carefully. Identify the hieratogram/sign shown, giving possible Gardiner list classification codes or transcription."*
+- **Protocol Fingerprint:** SHA-256 `d70c8525...` recorded as a runtime execution fingerprint.
+
+### 12.6 Attempt Ledger & Accounting Invariant
+Execution is logged into an immutable append-only `attempt_ledger`.
+- **Planned Population:** 15 media $\times$ 2 prompts + 8 controls $\times$ 2 prompts = **46 forward passes**.
+- **Accounting Invariants:**
+  - `#planned == #attempted + #skipped` ($46 = 46 + 0$)
+  - `#attempted == #succeeded + #failed` ($46 = 46 + 0$)
+
+### 12.7 Empirical Findings on SmolVLM-256M-Instruct (CPU Live Run)
+Executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA devices, $0.00 spend):
+- **Model Snapshot:** `HuggingFaceTB/SmolVLM-256M-Instruct` (safetensors SHA-256 `74dea590...`).
+- **Private Receipt Hash:** `sign_replay_report_w20.json` (SHA-256 `c4712ca0e43776ae074b76ac6095b0c245fba7e0436895a95d8dbd5f2da97a5f`).
+
+#### Key Empirical Results:
+1. **Modality Sensitivity Disconnect (SVG vs WebP):**
+   - For all 5 matched pairs, the Jaccard vocabulary similarity between the SVG facsimile and the WebP scan under neutral prompting was **0.00** (0% token overlap).
+   - On SVG facsimiles (black vector strokes on white), the model generated generic echoed boilerplate: `"This image shows an ancient Egyptian script sign."` across all signs.
+   - On retro-digitized WebP publication scans (scanned half-tone / photographic paper), the model collapsed into OCR noise or uncertainty tokens (`"[UNCERTAIN]"`, `"\xi"`, `"\hat{7}"`, `"2"`, `"[UNDERSTANDING]"`).
+   - This proves that SmolVLM-256M does not recognize sign morphology invariantly across visual recording modalities.
+2. **Derivative Outline Disconnect:**
+   - Comparing filled SVG facsimiles to their derived outline counterparts for Signs 6036 and 23466 produced a Jaccard similarity of **0.00**.
+   - Outline modifications completely altered model token decoding, further indicating lack of shape-based invariance.
+3. **Decisive Evidence of Prompt Priming on Controls:**
+   - On `control_blank` under neutral prompting: the model claimed `"This image shows an ancient Egyptian script sign."` despite the stimulus being completely blank!
+   - On `control_blank` under leading prompting: the model hallucinated Gardiner sign lists (`"H1\nH2\nH3\nH4..."`).
+   - On `control_photo_negative`: claimed script on neutral and hallucinated Gardiner sequences on leading.
+   - On `control_geometric_marks`: correctly identified as `"Non-textual graphic"` under neutral prompting, but output `"0"` under leading prompting.
+   - On `control_identity_mark`: output `"\underline{Y}"` under both prompt regimes.
+   - On `control_manuscript_photo_positive` (authentic papyrus crop): classified as `"Non-textual graphic."` under neutral prompting.
+
+### 12.8 Evidence Grade Matrix (Wave 20)
+| Grade | Status | Audit Finding |
+|---|---|---|
+| **Grade A** | **PASSED** | Official `SmolVLMAdapter` image-conditioned execution on CPU. |
+| **Grade B** | **NOT_VERIFIED_BY_RUNTIME** | CI regression suite verified by hosted GitHub Actions at exact commit. |
+| **Grade C** | **PASSED** | Verified exact safetensors bytes on disk (`74dea590...`, 513,028,808 bytes). |
+| **Grade D** | **PASSED** | Actual forward passes executed on 15 verified publisher media items and 8 controls. |
+| **Grade E** | **NOT_VERIFIED** | Model hallucinates script on blank and textured stimuli; lacks robust visual discrimination. |
+| **Sign Diagnostic** | **PASSED_DIAGNOSTIC_ONLY** | Provisional publisher sign diagnostic; not certified independent gold. |
+| **Grade F** | **STRICTLY NO (0.0 / 2.0)** | Zero capability points claimed; 0.0 capability points. |
+
+

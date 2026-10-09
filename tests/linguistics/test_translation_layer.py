@@ -865,5 +865,90 @@ class W12BFrozenGrammarEvidenceTests(unittest.TestCase):
                                                                ensure_ascii=False))
 
 
+class W13PreCopticEgyptianDependencyTests(unittest.TestCase):
+    """Original UD Egyptian-PC is Old Egyptian, not a later Hieratic reading."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import w13_egyptian_pc as ud
+        cls.ud = ud
+        cls.train, cls.dev = ud.load_project()
+
+    def test_genuine_original_publisher_census_and_strict_rights(self):
+        self.assertEqual("CC-BY-SA-4.0", self.train["rights"])
+        self.assertEqual("CC-BY-SA-4.0", self.train["rights"])
+        self.assertEqual(1619, self.train["sentence_count"])
+        self.assertEqual(19486, self.train["token_count"])
+        self.assertEqual(230, len(self.dev))
+        self.assertEqual(3167, sum(len(x["rows"]) for x in self.dev))
+        self.assertEqual("fca8538287cb69fd07b811eb55dcfd25584f3006",
+                         self.ud.REVISION_TREE)
+        self.assertEqual(40, len(self.ud.TRAIN_BLOB))
+        self.assertEqual(40, len(self.ud.DEV_BLOB))
+
+    def test_source_tampering_rejected_including_byte_append(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "corrupted.json"
+            path.write_bytes(self.ud.TRAIN_FILE.read_bytes() + b" ")
+            with self.assertRaisesRegex(tr.TranslationError, "Git blob identity"):
+                self.ud._load(path, self.ud.TRAIN_BLOB, 150000)
+
+    def test_publisher_gold_root_cycle_and_head_validation(self):
+        sample = [[1,"VERB",0,"root"],[2,"NOUN",1,"obj"]]
+        self.ud._check_gold(sample)
+        for invalid in (
+            [[1,"VERB",0,"root"],[2,"NOUN",0,"obj"]],
+            [[1,"VERB",2,"root"],[2,"NOUN",1,"obj"]],
+            [[1,"VERB",0,"root"],[2,"NOUN",4,"obj"]],
+            [[1,"VERB",0,"root"],[2,"NOUN",2,"obj"]],
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(tr.TranslationError):
+                self.ud._check_gold(invalid)
+
+    def test_model_never_consumes_dev_gold_for_prediction(self):
+        model = self.ud.FixedOraclePosSyntax(self.train)
+        sample = self.dev[0]
+        pos = [x[1] for x in sample["rows"]]
+        a = model.predict(pos)
+        forged = copy.deepcopy(sample)
+        for token in forged["rows"]:
+            token[2] = 99999
+            token[3] = "FORGED_REFERENCE"
+        b = model.predict([x[1] for x in forged["rows"]])
+        self.assertEqual(a, b)
+
+    def test_fixed_oracle_pos_predictor_always_outputs_one_root_and_acyclic(self):
+        model = self.ud.FixedOraclePosSyntax(self.train)
+        for sample in self.dev:
+            pos = [row[1] for row in sample["rows"]]
+            for p in (model.predict, model.baseline):
+                heads, rels = p(pos)
+                self.assertEqual(len(pos), len(heads))
+                self.assertEqual(len(pos), len(rels))
+                self.assertEqual(1, heads.count(0))
+                self.assertIsNone(self.ud.has_cycle(heads))
+
+    def test_explicitly_no_manuscript_accuracy_certification(self):
+        report = self.ud.evaluate(self.train, self.dev)
+        self.assertTrue(report["oracle_dev_UPOS_exposed"])
+        self.assertFalse(report["gold_dev_HEAD_DEPREL_used_for_prediction"])
+        self.assertFalse(report["official_test_split_opened"])
+        self.assertTrue(report["no_original_hieratic_image"])
+        self.assertFalse(report["ling003_scientific_milestone_accepted"])
+        self.assertEqual(0.0, report["scientific_capability_points"])
+        self.assertEqual(3167, report["metrics"]["model"]["tokens"])
+        self.assertEqual(230, report["metrics"]["model"]["sentences"])
+        self.assertEqual(0, report["metrics"]["model"]["invalid_predicted_trees"])
+        self.assertEqual(report, self.ud.evaluate(self.train, self.dev))
+        print("W13_EGYPTIAN_PC_DEPENDENCY " + json.dumps({
+            "report_sha256": report["report_sha256"],
+            "train": report["training_token_count"],
+            "dev": report["development_sentence_count"],
+            "metrics": {name: {k: x[k] for k in
+                ("correct_head", "correct_head_relation", "UAS", "LAS",
+                 "invalid_predicted_trees")} for name, x in report["metrics"].items()},
+        }, ensure_ascii=False, sort_keys=True))
+
+
 if __name__ == "__main__":
     unittest.main()

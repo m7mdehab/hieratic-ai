@@ -1,0 +1,159 @@
+{
+  "schema_version": "w20-r025-photo-edition-document-audit/1.0",
+  "as_of": "2026-10-10",
+  "classification": "DOCUMENT_LEVEL_HISTORICAL_EDITION_CANDIDATE_NOT_REVIEWED_LINE_GOLD",
+  "source_byte_sha256_status": "NOT_ACQUIRED_NO_PERMISSION_GATE_BYPASS",
+  "original_photos_acquired": 0,
+  "exact_photo_to_written_line_pairs": 0,
+  "independent_expert_reviewed_pairs": 0,
+  "benchmark_status": "UNRESOLVED_QUARANTINED",
+  "training_admission": false,
+  "historical_edition": {
+    "name": "Pleyte and Rossi, Papyrus de Turin (1869-1876)",
+    "source_museum": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880",
+    "text_volume": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin01muse).pdf",
+    "plates_volume": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin02muse).pdf",
+    "rights": "PDM-1.0_EXACT_HISTORICAL_SOURCE_PAGES",
+    "cat1880_printed_text_pages": [
+      50,
+      65
+    ],
+    "cat1880_plates": [
+      "XXXV",
+      "XXXVI",
+      "XXXVII",
+      "XXXVIII",
+      "XXXIX",
+      "XL",
+      "XLI",
+      "XLII",
+      "XLIII",
+      "XLIV",
+      "XLV",
+      "XLVI",
+      "XLVII",
+      "XLVIII"
+    ],
+    "photo_to_specific_plate_region": "UNRESOLVED_NO_VISUAL_INSPECTION",
+    "original_pdf_bytes_acquired": false
+  },
+  "source_objects": [
+    {
+      "support_id": "MuseoEgizio:Cat.1880",
+      "type": "GENUINE_HIERATIC_ADMINISTRATIVE_PAPYRUS",
+      "museum": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880",
+      "tpop": "https://collezionepapiri.museoegizio.it/en-GB/document/131",
+      "tpop_public_text_selector_entries": 12,
+      "original_museum_photo_licence": "CC0-1.0_INDIVIDUAL_COMMONS_FILE_PAGE",
+      "museum_modern_text_rights": "NOT_CLEAR_FOR_REUSE",
+      "historical_edition_document_link": "MUSEUM_ATTESTED_PLEYTE_ROSSI_VOL1_PP50_65_VOL2_PLATES_35_48",
+      "source_gallery": "https://commons.wikimedia.org/wiki/Category:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880",
+      "same_support_gallery_files": 7,
+      "exact_face_and_line_alignment": "UNKNOWN",
+      "files": [
+        {
+          "key": "cat1880_new_p01",
+          "title": "The so-called 'Strike Papyrus' written by Amunnakht - Museo Egizio Turin C 1880 p01.jpg",
+          "dimensions": [
+            17704,
+            7983
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_'Strike_Papyrus'_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p01.jpg"
+        },
+        {
+          "key": "cat1880_new_p02",
+          "title": "The so-called 'Strike Papyrus' written by Amunnakht - Museo Egizio Turin C 1880 p02.jpg",
+          "dimensions": [
+            17610,
+            7995
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_'Strike_Papyrus'_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p02.jpg"
+        },
+        {
+          "key": "cat1880_old_p01",
+          "title": "The so-called 'Strike Papyrus' written by Amunnakht, papyurs - Museo Egizio (Turin) C 1880 p01.jpg",
+          "dimensions": [
+            6941,
+            3431
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_'Strike_Papyrus'_written_by_Amunnakht%2C_papyurs_-_Museo_Egizio_(Turin)_C_1880_p01.jpg"
+        },
+        {
+          "key": "cat1880_old_p02",
+          "title": "The so-called 'Strike Papyrus' written by Amunnakht, papyurs - Museo Egizio (Turin) C 1880 p02.jpg",
+          "dimensions": [
+            17610,
+            7995
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_'Strike_Papyrus'_written_by_Amunnakht%2C_papyurs_-_Museo_Egizio_(Turin)_C_1880_p02.jpg"
+        }
+      ]
+    },
+    {
+      "support_id": "MuseoEgizio:Suppl.6759",
+      "type": "GENUINE_HIERATIC_ORACULAR_TEXT_OSTRACON",
+      "museum": "https://collezioni.museoegizio.it/en-GB/material/S_6759",
+      "original_museum_photo_licence": "CC0-1.0_INDIVIDUAL_COMMONS_FILE_PAGE",
+      "published_edition": "Lopez 1980 p48 plates83,83a; RIGHTS_NOT_VERIFIED",
+      "exact_face_and_line_alignment": "UNKNOWN",
+      "files": [
+        {
+          "key": "suppl6759_p01",
+          "title": "Hieratic ostracon with an oracular text, clay - Museo Egizio (Turin) S 6759 p01.jpg",
+          "dimensions": [
+            3760,
+            3259
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:Hieratic_ostracon_with_an_oracular_text%2C_clay_-_Museo_Egizio_(Turin)_S_6759_p01.jpg"
+        }
+      ]
+    },
+    {
+      "support_id": "MuseoEgizio:Cat.2169",
+      "type": "CRAFTSMEN_IDENTITY_MARKS_NOT_STANDARD_TRANSLITERABLE_HIERATIC_LINES",
+      "museum": "https://collezioni.museoegizio.it/en-GB/material/Cat_2169",
+      "original_museum_photo_licence": "CC0-1.0_INDIVIDUAL_COMMONS_FILE_PAGE",
+      "source_gallery": "https://commons.wikimedia.org/wiki/Category:Hieratic_ostracon_with_an_inventory,_limestone_-_Museo_Egizio,_Turin_C_2169",
+      "same_support_gallery_files": 7,
+      "scientific_role": "CONTEXTUAL_HARD_NEGATIVE_NOT_AUTOMATIC_NO_WRITING",
+      "published_edition": "Lopez 1978 p19 pl9/9a; RIGHTS_NOT_VERIFIED",
+      "exact_face_and_line_alignment": "NOT_APPLICABLE_STANDARD_HIERATIC_LINE",
+      "files": [
+        {
+          "key": "cat2169_p01",
+          "title": "Hieratic ostracon with an inventory, limestone - Museo Egizio (Turin) C 2169 p01.jpg",
+          "dimensions": [
+            8256,
+            5504
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:Hieratic_ostracon_with_an_inventory%2C_limestone_-_Museo_Egizio_(Turin)_C_2169_p01.jpg"
+        },
+        {
+          "key": "cat2169_p02",
+          "title": "Hieratic ostracon with an inventory, limestone - Museo Egizio (Turin) C 2169 p02.jpg",
+          "dimensions": [
+            8256,
+            5504
+          ],
+          "original_media_SHA256": null,
+          "original_bytes_acquired": false,
+          "commons_file_page": "https://commons.wikimedia.org/wiki/File:Hieratic_ostracon_with_an_inventory%2C_limestone_-_Museo_Egizio_(Turin)_C_2169_p02.jpg"
+        }
+      ]
+    }
+  ],
+  "external_image_or_edition_original_files_downloaded": 0,
+  "model_inference_calls": 0
+}

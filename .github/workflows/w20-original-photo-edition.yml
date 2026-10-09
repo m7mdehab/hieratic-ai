@@ -1,0 +1,36 @@
+name: W20 R025 Genuine Original Photo and Public-Domain Edition Review
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/research/R025_CC0_PHOTO_EDITION_MATRIX.json"
+      - "docs/research/R025_CC0_PHOTO_EDITION_AUDIT.md"
+      - "tools/research_photo_pair.py"
+      - "tests/research/test_original_photo_pair.py"
+      - ".github/workflows/w20-original-photo-edition.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-public-source-documentary-audit:
+    name: Validate same-original-document and separately licensed edition documentary path
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Test original-source/corpus/benchmark claim refusal boundaries
+        run: python -m unittest tests.research.test_original_photo_pair -v
+      - name: Independently check all 266 publisher metadata entries offline
+        run: python -m tools.research_photo_pair --output "$RUNNER_TEMP/w20-r025-documentary-report.json"
+      - name: Publish documentary aggregate and exact source URLs, never source photo bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: w20-r025-cc0-original-photo-and-historical-edition-metadata
+          path: /home/runner/work/_temp/w20-r025-documentary-report.json
+          if-no-files-found: error
+          retention-days: 30

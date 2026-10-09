@@ -163,7 +163,8 @@ class TranslationMemory:
                 if gloss:
                     self.observations[form][gloss].add(row["text_id"])
         self.document_count = len(self.sentences)
-        self._norms: dict[str, float] = {}
+        self._gloss_cache: dict[tuple[str, ...], dict[str, Any]] = {}
+        self._neighbor_cache: dict[tuple[tuple[str, ...], str], dict[str, Any] | None] = {}
         self._weights: list[tuple[dict[str, float], float]] = []
         for row in self.sentences:
             weights = {token: self._idf(token) ** 2 for token in set(row["forms"])}
@@ -174,6 +175,8 @@ class TranslationMemory:
         return math.log(1 + (self.document_count + 1) / (1 + self.frequency[term]))
 
     def gloss(self, forms: tuple[str, ...]) -> dict[str, Any]:
+        if forms in self._gloss_cache:
+            return self._gloss_cache[forms]
         items = []
         for term in forms:
             by = self.observations.get(term, {})
@@ -185,13 +188,18 @@ class TranslationMemory:
                                for x in alternatives[:12]],
                 "abstained": best is None,
             })
-        return {
+        result = {
             "text": " ".join(item["german"] or "[?]" for item in items),
             "units": items, "abstentions": sum(item["abstained"] for item in items),
             "mode": "TRAIN_ONLY_GLOSS_FALLBACK",
         }
+        self._gloss_cache[forms] = result
+        return result
 
     def neighbor(self, forms: tuple[str, ...], excluded_text_id: str) -> dict[str, Any] | None:
+        cache_key = (forms, excluded_text_id)
+        if cache_key in self._neighbor_cache:
+            return self._neighbor_cache[cache_key]
         candidates = []
         qset = set(forms)
         qweights = {term: self._idf(term) ** 2 for term in qset}
@@ -216,11 +224,12 @@ class TranslationMemory:
                 continue
             candidates.append((score, len(shared), row["text_id"], row["sentence_id"], row))
         if not candidates:
+            self._neighbor_cache[cache_key] = None
             return None
         candidates.sort(key=lambda entry: (-entry[0], -entry[1], entry[2], entry[3]))
         best = candidates[0]
         source = best[4]
-        return {
+        result = {
             "text": source["german"], "cosine_length_similarity": round(best[0], 8),
             "shared_source_forms": best[1],
             "source_text_id": source["text_id"],
@@ -230,6 +239,8 @@ class TranslationMemory:
             "source_form_difference": sorted(set(source["forms"]) ^ set(forms)),
             "mode": "CROSS_TEXT_SENTENCE_RETRIEVAL",
         }
+        self._neighbor_cache[cache_key] = result
+        return result
 
     def predict(self, row: dict[str, Any], threshold: float) -> dict[str, Any]:
         fallback = self.gloss(row["forms"])

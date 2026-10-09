@@ -47,6 +47,16 @@ class OriginalSignBinaryGates(unittest.TestCase):
         self.assertEqual(False,result["training_admission"])
         self.assertFalse(result["gold_admission"])
 
+    def test_single_item_wrapped_publisher_array(self):
+        import json
+        obj=[{"id":6036,"license":"CC BY 4.0","image":{"url":"/media/a.svg"}}]
+        with patch.object(p,"bounded_get",side_effect=lambda url,*args:
+              (json.dumps(obj).encode(),"application/json") if "/api/signs/" in url
+              else (b'<svg xmlns="http://www.w3.org/2000/svg"></svg>',"image/svg+xml")):
+            res=p.inspect_one(6036)
+        self.assertEqual("VERIFIED_PUBLISHER_JSON",res["record"])
+        self.assertEqual(1,res["source_binary_images_verified"])
+
     def test_unreliable_original_id_cannot_admit(self):
         with patch.object(p,"bounded_get",return_value=(b'{"id":999,"license":"CC BY 4.0"}',"application/json")):
             res=p.inspect_one(6036)

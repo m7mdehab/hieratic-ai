@@ -92,7 +92,22 @@ def inspect_one(rid:int)->dict:
     try:
         raw,_=bounded_get(url,MAX_JSON,("application/json",))
         data=json.loads(raw)
-        if not isinstance(data,dict):raise ValueError("bad original JSON shape")
+        if isinstance(data,list):
+            # Publisher may wrap a single complete sign in a JSON array.
+            if len(data)==1 and isinstance(data[0],dict):
+                data=data[0]
+            else:
+                matching=[x for x in data if isinstance(x,dict) and
+                    str(x.get("id"))==str(rid)]
+                if len(matching)==1:
+                    data=matching[0]
+                else:
+                    raise ValueError("unrecognized publisher list schema: "+str(len(data))+
+                        " first keys="+str(sorted(data[0].keys())[:14]
+                          if data and isinstance(data[0],dict) else
+                          (type(data[0]).__name__ if data else "empty")))
+        if not isinstance(data,dict):raise ValueError(
+            "bad original JSON shape: "+type(data).__name__)
         leaves=surface_keys(data)
         text=raw.decode("utf-8")
         if not re.search(r"(?:\b|_)"+str(rid)+r"(?:\b|_)",text):raise ValueError("item ID not identified")
@@ -168,3 +183,6 @@ if __name__=="__main__":
          "media_status":x.get("media_status"),"asset_candidates":x.get("publisher_asset_candidates",[]),
          "error":x.get("error")}
         for x in report["records"]]},sort_keys=True,ensure_ascii=False))
+    if report["record_json_verified"]!=len(IDS):
+        raise SystemExit("SOURCE_AUDIT_BLOCKED: not all eight source-specific records verified")
+

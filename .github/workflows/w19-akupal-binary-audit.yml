@@ -27,6 +27,7 @@ jobs:
         run: |
           python -m data.releases.w19_aku_pal_binary_probe "$RUNNER_TEMP/w19-sign-image-hashes-only.json"
       - name: Preserve licensed image hashes and structured source proof only
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: w19-akupal-original-image-digests-no-binaries

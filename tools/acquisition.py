@@ -452,7 +452,7 @@ def acquire_rime_cat1883_2095_figure6(
         "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
         "article_url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
         "exact_original_file_url": RIME_FIGURE_URL,
-        "figure_caption": "Figure 6: recto, as currently mounted; scan by Museo Egizio, Turin; digital processing by Martina Landrino.",
+        "caption_summary": "Recto in its present mounting; scan attributed to Museo Egizio; digital processing credited to Martina Landrino.",
         "source_sha256": digest, "source_byte_size": len(image_bytes), "mime_type": content_type,
         "declared_dimensions": [6585, 4718], "retrieved_at": retrieved,
         "response_headers": {key: headers.get(key) for key in ("etag", "last-modified", "content-length")},

@@ -1,6 +1,6 @@
 schema_version: "0.2.0"
 roadmap_version: "0.1.0"
-updated_at: "2026-10-09"
+updated_at: "2026-10-10"
 
 project:
   name: "Hieratic AI"
@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W17_AKUPAL_8_ORIGINAL_SIGN_RECORDS_VERIFIED_DATA008_GOLD_BLOCKED"
+  current_wave: "W19_EIGHT_AKUPAL_SIGN_RECORDS_FIFTEEN_REAL_MEDIA_HASHED_NO_GOLD"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,7 +38,7 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "W17 DATA-008 actual source-route audit: per-item AKU-PAL original /api/signs/{ID} source JSON verified for 8 scholarly Hieratic sign records representing 6 distinct physical manuscripts, each record contains sign ID and CC BY 4.0; exact source byte SHA256s and licenses in metadata-only hosted run 37988701817. Separate 8 apparent webpages are IDENTICAL 6854-byte SPA shells and cannot prove distinct assets. No original sign image bytes/hashes, independently reviewed sign labels or line transcription, benchmark-overlap clearance or supervised train/dev/test, so no real DATA-008 admission or points; original-source provenance infrastructure PR #121 merged de089bf429e49dbfe71da5fdeae8f5f096b9a042."
+    - "W19 DATA-008 source binary blocker PARTIALLY RESOLVED: AKU-PAL exact original /api/signs IDs 8/8 independently recorded, each exact record license CC BY 4.0 and six physical supports, 15 REAL PUBLISHER IMAGE bytes/hash receipts (8 Hieratogram SVG sign drawings, 5 scanned publication figures, 2 derived SVG outlines). W19 hosted original-image CI 37991651242 and repeated 37991858101 PASS; governance 37991858068 PASS, PR #126 merged at 17471d1ef8dd40b9ff601b5e6ad8ec57e95b7465. All original binaries read only and discarded; full digest receipt data/releases/w19_aku_pal_original_image_receipts.json. These are scholarly sign derivatives, not full original photographic papyrus lines; no expert-independent sign adjudication, manuscript line→text, overlap/splits or scientifically adequate corpus. DATA-008 0/3, no weighted credit."
     - "W16 LING-003 source access barrier RESOLVED: actual published TLA 3606 Late Egyptian German source rows verified on hosted runner (original Git blob 74a058b192314b165bec33278fb882ba1333b172, SHA256 dfded75c7d34bc1f2f12e18af6936394dc0c5cadacd1229dc28d46751d6389df, 1904138 bytes), but genuine preregistered AES-only transfer is poor: 7069/24437 Egyptian tokens attested (28.927446%), German word micro F1 0.01803378 on 3606 complete target references. No TLA physical witness IDs, independent editorial genealogy or fluent semantic evidence. Requires new source/expert gold before LING-003 acceptance; points 0/2. Hosted source/score run 37986861986."
     - "W14 DATA-006 PR #114 historical recto/verso CONVENTION CORRECTED and merged at 5b973be03e2e37a53c89f4118954254f4075ea16 after exact-head CI 37988275962. Physical Plate XXIX to RIME Figure8 exact line correspondence remains UNRESOLVED, one joined Cat1883+2095 physical support, 0 qualified reviewer-reviewed gold/line pairs, training admission blocked and benchmark quarantined; not a DATA-008 unlock or extra weighted credit."
     - "W14 VLM-001 PR #115 corrected engineering MERGED at 04a5cde3dff89ad2eae9bbc1dbdcbe40d7b28a1b (CI 37989748828/37989748823/37989748820 PASS). Thirty-five attempted source/control calls accounted correctly, full-vs-full comparison fixed, script response classifier improved. Real original CPU runs remain agent-reported; private source/weight/raw receipts not independently replayed. VLM-001 scientific Grade E NOT_VERIFIED, F STRICTLY_NO, task active 0/2."
@@ -85,36 +85,43 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W17 project-critical DATA-008 source audit COMPLETED, primary AKU-PAL
-  per-item records from Academy Mainz. Official FAQ authorizes individual
-  image reuse under item-specific license. Eight explicit genuine Hieratic
-  sign item endpoints from SIX independent physical original manuscript
-  supports carry CC BY 4.0, creator and line/side provenance. The 8 HTML
-  /signs/{id} pages all serve identical 6854-byte JavaScript shell,
-  SHA256 83a06a4f5761e7607a505351586f9fe169f09ad71a4c6726d5f696b1afd95dd0,
-  so cannot be treated as different image provenance. Corrected exact
-  source API /api/signs/{id} read-only audit confirms 8/8 individually
-  identified records with CC BY license; 8 distinct publisher JSON SHA256,
-  artifact 37988701817 and original candidate manifest at
-  data/releases/w17_aku_pal_candidate_manifest.json. Real checks green,
-  PR #121 merged de089bf429e49dbfe71da5fdeae8f5f096b9a042.
-  Original image bytes were NOT acquired; no original image file SHA256,
-  image-specific reuse decision beyond the record-level display, independent
-  palaeographic gold, full written manuscript line transcript, verified
-  source/near-duplicate benchmark exclusion, identity-protected institutional
-  review or non-leaking train/dev/test partitions. DATA-008 remains ACTIVE
-  0/3. Follow-on: use authenticated individual API sign records to identify
-  exact image asset URLs and item-level reuse evidence; only after separate
-  lawful binary verification and independent benchmark/source review can
-  sign images be considered for any new data admission. A small collection
-  of 8 sign examples cannot be passed off as scientific adequate corpus_v1.
-  W16 independent TLA real source original SHA256
-  dfded75c7d34bc1f2f12e18af6936394dc0c5cadacd1229dc28d46751d6389df
-  evaluated 3606 original Late Egyptian sentences; lexical F1 0.01803378
-  is authentic negative transfer, not manuscript translation competence.
-  W14 DATA-006 PR #114 and VLM-001 PR #115 remain unmerged, require
-  historical side-convention and 35-v-29 inference ledger correction.
-  Preserve verified goal 34.5/100, historic research coverage 14%,
-  LING-003 0/2, VLM-001 0/2, 0 trained neural models, 0 certified original
-  Hieratic image/model benchmark runs. No external paid model provider,
-  third-party expert contact or sealed data access without authorization.
+  W19 DATA-008 original-image BYTE ACCESS is now demonstrated, independently
+  source-hashed at exact Mainz AKU-PAL per-item endpoints:
+  hosted W19 run 37991651242 and repeat 37991858101 succeeded; full
+  project governance 37991858068 SUCCESS. PR #126 merged on main
+  17471d1ef8dd40b9ff601b5e6ad8ec57e95b7465.
+  Eight exact scholarly Hieratogram sign IDs 6036 2448 23466 6066
+  32833 56377 5862 5447 represent six physical original supports,
+  each original publisher detail item licenseTxt explicitly CC BY 4.0.
+  Fifteen real publisher media binary byte streams were downloaded
+  into temporary memory, checked for image MIME and actual format magic,
+  and SHA256 hashed: EIGHT /img/data/ht/svg/ht_ID.svg sign tracings,
+  FIVE /img/data/ht/scan/ht_ID_2.webp digitized publication scans,
+  TWO /api/svg/ht_ID.svg/outline derivatives. Generic hg SVG hieroglyph
+  references were excluded. Original binary assets are not in repository
+  or artifacts; only exact first-party URLs, sizes, SHA256, per-item
+  creator, license and original source manuscript witness references
+  reside in data/releases/w19_aku_pal_original_image_receipts.json.
+  IMPORTANT: Although authentic CC BY publisher-source images, these
+  SVG and book scans are representations, NOT independent original
+  physical papyrus photography or verified full line+transliteration
+  gold. Zero independent palaeographic review, zero manuscript-line
+  image-text correspondence, zero benchmark near-duplicate overlap
+  clearance, zero adequate real train/dev/test grouping, and zero
+  legally independently authorized corpus_v1 release. DATA-008 active
+  0/3 and specialty recognition and VLM accepted science BLOCKED.
+  Next physical research priority: expand actual independently licensed
+  sign specimens to a demonstrably adequate, support-separated population,
+  verify creator and image rights per item and source object, obtain
+  independently blind palaeographic sign classifications and later
+  source-exact photograph→written-line paired transcription with
+  benchmark exclusion. Existing DATA-006 historic recto/verso crosswalk
+  corrected PR #114 but exact line match remains unresolved.
+  VLM-001 #115 corrected evaluation software integrated with 35-call
+  ledger yet independent private real CPU pass receipts remain
+  unreplayed and Grades E NOT_VERIFIED / F STRICTLY_NO.
+  Original 3606 German TLA target experiment genuine negative
+  (word F1 0.01803378); LING-003 active 0/2. Preserve verified
+  goal progress 34.5/100, historic research coverage 14%, no trained
+  specialist neural model, no certified real image-model accuracy
+  and original Egyptian-PC official TEST unopened.

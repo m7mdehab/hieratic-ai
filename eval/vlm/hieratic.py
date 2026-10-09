@@ -160,6 +160,56 @@ def generate_inverted_control(image_bytes: bytes) -> bytes:
     raise ImageConditioningError("Cannot invert source pixels: no valid image decoder available")
 
 
+def generate_scrambled_control(
+    image_bytes: bytes,
+    tile_size: int = 32,
+    seed: int = 42,
+) -> bytes:
+    """Generate deterministic scrambled control image permuting spatial tiles.
+
+    Reorders complete spatial tiles while preserving their pixel histograms;
+    within-tile ink strokes and incomplete edge strips remain recognizable.
+    This is an *exploratory corrupted-layout control*, not a certified blank
+    or proof that all Hieratic sign structure was destroyed.
+    """
+    if not isinstance(image_bytes, bytes) or not image_bytes or len(image_bytes) > 40 * 1024 * 1024:
+        raise ImageConditioningError("Invalid or oversized image bytes for scrambling")
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise ImageConditioningError("Pillow is required to generate scrambled control image") from exc
+    try:
+        with Image.open(io.BytesIO(image_bytes)) as original:
+            img = original.convert("RGB")
+            w, h = img.size
+            if min(w, h) < 16:
+                raise ImageConditioningError("Image too small to tile and scramble")
+            t_size = max(8, min(tile_size, min(w, h)))
+            cols = max(1, w // t_size)
+            rows = max(1, h // t_size)
+            tiles = []
+            for r in range(rows):
+                for c in range(cols):
+                    box = (c * t_size, r * t_size, (c + 1) * t_size, (r + 1) * t_size)
+                    tiles.append(img.crop(box))
+            import random
+            rng = random.Random(seed)
+            perm = list(range(len(tiles)))
+            rng.shuffle(perm)
+            out = img.copy()
+            for idx, orig_idx in enumerate(perm):
+                r = idx // cols
+                c = idx % cols
+                out.paste(tiles[orig_idx], (c * t_size, r * t_size))
+            buf = io.BytesIO()
+            out.save(buf, format="PNG")
+            return buf.getvalue()
+    except ImageConditioningError:
+        raise
+    except Exception as exc:
+        raise ImageConditioningError(f"Scrambled control generation failed: {exc}") from exc
+
+
 def resize_image_aspect_ratio(
     image_bytes: bytes,
     max_dimension: int = 1024,
@@ -223,8 +273,9 @@ def verified_model_weight_sha256(adapter: BaseVLMAdapter) -> bool:
     supplied = getattr(adapter, "weights_dir", None)
     if supplied is not None:
         roots.append(Path(supplied))
-    hub = Path.home() / ".cache" / "huggingface" / "hub" / "models--HuggingFaceTB--SmolVLM-256M-Instruct"
-    roots.append(hub)
+    else:
+        hub = Path.home() / ".cache" / "huggingface" / "hub" / "models--HuggingFaceTB--SmolVLM-256M-Instruct"
+        roots.append(hub)
     for root in roots:
         candidates = [root / "model.safetensors", root / "snapshots" / PINNED_REVISION / "model.safetensors"]
         for candidate in candidates:
@@ -260,7 +311,9 @@ def audit_alternative_models() -> dict[str, Any]:
             "license": "Apache-2.0",
             "cpu_suitability": "FEASIBLE_BOUNDED_RAM",
             "memory_footprint_mb": "~2200 MB estimated",
-            "execution_status": "AVAILABLE_NO_COST_BACKUP",
+            "execution_status": "UNAVAILABLE_INSUFFICIENT_AVAILABLE_RAM_AND_WEIGHTS_ABSENT",
+            "host_available_ram_mb": "~680 MB available on host (2200 MB required)",
+            "comparison_status": "NOT_EXECUTED_DUE_TO_RAM_LIMITS",
         },
         "qwen2_vl_2b_instruct": {
             "model_id": "Qwen/Qwen2-VL-2B-Instruct",
@@ -401,7 +454,10 @@ def execute_hieratic_experiment(
                  if h["target_id"] == image_targets[0]["target_id"] and h["task"] == "script_identification")
     if is_simulated:
         blank_response, inverted_response = "Synthetic blank example", "Synthetic inverted example"
-        blank_status = inverted_status = "synthetic_ci_fixture"
+        scrambled_response = "Synthetic scrambled example"
+        blank_status = inverted_status = scrambled_status = "synthetic_ci_fixture"
+        inverted = None
+        scrambled = None
     else:
         blank_result = adapter.predict(
             image_bytes=blank, prompt=FROZEN_PROMPTS["script_identification"],
@@ -417,33 +473,93 @@ def execute_hieratic_experiment(
             item_id="inverted_control_script_id",
         )
         inverted_response, inverted_status = inv_result.raw_output or "", inv_result.status
+        scrambled = generate_scrambled_control(source_image, tile_size=32, seed=42)
+        scrambled_result = adapter.predict(
+            image_bytes=scrambled, prompt=FROZEN_PROMPTS["script_identification"],
+            system_prompt=SYSTEM_PROMPT, shot_mode="zero_shot", rung="identify",
+            item_id="scrambled_control_script_id",
+        )
+        scrambled_response, scrambled_status = scrambled_result.raw_output or "", scrambled_result.status
 
     primary_response = first["output_text"]
     different_text = bool(primary_response.strip() and blank_response.strip()
                           and primary_response.strip() != blank_response.strip())
+    blank_hallucinates_script = any(
+        kw in blank_response.lower()
+        for kw in ("hieratic", "hieroglyph", "inscript", "stroke", "ink", "writing", "papyrus", "text", "script")
+    )
     blank_correctly_identified = any(
         marker in blank_response.lower()
-        for marker in ("no visible script", "no writing", "no text", "blank image", "blank canvas")
+        for marker in ("no visible script", "no writing", "no text", "blank image", "blank canvas", "empty")
     )
     successful_pair = first["status"] == "success" and blank_status == "success"
     inverted_valid = inverted_status == "success" and bool(inverted_response.strip())
+    inverted_identifies_hieratic = "hieratic" in inverted_response.lower()
+    scrambled_valid = scrambled_status == "success" and bool(scrambled_response.strip())
+    scrambled_hallucinates_script = any(
+        kw in scrambled_response.lower()
+        for kw in ("hieratic", "hieroglyph", "demotic", "cursive hieroglyphs")
+    )
+    prompt_priming_observed = (not is_simulated) and (blank_hallucinates_script or scrambled_hallucinates_script)
     distinct_crop_responses = len({
         h["output_text"].strip()
         for h in reading_hypotheses
         if h["task"] == "script_identification" and h["status"] == "success" and h["output_text"].strip()
     }) > 1
+
+    translit_hypotheses = [h for h in reading_hypotheses if h["task"] == "transliteration_hypotheses"]
+    translit_abstentions = [
+        any(marker in h["output_text"] for marker in ("[UNREADABLE]", "[DAMAGED]", "[UNCERTAIN]"))
+        for h in translit_hypotheses
+    ]
+    transliteration_abstention_rate = (
+        sum(translit_abstentions) / len(translit_hypotheses) if translit_hypotheses else 0.0
+    )
+
+    def detect_repetition(text: str) -> bool:
+        words = text.split()
+        if len(words) >= 6:
+            for n in (1, 2, 3):
+                chunks = [" ".join(words[i:i+n]) for i in range(0, len(words) - n + 1, n)]
+                if len(chunks) >= 4 and len(set(chunks[-4:])) == 1:
+                    return True
+        if len(text) > 20 and any(c * 5 in text for c in "[,.- "):
+            return True
+        return False
+
+    repetition_loop_detected = any(detect_repetition(h["output_text"]) for h in reading_hypotheses)
+    trans_hypotheses = [h for h in reading_hypotheses if h["task"] == "translation_hypotheses"]
+    translation_unsupported_acknowledged = all(
+        any(kw in h["output_text"].lower() for kw in ("unsupported", "unknown", "undetermined", "cannot be", "not possible", "unable", "uncertain", "damaged"))
+        for h in trans_hypotheses
+    ) if trans_hypotheses else False
+
     control_verified = (
-        not is_simulated and successful_pair and inverted_valid and different_text
-        and blank_correctly_identified
+        not is_simulated and successful_pair and inverted_valid and scrambled_valid
+        and different_text and blank_correctly_identified
+        and not blank_hallucinates_script and not scrambled_hallucinates_script
     )
     sensitivity_controls = {
         "blank_control_sha256": hashlib.sha256(blank).hexdigest(),
-        "blank_response_text": blank_response, "blank_status": blank_status,
-        "inverted_response_text": inverted_response, "inverted_status": inverted_status,
+        "blank_response_text": blank_response,
+        "blank_status": blank_status,
+        "blank_hallucinates_script": blank_hallucinates_script,
+        "blank_correctly_identified": blank_correctly_identified,
+        "inverted_control_sha256": hashlib.sha256(inverted).hexdigest() if inverted else None,
+        "inverted_response_text": inverted_response,
+        "inverted_status": inverted_status,
+        "inverted_identifies_hieratic": inverted_identifies_hieratic,
+        "scrambled_control_sha256": hashlib.sha256(scrambled).hexdigest() if scrambled else None,
+        "scrambled_response_text": scrambled_response,
+        "scrambled_status": scrambled_status,
+        "scrambled_hallucinates_script": scrambled_hallucinates_script,
         "primary_target_id": image_targets[0]["target_id"],
         "primary_hieratic_response_text": primary_response,
         "response_difference_only": different_text,
-        "blank_correctly_identified": blank_correctly_identified,
+        "prompt_priming_observed": prompt_priming_observed,
+        "transliteration_abstention_rate": transliteration_abstention_rate,
+        "repetition_loop_detected": repetition_loop_detected,
+        "translation_unsupported_acknowledged": translation_unsupported_acknowledged,
         "sensitivity_observed": control_verified,
         "inter_crop_discrimination_tested": not is_simulated and distinct_crop_responses,
     }

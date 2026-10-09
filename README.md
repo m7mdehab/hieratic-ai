@@ -6,7 +6,7 @@ Open research project for teaching multimodal AI systems to **read, transliterat
 
 - **Verified goal progress:** 34.5 / 100
 - **Research coverage:** ~14%
-- **Current stage:** P2 Evaluation; W10 data/VLM, W11 source-text generalization and W12B publisher-annotated Egyptian POS/morphology evidence integrated; source-exact Hieratic line gold, true grammatical/semantic translation and independent recognition accuracy remain blocked
+- **Current stage:** P2 Evaluation; W13 original Old Egyptian dependency-learning diagnostic merged, following W12B publisher POS work and W10/W11 data/VLM studies. True Hieratic recognition, source-exact line gold, independent semantic translation and contamination-resistant generalization remain unverified
 - **Validated experiments:** 0
 
 Progress is capability-based, not time-based. Work only earns goal-progress points after predefined acceptance criteria are met and the evidence is reviewed.

@@ -952,3 +952,152 @@ class W13PreCopticEgyptianDependencyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+"""W14 train-only nonoracle grammatical inference, actual original Egyptian-PC."""
+import copy
+import contextlib
+import io
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from ling.translation import w14_oracle_free as w14
+from tools.translation_layer import TranslationError
+
+
+class W14OriginalTrainGroupTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.bundle = w14.load_dataset()
+        cls.train = [s for s in cls.bundle["sentences"] if s["group"] in w14.TRAIN_GROUPS]
+        cls.eval_rows = [s for s in cls.bundle["sentences"] if s["group"] == w14.HELDOUT_GROUP]
+        cls.model = w14.TrainOnlyOracleFree(cls.train)
+
+    def test_original_train_only_source_rights_population_and_split(self):
+        b = self.bundle
+        self.assertEqual("CC-BY-SA-4.0", b["rights"])
+        self.assertEqual(w14.ORIGINAL_TREE, b["source_tree"])
+        self.assertEqual(w14.ORIGINAL_TRAIN_BLOB, b["original_train_git_blob"])
+        self.assertEqual(1619, b["sentence_count"])
+        self.assertEqual(19486, b["token_count"])
+        self.assertEqual(790, len(self.train))
+        self.assertEqual(829, len(self.eval_rows))
+        self.assertEqual(9157, sum(len(s["rows"]) for s in self.train))
+        self.assertEqual(10329, sum(len(s["rows"]) for s in self.eval_rows))
+        self.assertTrue(b["original_dev_labels_exposed_elsewhere"])
+        self.assertFalse(b["official_test_accessed"])
+
+    def test_exact_source_derivative_rejects_single_byte_drift(self):
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory) / w14.DATA.relative_to(w14.ROOT)
+            destination.parent.mkdir(parents=True)
+            destination.write_bytes(w14.DATA.read_bytes() + b" ")
+            with self.assertRaisesRegex(TranslationError, "identity mismatch"):
+                w14.load_dataset(Path(directory))
+
+    def test_original_source_gold_graph_rejects_invalid_edges_and_multiple_roots(self):
+        sample = copy.deepcopy(self.train[0])
+        sample["rows"][1][2] = 0
+        with self.assertRaisesRegex(TranslationError, "single-rooted"):
+            w14._valid_sentence(sample)
+        sample = copy.deepcopy(self.train[0])
+        sample["rows"][0][2] = 1
+        with self.assertRaisesRegex(TranslationError, "Invalid original"):
+            w14._valid_sentence(sample)
+
+    def test_no_heldout_group_can_enter_training(self):
+        with self.assertRaisesRegex(TranslationError, "mixing refused"):
+            w14.TrainOnlyOracleFree(self.train + [self.eval_rows[0]])
+
+    def test_inference_refuses_gold_rows_or_dict_labels(self):
+        forms = [row[0] for row in self.eval_rows[0]["rows"]]
+        original = self.model.predict(forms)
+        self.assertNotIn("gold", json.dumps(original).casefold())
+        for forged in ([r[:] for r in self.eval_rows[0]["rows"]],
+                       [{"form": forms[0], "UPOS": "SECRET"}], [], [""]):
+            with self.subTest(forged=forged):
+                with self.assertRaises(TranslationError):
+                    self.model.predict(forged)
+
+    def test_target_upos_head_relation_modification_does_not_affect_nonoracle(self):
+        sentence = copy.deepcopy(self.eval_rows[0])
+        forms = [row[0] for row in sentence["rows"]]
+        prediction = self.model.predict(forms)
+        weak = self.model.weak_baseline(forms)
+        for row in sentence["rows"]:
+            row[1], row[3] = "FORGED_UPOS", "FORGED_REFERENCE_RELATION"
+        self.assertEqual(prediction, self.model.predict([r[0] for r in sentence["rows"]]))
+        self.assertEqual(weak, self.model.weak_baseline([r[0] for r in sentence["rows"]]))
+        self.assertFalse(any(tag == "FORGED_UPOS" for tag in prediction["UPOS"]))
+
+    def test_all_original_heldout_sentences_have_valid_predictions(self):
+        for sentence in self.eval_rows:
+            forms = [r[0] for r in sentence["rows"]]
+            for pred in (self.model.predict(forms), self.model.weak_baseline(forms)):
+                self.assertEqual(1, pred["heads"].count(0))
+                self.assertIsNone(w14.has_cycle(pred["heads"]))
+                self.assertEqual(len(forms), len(pred["UPOS"]))
+                self.assertEqual(len(forms), len(pred["relations"]))
+
+    def test_real_full_population_deterministic_report_and_denominators(self):
+        first = w14.evaluate(self.bundle)
+        second = w14.evaluate(self.bundle)
+        self.assertEqual(first, second)
+        # Frozen W14 full-population values independently reconstructed
+        # directly from the pinned publisher TRAIN-only rows.
+        self.assertEqual(8060, first["predicted_UPOS_correct"])
+        self.assertEqual(4259, first["models"]["weak_baseline"]["correct_head"])
+        self.assertEqual(750, first["models"]["weak_baseline"]["correct_head_and_relation"])
+        self.assertEqual(4757, first["models"]["nonoracle"]["correct_head"])
+        self.assertEqual(2811, first["models"]["nonoracle"]["correct_head_and_relation"])
+        self.assertEqual(6489, first["models"]["oracle_UPOS_diagnostic"]["correct_head"])
+        self.assertEqual(4316, first["models"]["oracle_UPOS_diagnostic"]["correct_head_and_relation"])
+        self.assertEqual(0, first["heldout_sentences_with_exact_training_form_sequence"])
+        self.assertEqual("CC-BY-SA-4.0", first["license"])
+        self.assertEqual(10329, first["evaluation_tokens"])
+        self.assertEqual(829, first["evaluation_sentences"])
+        self.assertEqual(0, first["train_heldout_sentence_id_overlap"])
+        self.assertEqual(10329, sum(first["predicted_POS_evidence_counts"].values()))
+        self.assertEqual(10329, sum(x["tokens"] for x in first["true_UPOS_errors"].values()))
+        self.assertEqual(10329, sum(x["tokens"] for x in first["true_relation_errors"].values()))
+        self.assertGreater(first["predicted_UPOS_correct"], 0)
+        self.assertLess(first["predicted_UPOS_correct"], 10329)
+        self.assertGreater(first["models"]["nonoracle"]["correct_head"], 0)
+        self.assertTrue(first["training_corpus_aggregate_statistics_previously_exposed_in_W13"])
+        self.assertFalse(first["source_witness_and_editor_genealogy_independence_verified"])
+        self.assertFalse(first["original_official_TEST_opened"])
+        self.assertFalse(first["nonoracle_gold_UPOS_used_for_predictions"])
+        self.assertEqual(0.0, first["LING003_capability_points_earned"])
+        from hashlib import sha256
+        from tools.translation_layer import _canonical
+        self.assertEqual(
+            sha256(_canonical({k: v for k, v in first.items() if k != "report_sha256"})).hexdigest(),
+            first["report_sha256"],
+        )
+        for metric in first["models"].values():
+            self.assertEqual(10329, metric["tokens"])
+            self.assertEqual(829, metric["sentences"])
+            self.assertEqual(0, metric["invalid_trees"])
+            self.assertGreaterEqual(metric["correct_head"], metric["correct_head_and_relation"])
+
+    def test_cli_verify_and_only_explicit_form_predict(self):
+        for action, args in (("verify", ["verify"]), ("predict", ["predict", "--form", "m", "--form", "n"])):
+            buffer = io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                self.assertEqual(0, w14.main(args))
+            result = json.loads(buffer.getvalue())
+            if action == "verify":
+                self.assertTrue(result["test_not_opened"])
+            else:
+                self.assertEqual(2, len(result["UPOS"]))
+                self.assertTrue(result["no_reference_gold_accessed"])
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(1, w14.main(["predict"]))
+            self.assertEqual(1, w14.main(["evaluate", "--form", "MUTATION"]))
+
+
+if __name__ == "__main__":
+    unittest.main()

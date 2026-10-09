@@ -138,3 +138,42 @@ Reproduce with `python -m ling.translation.w12b_evaluation verify`, `python -m l
 **Verified first DEV result:** baseline **UAS 0.43890117, LAS 0.17492895**; dependency model **UAS 0.58383328, LAS 0.36090938**. Zero predicted cycles/multiple roots. Diagnostics are whole-source DEV metrics (not cherry-picked) with deterministic report hash `da5710ab3ea140f34d68fba5457ad4cf56d1d0a7e4cf2a0ec7a050086e736f70`. Preregistration, complete score, rights/uncertainty boundaries and reproducibility in `ling/translation/experiments/W13_EGYPTIAN_PC_DEPENDENCY_RESULTS.md`. Hosted 34 governance / 182 data / 90 linguistic / 299 evaluation tests passed at exact PR #110 head.
 
 **Scientific gate:** This is real, source-verified **Old Egyptian syntactic dependency learning**; not German fluency or cross-period Hieratic accuracy. No independent semantic-role expert adjudication, manuscript pixel-to-line validation or blind new witness. Retain LING-003 at 0/2 and the canonical score at 34.5/100 pending broader acceptance.
+
+
+---
+
+# W14 — Real Egyptian-PC TRAIN-only oracle-free grammatical inference
+
+**Preregistration (committed before W14 original train-group scoring):** [W14_PREREG_ORACLE_FREE_TRAIN_GROUP.md](experiments/W14_PREREG_ORACLE_FREE_TRAIN_GROUP.md). Registration was made after W13 published global TRAIN statistics, so this is a **retrospective internal diagnostic, not independent blind evaluation**. The publisher TRAIN file was accessed initially for source/group census and small incidental technical previews; new group scoring began afterward. The official UD Egyptian-PC TEST was neither read nor scored. The previously exposed official W13 DEV labels were never used for W14 training/evaluation/tuning.
+
+**Original source:** UniversalDependencies/UD_Egyptian-PC (University of Jaén, Roberto A. Díaz Hernández and collaborators), Old Egyptian Pyramid Texts; publisher source tree `fca8538287cb69fd07b811eb55dcfd25584f3006`; original TRAIN Git blob `ea262ee047943b81c0e0db8ff139ec7deb9b7b53`, 2,563,828 bytes; dataset and annotations CC BY-SA 4.0 and derivatives remain attributed and share-alike. The original train has 1,619 publisher sentences, 19,486 UD word tokens. No image rights can be inferred from these annotated textual files. Source: https://github.com/UniversalDependencies/UD_Egyptian-PC .
+
+**Reproducible published source-derived data:** `ling/translation/data/w14_egyptian_pc_train_only_ccby_sa.json`, Git blob `2b42a078e6ec4277a5ab7016d6f966c3545a7894`. Contains publisher original TRAIN FORM/UPOS/HEAD/DEPREL, source ID and king-group metadata. It is a licensed re-expression of previously public TRAIN material, **not DATA-008 gold or a newly admitted image corpus**. The loader strictly checks the original source lineage, derived Git blob, licence, population, group composition, dependency trees and absence of official test material.
+
+## Frozen group split and algorithm
+
+- Train: **Teti + Neith + Merenre**, 790 original sentences / 9,157 tokens.
+- Internal retrospective heldout: **Pepi**, 829 original sentences / 10,329 tokens. Groups use publisher `# king` metadata, **not verified physically independent papyrus witnesses or scribes**. Shared literary formulae and editorial genealogy may contaminate inferred generalization. Report exact form-sequence overlaps.
+- Train-only form-POS majority lookup; unknown forms use frozen 3-character suffix (3+ observations), else 2-character (5+), else 1-character (8+), else train-global majority. Deterministic lexical ties.
+- Non-oracle POS is supplied to the *unchanged W13* UPOS/head-direction/DEPREL frequency scorer, trained again **only on allowed groups**, fixed distance penalty 0.02 and valid single-root/cycle-free tree repair. It consumes FORM strings only during inference. No publisher gold heldout UPOS, HEAD, DEPREL, lemma, FEATS or translation enters the nonoracle inference API.
+- Two comparators: frozen **train global-majority POS + previous-token dependency** and separately marked **oracle gold-POS syntax** (upper-bound diagnostic, not the nonoracle result).
+- Predictions are generated before comparison with original heldout HEAD/DEPREL; full 10,329-token denominators, POS accuracy and macro F1, UAS, LAS, oracle gaps, per-tag/relation errors, form coverage and non-silent negative outputs are recorded.
+
+## Commands
+
+```bash
+python -m ling.translation.w14_oracle_free verify
+python -m ling.translation.w14_oracle_free evaluate
+python -m ling.translation.w14_oracle_free predict --form m --form n
+python -m unittest tests.linguistics.test_translation_layer -v
+```
+
+Focused W14 tests have been added to the existing LING-003 test module: original source identity, role/source group counts, byte mutation, graph mutation, heldout contamination, forbidden gold inference, frozen predictions under target-label mutation, every heldout dependency tree, complete scored denominators, report determinism and CLI fail-closed behavior.
+
+## Strict interpretation and blocked next scientific steps
+
+This is **Old Egyptian grammar applied to authentic scholarly token forms**, not Hieratic image reading, not handwritten transliteration, not cross-period transfer and not German translation. W13's previously published complete-TRAIN frequency statistics invalidate any claim that the new train-only partition is a completely unseen independent test. The method is deterministic frequency lookup, **not a trained neural model**. If it improves on a weak comparator, that does not establish general grammatical or semantic competence.
+
+The separate source-external **semantic adequacy evaluation is blocked**: this wave did not identify and preregister a new, independently licensed Egyptian↔modern-language expert reference set outside the already exposed W9–W12 AES cohorts; the existing W13 treebank is grammatical annotations, not full German parallel translation; zero authenticated image/text/semantic-gold alignments exist. No semantic score or human adjudication is inferred.
+
+Do not upgrade LING-003 from active 0/2, verified capability 34.5/100, trained-model count zero or validated real Hieratic manuscript experiment count zero until original scientific acceptance gates are separately satisfied. Scientific report must distinguish a source-validated internal retrospective grammatical experiment from any independent unseen evaluation.

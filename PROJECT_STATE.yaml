@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W11_BIOGRAPHY_SOURCE_GENERALIZATION_AND_W10_DATA_VLM_INTEGRATED"
+  current_wave: "W12B_AMARNA_EDITORIAL_POS_MORPHOLOGY_AND_W10_W11_INTEGRATED"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -41,7 +41,7 @@ state:
     - "DATA-008: W8 CC0 Cat.2044/013 original and W9 RIME Cat.1883+2095 processed figure are source-verified images across two physical manuscript supports. W10 RIME verso Fig.8/Pleyte-Rossi p.41 Plate XXIX is a new source-locked unreviewed bibliographic/candidate line envelope, NOT a verified line-to-text match. Zero independently reviewed aligned readings, zero gold, zero production admissions; benchmark and rights gates remain."
     - "VLM-001: PR #100 fail-closed implementation and W10 #104 tile-scramble/blank/inversion controls merged; Gemini reports fresh 23 Cat.2044 local CPU passes with pinned pixels/weights but protected receipt was not independently rerun by overseer. Negative blank/scrambled controls hallucinated script: Grade E NOT_VERIFIED, Grade F STRICTLY_NO. Zero independent OCR accuracy, 0/2 VLM points."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
-    - "LING-003: Wave 10 #102 source-compositional method failed on first-use AES archive 47 references (word F1 0.02285714 vs gloss 0.02312139); Wave 11 #105 expanded lawful AES train from 904 to 3925 and improved new biography editorial text word F1 from 0.09667330 to 0.10791969 on 178 references, but no local grammar swaps, 846/2264 unsupported Egyptian tokens, and whole-sentence memory copied 50 nonidentical texts. Publisher text IDs do not prove physical witness independence or semantic quality; 0/2 task points."
+    - "LING-003: W10 #102 original archive 47 translations failed lexical compositional generalization; W11 #105 3925 lawful AES developer sentences raised new biography German word F1 to 0.10791969 on 178 references, but no syntactic swaps/independent semantic adequacy. W12 #107 temple corpus FAILED frozen group requirement (11 vs 24) and W12B newly preregistered Amarna editor-original POS/morphology test scored 780/1649 POS labels (47.301395% all-label accuracy), baseline 773/1649, POS coverage 954/1649 (57.853244%), context correctly chooses 7 net more labels. Publisher word-class tags are NOT source image reading, independently blind grammatical roles, dependency parsing, or sentence meaning; morphology recall low. All W9-W12 original evaluation cohorts exposed. LING-003 0/2 points, no certified translation."
 
 canonical_files:
   start: "START_HERE.md"
@@ -79,31 +79,40 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Waves 10 and 11 have been independently integrated. PR #102 W10 LING-003
-  compositional archive negative test, #105 W11 3925-sentence training expansion
-  and new 178-reference biographies test, #103 Luna DATA-006 lawful RIME verso
-  versus Pleyte-Rossi bibliographic candidate, and #104 Gemini VLM-001 reported
-  fresh 23-pass CPU negative controls are merged. Exact-head hosted CI passed
-  on all; last merge dbc65cadee4466d45910669e2d1cd8454254b188, with
-  main post-merge verification separate. W11 first-use external composer micro
-  German word F1 0.10791969 versus original 904-trained 0.09667330,
-  103 fewer unknown source tokens, but 846/2264 remain unsupported, no
-  German unit-order swaps activated, and 50 whole-sentence contextual retrievals
-  copied nonidentical source sequences. This is publisher text overlap,
-  NOT Egyptian semantic adequacy or Hieratic image understanding. W9 Tuebingen,
-  W10 archive and W11 biographies external cohorts are all exposed and
-  must never be retuned and claimed independently held out. DATA-006 remains
-  one unreviewed candidate without independently cross-checked original
-  edition Plate XXIX line correspondence or rights-admitted manuscript gold;
-  DATA-008 is blocked. W10 VLM local host's 23-pass receipt is agent reported,
-  reviewer host did not independently execute it; blank/scrambled hallucinations
-  invalidate Grade E, Grade F remains STRICTLY_NO and VLM-001 unearned.
-  Next owner action: independently source a lawfully reusable exact original
-  manuscript-line/edition pair with genuine witness and rights review, establish
-  blinded review/evaluation cohort, and investigate independently supervised
-  ancient Egyptian grammar/role realization on *new* source material. Do not
-  hire experts or spend money automatically; execute licensed-online research
-  and rigorous source audits first. Canonical score remains 34.5/100,
-  research coverage historical 14%, 0 accepted model experiments, 0 trained
-  models, last weighted accepted LING-002; active LING-003, DATA-008,
-  VLM-001, EVAL-003. No ability/phase points from W10/W11 engineering.
+  Integrated W9-W11 source evidence and W12B independently preregistered
+  Egyptian POS/morphology evidence. Most recent LING-003 PR #107 merged as
+  e321b82031b4e2eec7ec493162f9c2aaffdad5e1; exact-head hosted
+  governance and data/linguistic/evaluation suites passed. W12 temple
+  first preregistered corpus attempt BLOCKED because its original 11 source
+  text IDs missed the frozen 24-group minimum; no silent retuning.
+  A separate W12B original Amarna publisher CC BY-SA corpus was preregistered
+  before opening its gold: 24 novel whole source-text groups, 163 authentic
+  editorial sentences, 1691 Egyptian written-form tokens, 1649 published
+  POS labels; 3925 train sentences across 1526 original source text IDs
+  never include W9 Tuebingen, W10 archive, W11 biographies or W12 temple.
+  Frozen text-only, train-attested POS tagging: base 773/1649 = 46.876895%
+  vs context 780/1649 = 47.301395% full-denominator accuracy; 954/1649
+  POS-labeled tokens covered, conditional contextual 780/954 = 81.761006%.
+  Morphology candidate recall remains low, POS bigram evidence is not an
+  Egyptian subject/object or dependency parse, and no fluent German
+  translation or original Hieratic manuscript reading was evaluated.
+  W12B Amarna labels are now exposed and must not guide model tuning
+  presented as new heldout science. All W9-W12 original source-text
+  tests are already exposed, and source-ID distinctness still cannot
+  establish independent papyrus/work/editor genealogy. DATA-006 has one
+  unreviewed lawful RIME verso bibliographic line-envelope candidate,
+  no verified exact image-line/transcription match, no DATA-008 release.
+  VLM W10 Gemini source/weights local 23 passes remain private agent
+  reported, not overseer-reproduced, and blank/scramble hallucinations
+  keep Grades E/F unearned. EVAL-003 requires permitted provider access.
+  Next substantial effort: independently sourced publishable ancient
+  Egyptian grammatical role/dependency supervision and genuinely NEW
+  rights-cleared source/witness-based semantic evaluation, plus actual
+  source-exact manuscript line alignment for end-to-end tests.
+  Never retune on exposed Tuebingen, archive, biographies, temple or
+  Amarna as though they are heldout. No automatic hiring, paid access,
+  sealed gold, source reuse or fabricated expert validation.
+  Canonical capability 34.5/100, historical research coverage 14%,
+  zero validated real Hieratic model experiments, zero trained neural
+  models, last accepted weighted LING-002. Active LING-003, DATA-008,
+  VLM-001 and EVAL-003, with zero new points from W10-W12B.

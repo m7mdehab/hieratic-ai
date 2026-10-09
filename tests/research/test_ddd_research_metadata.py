@@ -32,6 +32,10 @@ class DDDResearchRightsTests(unittest.TestCase):
   self.assertEqual("UNKNOWN_QUARANTINED",z["benchmark_overlap"])
   self.assertIn("NONCOMMERCIAL",z["licence_for_dataset_annotations"])
   self.assertEqual(0,z["source_image_bytes_committed"])
+  self.assertEqual("C-B",z["recommended_first_research_only_closed_set_holdout_split"])
+  self.assertEqual("O-B",z["recommended_first_research_only_open_set_holdout_split"])
+  self.assertNotIn("C-D",z["publisher_document_disjoint_split_protocols"])
+  self.assertIn("C-D",z["publisher_random_sample_splits_not_valid_as_document_holdout"])
  def test_two_cat1880_views_cannot_be_split_as_distinct_objects(self):
   source,bench=fixture();s=json.loads(source["papyri.json"]);s["004"]["doc_cluster"]=44
   source["papyri.json"]=json.dumps(s).encode()

@@ -1,0 +1,7203 @@
+{
+  "IBUBd06kT0Tzr0YWu8NetRBeo6c": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "preposition",
+      "substantive",
+      "verb",
+      "verb",
+      "verb",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "adjective",
+      "verb",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      null,
+      "substantive",
+      "substantive",
+      "substantive",
+      "particle",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective",
+      "verb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-inf"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBd0E5WWi0AE8vjCr5OjPKQM4": {
+    "pos": [
+      "substantive",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd0WjwgTttUtDkplm4HxRmCk": {
+    "pos": [
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBd0XGBJOGxUH5iAqaKLCRMs4": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd0zeGWsUN0S0qcuKaGNqkEM": {
+    "pos": [
+      "substantive",
+      "preposition",
+      "pronoun",
+      "pronoun",
+      "entity_name",
+      "verb"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBd10W0QJcIkOkmmxpvEJs8wI": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd17kZsSWFET6tW2vmkixZng": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "adjective",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_irr"
+      },
+      {}
+    ]
+  },
+  "IBUBd18Y29WGNkdWunEIUQmXcgc": {
+    "pos": [
+      "substantive",
+      "adjective",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBd1A7rSYhzEelinuSbeWYwrE": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "substantive",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd1BgdEQ70kBcltzWUXwntgM": {
+    "pos": [
+      "undefined",
+      "substantive",
+      "substantive",
+      "substantive",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-gem"
+      },
+      {}
+    ]
+  },
+  "IBUBd1bGdKP2h0x6jtZ2fgIR7zQ": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd1dChZTxfEb4jWs3GRD6bQw": {
+    "pos": [
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb",
+      "entity_name",
+      "verb",
+      "verb",
+      "epitheton_title",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd1Hq0ulPdU9dnLNlVghgqSo": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "particle",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      }
+    ]
+  },
+  "IBUBd1HRoMahlUU6kANKl5JMfUc": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "inflection": "imperative",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd1i6T9IUCUrbvWuwQFaEhEQ": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd1mKQxqEd0YKpWRSHUbG9oY": {
+    "pos": [
+      "particle",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "numerus": "dual",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd1NC6QCpU0sij35vERFCUzA": {
+    "pos": [
+      "particle",
+      "substantive",
+      "pronoun",
+      "verb",
+      "verb",
+      "verb",
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_4-inf"
+      },
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd1oWcfgXlU0UghbkvPnfwf0": {
+    "pos": [
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd1rD71k5VUgJrrcwPthYXNs": {
+    "pos": [
+      "particle",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "adjective",
+      "verb",
+      "preposition",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "entity_name",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "verb"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_4-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_4-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBd1v9FIY7gkMivqt8rmJySVs": {
+    "pos": [
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd1wuWQWJ5EQWhY29R3uggsg": {
+    "pos": [
+      "substantive",
+      "epitheton_title",
+      null
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd23SebBq7k39ow1KWvlr98M": {
+    "pos": [
+      "undefined",
+      "substantive",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb",
+      "epitheton_title",
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "verb",
+      "substantive",
+      "adjective"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      }
+    ]
+  },
+  "IBUBd251niZGsEMrtgorbmkCUbI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun",
+      null
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd2a7RwIkw0bHuWS7t9VQ2yo": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd2er2QGqS0czmpB7dzyWnf0": {
+    "pos": [
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd2Fch7Eo806covIkdQpWi9g": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd2Gcm8ShI0Lgo5MucRGA6pg": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd2gTZQcnGUWwu0VYbXKv53c": {
+    "pos": [
+      "entity_name",
+      "epitheton_title",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "entity_name",
+      "adjective",
+      "substantive",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "numerus": "dual",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd2iy5Nmwx01QutzVcQBVARU": {
+    "pos": [
+      "particle",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "particle",
+      "particle",
+      "verb"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-lit"
+      }
+    ]
+  },
+  "IBUBd2t1Oq4R1kOUhZAE98WbXmk": {
+    "pos": [
+      "entity_name",
+      "entity_name",
+      null,
+      "entity_name",
+      "preposition",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd2WeOMrKf0Wqpb5xrXkdvUk": {
+    "pos": [
+      "adverb",
+      "substantive",
+      "verb",
+      "preposition",
+      "pronoun",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd2WtySM6CUY4tsBGHCIejKY": {
+    "pos": [
+      "substantive",
+      "verb",
+      "verb"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple"
+      }
+    ]
+  },
+  "IBUBd33D1WXlIUhIvZQq50S65GE": {
+    "pos": [
+      null,
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {}
+    ]
+  },
+  "IBUBd3EQ5GPQc0DWvTvgXZGkIZY": {
+    "pos": [
+      null,
+      "substantive",
+      "epitheton_title",
+      "entity_name",
+      null,
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd3lsQBJL0kI6rs1jNWeYKWU": {
+    "pos": [
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd3omtPbWrkxtnnQccnjnPK8": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd3rL8OkeCEbEtLWNctkb6WA": {
+    "pos": [
+      "substantive",
+      "numeral",
+      "substantive",
+      "numeral",
+      "substantive",
+      "numeral",
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "substantive",
+      "entity_name",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd3stLIpPPEKuhjRLrJXLuE0": {
+    "pos": [
+      "epitheton_title"
+    ],
+    "features": [
+      {}
+    ]
+  },
+  "IBUBd3STW70vjEz0lQFchYQXgs8": {
+    "pos": [
+      "verb",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd3WGejL72kPTsNOVtF4DNKA": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "verb",
+      "substantive",
+      "adjective"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      }
+    ]
+  },
+  "IBUBd3WQBFbQPEGyndvEWhqc3HM": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "entity_name",
+      "preposition",
+      "substantive",
+      "numeral",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "adjective",
+      "verb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      }
+    ]
+  },
+  "IBUBd4as0ALl0EyZleTnGWaj9iw": {
+    "pos": [
+      "verb",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd4hQM7zHUEUXhmwFgDIrJBg": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd4IpcjCXjUW2hM7ryDrxydo": {
+    "pos": [
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBd4MVM9Lx4EkMmafYvgVpnMU": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_constructus"
+      },
+      {}
+    ]
+  },
+  "IBUBd4QP9ScT2Eimgj7demTlduc": {
+    "pos": [
+      "particle",
+      "verb",
+      "substantive",
+      "pronoun",
+      "verb",
+      "substantive",
+      "substantive",
+      "epitheton_title",
+      "substantive",
+      "verb",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd4rKmW3KME7hpVr8wtySfV8": {
+    "pos": [
+      "particle",
+      "particle",
+      "verb",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "verb",
+      "adverb",
+      "preposition",
+      "substantive",
+      "numeral"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBd4XLRIQ85ENOtvfx4yDIGbg": {
+    "pos": [
+      "preposition",
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "preposition",
+      "verb",
+      "substantive",
+      "entity_name",
+      "particle",
+      "verb",
+      "substantive",
+      "pronoun",
+      "adjective"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      }
+    ]
+  },
+  "IBUBd4xtDHXlR0U8ht90YX9O4Wk": {
+    "pos": [
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective",
+      "substantive",
+      "substantive",
+      "verb",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "verb",
+      "preposition",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "preposition",
+      null,
+      null
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd5dXKKbfJEj6heXMR9tkgVY": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd5ft3bw4wEV8rqbWi1zXMW4": {
+    "pos": [
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "substantive",
+      "verb",
+      "substantive",
+      "verb",
+      "verb",
+      "entity_name",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "verb",
+      "verb",
+      "pronoun",
+      "verb",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {}
+    ]
+  },
+  "IBUBd5iwrP9XDEtVi8Pom8lPDcs": {
+    "pos": [
+      "verb",
+      "substantive",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "particle",
+      "adjective",
+      "substantive",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "inflection": "imperative",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd5KO9qwoZUCRkWovfAcEvoU": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd5kpnPQoQ0zWt4UDsT7K2nc": {
+    "pos": [
+      "verb",
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd5sOoWQYF0FUvs3rOugKOcc": {
+    "pos": [
+      "substantive",
+      "verb",
+      "adjective",
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "pronoun",
+      "preposition",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {}
+    ]
+  },
+  "IBUBd5WpJLXzWUqAhzIY2Ev6zCY": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "verb",
+      "substantive",
+      "pronoun",
+      "adjective",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "verb",
+      "adjective",
+      "entity_name",
+      "preposition",
+      "substantive",
+      "adjective",
+      "entity_name",
+      "verb",
+      "preposition",
+      "substantive",
+      "adjective",
+      "substantive",
+      "substantive",
+      "verb",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_2-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd5xfW1dCfEy7t9LeBe0by9c": {
+    "pos": [
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd61FJmNWA0BciQiMWMrygIY": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBd6BMHQvkG0XWmIJtNINtfp4": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd6dSJyE1j03MonvyEDSfRw0": {
+    "pos": [
+      "verb",
+      "entity_name",
+      "preposition",
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive",
+      "verb",
+      "preposition",
+      "substantive",
+      "epitheton_title",
+      "verb",
+      "substantive",
+      "preposition",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd6F5rFab808Fh14RNs0FYhY": {
+    "pos": [
+      null,
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd6KsGyXcBEZhvwcRoglAaR8": {
+    "pos": [
+      "interjection",
+      "substantive",
+      "adjective",
+      "verb",
+      "substantive",
+      "verb",
+      "substantive",
+      "verb"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBd6M1w5DVp0lQq6NCLWTWDA8": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb",
+      "entity_name",
+      "verb",
+      "verb",
+      "epitheton_title",
+      "preposition",
+      "entity_name",
+      "preposition",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd6Nwg73LB0HOu6dvruCmXnI": {
+    "pos": [
+      null,
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd6tT1SRzyE0NuGrhUfQjG8Q": {
+    "pos": [
+      "substantive",
+      "adjective",
+      "substantive",
+      "preposition",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "verb",
+      "preposition",
+      "verb",
+      null,
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd6VY0dqmC0d6jitKyArPJyI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd6wZbCs4VUvml5dCIf5xSQg": {
+    "pos": [
+      "particle",
+      "particle",
+      "pronoun",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "particle",
+      "substantive",
+      "adjective",
+      "substantive",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "preposition",
+      "substantive",
+      "substantive",
+      null,
+      "verb",
+      "preposition",
+      "verb"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBd72McGSxgkJFtpHQM64czb8": {
+    "pos": [
+      "verb",
+      "preposition",
+      "entity_name",
+      "verb",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "verb",
+      "preposition",
+      "entity_name",
+      "verb",
+      "substantive",
+      "verb",
+      "substantive",
+      null,
+      "verb",
+      "substantive"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd7504B88L0nXuKcpdXHwZR0": {
+    "pos": [
+      "verb",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "verb",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-gem"
+      },
+      {}
+    ]
+  },
+  "IBUBd7cM1kfpH07PqMoseseZtm4": {
+    "pos": [
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "verb",
+      "preposition",
+      "pronoun",
+      "particle",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd7g6W91XjkcCieCu8jvmKSc": {
+    "pos": [
+      "undefined",
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "preposition",
+      "substantive",
+      "verb",
+      "preposition",
+      "entity_name",
+      "pronoun",
+      "verb",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBd7gppp69nkRfh6I6GvQCVCE": {
+    "pos": [
+      "particle",
+      "particle",
+      "verb",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "verb",
+      "adverb",
+      "preposition",
+      "substantive",
+      "numeral"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBd7lfZvkxb06Qm48D2vLcKk4": {
+    "pos": [
+      "adjective",
+      "substantive",
+      "pronoun",
+      "pronoun",
+      "entity_name",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd7nkqQoUmU8AkrEz3LNKnxA": {
+    "pos": [
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb",
+      "entity_name",
+      "verb",
+      "verb",
+      "epitheton_title",
+      null,
+      "epitheton_title",
+      "epitheton_title",
+      "preposition",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd7OG611xqUVJvv6eqmtM68g": {
+    "pos": [
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd7UfrjTIKEebqe835TiDEio": {
+    "pos": [
+      null,
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd7wq2gUUsEwDrQbXvCnWWa8": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "verb",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd7X5ocA3qkTVpB7No0N7n6M": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "numeral",
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "adjective",
+      "verb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "verbalClass": "verb_4-inf"
+      }
+    ]
+  },
+  "IBUBd86NhwW8Xknvg2Dfkzpd7f4": {
+    "pos": [
+      "substantive",
+      "preposition",
+      "substantive",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd8AbbUFGEUCDpI0My4aYOhc": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBd8d8tMbVwUJdoO2yVTbq0jU": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "particle",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBd8HG23waj0gsmREKCnYbUYQ": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd8PqB7NXtEDooaRXaazYegE": {
+    "pos": [
+      "substantive",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "entity_name",
+      "substantive",
+      "pronoun",
+      "adjective",
+      "adverb",
+      "verb",
+      "pronoun",
+      "verb",
+      "substantive",
+      "substantive",
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "substantive",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBd8QpGMw1x0D9kQfEqXYtup8": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "substantive",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBd91sgnEbOETvsIBoXYOmWhU": {
+    "pos": [
+      "pronoun",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "substantive",
+      "verb",
+      null,
+      "verb",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBd9aesitsOEQal8UDcnsXkso": {
+    "pos": [
+      "entity_name",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd9d50MCOJ0pUrn6kvaandiE": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBd9EBawrPzUmIvwS52aYcBpU": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "verb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {}
+    ]
+  },
+  "IBUBd9jBWbBi804xheyxdFpQ1qQ": {
+    "pos": [
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBd9PEIbGXpUEZqfJaL2OyekU": {
+    "pos": [
+      null,
+      "verb",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "entity_name",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "pronoun",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "pronoun",
+      "substantive",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBd9xj0CxVZkXMhxWj8l2KCWQ": {
+    "pos": [
+      "entity_name",
+      "substantive",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdQ2Afmj1qUkwsFNwxlLUmL8": {
+    "pos": [
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdQ5QH3HFt0SwqaPq2fZ9emo": {
+    "pos": [
+      "epitheton_title",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBdQgZVRWLY0eysQOPvomTxkg": {
+    "pos": [
+      "verb",
+      "preposition",
+      "substantive",
+      "adjective",
+      "substantive",
+      "preposition",
+      "substantive",
+      "entity_name",
+      "adverb"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdQqjmsqyHkJ6mX7pPisxXUg": {
+    "pos": [
+      "particle",
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "verb",
+      "adjective",
+      "substantive",
+      "adjective",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdQvxW9tdX0TEjlQZ8rW5jwo": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "particle",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "verb",
+      "adjective",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {}
+    ]
+  },
+  "IBUBdQw2zvKYQkBejvfggCneHw0": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "pronoun",
+      "verb",
+      "preposition",
+      "entity_name",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdw6cMVQAvEk1vZTShueYsTo": {
+    "pos": [
+      "substantive",
+      "preposition",
+      "pronoun",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "substantive",
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdWB9TI6gwUxDhPT3aNVYeIU": {
+    "pos": [
+      null,
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdWbM9wj220elilZIWdj9NQs": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdwDvHQdqP0FOqISTRejbYGo": {
+    "pos": [
+      "substantive",
+      "epitheton_title",
+      "preposition",
+      "substantive",
+      "adjective",
+      "entity_name",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdweSmqjoLkIitm13GSJUxAE": {
+    "pos": [
+      "substantive",
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_4-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBdwFzLqlp50sFgKmYL09owb4": {
+    "pos": [
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      null,
+      "entity_name",
+      "substantive",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBdWGvIIzhgU3SrXii38hjZok": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "pronoun",
+      "pronoun",
+      "substantive",
+      "verb",
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "epitheton_title",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-inf"
+      },
+      {
+        "numerus": "dual",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdwhNjeHIZ0rQpGaHlToWbWY": {
+    "pos": [
+      "preposition",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "substantive",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBdWipdWWwxEQlmqJ3txpuxXI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "verb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-gem"
+      },
+      {}
+    ]
+  },
+  "IBUBdwJlADrWa0BGgBkZaWqR1pA": {
+    "pos": [
+      "substantive",
+      "substantive",
+      "adjective",
+      "preposition",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdwlwYHFvBEcYmuxNerqX27I": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "verb",
+      "pronoun",
+      "preposition",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdwM2yqQQn0JokUHCvvgmgX4": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "dual",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdwmHoZFWQUOih3dx5ugvQWc": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective",
+      "substantive",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdwnKQW4Il0t6iAgrdJX0Qjc": {
+    "pos": [
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "substantive",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdWoTeBGDlE7DrAEcuGnRCrs": {
+    "pos": [
+      "epitheton_title",
+      null,
+      "preposition",
+      "verb",
+      null,
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdWPLQP7rQEuUqsyOIJQB5mA": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdWQ5QVWjh0txhdFJWKdtT28": {
+    "pos": [
+      "preposition",
+      "verb",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive",
+      "preposition",
+      "pronoun",
+      "particle",
+      "verb",
+      "pronoun",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdwSFL3bOG0BoiTYGOn3OiiI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "verb",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "preposition",
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "verb",
+      "substantive",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdWSt1YVhiEy4vRjBr2BbMDw": {
+    "pos": [
+      "particle",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "adjective",
+      "entity_name",
+      "preposition",
+      "entity_name",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdWUu8ptChE1QutPD6ViSIn8": {
+    "pos": [
+      null,
+      "entity_name",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdWVLwStW5EKVkw2i5boK4pY": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "verb",
+      "preposition",
+      "pronoun",
+      "pronoun",
+      "entity_name",
+      "verb"
+    ],
+    "features": [
+      {
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBdWXC8V1Q6U0OsaG4Y3Fe4po": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_4-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdwXOC2MvKUF1rTeiUPRDWLo": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "verb",
+      null,
+      "substantive",
+      null,
+      "preposition",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdwybnCLnFEoLnXhxtah1jRc": {
+    "pos": [
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdWYDQQw2a0o4vFLfBSar6yE": {
+    "pos": [
+      "verb",
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdx3N2ixQSkGzr7T29AJmrD8": {
+    "pos": [
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdx4IwRKOkEuci9SgdWZF4ks": {
+    "pos": [
+      "particle",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "verb",
+      "adjective",
+      "substantive",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive",
+      "substantive",
+      "verb",
+      "preposition",
+      "substantive",
+      "substantive",
+      "preposition",
+      "verb",
+      "preposition",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "substantive",
+      "adjective",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdx5OEc8LG01WnUjMkH6ZvBA": {
+    "pos": [
+      "preposition",
+      "substantive",
+      "adjective",
+      "verb",
+      "adjective",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdx7OMQ0vYUN7jFGKzGbIJW0": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "preposition",
+      "pronoun",
+      "particle",
+      "verb"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdx7SDwM36UrIogJj87SvwsM": {
+    "pos": [
+      null,
+      "entity_name",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdxHxs7QQckRYtZipsUV2C9g": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-inf"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBdxi3GtNaAUdZiWhr5xCwboI": {
+    "pos": [
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "preposition",
+      "verb",
+      "pronoun",
+      "verb",
+      "preposition",
+      "epitheton_title",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "verb",
+      "substantive",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "particle",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "epitheton_title",
+      "substantive",
+      "substantive",
+      "adjective",
+      "substantive",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdxiq1h3mr0XKppXPlNInOWE": {
+    "pos": [
+      "verb",
+      "substantive",
+      "preposition",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "verb",
+      "substantive",
+      "preposition",
+      "epitheton_title",
+      "preposition",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdxO3NK2B001Mj2OD88Oqm4M": {
+    "pos": [
+      null,
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdxsQKbmnwUoTtfoJAkw2LBA": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdxuk7pobykSPrbkaUYlodLY": {
+    "pos": [
+      "epitheton_title",
+      "entity_name",
+      "entity_name",
+      "substantive",
+      "verb",
+      "preposition",
+      "verb",
+      "pronoun",
+      "adjective",
+      "verb",
+      "substantive",
+      "verb",
+      "substantive",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "entity_name",
+      "verb",
+      "substantive",
+      "substantive",
+      "verb",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBdxUsYcIFUkRIt8QmdFyV25g": {
+    "pos": [
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdxw0EWEC5kRAliu6R9OpKwg": {
+    "pos": [
+      null,
+      "entity_name",
+      "verb",
+      "preposition",
+      "entity_name",
+      "verb",
+      "pronoun",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "dual",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdy8qDd4imkmjrOyoquSSGFU": {
+    "pos": [
+      "epitheton_title",
+      "pronoun",
+      "verb",
+      "substantive",
+      "preposition",
+      "verb",
+      "preposition",
+      "substantive",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "preposition",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdy9v6YvKzUxUk4rDP9Kg3nE": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "entity_name"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdyCehXVPPUzLjUPJeVqs1i4": {
+    "pos": [
+      "preposition",
+      "substantive",
+      "adjective",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdyHZ0IsVnEZLmnnaCGbdVbU": {
+    "pos": [
+      "substantive",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "entity_name",
+      null
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_caus_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdyNsI47JcUFWn1LNckWPbpI": {
+    "pos": [
+      null,
+      "entity_name",
+      "verb",
+      null
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {}
+    ]
+  },
+  "IBUBdyrJ3luWUUhOmzMctf0ocJY": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "entity_name",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdysYkX4pAk1PpChdvz5wXKc": {
+    "pos": [
+      "substantive",
+      "verb",
+      "adjective",
+      "substantive",
+      "verb",
+      "epitheton_title",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdyUOP5fP00jyksOQSJc99Us": {
+    "pos": [
+      "substantive",
+      "numeral"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {}
+    ]
+  },
+  "IBUBdyvd3kZG2UEXsOS3a1W6mMI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdyWZ9QCZ1ER2vPguktbKWU8": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "preposition",
+      "verb",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdz4ESuAD2ULhgf5o0W0Lkqs": {
+    "pos": [
+      "substantive",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdz7tTuiyjEhJjSkkrQ73sEI": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "substantive",
+      "preposition",
+      "substantive",
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "verb",
+      "verb",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "plural",
+        "status": "st_constructus"
+      },
+      {
+        "numerus": "plural",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_2-lit"
+      },
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdzEnYcMGQUfJq7FNQ0hkFFs": {
+    "pos": [
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdzGYJGmLbUWbuelsmbsQwG0": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdzH1YUWGrkE5vdaV9y2l9DI": {
+    "pos": [
+      "substantive",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "adjective",
+      "entity_name",
+      "entity_name",
+      "substantive",
+      "verb"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      }
+    ]
+  },
+  "IBUBdzmdWaHClEAqq1KvRqRpUj4": {
+    "pos": [
+      null,
+      "entity_name",
+      "entity_name",
+      "preposition",
+      null,
+      "preposition",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdzmhrRZ93UgcmBZHKCp6XmI": {
+    "pos": [
+      "pronoun",
+      "substantive",
+      "pronoun",
+      "substantive",
+      "epitheton_title"
+    ],
+    "features": [
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_constructus"
+      },
+      {}
+    ]
+  },
+  "IBUBdzmz981mNESQreFeJ0tw2TI": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "verb",
+      "verb",
+      "preposition",
+      "substantive",
+      "verb",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {
+        "numerus": "plural",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {
+        "inflection": "infinitive",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "participle",
+        "voice": "active"
+      },
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "plural",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdzPEz66bW0QstWkHW6H3bEA": {
+    "pos": [
+      null,
+      "verb",
+      "pronoun",
+      null,
+      "entity_name",
+      "verb",
+      "verb",
+      "substantive",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_4-inf"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdzpNCtHWIU2liQvvLQIO2Ug": {
+    "pos": [
+      "substantive",
+      "entity_name",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdzrpvYHtH0ZWprpTQWeMx1k": {
+    "pos": [
+      "entity_name",
+      "verb",
+      "verb",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "adjective",
+      "entity_name"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "active",
+        "verbalClass": "verb_2-gem"
+      },
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "IBUBdzS9xtpV4U4suwacly7g1A0": {
+    "pos": [
+      "preposition",
+      "verb",
+      "pronoun",
+      "preposition",
+      "substantive",
+      "adjective",
+      "adverb",
+      "particle",
+      "verb",
+      "pronoun",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "feminine",
+        "numerus": "singular"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_irr"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdzSE35ZhkUZEgfcX0aKMvWc": {
+    "pos": [
+      "epitheton_title",
+      "adjective",
+      "substantive",
+      "pronoun",
+      "verb",
+      "pronoun",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "entity_name",
+      "verb",
+      "substantive",
+      "substantive",
+      "substantive",
+      "preposition",
+      "entity_name",
+      "substantive",
+      "preposition",
+      "substantive"
+    ],
+    "features": [
+      {},
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "participle",
+        "voice": "passive",
+        "verbalClass": "verb_irr"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdzTaJQptlU2SmbH7WZApCd4": {
+    "pos": [
+      "substantive",
+      "pronoun",
+      "verb",
+      "preposition",
+      "substantive",
+      "pronoun"
+    ],
+    "features": [
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_2-lit"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {}
+    ]
+  },
+  "IBUBdzVKTVg2v032kSTFEVYZw4g": {
+    "pos": [
+      "epitheton_title",
+      "verb",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "epitheton_title",
+      "entity_name",
+      "verb",
+      "adverb",
+      "adverb"
+    ],
+    "features": [
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "relativeform",
+        "verbalClass": "verb_3-inf"
+      },
+      {},
+      {},
+      {
+        "genus": "feminine",
+        "numerus": "singular",
+        "inflection": "pseudoParticiple",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {}
+    ]
+  },
+  "IBUBdzWh3oU8M0XBiaBd9I0gR5w": {
+    "pos": [
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "epitheton_title",
+      "entity_name",
+      "epitheton_title",
+      "verb",
+      "pronoun"
+    ],
+    "features": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_2-lit"
+      },
+      {}
+    ]
+  },
+  "IBUBdzwRkILosEWQhvsVUqOS42o": {
+    "pos": [
+      "verb",
+      "pronoun",
+      "entity_name",
+      "verb",
+      "pronoun",
+      "substantive"
+    ],
+    "features": [
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {},
+      {
+        "inflection": "suffixConjugation",
+        "voice": "active",
+        "verbalClass": "verb_3-lit"
+      },
+      {},
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      }
+    ]
+  },
+  "IBUBdzXtiFu3YkjQkVkTkNvC97g": {
+    "pos": [
+      "substantive",
+      "preposition",
+      "substantive",
+      "pronoun",
+      "pronoun",
+      "epitheton_title"
+    ],
+    "features": [
+      {
+        "genus": "masculine",
+        "numerus": "singular",
+        "status": "st_absolutus"
+      },
+      {},
+      {
+        "numerus": "singular",
+        "status": "st_pronominalis"
+      },
+      {},
+      {},
+      {}
+    ]
+  }
+}

@@ -1908,6 +1908,149 @@ class VLMBaselinesTests(unittest.TestCase):
             "NOT_EXECUTED_DUE_TO_RAM_LIMITS",
         )
 
+    # =========================================================================
+    # Section 16: Wave 14 Cross-Support, RIME Fig. 6 Recto, and Adversarial Falsification
+    # =========================================================================
+
+    def test_w14_natural_nontext_control_generation_and_properties(self) -> None:
+        """Verify procedural natural non-text control generates deterministic valid PNG."""
+        from eval.vlm.hieratic import generate_natural_nontext_control
+        b1 = generate_natural_nontext_control(256, 256, seed=42)
+        b2 = generate_natural_nontext_control(256, 256, seed=42)
+        self.assertTrue(b1.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(b1, b2)
+        self.assertEqual(hashlib.sha256(b1).hexdigest(), hashlib.sha256(b2).hexdigest())
+        b3 = generate_natural_nontext_control(256, 256, seed=99)
+        self.assertNotEqual(b1, b3)
+
+    def test_w14_detects_forbidden_figure_8_verso_substitution(self) -> None:
+        """Verify supplying RIME Figure 8 Verso bytes raises ImageConditioningError."""
+        from eval.vlm.hieratic import (
+            resize_image_aspect_ratio,
+            ImageConditioningError,
+            RIME_FIG8_VERSO_FORBIDDEN_SHA256,
+        )
+        fake_fig8_bytes = b"\x89PNG\r\n\x1a\n" + b"fig8_verso_data"
+        with mock.patch("hashlib.sha256") as mock_sha:
+            mock_obj = mock.MagicMock()
+            mock_obj.hexdigest.return_value = RIME_FIG8_VERSO_FORBIDDEN_SHA256
+            mock_sha.return_value = mock_obj
+            with self.assertRaisesRegex(ImageConditioningError, "Forbidden Figure 8 Verso"):
+                resize_image_aspect_ratio(fake_fig8_bytes)
+
+    def test_w14_detects_missing_or_corrupt_rime_tiff_in_live_execution(self) -> None:
+        """Verify live execution fails closed when RIME Fig. 6 TIFF bytes mismatch size or hash."""
+        from eval.vlm.hieratic import (
+            execute_hieratic_experiment,
+            ImageConditioningError,
+        )
+        class StubLive:
+            execution_tier = "live_local_open_weight"
+            weights_dir = Path("missing_weights_dir_test")
+            model_config = {
+                "provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+                "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+            }
+
+        with mock.patch("eval.vlm.hieratic.verified_model_weight_sha256", return_value=True):
+            bad_size = [{
+                "target_id": "cat1883_2095_full_fig6",
+                "target_type": "full_manuscript",
+                "image_bytes": b"too_short",
+            }]
+            with self.assertRaisesRegex(ImageConditioningError, "RIME Fig. 6 source hash or byte size"):
+                execute_hieratic_experiment(StubLive(), bad_size, allow_simulated=False)
+
+    def test_w14_cross_support_vocabulary_overlap_and_metrics(self) -> None:
+        """Verify simulated cross-support run calculates Jaccard vocabulary similarity and divergence."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets = [
+            {"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"synthetic_2044"},
+            {"target_id": "cat1883_2095_full_fig6", "target_type": "full_manuscript", "image_bytes": b"synthetic_1883"},
+        ]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True)
+        self.assertIn("cross_support_comparison", report["sensitivity_controls"])
+        cs = report["sensitivity_controls"]["cross_support_comparison"]
+        self.assertIsNotNone(cs)
+        self.assertTrue(cs["evaluated"])
+        self.assertIn("jaccard_vocabulary_similarity", cs)
+        self.assertIn("shared_vocabulary_count", cs)
+        self.assertEqual(cs["support_1"], "Cat.2044/013")
+        self.assertEqual(cs["support_2"], "Cat.1883 + Cat.2095 (RIME Fig. 6)")
+
+    def test_w14_prompt_priming_differential_measurement(self) -> None:
+        """Verify report records leading ablation and prompt priming differential across controls."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets = [
+            {"target_id": "t1", "target_type": "full_manuscript", "image_bytes": b"synthetic_fixture"},
+        ]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True, run_leading_ablation=True)
+        ctrl = report["sensitivity_controls"]
+        self.assertIn("leading_ablation", ctrl)
+        la = ctrl["leading_ablation"]
+        self.assertIn("blank_leading_response", la)
+        self.assertIn("blank_leading_claims_script", la)
+        self.assertIn("scrambled_leading_claims_script", la)
+        self.assertIn("natural_nontext_leading_claims_script", la)
+        self.assertIn("manuscript_leading_responses", la)
+
+    def test_w14_evidence_grades_fail_closed_grade_e_and_f(self) -> None:
+        """Verify Grade E stays NOT_VERIFIED and Grade F stays STRICTLY_NO (0.0 points)."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets = [
+            {"target_id": "t1", "target_type": "full_manuscript", "image_bytes": b"synthetic_fixture"},
+        ]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True)
+        grades = report["evidence_grades"]
+        self.assertEqual(grades["grade_f_authentic_hieratic_gold_evaluation"]["status"], "STRICTLY_NO")
+        self.assertEqual(report["scientific_capability_points"], 0.0)
+        self.assertFalse(report["hieratic_reading_claim"])
+        self.assertEqual(report["classification"], "noncertifiable_diagnostic")
+
+    def test_w14_cli_invocation_with_rime_image_simulated(self) -> None:
+        """Verify real-hieratic CLI subcommand accepts --rime-image-path in simulated mode."""
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+        tmp_path.unlink()
+        try:
+            ret = cli_main([
+                "real-hieratic",
+                "--model", "smolvlm-256m-instruct",
+                "--allow-simulated",
+                "--output", str(tmp_path),
+            ])
+            self.assertEqual(ret, 0)
+            self.assertTrue(tmp_path.is_file())
+            data = json.loads(tmp_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["doc_type"], "vlm_hieratic_experiment_report")
+            self.assertEqual(data["classification"], "noncertifiable_diagnostic")
+            self.assertEqual(data["scientific_capability_points"], 0.0)
+            self.assertFalse(data["hieratic_reading_claim"])
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+    def test_w14_scholarly_provenance_records_two_supports(self) -> None:
+        """Verify scholarly provenance documents two distinct physical supports with single-support note."""
+        from eval.vlm.hieratic import get_scholarly_provenance
+        prov = get_scholarly_provenance()
+        self.assertEqual(prov["distinct_physical_supports_evaluated"], 2)
+        self.assertEqual(len(prov["supports"]), 2)
+        s1 = prov["supports"][0]
+        s2 = prov["supports"][1]
+        self.assertEqual(s1["accession"], "Cat.2044/013")
+        self.assertEqual(s2["accession"], "Cat.1883 + Cat.2095")
+        self.assertIn("single physical manuscript support", prov["scholarly_note"])
+        self.assertEqual(s1["alignment_status"], "NO_LINE_ALIGNMENT")
+        self.assertEqual(s2["alignment_status"], "NO_LINE_ALIGNMENT")
+        self.assertEqual(s2["text_reuse_status"], "BLOCKED_UNVERIFIED_LICENSE")
+
 
 if __name__ == "__main__":
     unittest.main()

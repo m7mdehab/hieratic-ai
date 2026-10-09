@@ -597,6 +597,7 @@ def main(argv: list[str] | None = None) -> int:
     p_hieratic.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH, help="Path to evaluation suite YAML")
     p_hieratic.add_argument("--weights-dir", type=Path, default=None, help="Local directory containing model snapshot weights")
     p_hieratic.add_argument("--image-path", type=Path, default=None, help="Path to authentic Cat.2044 JPEG image file")
+    p_hieratic.add_argument("--rime-image-path", type=Path, default=None, help="Path to authentic RIME Figure 6 TIFF image file (Cat.1883 + Cat.2095)")
     p_hieratic.add_argument("--crops-dir", type=Path, default=None, help="Path to directory containing deterministic line crops and inspection-manifest.json")
     p_hieratic.add_argument("--output", type=Path, default=None, help="Path to write structured hieratic experiment report JSON")
     p_hieratic.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
@@ -831,7 +832,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise VLMCLIError(f"Model key '{args.model}' not found in suite.")
 
             targets = []
-            # 1. Load full image if provided
+            # 1. Load full Cat.2044 image if provided
             if args.image_path and args.image_path.is_file():
                 img_bytes = args.image_path.read_bytes()
                 targets.append({
@@ -840,11 +841,28 @@ def main(argv: list[str] | None = None) -> int:
                     "image_bytes": img_bytes,
                     "source_bounds": [0, 0, 7063, 3947],
                     "transform": None,
+                    "source_object_id": "Cat.2044/013",
                 })
 
-            # 2. Refuse unconstrained crops: manifest + source identity + artifact hashes required.
-            if not args.allow_simulated and (not targets or targets[0]["target_type"] != "full_manuscript"):
-                raise VLMCLIError("Live Hieratic mode requires the pinned Cat.2044 original --image-path.")
+            # 2. Load authentic RIME Figure 6 TIFF image if provided (Cat.1883 + Cat.2095)
+            if getattr(args, "rime_image_path", None) and args.rime_image_path.is_file():
+                from eval.vlm.hieratic import RIME_FIG8_VERSO_FORBIDDEN_SHA256
+                rime_bytes = args.rime_image_path.read_bytes()
+                rime_sha = hashlib.sha256(rime_bytes).hexdigest()
+                if rime_sha == RIME_FIG8_VERSO_FORBIDDEN_SHA256:
+                    raise VLMCLIError("Forbidden Figure 8 Verso substitution detected: expected RIME Figure 6 Recto")
+                targets.append({
+                    "target_id": "cat1883_2095_full_fig6",
+                    "target_type": "full_manuscript",
+                    "image_bytes": rime_bytes,
+                    "source_bounds": [0, 0, 6585, 4718],
+                    "transform": None,
+                    "source_object_id": "Cat.1883 + Cat.2095",
+                })
+
+            # 3. Refuse unconstrained crops: manifest + source identity + artifact hashes required.
+            if not args.allow_simulated and (not targets or not any(t["target_type"] == "full_manuscript" for t in targets)):
+                raise VLMCLIError("Live Hieratic mode requires an authentic full manuscript --image-path or --rime-image-path.")
             if args.crops_dir:
                 from eval.vlm.hieratic import CAT2044_SOURCE_SHA256
                 if not args.crops_dir.is_dir():
@@ -877,6 +895,7 @@ def main(argv: list[str] | None = None) -> int:
                         "image_bytes": raw_crop, "expected_sha256": sha,
                         "source_bounds": record.get("crop_source_bounds"),
                         "transform": record.get("source_to_crop_transform"),
+                        "source_object_id": "Cat.2044/013",
                     })
 
             if not targets:
@@ -887,6 +906,15 @@ def main(argv: list[str] | None = None) -> int:
                         "image_bytes": b"synthetic_hieratic_full_manuscript_bytes",
                         "source_bounds": [0, 0, 7063, 3947],
                         "transform": None,
+                        "source_object_id": "Cat.2044/013",
+                    })
+                    targets.append({
+                        "target_id": "fixture_cat1883_2095_full",
+                        "target_type": "full_manuscript",
+                        "image_bytes": b"synthetic_rime_fig6_manuscript_bytes",
+                        "source_bounds": [0, 0, 6585, 4718],
+                        "transform": None,
+                        "source_object_id": "Cat.1883 + Cat.2095",
                     })
                     targets.append({
                         "target_id": "fixture_cat2044_line_001",
@@ -894,9 +922,10 @@ def main(argv: list[str] | None = None) -> int:
                         "image_bytes": b"synthetic_hieratic_line_crop_bytes",
                         "source_bounds": [100, 100, 300, 200],
                         "transform": None,
+                        "source_object_id": "Cat.2044/013",
                     })
                 else:
-                    raise VLMCLIError("No authentic Hieratic image or crops provided. Specify --image-path or --crops-dir.")
+                    raise VLMCLIError("No authentic Hieratic image or crops provided. Specify --image-path, --rime-image-path, or --crops-dir.")
 
             if args.allow_simulated:
                 adapter = MockVLMAdapter(model_cfg, simulated_mode="normal")

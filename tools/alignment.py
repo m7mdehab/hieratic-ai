@@ -10,14 +10,32 @@ from tools.acquisition import validate_data as validate_acquisition
 
 ROOT=Path(__file__).resolve().parents[1]
 ALIGN_SCHEMA=ROOT/"schemas/alignment_manifest.schema.json"
+W9_RIME_REFERENCE_SCHEMA=ROOT/"data/alignment/w9_rime/reference_geometry.schema.json"
+W9_RIME_REFERENCE_PACKET=ROOT/"data/alignment/w9_rime/CAT1883-CAT2095-recto-reference-geometry.json"
 ACQ_SCHEMA=ROOT/"schemas/acquisition_manifest.schema.json"
 ANNOTATION_SCHEMA=ROOT/"schemas/annotation.schema.json"
 REGISTRY=ROOT/"data/sources/registry.yaml"
 class AlignmentError(ValueError):pass
 
+def validate_reference_geometry(packet:Any,schema_path:Path=W9_RIME_REFERENCE_SCHEMA)->list[str]:
+    """Validate image-linked bibliographic pointers that are expressly not DATA-006 gold alignments."""
+    errors=schema_errors(packet,schema_path)
+    if errors:return errors
+    regions=packet["geometry_regions"]
+    ids=[region["region_id"] for region in regions]
+    if len(ids)!=len(set(ids)):errors.append("duplicate reference geometry region_id")
+    for region in regions:
+        x0,y0,x1,y1=region["source_bounds"]
+        if x1<=x0 or y1<=y0:errors.append(f"{region['region_id']}: empty or reversed source bounds")
+    if packet.get("line_level_alignment") is not False or packet.get("data004_annotation_id") is not None:
+        errors.append("reference-only geometry cannot claim DATA-004 line alignment")
+    return errors
+
 def read(path:Path)->Any:
-    try:return yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError,UnicodeError,yaml.YAMLError) as exc:raise AlignmentError(f"{path}: {exc}") from exc
+    try:
+        raw=path.read_text(encoding="utf-8")
+        return json.loads(raw) if path.suffix.lower()==".json" else yaml.safe_load(raw)
+    except (OSError,UnicodeError,yaml.YAMLError,json.JSONDecodeError) as exc:raise AlignmentError(f"{path}: {exc}") from exc
 
 def schema_errors(data:Any,path:Path)->list[str]:
     return [f"{'.'.join(map(str,e.absolute_path)) or '<root>'}: {e.message}" for e in sorted(Draft202012Validator(read(path),format_checker=FormatChecker()).iter_errors(data),key=lambda e:str(e.absolute_path))]
@@ -144,8 +162,15 @@ def validate(alignment:Any,acquisition:Any,annotation:Any,registry:Any)->tuple[l
 def main(argv=None)->int:
     p=argparse.ArgumentParser(description=__doc__);s=p.add_subparsers(dest="cmd",required=True)
     q=s.add_parser("validate");q.add_argument("manifest",type=Path);q.add_argument("--acquisition",type=Path,required=True);q.add_argument("--annotation",type=Path,required=True);q.add_argument("--output",type=Path)
+    ref=s.add_parser("validate-reference",help="validate image-linked citation pointers with geometry only; never DATA-006 gold")
+    ref.add_argument("manifest",type=Path,nargs="?",default=W9_RIME_REFERENCE_PACKET);ref.add_argument("--schema",type=Path,default=W9_RIME_REFERENCE_SCHEMA)
     a=p.parse_args(argv)
     try:
+        if a.cmd=="validate-reference":
+            packet=read(a.manifest);errors=validate_reference_geometry(packet,a.schema)
+            if errors:raise AlignmentError("\n".join(errors))
+            print(json.dumps({"reference_set_id":packet["reference_set_id"],"geometry_region_count":len(packet["geometry_regions"]),"line_level_alignment":False,"gold_scoreable_count":0,"training_admission":packet["rights_boundary"]["training_admission"]},sort_keys=True))
+            return 0
         alignment=read(a.manifest);acq=read(a.acquisition);ann=read(a.annotation);registry=read(REGISTRY)
         errors,eligible=validate(alignment,acq,ann,registry)
         if errors:raise AlignmentError("\n".join(errors))

@@ -490,6 +490,92 @@ W8_VAULT_SUFFIX=Path("HieraticAI/private-artifacts/W8")
 W8_MAX_BYTES=8*1024*1024
 W8_MAX_PIXELS=35_000_000
 W8_MAX_EVIDENCE_BYTES=256*1024
+W9_RIME_PROFILE=ROOT/"data/preprocessing/w9_rime_cat1883_cat2095_geometry.json"
+W9_RIME_SHA256="c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9"
+W9_RIME_BYTES=36_023_444
+W9_RIME_DIMENSIONS=[6585,4718]
+W9_MAX_BYTES=40*1024*1024
+W9_MAX_PIXELS=35_000_000
+W9_MAX_EVIDENCE_BYTES=256*1024
+
+def _w9_rime_private_root()->Path:
+    local=os.environ.get("LOCALAPPDATA")
+    if not local:raise PreprocessingError("W9 local inspection requires LOCALAPPDATA private vault")
+    root=(Path(local)/"HieraticAI/private-artifacts/W9").absolute()
+    if _has_symlink_or_junction(root):raise PreprocessingError("W9 private vault contains a symlink or junction")
+    try:resolved=root.resolve(strict=True)
+    except OSError as exc:raise PreprocessingError("W9 private vault does not exist") from exc
+    if resolved==ROOT.resolve() or ROOT.resolve() in resolved.parents:raise PreprocessingError("W9 private vault must be outside repository")
+    return resolved
+
+def _w9_rime_profile(path:Path=W9_RIME_PROFILE)->dict[str,Any]:
+    try:profile=json.loads(path.read_text(encoding="utf-8"))
+    except (OSError,UnicodeError,json.JSONDecodeError) as exc:raise PreprocessingError("W9 RIME geometry profile missing or invalid") from exc
+    source=profile.get("source_lock",{})
+    if profile.get("profile_id")!="w9-rime-cat1883-cat2095-recto-geometry" or profile.get("profile_version")!="1.0.0" or source.get("source_sha256")!=W9_RIME_SHA256 or source.get("byte_size")!=W9_RIME_BYTES or source.get("dimensions")!=W9_RIME_DIMENSIONS or source.get("exact_file_url")!="https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif":
+        raise PreprocessingError("W9 RIME profile differs from exact source lock")
+    if profile.get("outputs",{}).get("training_admission")!="BLOCKED" or profile.get("outputs",{}).get("annotation_or_gold")!="NONE" or profile.get("outputs",{}).get("article_text_reuse")!="BLOCKED_UNVERIFIED_LICENSE":
+        raise PreprocessingError("W9 RIME profile attempts to promote rights or scholarly status")
+    return profile
+
+def inspect_w9_rime_image(profile_path:Path,image_path:Path,evidence_path:Path,out_dir:Path)->dict[str,Any]:
+    """Decode the exact article-hosted TIFF and create a private, unlabelled geometry diagnostic."""
+    profile=_w9_rime_profile(profile_path);vault=_w9_rime_private_root()
+    for path,label in ((image_path,"source image"),(evidence_path,"acquisition evidence")):
+        absolute=path.absolute()
+        if _has_symlink_or_junction(absolute):raise PreprocessingError(f"W9 {label} path contains a symlink or junction")
+        try:resolved=absolute.resolve(strict=True);resolved.relative_to(vault)
+        except (OSError,ValueError) as exc:raise PreprocessingError(f"W9 {label} must be inside the private vault") from exc
+        if len(resolved.relative_to(vault).parts)!=1:raise PreprocessingError(f"W9 {label} must be a direct vault child")
+    if image_path.name!="CAT1883-CAT2095-RIME-fig6-recto-original.tif" or evidence_path.name!="CAT1883-CAT2095-FIG6.json":raise PreprocessingError("W9 input filenames do not match the fixed source lock")
+    source_bytes=_w8_read_private_file(image_path,W9_MAX_BYTES,"RIME source image")
+    evidence_bytes=_w8_read_private_file(evidence_path,W9_MAX_EVIDENCE_BYTES,"RIME acquisition evidence")
+    try:evidence=json.loads(evidence_bytes.decode("utf-8"))
+    except (UnicodeError,json.JSONDecodeError) as exc:raise PreprocessingError("W9 acquisition evidence is malformed") from exc
+    digest=_digest(source_bytes);source=profile["source_lock"]
+    if len(source_bytes)!=W9_RIME_BYTES or digest!=W9_RIME_SHA256 or not source_bytes.startswith((b"II*\x00",b"MM\x00*")):raise PreprocessingError("W9 source byte size, TIFF signature, or hash differs from source lock")
+    if evidence.get("source_sha256")!=digest or evidence.get("source_byte_size")!=len(source_bytes) or evidence.get("source_object_id")!="Cat.1883 + Cat.2095" or evidence.get("physical_support_group")!="Cat.1883 + Cat.2095 (one joined five-fragment support)" or evidence.get("exact_original_file_url")!=source["exact_file_url"] or evidence.get("use_boundary",{}).get("source_registry_status")!="NOT_REGISTERED" or evidence.get("use_boundary",{}).get("training_admission")!="BLOCKED" or evidence.get("use_boundary",{}).get("gold_or_transcription")!="NONE":raise PreprocessingError("W9 acquisition evidence identity or rights boundary mismatch")
+    try:
+        from PIL import Image,ImageDraw,ImageOps,UnidentifiedImageError
+    except ImportError as exc:raise PreprocessingError("W9 TIFF inspection requires documented Pillow runtime") from exc
+    previous=Image.MAX_IMAGE_PIXELS;Image.MAX_IMAGE_PIXELS=W9_MAX_PIXELS
+    try:
+        import io,warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("error",Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(source_bytes)) as check:
+                if check.format!="TIFF" or check.n_frames!=1 or check.size!=tuple(W9_RIME_DIMENSIONS):raise PreprocessingError("W9 TIFF format, frame count, or dimensions differ from source lock")
+                check.verify()
+            with Image.open(io.BytesIO(source_bytes)) as opened:
+                opened.load();image=ImageOps.exif_transpose(opened).convert("RGB")
+    except (OSError,ValueError,Image.DecompressionBombError,Image.DecompressionBombWarning,UnidentifiedImageError) as exc:raise PreprocessingError(f"W9 TIFF decode failed: {type(exc).__name__}") from exc
+    finally:Image.MAX_IMAGE_PIXELS=previous
+    if image.size!=tuple(W9_RIME_DIMENSIONS) or image.width*image.height>W9_MAX_PIXELS:raise PreprocessingError("W9 decoded dimensions exceed locked limits")
+    # Compute only the outer non-white photographed-content bounds. This includes
+    # the printed scale and says nothing about writing, columns, lines, or signs.
+    gray=image.convert("L");mask=gray.point(lambda value:255 if value<248 else 0);bounds=mask.getbbox()
+    if not bounds:raise PreprocessingError("W9 TIFF contains no non-white photographed content")
+    preview=image.copy();preview.thumbnail((1800,1800),Image.Resampling.LANCZOS)
+    sx=preview.width/image.width;sy=preview.height/image.height;draw=ImageDraw.Draw(preview)
+    mapped=(round(bounds[0]*sx),round(bounds[1]*sy),round(bounds[2]*sx)-1,round(bounds[3]*sy)-1);draw.rectangle(mapped,outline=(0,190,255),width=3)
+    output=out_dir.absolute()
+    if _has_symlink_or_junction(output):raise PreprocessingError("W9 output path contains symlink or junction")
+    try:parent=output.parent.resolve(strict=True)
+    except OSError as exc:raise PreprocessingError("W9 output parent must exist") from exc
+    if parent!=vault or output.exists() or output.is_symlink():raise PreprocessingError("W9 output must be a new direct child of the private vault")
+    output.mkdir();created=[]
+    try:
+        artifact=output/"photographed-content-bounds.png";preview.save(artifact,format="PNG",optimize=False,compress_level=9);created.append(artifact);artifact_bytes=artifact.read_bytes()
+        packet={"processing_id":"w9-rime-"+_digest(json.dumps({"profile":profile,"source_sha256":digest,"evidence_sha256":_digest(evidence_bytes),"bounds":list(bounds),"artifact_sha256":_digest(artifact_bytes)},sort_keys=True,separators=(",",":")).encode()),"profile_id":profile["profile_id"],"profile_version":profile["profile_version"],"engine_version":profile["engine_version"],"source_sha256":digest,"source_dimensions":list(image.size),"source_object_id":evidence["source_object_id"],"physical_support_group":evidence["physical_support_group"],"view":"recto as mounted in RIME Fig. 6","photographed_content_bounds_source_pixels":list(bounds),"overlay":{"filename":artifact.name,"sha256":_digest(artifact_bytes),"byte_size":len(artifact_bytes),"dimensions":list(preview.size),"content":"single bounding box around non-white photo contents; not papyrus/text segmentation"},"evidence_sha256":_digest(evidence_bytes),"transformations":["Pillow TIFF decode after exact byte hash check","EXIF orientation applied if present; resulting dimensions must remain locked","RGB conversion","white-threshold outer content bounds only","LANCZOS thumbnail with max side 1800","PNG overlay; no text segmentation, OCR, or line labels"],"scientific_status":"UNLABELLED_PHOTOGRAPHED_CONTENT_BOUND_ONLY","line_alignment":"NONE","article_text_reuse":"BLOCKED_UNVERIFIED_LICENSE","independent_line_review":False,"training_admission":"BLOCKED","development_admission":"BLOCKED","evaluation_admission":"NOT_AUTHORIZED","gold_or_annotation_created":False}
+        manifest=output/"inspection-manifest.json";manifest.write_text(json.dumps(packet,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8",newline="\n");created.append(manifest)
+        return packet
+    except Exception:
+        for path in reversed(created):
+            try:path.unlink(missing_ok=True)
+            except OSError:pass
+        try:output.rmdir()
+        except OSError:pass
+        raise
 
 def _w8_private_root()->Path:
     local=os.environ.get("LOCALAPPDATA")
@@ -720,6 +806,10 @@ def main(argv=None)->int:
     inspect.add_argument("manifest",type=Path,nargs="?",default=W8_PROFILE);inspect.add_argument("--image",type=Path,required=True,help="exact acquired JPEG inside the private W8 vault")
     inspect.add_argument("--evidence",type=Path,required=True,help="redacted Cat.2044 acquisition record inside the private W8 vault")
     inspect.add_argument("--output",type=Path,required=True,help="new, unused output directory inside the private W8 vault")
+    rime=sub.add_parser("inspect-rime-image",help="private, pinned W9 unlabelled Cat.1883 + Cat.2095 RIME figure-image bounds diagnostic")
+    rime.add_argument("--profile",type=Path,default=W9_RIME_PROFILE);rime.add_argument("--image",type=Path,required=True,help="exact acquired TIFF inside the private W9 vault")
+    rime.add_argument("--evidence",type=Path,required=True,help="redacted source evidence packet inside the private W9 vault")
+    rime.add_argument("--output",type=Path,required=True,help="new output directory inside the private W9 vault")
     args=parser.parse_args(argv)
     try:
         if args.command=="met-readiness":
@@ -732,6 +822,10 @@ def main(argv=None)->int:
         if args.command=="inspect-image":
             result=inspect_w8_real_image(args.manifest,args.image,args.evidence,args.output)
             print(json.dumps({"processing_id":result["processing_id"],"source_sha256":result["source_sha256"],"source_dimensions":result["source_dimensions"],"decoder":result["decoder"],"candidate_material_regions":len(result["analysis"]["candidate_material_regions"]),"candidate_line_regions":len(result["analysis"]["candidate_line_regions"]),"artifact_count":len(result["artifacts"]),"output":str(args.output),"training_admission":"BLOCKED","benchmark_overlap":"UNRESOLVED_QUARANTINED","gold_created":False},sort_keys=True))
+            return 0
+        if args.command=="inspect-rime-image":
+            result=inspect_w9_rime_image(args.profile,args.image,args.evidence,args.output)
+            print(json.dumps({"processing_id":result["processing_id"],"source_sha256":result["source_sha256"],"source_dimensions":result["source_dimensions"],"photographed_content_bounds":result["photographed_content_bounds_source_pixels"],"overlay":result["overlay"],"line_alignment":"NONE","text_reuse":"BLOCKED_UNVERIFIED_LICENSE","training_admission":"BLOCKED","gold_created":False},sort_keys=True))
             return 0
         if args.command=="validate":
             acquisition=_read(args.acquisition) if args.acquisition else None;errors=validate_request(_read(args.manifest),_read(REGISTRY),args.manifest.parent,acquisition)

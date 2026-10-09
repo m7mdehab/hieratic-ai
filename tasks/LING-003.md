@@ -1,6 +1,6 @@
 # LING-003 — Meaning and translation layer (Wave 8)
 
-**Canonical task:** ready, weight 2.0 points, dependency LING-002 accepted. **Owner implementation branch:** task/LING-003-real-aes-translation-w8.
+**Canonical task:** active, weight 2.0 points (not yet earned), dependency LING-002 accepted. **W8 implementation branch:** task/LING-003-real-aes-translation-w8. **W9 research branch:** task/LING-003-w9-contextual-translation-heldout.
 
 ## Objective
 
@@ -42,3 +42,14 @@ python -m unittest tests.linguistics.test_translation_layer -v
 ## Authentic sentence-level parallel extension
 
 The publisher's 445 original AES sentences include **14 cases with an identical full Egyptian source token sequence in a different source-text ID**. The implemented pipeline can retrieve a genuine **other-text, publisher-authored German whole-sentence translation** for those cases (and preserves all alternate translation strings). The reference translation from the target text ID remains excluded, including any within-text duplicates; this is not self-leakage or a model hallucination. For the rest it abstains from claiming fluent translation and explicitly falls back to gloss sequences. Count of actual cross-source published full-sentence parallels is fixed in source-verified tests. This is real and substantial coverage of a limited domain, not general compositional translation competence.
+
+
+## Wave 9 — contextual method + genuine adverse external result (scientific status unchanged)
+
+W9 was a substantial new run, not an extension to the existing 445-sentence glossary: pinned CC BY-SA texts from three additional real AES subcorpora made **1,156 authentic sentences, 1,151 publisher German translations, 418 AES text IDs**. The source-text-blocked training/dev collection has 904 translated sentences; the entire Tübingen-stelae edition subcorpus (247 sentences / 21 text IDs) was locked out of training, word-gloss access and threshold selection. A deterministic five-fold internal training-only contextual/TF-IDF German sentence memory was tested against train-only gloss control. It was scored separately from image recognition and independently checked by exact-head CI.
+
+Development source-text-grouped micro German-word F1 increased **0.15368591 → 0.24261684**, but on the reserved, harder different subcorpus performance **fell 0.15275625 → 0.14259102**; macro word F1 and character F2 also fell. **40 of the 247** external outputs copied whole German sentences from *non-identical* Egyptian source sequences. This demonstrates a serious formula, grammatical structure and personal-name hallucination risk. The context model is therefore **not shown to generalize** and must not be claimed as a semantically adequate translation system.
+
+Full details, checksums, denominators and negative results: ling/translation/experiments/W9_CONTEXTUAL_TRANSLATION_EXTERNAL_TEST.md . The pinned AES publisher sources are open scholarly text only, not admissible source-aligned original Hieratic manuscript gold, so DATA-008/VLM certification remains blocked. This text experiment neither trains a neural translation model nor evaluates a bona fide Hieratic photographic reading.
+
+**W9 output was a completed experimental work package with a clear negative finding, not completion of the full LING-003 weighted scientific milestone.** Remain **active** at 0/2 LING-003 points and canonical 34.5/100. A second untouched external source corpus, genuinely compositional grammatical translation and independently adjudicated semantic adequacy remain required before re-review. Never retune on the now-revealed Tübingen references and present such performance as unseen.

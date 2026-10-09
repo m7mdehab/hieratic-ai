@@ -75,6 +75,12 @@ COMMONS_API_HOST = "commons.wikimedia.org"
 COMMONS_FILE_HOST = "upload.wikimedia.org"
 COMMONS_API_TIMEOUT_SECONDS = 20
 MAX_COMMONS_IMAGE_BYTES = 8 * 1024 * 1024
+RIME_FIGURE_HOST = "rivista.museoegizio.it"
+RIME_FIGURE_PATH = "/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif"
+RIME_FIGURE_URL = f"https://{RIME_FIGURE_HOST}{RIME_FIGURE_PATH}"
+RIME_FIGURE_SHA256 = "c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9"
+RIME_FIGURE_BYTES = 36_023_444
+MAX_RIME_FIGURE_BYTES = 40 * 1024 * 1024
 
 
 class AcquisitionError(Exception):
@@ -129,8 +135,10 @@ def _met_get(path: str) -> tuple[int, str, bytes]:
 
 def _public_https_get(host: str, path: str, byte_limit: int) -> tuple[int, str, bytes, dict[str, str]]:
     """Single bounded HTTPS GET to a fixed caller-allowlisted public host; never follows redirects."""
-    if host not in {COMMONS_API_HOST, COMMONS_FILE_HOST} or not path.startswith("/") or byte_limit <= 0:
+    if host not in {COMMONS_API_HOST, COMMONS_FILE_HOST, RIME_FIGURE_HOST} or not path.startswith("/") or byte_limit <= 0:
         raise AcquisitionError("COMMONS_REQUEST_OUTSIDE_ALLOWLIST")
+    if host == RIME_FIGURE_HOST and (path != RIME_FIGURE_PATH or byte_limit != MAX_RIME_FIGURE_BYTES):
+        raise AcquisitionError("RIME_REQUEST_OUTSIDE_ALLOWLIST")
     answers = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
     addresses = sorted({answer[4][0] for answer in answers})
     if not addresses or any(not ipaddress.ip_address(address).is_global for address in addresses):
@@ -138,9 +146,9 @@ def _public_https_get(host: str, path: str, byte_limit: int) -> tuple[int, str, 
     connection = _PinnedHTTPSConnection(host, addresses[0], COMMONS_API_TIMEOUT_SECONDS)
     try:
         connection.request("GET", path, headers={
-            "Accept": "application/json, image/jpeg",
+            "Accept": "application/json, image/jpeg, image/tiff",
             "Accept-Encoding": "identity",
-            "User-Agent": "Hieratic-AI/0.1 (https://github.com/m7mdehab/hieratic-ai; W8 single-file research acquisition)",
+            "User-Agent": "Hieratic-AI/0.1 (https://github.com/m7mdehab/hieratic-ai; bounded source-specific research acquisition)",
             "Connection": "close",
         })
         response = connection.getresponse()
@@ -221,11 +229,13 @@ def _has_reparse_component(path: Path) -> bool:
     return False
 
 
-def _default_private_vault() -> Path:
+def _default_private_vault(wave: str = "W8") -> Path:
     local = os.environ.get("LOCALAPPDATA")
     if not local:
         raise AcquisitionError("COMMONS_PRIVATE_VAULT_REQUIRES_LOCALAPPDATA")
-    root = Path(local) / "HieraticAI" / "private-artifacts" / "W8"
+    if wave not in {"W8", "W9"}:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_WAVE_NOT_ALLOWLISTED")
+    root = Path(local) / "HieraticAI" / "private-artifacts" / wave
     repo = ROOT.resolve()
     if root.resolve(strict=False) == repo or repo in root.resolve(strict=False).parents:
         raise AcquisitionError("COMMONS_PRIVATE_VAULT_MUST_BE_OUTSIDE_REPOSITORY")
@@ -240,7 +250,7 @@ def _publish_private_file(root: Path, filename: str, data: bytes) -> Path:
     before and after publication (Windows Python lacks POSIX dir_fd hard-link APIs).
     """
     root = root.absolute()
-    if filename != "CAT2044-013-commons-original.jpg":
+    if filename not in {"CAT2044-013-commons-original.jpg", "CAT1883-CAT2095-RIME-fig6-recto-original.tif"}:
         raise AcquisitionError("COMMONS_PRIVATE_FILENAME_NOT_ALLOWLISTED")
     root.mkdir(parents=True, exist_ok=True)
     if _has_reparse_component(root) or not root.is_dir():
@@ -254,7 +264,8 @@ def _publish_private_file(root: Path, filename: str, data: bytes) -> Path:
 
     if os.name == "posix" and hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NOFOLLOW"):
         directory_fd: int | None = None
-        temporary_name = f".w8-{secrets.token_hex(16)}.part"
+        prefix = ".w9-" if filename.startswith("CAT1883-") else ".w8-"
+        temporary_name = f"{prefix}{secrets.token_hex(16)}.part"
         published = False
         succeeded = False
         try:
@@ -312,7 +323,9 @@ def _publish_private_file(root: Path, filename: str, data: bytes) -> Path:
     succeeded = False
     try:
         with tempfile.NamedTemporaryFile(
-            mode="wb", dir=root, prefix=".w8-", suffix=".part", delete=False
+            mode="wb", dir=root,
+            prefix=".w9-" if filename.startswith("CAT1883-") else ".w8-",
+            suffix=".part", delete=False
         ) as stream:
             temporary = Path(stream.name)
             stream.write(data)
@@ -399,6 +412,64 @@ def acquire_commons_candidate(
         "private_storage": {"storage_class": "user_local_private_artifact_vault", "asset_filename": candidate["filename"], "path_published": False},
         "use_boundary": {"purpose": "unlabelled local image-processing research only", "source_registry_status": "NOT_REGISTERED", "benchmark_overlap_status": "UNRESOLVED_QUARANTINED", "training_admission": "BLOCKED", "development_admission": "BLOCKED", "evaluation_admission": "NOT_AUTHORIZED", "gold_or_transcription": "NONE"},
         "response_headers": {key: headers.get(key) for key in ("etag", "last-modified", "content-length")},
+    }
+    return record, private_path
+
+
+def acquire_rime_cat1883_2095_figure6(
+    *, transport: Callable[..., tuple[int, str, bytes, dict[str, str]]] | None = None,
+    vault_root: Path | None = None, now: dt.datetime | None = None,
+) -> tuple[dict[str, Any], Path]:
+    """Acquire only the pinned RIME Fig. 6 recto TIFF to a private local vault.
+
+    The figure image license is evidenced by the RIME author guidelines and
+    figure credit; the article's transcription/text license is not inferred.
+    This packet is research evidence only and never corpus admission.
+    """
+    request = transport or _public_https_get
+    status, content_type, image_bytes, headers = request(
+        RIME_FIGURE_HOST, RIME_FIGURE_PATH, MAX_RIME_FIGURE_BYTES
+    )
+    if status != 200 or content_type != "image/tiff":
+        raise AcquisitionError("RIME_FIGURE_RESPONSE_INVALID")
+    if len(image_bytes) != RIME_FIGURE_BYTES or len(image_bytes) > MAX_RIME_FIGURE_BYTES:
+        raise AcquisitionError("RIME_FIGURE_BYTE_SIZE_MISMATCH")
+    if not (image_bytes.startswith((b"II*\x00", b"MM\x00*"))):
+        raise AcquisitionError("RIME_FIGURE_TIFF_MAGIC_INVALID")
+    digest = hashlib.sha256(image_bytes).hexdigest()
+    if digest != RIME_FIGURE_SHA256:
+        raise AcquisitionError("RIME_FIGURE_PINNED_SHA256_MISMATCH")
+    vault = (vault_root or _default_private_vault("W9")).absolute()
+    if vault.resolve(strict=False) == ROOT.resolve() or ROOT.resolve() in vault.resolve(strict=False).parents:
+        raise AcquisitionError("COMMONS_PRIVATE_VAULT_MUST_BE_OUTSIDE_REPOSITORY")
+    filename = "CAT1883-CAT2095-RIME-fig6-recto-original.tif"
+    private_path = _publish_private_file(vault, filename, image_bytes)
+    retrieved = (now or dt.datetime.now(dt.timezone.utc)).astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    record = {
+        "record_schema_version": "1.0.0", "evidence_id": "W9-RIME-CAT1883-CAT2095-FIG6-RECTO-v1",
+        "candidate_id": "CAT1883-CAT2095-RIME-FIG6-RECTO",
+        "institution": "Museo Egizio, Turin", "source_object_id": "Cat.1883 + Cat.2095",
+        "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+        "article_url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+        "exact_original_file_url": RIME_FIGURE_URL,
+        "caption_summary": "Recto in its present mounting; scan attributed to Museo Egizio; digital processing credited to Martina Landrino.",
+        "source_sha256": digest, "source_byte_size": len(image_bytes), "mime_type": content_type,
+        "declared_dimensions": [6585, 4718], "retrieved_at": retrieved,
+        "response_headers": {key: headers.get(key) for key in ("etag", "last-modified", "content-length")},
+        "license": {
+            "identifier": "CC BY 2.0", "url": "https://creativecommons.org/licenses/by/2.0/",
+            "evidence_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+            "scope": "RIME image reuse terms plus exact Fig. 6 Museo Egizio scan credit; article transcription/text license is not verified",
+            "attribution": "Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 6",
+        },
+        "private_storage": {"storage_class": "user_local_private_artifact_vault", "asset_filename": filename, "path_published": False},
+        "use_boundary": {
+            "purpose": "private research inspection and geometry-only diagnostics",
+            "source_registry_status": "NOT_REGISTERED", "article_text_license_status": "UNVERIFIED",
+            "benchmark_overlap_status": "UNRESOLVED_QUARANTINED", "training_admission": "BLOCKED",
+            "development_admission": "BLOCKED", "evaluation_admission": "NOT_AUTHORIZED",
+            "gold_or_transcription": "NONE",
+        },
     }
     return record, private_path
 
@@ -911,13 +982,36 @@ def load_and_validate(manifest_path: Path, registry_path: Path = REGISTRY_PATH, 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m tools.acquisition")
-    parser.add_argument("command", choices=["plan", "validate", "metadata-fetch-met", "commons-image-fetch"])
+    parser.add_argument("command", choices=["plan", "validate", "metadata-fetch-met", "commons-image-fetch", "rime-figure-fetch"])
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     parser.add_argument("--schema", type=Path, default=SCHEMA_PATH)
     parser.add_argument("--object-id", type=int, help="one allowlisted Met collection object ID")
     parser.add_argument("--candidate-id", help="one pinned Museo Egizio Commons candidate (CAT2044 only)")
     args = parser.parse_args(argv)
+    if args.command == "rime-figure-fetch":
+        expected_output = ROOT / "data" / "acquisition" / "rime" / "CAT1883-CAT2095-FIG6.json"
+        if args.manifest.absolute() != expected_output.absolute():
+            parser.error("rime-figure-fetch requires the fixed redacted evidence output path under data/acquisition/rime")
+        private_path: Path | None = None
+        try:
+            target = _validate_metadata_output(expected_output)
+            record, private_path = acquire_rime_cat1883_2095_figure6()
+            _publish_metadata_packet(target, record)
+        except (AcquisitionError, OSError) as exc:
+            if private_path is not None:
+                try:
+                    private_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps({"evidence_output": str(target.relative_to(ROOT)), "candidate_id": record["candidate_id"],
+                          "source_sha256": record["source_sha256"], "source_byte_size": record["source_byte_size"],
+                          "dimensions": record["declared_dimensions"], "license": record["license"]["identifier"],
+                          "local_private_asset": str(private_path), "training_admission": "BLOCKED",
+                          "article_text_license_status": "UNVERIFIED"}, sort_keys=True))
+        return 0
     if args.command == "commons-image-fetch":
         if not args.candidate_id:
             parser.error("commons-image-fetch requires --candidate-id")

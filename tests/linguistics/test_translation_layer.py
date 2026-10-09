@@ -246,5 +246,197 @@ class RealPublishedTranslationTests(unittest.TestCase):
         self.assertFalse(r["scientific_release_admitted"])
 
 
+
+
+class W9ContextualPublisherExperimentTests(unittest.TestCase):
+    """Real AES CC-BY-SA paired-language test plus strict source-group leakage."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import contextual
+        cls.engine = contextual
+        cls.corpus = contextual.load_corpus()
+        cls.report = contextual.evaluate_corpus(cls.corpus)
+
+    def test_all_four_exact_publisher_git_blobs_and_group_population(self):
+        eng = self.engine
+        from ling.lexical import aes_holdout
+        expected = eng.EXPECTED_COUNTS
+        self.assertEqual(4, len(self.corpus["groups"]))
+        self.assertEqual(1156, sum(map(len, self.corpus["groups"].values())))
+        self.assertEqual(418, len(self.corpus["all_text_ids"]))
+        self.assertEqual(1151, sum(
+            bool(x["german"]) for group in self.corpus["groups"].values() for x in group))
+        for name, (_, _, _, blob) in expected.items():
+            path = (aes_holdout.ROOT / "ling/lexical/data/aes_felsinschriften_ccby_sa.json"
+                    if name == "bbawfelsinschriften"
+                    else aes_holdout.ROOT / f"ling/translation/data/_aes_{name}.json")
+            self.assertEqual(blob, eng._blob_sha(path.read_bytes()))
+        self.assertEqual("CC-BY-SA-4.0", self.corpus["manifest"]["license"])
+
+    def test_publisher_external_corpus_is_wholly_separate_from_internal_folds(self):
+        groups = self.corpus["groups"]
+        training = {r["text_id"] for c in self.engine.DEV_CORPORA for r in groups[c]}
+        test = {r["text_id"] for r in groups[self.engine.EXTERNAL_CORPUS]}
+        self.assertTrue(training)
+        self.assertEqual(21, len(test))
+        self.assertFalse(training.intersection(test))
+        self.assertEqual(247, self.report["external_test_sentences"])
+        self.assertEqual(21, self.report["external_test_text_groups"])
+        self.assertEqual(904, self.report["internal_training_dev_sentences"])
+        self.assertEqual(5, len(self.report["five_fold_group_counts"]))
+        self.assertEqual(904, sum(x["dev_sentences"] for x in self.report["five_fold_group_counts"]))
+        self.assertEqual(self.engine.EXTERNAL_CORPUS, self.report["corpus_name"])
+
+    def test_actual_publisher_external_translation_is_scored_and_not_certified(self):
+        results = self.report["external_test_metrics"]
+        ref = results["gloss_control"]
+        improved = results["contextual_translation_memory"]
+        self.assertEqual(ref["sentences_scored"], 247)
+        self.assertEqual(improved["sentences_scored"], 247)
+        self.assertGreater(ref["reference_words"], 0)
+        self.assertGreater(improved["reference_words"], 0)
+        self.assertGreaterEqual(ref["micro_word_f1"], 0)
+        self.assertLessEqual(improved["micro_word_f1"], 1)
+        self.assertGreaterEqual(improved["macro_sentence_char_ngram_f2"], 0)
+        self.assertLessEqual(improved["macro_sentence_char_ngram_f2"], 1)
+        self.assertFalse(self.report["scientific_certification"])
+        self.assertFalse(self.report["not_fluent_generative_translation"] is False)
+        self.assertEqual(0, self.report["physical_original_manuscript_images"])
+        self.assertEqual(0, self.report["editorially_blind_gold_references"])
+        # Preserve the *negative* reserved-domain result as a falsifiable benchmark.
+        self.assertEqual(0.15275625, ref["micro_word_f1"])
+        self.assertEqual(0.14259102, improved["micro_word_f1"])
+        self.assertLess(improved["micro_word_f1"], ref["micro_word_f1"])
+        self.assertEqual(40, improved["prediction_modes"]["CROSS_TEXT_SENTENCE_RETRIEVAL"])
+        self.assertEqual(40, improved["retrievals_with_nonidentical_source_sequence"])
+        self.assertEqual(0.0, self.report["selected_threshold"])
+        self.assertEqual(
+            "3e8b42915d0a5cfce9a1a8cde78d503b319c18cbd3ed3ec28cafa745167402aa",
+            self.report["report_sha256"])
+
+        print("W9_AUTHENTIC_TEXT_EVALUATION " + json.dumps({
+            "selected_threshold": self.report["selected_threshold"],
+            "heldout": self.report["external_test_metrics"],
+            "dev_thresholds": self.report["internal_threshold_selection"],
+            "report_sha256": self.report["report_sha256"],
+        }, ensure_ascii=False, sort_keys=True))
+
+    def test_dev_threshold_is_chosen_without_external_reference(self):
+        x = self.report
+        tuning = x["internal_threshold_selection"]
+        self.assertEqual(list(self.engine.THRESHOLDS), [q["threshold"] for q in tuning])
+        expected = sorted(
+            tuning, key=lambda v: (-v["dev_context_word_f1"], -v["threshold"]))[0]
+        self.assertEqual(expected["threshold"], x["selected_threshold"])
+        self.assertEqual("ENTIRE_PREDECLARED_AES_SUBCORPUS_EXCLUDED_FROM_TRAINING_TUNING_AND_GLOSSES",
+                         x["external_test_policy"])
+        for row in x["five_fold_group_counts"]:
+            self.assertGreater(row["train_text_groups"], 0)
+            self.assertGreater(row["dev_text_groups"], 0)
+
+    def test_exact_reproducible_report_digest(self):
+        r = self.report
+        self.assertEqual(64, len(r["report_sha256"]))
+        identity = {k: v for k, v in r.items() if k != "report_sha256"}
+        self.assertEqual(self.engine.sha256(self.engine._canonical(identity)).hexdigest(),
+                         r["report_sha256"])
+        # A cold model run is deterministic, stable and not Python-hash-dependent.
+        self.assertEqual(r, self.engine.evaluate_corpus(self.corpus))
+
+    def test_missing_german_editorial_target_cannot_influence_external_prediction(self):
+        eng = self.engine
+        train = [r for name in eng.DEV_CORPORA for r in self.corpus["groups"][name] if r["german"]]
+        model = eng.TranslationMemory(train)
+        sample = self.corpus["groups"][eng.EXTERNAL_CORPUS][0]
+        first = model.predict(sample, 0.3)
+        forged = dict(sample, german="COMPROMISED TARGET REFERENCE",
+                      glosses=tuple("FORGED TARGET GLOSS" for _ in sample["forms"]))
+        second = model.predict(forged, 0.3)
+        self.assertEqual(first, second)
+        self.assertNotIn("COMPROMISED", str(first))
+        self.assertFalse(first["published_reference_used_for_prediction"])
+        self.assertFalse(first["editorial_source_token_labels_used_for_prediction"])
+
+    def test_entire_source_text_is_excluded_from_internal_validation(self):
+        eng = self.engine
+        all_train = [r for name in eng.DEV_CORPORA for r in self.corpus["groups"][name]
+                     if r["german"]]
+        heldout = next(r for r in all_train if r["forms"])
+        filtered = [r for r in all_train if r["text_id"] != heldout["text_id"]]
+        model = eng.TranslationMemory(filtered)
+        prediction = model.predict(heldout, 0.0)
+        nearest = prediction["nearest_training"]
+        if nearest is not None:
+            self.assertNotEqual(heldout["text_id"], nearest["source_text_id"])
+        self.assertTrue(all(
+            record["text_id"] != heldout["text_id"] for record in model.sentences))
+        self.assertFalse(any(
+            heldout["text_id"] in texts
+            for candidates in model.observations.values() for texts in candidates.values()))
+
+    def test_genuine_context_changes_sentence_retrieval_and_names_remain_warning(self):
+        eng = self.engine
+        source = [
+            {"sentence_id": "a", "text_id": "textA", "corpus": "test",
+             "forms": ("A", "B", "C"), "glosses": ("one", "two", "three"),
+             "german": "A familiar sentence with a specific personal name."},
+            {"sentence_id": "b", "text_id": "textB", "corpus": "test",
+             "forms": ("A", "D", "E"), "glosses": ("one", "four", "five"),
+             "german": "A different formula with a different personal name."},
+        ]
+        model = eng.TranslationMemory(source)
+        query = dict(source[0], sentence_id="heldout", text_id="heldout",
+                     german="HIDDEN GOLD", glosses=(None, None, None))
+        p = model.predict(query, 0.0)
+        self.assertEqual("CROSS_TEXT_SENTENCE_RETRIEVAL", p["mode"])
+        self.assertEqual("textA", p["nearest_training"]["source_text_id"])
+        self.assertTrue(p["nearest_training"]["exact_egyptian_form_sequence"])
+        self.assertFalse(p["contextual_translation_is_scholarly_verified"])
+        modified = dict(query, forms=("A", "D", "E"))
+        q = model.predict(modified, 0.0)
+        self.assertEqual("textB", q["nearest_training"]["source_text_id"])
+        self.assertNotEqual(p["prediction"], q["prediction"])
+
+    def test_one_generic_shared_form_cannot_copy_whole_sentence(self):
+        eng = self.engine
+        row = {"sentence_id": "a", "text_id": "known", "corpus": "synthetic",
+               "forms": ("jr", "m", "name"), "glosses": ("do", "in", "John"),
+               "german": "John does the deed in the city."}
+        model = eng.TranslationMemory([row])
+        query = dict(row, sentence_id="query", text_id="other",
+                     forms=("jr", "unknown", "else"),
+                     glosses=(None, None, None), german="HIDDEN")
+        p = model.predict(query, 0.0)
+        self.assertEqual("TRAIN_ONLY_GLOSS_FALLBACK", p["mode"])
+        self.assertIsNone(p["nearest_training"])
+        self.assertIn("[?]", p["prediction"])
+
+    def test_unlicensed_or_modified_source_bytes_rejected_by_independent_hash(self):
+        eng = self.engine
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "publisher.json"
+            original = (eng.ROOT / "ling/translation/data/_aes_smaek.json").read_bytes()
+            p.write_bytes(original + b" ")
+            with self.assertRaisesRegex(eng.TranslationError, "blob identity mismatch"):
+                eng._json_pinned(p, eng.EXPECTED_COUNTS["smaek"][3], limit=4_000_000)
+
+    def test_character_ngram_diagnostic_is_bounded_and_not_sacrebleu(self):
+        eng = self.engine
+        self.assertAlmostEqual(1.0, eng.chrf2("Der König.", "Der König."))
+        self.assertAlmostEqual(0.0, eng.chrf2("AAA", "zzz"))
+        self.assertGreater(eng.chrf2("Der Koenig.", "Der König."), 0)
+        self.assertLess(eng.chrf2("Der Koenig.", "Der König."), 1)
+
+    def test_cli_verifies_original_four_subcorpora_without_spend(self):
+        eng = self.engine
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(0, eng.main(["verify"]))
+        report = json.loads(output.getvalue())
+        self.assertEqual(1156, report["total_sentences"])
+        self.assertEqual(418, report["total_group_ids"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -63,11 +63,14 @@ def run() -> dict:
             "source_host":"aku-pal.uni-mainz.de",
             "disclosure":"No image bytes, no target sign labels, no external model use",
             "individual_pages":[page_probe(ORIGIN+"/signs/"+str(i)) for i in RECORDS],
+            "official_sign_api_records":[page_probe(ORIGIN+"/api/signs/"+str(i),MAX_API)
+                                         for i in RECORDS],
             "sample_api_endpoints":[
-              page_probe(ORIGIN+"/api/signs/6036",MAX_API),
               page_probe(ORIGIN+"/api/graphemes/291",MAX_API),
               page_probe(ORIGIN+"/api/hieratograms/6036",MAX_API),
             ]}
+    result["spa_shell_is_not_sign_metadata"]=(len({r["original_sha256"] for r in result["individual_pages"]}) == 1 and not any(r["contains_record_id"] for r in result["individual_pages"]))
+    result["official_per_item_source_json_verified"]=sum(r["status"]=="HTTP_200_SOURCE_BYTES_VERIFIED" and r["contains_ccby"] and r["contains_record_id"] for r in result["official_sign_api_records"])
     result["source_pages_verified"]=sum(x["status"]=="HTTP_200_SOURCE_BYTES_VERIFIED"
                                       for x in result["individual_pages"])
     result["no_source_images_acquired"]=True

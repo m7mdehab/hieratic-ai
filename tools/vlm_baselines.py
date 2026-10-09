@@ -602,6 +602,15 @@ def main(argv: list[str] | None = None) -> int:
     p_hieratic.add_argument("--output", type=Path, default=None, help="Path to write structured hieratic experiment report JSON")
     p_hieratic.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
 
+    # sign-replay
+    p_sign = subparsers.add_parser("sign-replay", help="Execute authentic 15-media sign replay and paired controls test")
+    p_sign.add_argument("--model", type=str, default="smolvlm-256m-instruct", help="Model candidate key to evaluate")
+    p_sign.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH, help="Path to evaluation suite YAML")
+    p_sign.add_argument("--weights-dir", type=Path, default=None, help="Local directory containing model snapshot weights")
+    p_sign.add_argument("--output", type=Path, default=None, help="Path to write structured sign replay report JSON")
+    p_sign.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
+    p_sign.add_argument("--no-network", action="store_true", help="Enforce zero network calls; all media must be cached locally")
+
     args = parser.parse_args(argv)
 
     try:
@@ -949,6 +958,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  Visual sensitivity observed: {report['sensitivity_controls']['sensitivity_observed']}")
             print(f"  Classification: {report['classification']} (0.0 capability points)")
             return 0
+
+        elif args.command == "sign-replay":
+            from eval.vlm.signs import run_sign_replay_cli
+            return run_sign_replay_cli(args)
 
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)

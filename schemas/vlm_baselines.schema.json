@@ -10,7 +10,8 @@
     { "$ref": "#/$defs/score_report" },
     { "$ref": "#/$defs/evaluation_universe" },
     { "$ref": "#/$defs/smoke_report" },
-    { "$ref": "#/$defs/hieratic_experiment_report" }
+    { "$ref": "#/$defs/hieratic_experiment_report" },
+    { "$ref": "#/$defs/sign_replay_report" }
   ],
   "$defs": {
     "suite": {
@@ -831,6 +832,93 @@
         "scientific_capability_points": { "const": 0.0 },
         "hieratic_reading_claim": { "const": false }
       }
+    },
+    "sign_replay_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_type",
+        "schema_version",
+        "timestamp",
+        "protocol",
+        "model_info",
+        "publisher_provenance",
+        "media_matrix",
+        "controls_matrix",
+        "attempt_ledger",
+        "attempt_counts",
+        "paired_scan_comparisons",
+        "derivative_outline_analysis",
+        "support_level_analysis",
+        "sensitivity_controls",
+        "evidence_grades",
+        "classification",
+        "scientific_capability_points",
+        "hieratic_reading_claim"
+      ],
+      "properties": {
+        "doc_type": { "const": "vlm_sign_replay_report" },
+        "schema_version": { "const": "1.0.0" },
+        "timestamp": { "type": "string" },
+        "protocol": { "type": "object" },
+        "model_info": { "type": "object" },
+        "publisher_provenance": { "type": "object" },
+        "media_matrix": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "controls_matrix": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "attempt_ledger": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "attempt_counts": {
+          "type": "object",
+          "required": [
+            "planned_forward_passes",
+            "total_attempts_recorded",
+            "successful_actual_passes",
+            "failed_attempts",
+            "skipped_attempts"
+          ]
+        },
+        "paired_scan_comparisons": {
+          "type": "object",
+          "required": [
+            "matched_pairs_evaluated",
+            "pairs"
+          ]
+        },
+        "derivative_outline_analysis": {
+          "type": "object",
+          "required": [
+            "outlines_evaluated",
+            "outlines"
+          ]
+        },
+        "support_level_analysis": {
+          "type": "object",
+          "required": [
+            "unique_physical_witnesses_count",
+            "supports"
+          ]
+        },
+        "sensitivity_controls": {
+          "type": "object",
+          "required": [
+            "total_controls_evaluated",
+            "prompt_priming_observed"
+          ]
+        },
+        "evidence_grades": { "type": "object" },
+        "classification": { "const": "noncertifiable_diagnostic" },
+        "scientific_capability_points": { "const": 0.0 },
+        "hieratic_reading_claim": { "const": false }
+      }
     }
   }
 }
+

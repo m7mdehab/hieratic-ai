@@ -72,3 +72,23 @@ This is **not** an Egyptological word-sense disambiguator, German grammatical se
     python -m unittest tests.linguistics.test_translation_layer -v
 
 The real textual dataset is separately licensed and must never be promoted to DATA-008 image corpus or become HieraticBench benchmark gold. Historical LING-003 2.0 points remain pending fluent semantically adequate translation and independent image/witness-grounded evaluation.
+
+
+## W10 — preregistered genuinely new AES archive heldout + conservative compositional mechanism
+
+**Registered before target ingestion:** `ling/translation/experiments/W10_PREREG_ARCHIVE_HOLDOUT.md`, registration Git commit `7bd1d01c1d9d6242625a1dcd3363e6aaac15ffba`. Only after registering source, hashed 32-group selection and fixed model thresholds was the full publisher archive blob accessed. The original AES Git blob is `014cccf04235d9e093fca24ed48c62630d235852` (5,855,067 bytes) at the same 2020–21 publisher revision as existing scholarly sources. The archive contains 3,081 sentences / 1,163 original source text IDs. The predeclared 32 SHA-256-ranked complete source groups yield 47 original editorial translation sentences. Their derived Git blob is `d3d7b57aef7bd10a48df6b1be340be8ff5b36e32`. No group identity overlaps any of the 418 prior W9 train/dev/Tübingen source text IDs; the prior Tübingen external benchmark is **exposed and excluded from all new method selection**.
+
+**Rights:** Publisher AES files are CC BY-SA 4.0 (Simon D. Schweitzer and AED/AES scholarly editors). The derived archive cohort is also CC BY-SA 4.0 and retains publisher source/edition relationships; it includes only text `written_form` and publisher `sentence_translation`, not photographs or a claim to licensed manuscript gold. Live tla.digital website has separate bulk scientific-data restrictions. Independent physical-witness identity and editor genealogies remain unresolved.
+
+**Code and fixed method:** `ling/translation/compositional.py` constructs original Egyptian token positions from source written forms, with lexical candidates restricted to the other training texts' published German cotext glosses. For a given Egyptian form, it chooses among attested glosses with an explicitly evidenced neighboring-form context only where at least **two independent training text IDs** support it; otherwise uses the most-attested train-only gloss. Unknown written forms produce `[?]`, preserving lexical alternatives and support. It can invert two adjacent German gloss units only when at least **two independent source-text training items** establish the reversed order in German publisher sentences and reversed support exceeds twice normal support. The two editorial cotext glosses must each occur exactly once without overlap in the training sentence. This is a **constrained lexical-unit compositional hypothesis**, not an inferred subject/verb/object parse or a complete fluent translation.
+
+**Evaluation:** `ling/translation/w10_evaluation.py` compares (1) other-training-text glossary baseline, (2) W9 TF-IDF whole-sentence memory with its *previously selected* 0.0 similarity threshold and (3) frozen compositional method. The same 904 W9 non-Tübingen translated sentences supply training, with five SHA-256(text ID) folds only for historical internal development sanity. The archive 32 groups / 47 sentences are a separately preregistered external editor-text domain; only after frozen development are their publisher references scored. The module audits exact Git-blob identity, all four prior corpus text ID populations, complete heldout counts, exact result determinism, source-token abstention, accidental whole-training-sentence overlap, provenance/alternative candidates, known structural inversions and all failed comparison modes. Metrics remain German word multiset F1 and in-house char n-gram F2, **not** semantic accuracy or BLEU. No model training, GPU/API charges, expert gold, source image pairs or DATA-008 corpus admittance.
+
+**Reproduce:**
+
+    python -m ling.translation.w10_evaluation verify
+    python -m ling.translation.w10_evaluation internal
+    python -m ling.translation.w10_evaluation external
+    python -m unittest tests.linguistics.test_translation_layer -v
+
+This work provides a genuinely new **source-group-blocked publisher text reference population**, not a guarantee of independence by physical papyrus/scribe/editor, and a measurable structural mechanism instead of copying publisher German reference sentences. Its scientific acceptance and LING-003 2-point completion remain pending independent semantic review and end-to-end image-linked evidence.

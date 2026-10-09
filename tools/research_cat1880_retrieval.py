@@ -119,13 +119,35 @@ def inspect(item)->dict:
                 out["original_pixel_dimensions"]=dims
                 if dims is None:raise ValueError("JPEG original pixel geometry unavailable")
             else:
-                try:
-                    z=subprocess.run(["pdfinfo",str(path)],capture_output=True,text=True,timeout=20,check=True)
-                    match=re.search(r"^Pages:\s+(\d+)",z.stdout,re.M)
-                    if not match:raise ValueError("PDF page count not reported")
-                    out["original_pdf_page_count"]=int(match.group(1))
-                except (FileNotFoundError,subprocess.CalledProcessError,subprocess.TimeoutExpired):
-                    out["original_pdf_page_count"]=None
+                import fitz
+                pdf=fitz.open(str(path))
+                out["original_pdf_page_count"]=len(pdf)
+                if len(pdf)<150:raise ValueError("Historical 158-plate book PDF unusually short")
+                # Derivative contact sheets are low resolution PDM facsimile
+                # examination materials, not original source pages/benchmark gold.
+                directory=os.environ.get("R026_CONTACT_DIR")
+                if directory:
+                    from PIL import Image,ImageDraw
+                    destination=Path(directory)
+                    destination.mkdir(parents=True,exist_ok=True)
+                    for begin in range(0,min(len(pdf),240),40):
+                        sheet=Image.new("RGB",(8*235,5*305),"white")
+                        draw=ImageDraw.Draw(sheet)
+                        for offset in range(40):
+                            number=begin+offset
+                            if number>=len(pdf):break
+                            page=pdf[number]
+                            # 0.20 scale is thumbnail-only; no content transcription
+                            pix=page.get_pixmap(matrix=fitz.Matrix(0.20,0.20),alpha=False)
+                            image=Image.frombytes("RGB",(pix.width,pix.height),pix.samples)
+                            image.thumbnail((225,275))
+                            x=(offset%8)*235+int((235-image.width)/2)
+                            y=(offset//8)*305+22
+                            sheet.paste(image,(x,y))
+                            draw.text((offset%8*235+8,offset//8*305+4),f"PDF page index: {number}",fill="black")
+                        sheet.save(destination/f"historical_pdm_pdf_pages_{begin:03d}_{min(begin+39,len(pdf)-1):03d}.jpg",quality=77,optimize=True)
+                    out["research_only_thumbnail_grids_generated"]=len(list(destination.glob("*.jpg")))
+                pdf.close()
         out["source_pixels_not_exported"]=True
     except (ValueError,KeyError,TypeError,TimeoutError,urllib.error.URLError,json.JSONDecodeError) as exc:
         out["status"]="BLOCKED_ORIGINAL_SOURCE_EVIDENCE"

@@ -22,6 +22,10 @@ class OriginalResearchByteGates(unittest.TestCase):
         meta["extmetadata"]["LicenseShortName"]["value"]="Public domain"
         self.assertFalse(p.license_evidence(p.SOURCES[0],meta)[0])
         self.assertTrue(p.license_evidence(p.SOURCES[1],meta)[0])
+    def test_pdm_contact_sheet_never_stored_as_original_asset(self):
+        self.assertFalse(any("CORPUS_V1" in item["key"] for item in p.SOURCES))
+        self.assertTrue(all(item["max_bytes"]<50_000_000 for item in p.SOURCES))
+
     def test_source_ids_fixed(self):
         self.assertEqual(2,len(p.SOURCES))
         self.assertEqual("MuseoEgizio:Cat.1880",p.SOURCES[0]["source"])

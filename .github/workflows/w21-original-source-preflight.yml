@@ -20,9 +20,13 @@ jobs:
         with: {persist-credentials: false}
       - uses: actions/setup-python@v7
         with: {python-version: "3.12"}
+      - name: Install pinned source-read-only PDF inspection libraries
+        run: python -m pip install --disable-pip-version-check "PyMuPDF==1.26.7" "Pillow==12.0.0"
       - name: Run strict resource, exact-title and permission regression tests
         run: python -m unittest tests.research.test_cat1880_retrieval -v
       - name: Verify exact primary photograph and historic PDM original PDF bytes
+        env:
+          R026_CONTACT_DIR: ${{ runner.temp }}/w21-publicdomain-historical-page-thumbnails
         run: python -m tools.research_cat1880_retrieval --output "$RUNNER_TEMP/w21-signed-not-admitted-original-source-hashes.json"
       - name: Store receipts only, no photograph/PDF source bytes
         if: always()
@@ -32,3 +36,11 @@ jobs:
           path: /home/runner/work/_temp/w21-signed-not-admitted-original-source-hashes.json
           if-no-files-found: warn
           retention-days: 30
+      - name: Preserve low-resolution PUBLIC-DOMAIN research-page contact sheets (no original PDF source bytes)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w21-public-domain-facsimile-research-thumbnails
+          path: /home/runner/work/_temp/w21-publicdomain-historical-page-thumbnails/
+          if-no-files-found: error
+          retention-days: 7

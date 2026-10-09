@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "AES_W9_TEXT_ONLY_CONTEXTUAL_DIAGNOSTIC",
+  "publisher": "Ancient Egyptian Sentences (AES), Simon D. Schweitzer / TLA-AED contributors",
+  "upstream_repository": "https://github.com/simondschweitzer/aes",
+  "upstream_revision": "35276d2527cca1a055e31ed5f6683e777717170f",
+  "upstream_directory": "files/aes/",
+  "license": "CC-BY-SA-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "rights_scope": "scholarly published Egyptian transliteration/German editorial sentence and cotext text only; no original manuscript image or gold certification",
+  "train_dev_corpora": [
+    "bbawfelsinschriften",
+    "smaek",
+    "bbawgraeberspzt"
+  ],
+  "never_tune_reserved_external_subcorpus": "tuebingerstelen",
+  "expected_total_sentences": 1156,
+  "expected_translated_sentences": 1151,
+  "expected_text_groups": 418,
+  "files": [
+    {
+      "name": "bbawfelsinschriften",
+      "path": "ling/lexical/data/aes_felsinschriften_ccby_sa.json",
+      "upstream": "_aes_bbawfelsinschriften.json",
+      "git_blob_sha1": "7bfcba9678b64c3526a1123996a0714b5f76812f",
+      "sentences": 445,
+      "translated": 444,
+      "text_groups": 311,
+      "role": "internal_dev_train"
+    },
+    {
+      "name": "smaek",
+      "path": "ling/translation/data/_aes_smaek.json",
+      "upstream": "_aes_smaek.json",
+      "git_blob_sha1": "82f6f6229283d6c4174373e39b12871761bc81ec",
+      "sentences": 38,
+      "translated": 38,
+      "text_groups": 8,
+      "role": "internal_dev_train"
+    },
+    {
+      "name": "bbawgraeberspzt",
+      "path": "ling/translation/data/_aes_bbawgraeberspzt.json",
+      "upstream": "_aes_bbawgraeberspzt.json",
+      "git_blob_sha1": "a427ccf25e92fc7f5d849536af78ae39ae923327",
+      "sentences": 426,
+      "translated": 422,
+      "text_groups": 78,
+      "role": "internal_dev_train"
+    },
+    {
+      "name": "tuebingerstelen",
+      "path": "ling/translation/data/_aes_tuebingerstelen.json",
+      "upstream": "_aes_tuebingerstelen.json",
+      "git_blob_sha1": "87ac34335acd3dc1533580b2017a689fa87abda1",
+      "sentences": 247,
+      "translated": 247,
+      "text_groups": 21,
+      "role": "locked_external_subcorpus_test"
+    }
+  ],
+  "split_policy": "Source-text-group five-fold internal CV, train-only lexical/translation memory and model selection; all tuebingerstelen source texts excluded from all training, reference indexes, threshold selection and dev. No guarantee manuscript/edition/pretraining independent.",
+  "scoring": "diagnostic corpus word-multiset F1 and character ngram F2 (n=1..6); report full denominators, source text group and corpus breakdowns; not blind semantic adequacy.",
+  "performance_credit": "NONE_AUTOMATIC",
+  "image_evaluation": "NOT_PERFORMED",
+  "experiment_registry": "LING-003_W9_TEXT_ONLY",
+  "licensing_note": "Publisher provides CC BY-SA files. TLA interactive website has distinct terms; this edition is the licensed AES repository revision."
+}

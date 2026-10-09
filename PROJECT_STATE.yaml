@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W20_R025_SAME_DOCUMENT_CC0_PAPYRUS_HISTORICAL_PDM_EDITION_LINK_VERIFIED_NO_LINE_GOLD"
+  current_wave: "W21_R026_ORIGINAL_CAT1880_PHOTO_AND_HISTORIC_EDITION_BYTES_VERIFIED_NO_LINE_GOLD"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,6 +38,7 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
+    - "W21 R026 Cat1880 research-only ORIGINAL BINARY ACCESS achieved and independently host verified: exactly museum CC0 original p01 30,364,719 bytes 17704x7983 SHA256 2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5, and Pleyte/Rossi PDM historical facsimile vol2 400-page 16,926,761-byte PDF SHA256 deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0. Original Wikimedia file SHA1/size/rights all match. Hosted source audit 38000390567 and governance 38000390402 exact head success; software/evidence #133 merged 1738a6d7d9678664019565ef1f6dea186e420d72. Historic printed plates XXXV–XLVIII are still NOT cross-registered to a specific original-image line; PDF original byte page index differs from print plate numbers and page faces alternate with blank pages. Source binaries transient/deleted, no authorized production vault, no expert gold, benchmark overlap unresolved, DATA-008 remains 0/3 and capability 34.5/100. Additional later requests hit HTTP429; no bypass."
     - "W20 R025 overseer research issue #130 DOCUMENTARY DISCOVERY COMPLETE: Museo Egizio Cat.1880 genuine Hieratic Strike Papyrus has individually CC0 original manuscript photo-file page rights; museum independently identifies Pleyte/Rossi historical public-domain facsimile of SAME object at vol1 pp50-65, vol2 plates XXXV-XLVIII. Seven Commons Cat1880 JPEG/TIFF variants count as ONE original physical support; S.6759 genuine hieratic oracle + Cat2169 personal-mark hard control bring the candidate review to three physical supports. Original source images/PDF bytes NOT acquired, photo/plate/line pixel match UNRESOLVED, modern transcript rights UNKNOWN, independent gold 0, real corpus admission 0. Public R017 266 original source-metadata audit: zero literal accession matches and 19 broad Turin family records, NOT benchmark clearance. Exact-head W20 original documentary CI 37998925496 and full governance 37998925472 SUCCESS; PR #131 merged 456fc6eb599353caa4487799d5ce144bc5c8350e. Goal 34.5/100, research coverage 14%, DATA-008 0/3 unchanged."
     - "W19 DATA-008 source binary blocker PARTIALLY RESOLVED: AKU-PAL exact original /api/signs IDs 8/8 independently recorded, each exact record license CC BY 4.0 and six physical supports, 15 REAL PUBLISHER IMAGE bytes/hash receipts (8 Hieratogram SVG sign drawings, 5 scanned publication figures, 2 derived SVG outlines). W19 hosted original-image CI 37991651242 and repeated 37991858101 PASS; governance 37991858068 PASS, PR #126 merged at 17471d1ef8dd40b9ff601b5e6ad8ec57e95b7465. All original binaries read only and discarded; full digest receipt data/releases/w19_aku_pal_original_image_receipts.json. These are scholarly sign derivatives, not full original photographic papyrus lines; no expert-independent sign adjudication, manuscript line→text, overlap/splits or scientifically adequate corpus. DATA-008 0/3, no weighted credit."
     - "W16 LING-003 source access barrier RESOLVED: actual published TLA 3606 Late Egyptian German source rows verified on hosted runner (original Git blob 74a058b192314b165bec33278fb882ba1333b172, SHA256 dfded75c7d34bc1f2f12e18af6936394dc0c5cadacd1229dc28d46751d6389df, 1904138 bytes), but genuine preregistered AES-only transfer is poor: 7069/24437 Egyptian tokens attested (28.927446%), German word micro F1 0.01803378 on 3606 complete target references. No TLA physical witness IDs, independent editorial genealogy or fluent semantic evidence. Requires new source/expert gold before LING-003 acceptance; points 0/2. Hosted source/score run 37986861986."
@@ -86,42 +87,36 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W20 R025 independent genuine-manuscript photo+historical-edition route
-  completed as DOCUMENTARY research, NOT scientific capability.
-  PR #131 integrated source-cited and strict versioned matrix
-  docs/research/R025_CC0_PHOTO_EDITION_MATRIX.json, reproducible
-  tools/research_photo_pair.py + nine adversarial tests, source dossier
-  docs/research/R025_CC0_PHOTO_EDITION_AUDIT.md.
-  Hosted original-documentary run 37998925496 and full Project Governance
-  37998925472 PASS; main source research commit
-  456fc6eb599353caa4487799d5ce144bc5c8350e.
-  Museo Egizio Cat.1880 administrative Strike Papyrus museum CC0 original
-  photograph file-page rights established, same exact museum accession
-  linked by museum bibliography to public-domain historical Pleyte/Rossi
-  Papyrus de Turin text volume1 printed pages 50-65 and plate volume2
-  XXXV-XLVIII (14 plates). Seven Cat1880 gallery images include mixed
-  resolution and TIFF/JPEG variants but ONE original physical papyrus.
-  Suppl.6759 is a CC0 photographed written oracular ostracon with
-  Lopez 1980 published bibliography (NOT rights-cleared diplomatic text).
-  Cat2169 is CC0 identity marks and monograms, NOT continuous ordinary
-  transliterable hieratic reading. Three physical supports, seven exact
-  Commons file page candidates screened; ZERO actual photo/PDF binaries
-  acquired in W20 research due independently protected private-custody
-  rights review gate, zero fresh original SHA256, zero pixel registered
-  plate-to-photo written lines, zero expert-reviewed line gold. Historical
-  edition copyright public domain does not grant current TPOP editor
-  annotations or modern translation reuse.
-  Public R017 source-identification 266-row original metadata census
-  audited offline: 0 literal Cat1880/Suppl6759/Cat2169 aliases, 19
-  Turin/Museo Egizio source-family hints, still UNKNOWN possible overlap.
-  NEXT ACTUAL PERCENTAGE GATE: approved private intake of one selected
-  Cat1880 original photograph and corresponding PDM historical plate;
-  independently verified original byte SHA256, source view/side,
-  diagnostic sign-stroke photo-to-edition line geometric match,
-  separately licensed original readable diplomatic target, qualified
-  blind reviewer and physical-source/benchmark separation.
-  Keep DATA-008 active 0/3, VLM-001 0/2, LING-003 0/2,
-  verified goal 34.5/100, 14% research coverage and zero trained
-  Hieratic neural models. Wave20 Luna #128 and Gemini #129
-  are independent agent execution briefs; do not mark their work
-  executed until actual heads, hosted CI, original receipts are inspected.
+  W21 R026 exact original-public-domain manuscript photo and historical
+  edition byte identity now VERIFIED at source original URLs. Muse Egizio
+  Cat1880 CC0 17,704 x 7,983 original p01 JPEG SHA256
+  2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5
+  (30,364,719 bytes), Pleyte Rossi original scanned 400-page PDM
+  volume2 PDF SHA256
+  deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0
+  (16,926,761 bytes). Original Commons SHA1/byte counts verified and
+  one physically distinct original source group. Exact heads hosted
+  W21 source audit 38000390567 and Project Governance 38000390402
+  both PASS, PR #133 merged 1738a6d7d9678664019565ef1f6dea186e420d72.
+  All original photo/PDF bytes disposed in runner; committed only
+  docs/research/R026_ORIGINAL_SOURCE_BYTE_RECEIPTS.json and source
+  verification script/tests. Historical public-domain contact preview
+  of 400-page book shows interleaved blank/photo plate pages, so do
+  not equate printed XXXV-XLVIII plate numbers with PDF index.
+  Despite authentic document rights and byte proof, no independent
+  photograph-to-printed-facsimile side/line geometric registration,
+  readable diplomatically licensed continuous line or blind expert
+  review is accepted; official HieraticBench duplicate/lineage
+  overlap remains UNKNOWN, canonical dataset production disabled.
+  Wikimedia later emitted HTTP429 for additional exploratory requests;
+  honor access limits, do not hammer or bypass rate limiting.
+  Next true unblock: after respectful source access resumes and
+  protected original custody/reviewer authority is obtained, select
+  exact printed plate XXXV and museum p01 side based on actual
+  visual sign/stroke match, anchor one physical line ROI and
+  independent reader/transliteration rights; preserve source-object
+  holdout. W20 Luna #128 and Gemini #129 are execution briefs only
+  unless verified PR evidence appears. Keep DATA-008 0/3,
+  VLM-001 0/2, LING-003 0/2, goal 34.5/100,
+  historical research coverage 14%, no trained authentic specialist
+  model, no certified Hieratic original-line benchmark accuracy.

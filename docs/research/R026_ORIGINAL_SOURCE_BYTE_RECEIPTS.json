@@ -1,0 +1,55 @@
+{
+  "schema_version": "r026-exact-public-originals/1.0.0",
+  "as_of": "2026-10-10",
+  "execution": "source_byte_identity_research_only_not_corpus_admission",
+  "source_retention": "original_photo_and_pdf_deleted_at_hosted_job_end_original_bytes_not_committed_or_uploaded",
+  "original_runs": [
+    "https://github.com/m7mdehab/hieratic-ai/actions/runs/37999845270",
+    "https://github.com/m7mdehab/hieratic-ai/actions/runs/38000390567"
+  ],
+  "original_source_count": 2,
+  "verified_originals": [
+    {
+      "source": "MuseoEgizio:Cat.1880",
+      "role": "actual_public_domain_original_artifact_photo",
+      "item": "new p01",
+      "file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p01.jpg",
+      "license": "CC0-1.0_original_file_page",
+      "mime": "image/jpeg",
+      "source_museum": "Museo Egizio Torino",
+      "bytes": 30364719,
+      "sha1": "c6cf2123a26547c3f9f20e7fab31e1e5b8265ef3",
+      "sha256": "2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5",
+      "dimensions_pixels": [
+        17704,
+        7983
+      ],
+      "source_sha1_and_size_match": true
+    },
+    {
+      "source": "PleyteRossi:1869-1876:vol2",
+      "role": "nineteenth_century_public_domain_edition_facsimile",
+      "file_page": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin02muse).pdf",
+      "license": "Public-Domain-Mark-1.0_source_record",
+      "mime": "application/pdf",
+      "bytes": 16926761,
+      "sha1": "a7ded9ac0a41915fa61b57d35b70ddef79569a86",
+      "sha256": "deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0",
+      "original_pdf_page_count": 400,
+      "source_sha1_and_size_match": true
+    }
+  ],
+  "original_physical_supports": 1,
+  "original_image_and_book_document_relation": "SAME_CAT1880_PHYSICAL_PAPYRUS_MUSEUM_BIBLIOGRAPHY_ATTESTED",
+  "historical_plate_locator": "Pleyte Rossi vol2 printed plates XXXV-XLVIII, PDF byte index to individual printed plate and side not independently corroborated",
+  "photograph_to_plate_geometry": "NOT_VERIFIED",
+  "photograph_to_physical_line_text": "NOT_VERIFIED",
+  "independent_egyptologist_gold": 0,
+  "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+  "DATA008_train_dev_test_admission": false,
+  "actual_original_image_bytes_in_repository": 0,
+  "original_file_content_in_GitHub_artifacts": 0,
+  "scientific_capability_points_awarded": 0,
+  "latest_source_probe_limits": "After successful reproducible original checks, later additional Commons source requests received HTTP429; no rate-limit circumvention, source run reverted to last passing exact head.",
+  "note": "Historical plate research contact sheets are temporary low-resolution PDM derivatives, not an original-source corpus, physical line assignment or editorial text grant."
+}

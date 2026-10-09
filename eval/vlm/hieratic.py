@@ -157,44 +157,89 @@ def generate_inverted_control(image_bytes: bytes) -> bytes:
         pass
 
     # Deterministic inverted neutral dark-gray control if Pillow or decoding fails
-    return create_png(256, 256, lambda x, y: (25, 25, 25))
+    raise ImageConditioningError("Cannot invert source pixels: no valid image decoder available")
 
 
-def resize_image_aspect_ratio(image_bytes: bytes, max_dimension: int = 1024) -> tuple[bytes, list[int]]:
-    """Resize image preserving aspect ratio so that max(width, height) <= max_dimension.
+def resize_image_aspect_ratio(
+    image_bytes: bytes,
+    max_dimension: int = 1024,
+    *,
+    simulated_marker_ok: bool = False,
+) -> tuple[bytes, list[int]]:
+    """Decode and resize actual pixels; an invalid live image MUST fail closed.
 
-    Returns resized PNG bytes and [width, height].
+    Simulated literal markers are only permitted through an explicit synthetic
+    CI execution tier. They never become authentic-image evidence.
     """
+    if not isinstance(image_bytes, bytes) or not image_bytes or len(image_bytes) > 40 * 1024 * 1024:
+        raise ImageConditioningError("Invalid or oversized image bytes")
+    if not 16 <= max_dimension <= 4096:
+        raise ImageConditioningError("Invalid image resizing limit")
+    if image_bytes.startswith(b"synthetic_") and simulated_marker_ok:
+        width = min(max_dimension, 256)
+        return generate_blank_control(width, width), [width, width]
+    if not (image_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n") or image_bytes.startswith(b"\\xff\\xd8\\xff")):
+        raise ImageConditioningError("Only genuine PNG/JPEG image bytes are supported")
     try:
-        from PIL import Image
-        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        width, height = img.size
+        from PIL import Image, ImageOps
+    except ImportError as exc:
+        raise ImageConditioningError("Pillow is required to decode and preserve real pixels") from exc
+    try:
+        with Image.open(io.BytesIO(image_bytes)) as original:
+            if original.format not in {"PNG", "JPEG"}:
+                raise ImageConditioningError("Unexpected image codec")
+            width, height = original.size
+            if min(width, height) < 16 or width * height > 35_000_000:
+                raise ImageConditioningError("Image pixel dimensions outside allowed bounds")
+            original.verify()
+        with Image.open(io.BytesIO(image_bytes)) as original:
+            image = ImageOps.exif_transpose(original).convert("RGB")
+            image.load()
+        width, height = image.size
         if max(width, height) > max_dimension:
-            scale = max_dimension / max(width, height)
-            new_w = max(1, round(width * scale))
-            new_h = max(1, round(height * scale))
-            img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
-        return buffer.getvalue(), list(img.size)
-    except Exception:
-        pass
+            ratio = max_dimension / max(width, height)
+            image = image.resize(
+                (max(1, round(width * ratio)), max(1, round(height * ratio))),
+                Image.Resampling.LANCZOS,
+            )
+        out = io.BytesIO()
+        image.save(out, format="PNG")
+        return out.getvalue(), list(image.size)
+    except ImageConditioningError:
+        raise
+    except Exception as exc:
+        raise ImageConditioningError(f"Real image decoding or resizing failed: {type(exc).__name__}") from exc
 
-    # Pure Python aspect-ratio calculation and PNG dimension scaling when PIL is absent
-    if len(image_bytes) >= 24 and image_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
-        import struct
-        w, h = struct.unpack(">II", image_bytes[16:24])
-        if w > 0 and h > 0:
-            if max(w, h) > max_dimension:
-                scale = max_dimension / float(max(w, h))
-                new_w = max(1, int(round(w * scale)))
-                new_h = max(1, int(round(h * scale)))
-            else:
-                new_w, new_h = w, h
-            return create_png(new_w, new_h, lambda x, y: (230, 230, 230)), [new_w, new_h]
 
-    return image_bytes, [max(1, max_dimension), max(1, max_dimension)]
-
+def verified_model_weight_sha256(adapter: BaseVLMAdapter) -> bool:
+    """Verify the pinned weight bytes, not merely a cached model identifier."""
+    if getattr(adapter, "execution_tier", "") != "live_local_open_weight":
+        return False
+    if getattr(adapter, "model_config", {}).get("provider_model_id") != PINNED_MODEL_ID:
+        return False
+    if getattr(adapter, "model_config", {}).get("revision") != PINNED_REVISION:
+        return False
+    roots = []
+    supplied = getattr(adapter, "weights_dir", None)
+    if supplied is not None:
+        roots.append(Path(supplied))
+    hub = Path.home() / ".cache" / "huggingface" / "hub" / "models--HuggingFaceTB--SmolVLM-256M-Instruct"
+    roots.append(hub)
+    for root in roots:
+        candidates = [root / "model.safetensors", root / "snapshots" / PINNED_REVISION / "model.safetensors"]
+        for candidate in candidates:
+            try:
+                if not candidate.is_file() or candidate.stat().st_size != 513_028_808:
+                    continue
+                digest = hashlib.sha256()
+                with candidate.open("rb") as source:
+                    for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                if digest.hexdigest() == RECORDED_WEIGHT_SHA256:
+                    return True
+            except OSError:
+                continue
+    return False
 
 def audit_alternative_models() -> dict[str, Any]:
     """Audit free, no-cost lightweight VLM alternatives suitable for local CPU execution."""
@@ -253,233 +298,216 @@ def get_scholarly_provenance() -> dict[str, Any]:
     }
 
 
+TASK_RUNGS = {
+    "script_identification": "identify",
+    "visual_description": "identify",  # descriptive auxiliary, never an official scored rung
+    "sign_hypotheses": "signs",
+    "transliteration_hypotheses": "transliterate",
+    "translation_hypotheses": "translate",
+}
+
+
 def execute_hieratic_experiment(
     adapter: BaseVLMAdapter,
     image_targets: list[dict[str, Any]],
     *,
     allow_simulated: bool = False,
 ) -> dict[str, Any]:
-    """Execute complete authentic Hieratic reading experiment across all 5 tasks and controls.
-
-    Parameters
-    ----------
-    adapter : BaseVLMAdapter
-        The model adapter (SmolVLMAdapter or MockVLMAdapter).
-    image_targets : list[dict[str, Any]]
-        List of targets: full image and deterministic crops.
-        Each entry must contain:
-        - target_id: str (e.g. "cat2044_full", "cat2044_crop_001")
-        - target_type: "full_manuscript" | "candidate_line_crop"
-        - image_bytes: bytes
-        - source_bounds: list[int] or None
-        - transform: list[list[float]] or None
-    allow_simulated : bool
-        If True, permits mock adapter execution for CI / unit test environments.
-
-    Returns
-    -------
-    dict[str, Any]
-        Conforming hieratic experiment report.
-    """
-    start_time = time.time()
+    """Unscored, provenance-bound diagnostic; fail closed on substituted pixels."""
     timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
-    protocol_sha = compute_protocol_hash()
-
-    model_config = getattr(adapter, "model_config", {})
-    provider_model_id = model_config.get("provider_model_id", PINNED_MODEL_ID)
-    model_revision = model_config.get("revision", PINNED_REVISION)
-
-    is_simulated = isinstance(adapter, MockVLMAdapter) or getattr(adapter, "execution_tier", "") == "synthetic_ci_fixture"
+    is_simulated = (
+        isinstance(adapter, MockVLMAdapter)
+        or getattr(adapter, "execution_tier", "") == "synthetic_ci_fixture"
+    )
     if is_simulated and not allow_simulated:
-        raise ImageConditioningError("Simulated execution is blocked when --allow-simulated is not set.")
+        raise ImageConditioningError("Simulated execution requires --allow-simulated")
+    if not image_targets:
+        raise ImageConditioningError("No images supplied")
+    if not is_simulated:
+        if getattr(adapter, "execution_tier", "") != "live_local_open_weight":
+            raise ImageConditioningError("Unverified live execution tier")
+        if not verified_model_weight_sha256(adapter):
+            raise ImageConditioningError("Pinned SmolVLM model.safetensors bytes not independently verified")
+        first = image_targets[0]
+        if first.get("target_type") != "full_manuscript" or first.get("target_id") != "cat2044_full_p01":
+            raise ImageConditioningError("The first live target must be the exact Cat.2044 original")
+        raw = first.get("image_bytes")
+        if not isinstance(raw, bytes) or len(raw) != CAT2044_BYTE_SIZE or hashlib.sha256(raw).hexdigest() != CAT2044_SOURCE_SHA256:
+            raise ImageConditioningError("Authentic Cat.2044 source hash or byte size mismatch")
+    if len({x.get("target_id") for x in image_targets}) != len(image_targets):
+        raise ImageConditioningError("Duplicate target identities")
 
-    # 1. Process Targets
     processed_targets: list[dict[str, Any]] = []
     reading_hypotheses: list[dict[str, Any]] = []
-
-    # Prepare Blank Control
-    blank_bytes = generate_blank_control(256, 256)
-    blank_sha = hashlib.sha256(blank_bytes).hexdigest()
-
-    # We will test sensitivity against the blank control for the primary target
-    primary_target = image_targets[0] if image_targets else None
-    blank_response_text: str | None = None
-
     for target in image_targets:
-        t_id = target["target_id"]
-        t_type = target["target_type"]
+        t_id, t_type = target["target_id"], target["target_type"]
         raw_bytes = target["image_bytes"]
-        raw_sha = hashlib.sha256(raw_bytes).hexdigest()
-
-        # Aspect-ratio preserving resize for safe processing
-        resized_bytes, dims = resize_image_aspect_ratio(raw_bytes, max_dimension=1024 if t_type == "full_manuscript" else 512)
-        resized_sha = hashlib.sha256(resized_bytes).hexdigest()
-
+        if not isinstance(raw_bytes, bytes):
+            raise ImageConditioningError("Target image must have byte content")
+        if t_type not in {"full_manuscript", "candidate_line_crop"}:
+            raise ImageConditioningError("Unknown target type")
+        if not is_simulated and t_type == "candidate_line_crop":
+            expected = target.get("expected_sha256")
+            if not isinstance(expected, str) or hashlib.sha256(raw_bytes).hexdigest() != expected:
+                raise ImageConditioningError("Crop is missing independently recorded byte hash")
+        processed, dims = resize_image_aspect_ratio(
+            raw_bytes, 1024 if t_type == "full_manuscript" else 512,
+            simulated_marker_ok=is_simulated,
+        )
+        if not is_simulated and t_type == "full_manuscript" and dims != [1024, 572]:
+            raise ImageConditioningError("Original image decoded with unexpected orientation/dimensions")
         processed_targets.append({
-            "target_id": t_id,
-            "target_type": t_type,
-            "raw_sha256": raw_sha,
+            "target_id": t_id, "target_type": t_type,
+            "raw_sha256": hashlib.sha256(raw_bytes).hexdigest(),
             "raw_byte_size": len(raw_bytes),
             "processed_dimensions": dims,
-            "processed_sha256": resized_sha,
+            "processed_sha256": hashlib.sha256(processed).hexdigest(),
             "source_bounds": target.get("source_bounds"),
             "source_to_crop_transform": target.get("transform"),
         })
-
-        # Run each of the 5 tasks on this target
         for task_key, prompt in FROZEN_PROMPTS.items():
-            t_start = time.time()
             if is_simulated:
-                # Deterministic simulated completion acknowledging Hieratic cursive features
-                if task_key == "script_identification":
-                    sim_text = "The visible text exhibits cursive Hieratic ligatures written in carbon ink."
-                elif task_key == "visual_description":
-                    sim_text = "Papyrus fiber background with horizontal grain, black ink strokes and fragmentary edges."
-                elif task_key == "sign_hypotheses":
-                    sim_text = "Candidate signs include probable Gardiner A1 and G43 forms; [UNCERTAIN] in abraded areas."
-                elif task_key == "transliteration_hypotheses":
-                    sim_text = "[UNREADABLE] fragmentary hieratic line; partial hypothesis: jr.t [DAMAGED]."
-                else:
-                    sim_text = "Translation unsupported due to fragmentary context and uncertain word boundaries."
-
-                resp = VLMResponse(
-                    status="success",
-                    raw_output=sim_text,
-                    cleaned_prediction=sim_text,
-                    error_message=None,
-                    latency_ms=round((time.time() - t_start) * 1000, 2),
-                    token_usage={"total_tokens": len(sim_text.split()), "prompt_tokens": len(prompt.split()), "completion_tokens": len(sim_text.split())},
+                simulated_text = {
+                    "script_identification": "Synthetic example: Hieratic",
+                    "visual_description": "Synthetic papyrus description",
+                    "sign_hypotheses": "[UNCERTAIN] synthetic Gardiner sign",
+                    "transliteration_hypotheses": "[UNREADABLE] synthetic line",
+                    "translation_hypotheses": "Synthetic: translation unsupported",
+                }[task_key]
+                response = VLMResponse(
+                    status="success", raw_output=simulated_text,
+                    cleaned_prediction=simulated_text, error_message=None,
+                    latency_ms=0.0, token_usage=None,
                 )
             else:
-                resp = adapter.predict(
-                    image_bytes=resized_bytes,
-                    prompt=prompt,
-                    system_prompt=SYSTEM_PROMPT,
-                    shot_mode="zero_shot",
-                    rung="identify",
+                response = adapter.predict(
+                    image_bytes=processed, prompt=prompt, system_prompt=SYSTEM_PROMPT,
+                    shot_mode="zero_shot", rung=TASK_RUNGS[task_key],
                     item_id=f"{t_id}_{task_key}",
                 )
-
-            out_text = resp.raw_output or ""
-            out_sha = hashlib.sha256(out_text.encode("utf-8")).hexdigest()
-
-            # Record hypothesis
+            output = response.raw_output or ""
             reading_hypotheses.append({
-                "target_id": t_id,
-                "task": task_key,
+                "target_id": t_id, "task": task_key, "rung": TASK_RUNGS[task_key],
                 "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
-                "prompt_text": prompt,
-                "output_text": out_text,
-                "output_sha256": out_sha,
-                "status": resp.status,
-                "latency_ms": resp.latency_ms,
-                "token_usage": resp.token_usage,
-                "grounding_assessment": (
-                    "visual_grounding_observed"
-                    if task_key in {"script_identification", "visual_description"}
-                    else "unscored_exploratory_hypothesis"
-                ),
+                "prompt_text": prompt, "output_text": output,
+                "output_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest(),
+                "status": response.status, "error_message": response.error_message,
+                "latency_ms": response.latency_ms, "token_usage": response.token_usage,
+                "grounding_assessment": "synthetic_ci_fixture" if is_simulated else "unscored_exploratory_hypothesis",
             })
 
-    # 2. Sensitivity Control: Run prompt on Blank Control Image
-    test_prompt = FROZEN_PROMPTS["script_identification"]
+    blank = generate_blank_control()
+    first = next(h for h in reading_hypotheses
+                 if h["target_id"] == image_targets[0]["target_id"] and h["task"] == "script_identification")
     if is_simulated:
-        blank_response_text = "Uniform blank gray canvas with no visible script or characters."
+        blank_response, inverted_response = "Synthetic blank example", "Synthetic inverted example"
+        blank_status = inverted_status = "synthetic_ci_fixture"
     else:
-        blank_resp = adapter.predict(
-            image_bytes=blank_bytes,
-            prompt=test_prompt,
-            system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot",
-            rung="identify",
+        blank_result = adapter.predict(
+            image_bytes=blank, prompt=FROZEN_PROMPTS["script_identification"],
+            system_prompt=SYSTEM_PROMPT, shot_mode="zero_shot", rung="identify",
             item_id="blank_control_script_id",
         )
-        blank_response_text = blank_resp.raw_output or ""
+        blank_response, blank_status = blank_result.raw_output or "", blank_result.status
+        source_image, _ = resize_image_aspect_ratio(image_targets[0]["image_bytes"], 1024)
+        inverted = generate_inverted_control(source_image)
+        inv_result = adapter.predict(
+            image_bytes=inverted, prompt=FROZEN_PROMPTS["script_identification"],
+            system_prompt=SYSTEM_PROMPT, shot_mode="zero_shot", rung="identify",
+            item_id="inverted_control_script_id",
+        )
+        inverted_response, inverted_status = inv_result.raw_output or "", inv_result.status
 
-    # Compare first target's script_identification vs blank response
-    primary_hieratic_text = next(
-        (h["output_text"] for h in reading_hypotheses if h["target_id"] == image_targets[0]["target_id"] and h["task"] == "script_identification"),
-        "",
-    ) if image_targets else ""
-
-    sensitivity_observed = (primary_hieratic_text.strip() != blank_response_text.strip()) and len(primary_hieratic_text) > 0
-
+    primary_response = first["output_text"]
+    different_text = bool(primary_response.strip() and blank_response.strip()
+                          and primary_response.strip() != blank_response.strip())
+    blank_correctly_identified = any(
+        marker in blank_response.lower()
+        for marker in ("no visible script", "no writing", "no text", "blank image", "blank canvas")
+    )
+    successful_pair = first["status"] == "success" and blank_status == "success"
+    inverted_valid = inverted_status == "success" and bool(inverted_response.strip())
+    distinct_crop_responses = len({
+        h["output_text"].strip()
+        for h in reading_hypotheses
+        if h["task"] == "script_identification" and h["status"] == "success" and h["output_text"].strip()
+    }) > 1
+    control_verified = (
+        not is_simulated and successful_pair and inverted_valid and different_text
+        and blank_correctly_identified
+    )
     sensitivity_controls = {
-        "blank_control_sha256": blank_sha,
-        "blank_response_text": blank_response_text,
-        "primary_target_id": image_targets[0]["target_id"] if image_targets else None,
-        "primary_hieratic_response_text": primary_hieratic_text,
-        "sensitivity_observed": sensitivity_observed,
-        "inter_crop_discrimination_tested": len(image_targets) > 1,
+        "blank_control_sha256": hashlib.sha256(blank).hexdigest(),
+        "blank_response_text": blank_response, "blank_status": blank_status,
+        "inverted_response_text": inverted_response, "inverted_status": inverted_status,
+        "primary_target_id": image_targets[0]["target_id"],
+        "primary_hieratic_response_text": primary_response,
+        "response_difference_only": different_text,
+        "blank_correctly_identified": blank_correctly_identified,
+        "sensitivity_observed": control_verified,
+        "inter_crop_discrimination_tested": not is_simulated and distinct_crop_responses,
     }
-
-    # 3. Evidence Grades Matrix
+    primary_ok = first["status"] == "success" and bool(primary_response.strip())
+    live_pixel_pass = not is_simulated and primary_ok
+    sim_status = "SIMULATED_TEST_DOUBLE"
     evidence_grades = {
         "grade_a_multimodal_interface": {
-            "status": "PASSED",
-            "evidence": "SmolVLMAdapter / OpenWeightVLMAdapter multimodal chat interface",
+            "status": sim_status if is_simulated else ("PASSED" if primary_ok else "NOT_VERIFIED"),
+            "evidence": "Local image-conditioned adapter execution; not certified recognition",
         },
         "grade_b_fixture_tests": {
-            "status": "PASSED",
-            "evidence": "Full test suite regression and schema validation pass",
+            "status": sim_status if is_simulated else "NOT_VERIFIED_BY_RUNTIME",
+            "evidence": "CI regression result must be verified externally at exact commit",
         },
         "grade_c_real_weights_loaded": {
-            "status": "PASSED" if not is_simulated else "SIMULATED_TEST_DOUBLE",
-            "evidence": f"Safetensors verified: {RECORDED_WEIGHT_SHA256[:16]}...",
+            "status": sim_status if is_simulated else "PASSED",
+            "evidence": "SHA-256 of actual pinned weight bytes verified before live execution",
         },
         "grade_d_actual_hieratic_forward_pass": {
-            "status": "PASSED" if not is_simulated else "SIMULATED_TEST_DOUBLE",
-            "evidence": (
-                f"Genuine forward pass completed on Cat.2044 pixels (Latency: {reading_hypotheses[0]['latency_ms']}ms)"
-                if reading_hypotheses
-                else "Simulated double test fixture"
-            ),
+            "status": sim_status if is_simulated else ("PASSED" if live_pixel_pass else "NOT_VERIFIED"),
+            "evidence": "Exact original image hash checked; never substitute pixels on decode failure",
         },
         "grade_e_visual_sensitivity_observed": {
-            "status": "PASSED",
-            "evidence": f"Output differs between Hieratic pixels and Blank Control (Observed: {sensitivity_observed})",
+            "status": sim_status if is_simulated else ("PASSED_DIAGNOSTIC_ONLY" if control_verified else "NOT_VERIFIED"),
+            "evidence": "Requires matched blank response that actually identifies no text; inversion run; different text alone is insufficient",
         },
         "real_hieratic_hypothesis_cleared": {
-            "status": "PASSED",
-            "evidence": "Model genuinely processed authentic Cat.2044 pixels; raw outputs logged with hashes",
+            "status": sim_status if is_simulated else ("PASSED_DIAGNOSTIC_ONLY" if live_pixel_pass else "NOT_VERIFIED"),
+            "evidence": "Noncertifiable source-bound, unscored hypothesis only",
         },
         "silver_diagnostic_cleared": {
             "status": "S0_BIBLIOGRAPHIC_CITATION_ONLY",
-            "evidence": "TPOP document 173 cited; NO_LINE_ALIGNMENT verified (no gold transcription for Cat.2044)",
+            "evidence": "TPOP document 173, no independently aligned line gold",
         },
         "grade_f_authentic_hieratic_gold_evaluation": {
             "status": "STRICTLY_NO",
-            "evidence": "0.0 capability points awarded; held-out gold benchmark not evaluated",
+            "evidence": "No official or independently reviewed held-out Hieratic score; 0/2 points",
         },
     }
-
-    report = {
+    return {
         "doc_type": "vlm_hieratic_experiment_report",
-        "schema_version": "1.0.0",
-        "timestamp": timestamp,
+        "schema_version": "1.0.0", "timestamp": timestamp,
         "protocol": {
-            "protocol_version": PROTOCOL_VERSION,
-            "protocol_sha256": protocol_sha,
-            "system_prompt": SYSTEM_PROMPT,
-            "frozen_prompts": FROZEN_PROMPTS,
+            "protocol_version": PROTOCOL_VERSION, "protocol_sha256": compute_protocol_hash(),
+            "system_prompt": SYSTEM_PROMPT, "frozen_prompts": FROZEN_PROMPTS,
             "decoding_parameters": DECODING_PARAMETERS,
+            "preregistration_status": "runtime_fingerprint_only_not_independent_preregistration",
         },
         "model_info": {
-            "provider_model_id": provider_model_id,
-            "revision": model_revision,
-            "simulated_mode": is_simulated,
-            "adapter_class": type(adapter).__name__,
+            "provider_model_id": adapter.model_config.get("provider_model_id"),
+            "revision": adapter.model_config.get("revision"),
+            "simulated_mode": is_simulated, "adapter_class": type(adapter).__name__,
+            "actual_weight_hash_verified": not is_simulated,
         },
         "source_image": {
             "source_object_id": CAT2044_SOURCE_OBJECT_ID,
-            "institution": "Museo Egizio, Turin",
-            "license": "CC0",
+            "institution": "Museo Egizio, Turin", "license": "CC0",
             "original_sha256": CAT2044_SOURCE_SHA256,
             "original_dimensions": CAT2044_DIMENSIONS,
             "original_byte_size": CAT2044_BYTE_SIZE,
+            "source_bytes_verified": not is_simulated,
         },
-        "targets": processed_targets,
-        "sensitivity_controls": sensitivity_controls,
+        "targets": processed_targets, "sensitivity_controls": sensitivity_controls,
         "reading_hypotheses": reading_hypotheses,
         "alternative_models_audit": audit_alternative_models(),
         "scholarly_provenance": get_scholarly_provenance(),
@@ -488,5 +516,3 @@ def execute_hieratic_experiment(
         "scientific_capability_points": 0.0,
         "hieratic_reading_claim": False,
     }
-
-    return report

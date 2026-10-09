@@ -56,7 +56,6 @@ jobs:
         if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
         env:
           TASK_BRANCH: ${{ github.head_ref }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           python - <<'PY'
           import os
@@ -68,9 +67,17 @@ jobs:
           match = re.match(r"^task/([A-Z]+-[0-9]{3})-[a-z0-9-]+$", branch)
           if not match:
               raise SystemExit(f"FAIL: malformed task branch: {branch}")
-          base_sha = os.environ["BASE_SHA"]
+          # Actions PR checkout is refs/pull/N/merge, whose FIRST parent is
+          # the current base branch. Old event.pull_request.base.sha may
+          # predate later unrelated main merges on long-running PRs.
+          parents = subprocess.check_output(
+              ["git", "rev-list", "--parents", "-n", "1", "HEAD"], text=True
+          ).split()
+          if len(parents) != 3:
+              raise SystemExit("FAIL: PR checkout is not a two-parent merge commit")
+          current_pr_base = parents[1]
           changed = subprocess.check_output(
-              ["git", "diff", "--name-only", base_sha, "HEAD"],
+              ["git", "diff", "--name-only", current_pr_base, "HEAD"],
               text=True,
           ).splitlines()
           errors = check_scope(match.group(1), changed, read_payload(SCOPES))

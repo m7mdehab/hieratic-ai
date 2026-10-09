@@ -818,6 +818,23 @@ class CorpusReleaseTests(unittest.TestCase):
         tampered["items"][0]["record_sha256"] = "f" * 64
         self.assertTrue(akupal_w20.validate_report(tampered))
 
+    def test_w20_combined_item_receipt_contains_r026_crosscheck_and_never_promotes(self):
+        manifest = json.loads((ROOT / "data/releases/w20_item_receipt_manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual([], w20_manifest.validate_manifest(manifest))
+        self.assertEqual([], w20_manifest.validate_input(manifest))
+        self.assertTrue(manifest["summary"]["cat1880_p01_r026_byte_crossmatch"])
+        self.assertEqual(0, manifest["summary"]["sealed_benchmark_records_read"])
+        self.assertEqual(0, manifest["summary"]["training_admissions"])
+        self.assertEqual(0, manifest["summary"]["gold_labels"])
+        self.assertEqual(0, manifest["summary"]["raw_media_files_committed"])
+        self.assertGreater(manifest["summary"]["benchmark_screen_results"]["POSITIVE_PUBLIC_METADATA_ID_OVERLAP_QUARANTINED"], 0)
+        tampered = copy.deepcopy(manifest)
+        tampered["items"][0]["source_identity"]["record_sha256"] = "f" * 64
+        tampered["evidence_sha256"] = w20_manifest.digest({key: value for key, value in tampered.items() if key != "evidence_sha256"})
+        self.assertEqual([], w20_manifest.validate_manifest(tampered))
+        tampered["items"][0]["disposition"]["training_admission"] = True
+        self.assertTrue(w20_manifest.validate_manifest(tampered))
+
     def test_w20_item_manifest_binds_inputs_and_cannot_promote_candidates(self):
         census = {"schema_version": "w20-akupal-source-census/1.0.0", "source": "AKU-PAL Academy Mainz public API",
             "classification": "RESEARCH_INVENTORY_ONLY_NOT_CORPUS_ADMISSION", "discovery": {"index_sha256": "a" * 64, "unique_indexed_sign_ids": 2, "grapheme_records": 1},

@@ -19,10 +19,12 @@ from tools.translation_layer import TranslationError, _canonical
 ROOT = contextual.ROOT
 DONOR = Path("ling/translation/data/w11_archive_training_excluding_w10.json")
 BIOGRAPHIES = Path("ling/translation/data/w11_biography_external_32groups_ccby_sa.json")
+BIOGRAPHY_UNIVERSE = Path("ling/translation/data/w11_biography_source_id_universe.json")
 SOURCE_ARCHIVE_BLOB = "014cccf04235d9e093fca24ed48c62630d235852"
 SOURCE_BIOGRAPHY_BLOB = "6f26021ee4243e87657ff8afd59847f126d6ca65"
 DONOR_BLOB = "1354bbfd832680953bec25fb5742502599763bc1"
 BIOGRAPHY_BLOB = "7e5654b5d8194c3deb764cf37a8e2bce2c624855"
+BIOGRAPHY_UNIVERSE_BLOB = "16ac4c8cbc7ccd30c952b904825511b5756f3a27"
 BIOGRAPHY_HASH_SALT = "hieratic-ai-ling003-w11-biographies-v1:"
 BIOGRAPHY_HASH_CUTOFF = "37bde0beda59cec1a6b53e513ab5a5e77f75a8866728136f5d9ae52c7706ae26"
 DONOR_EXPECTED_SENTENCES = 3021
@@ -61,6 +63,7 @@ def load(corpus: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     """Prove every donor and heldout source identity is disjoint; no silent filters."""
     archived = pinned_json(root, DONOR, DONOR_BLOB, 3_000_000)
     biography = pinned_json(root, BIOGRAPHIES, BIOGRAPHY_BLOB, 400_000)
+    universe = pinned_json(root, BIOGRAPHY_UNIVERSE, BIOGRAPHY_UNIVERSE_BLOB, 30_000)
     prior_ids = {row["text_id"] for group in corpus["groups"].values() for row in group}
     earlier = w10_evaluation.load_archive(corpus, root=root)
     former_ids = set(earlier["text_ids"])
@@ -138,6 +141,30 @@ def load(corpus: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     if (len(target_ids) != BIOGRAPHY_EXPECTED_GROUPS
             or sum(bool(v["german"]) for v in test) != BIOGRAPHY_EXPECTED_TRANSLATED):
         raise TranslationError("W11 frozen target population drift")
+    # The full published source-ID universe is independently frozen, so merely
+    # sharing the last selected digest is insufficient to replace an entire
+    # source group or silently cherry-pick external reference text IDs.
+    original_ids = universe.get("source_text_ids_sorted")
+    if (universe.get("original_source_git_blob") != SOURCE_BIOGRAPHY_BLOB
+            or universe.get("original_sentence_count") != 1110
+            or universe.get("original_translated_sentence_count") != 1095
+            or universe.get("source_text_id_count") != 141
+            or not isinstance(original_ids, list)
+            or len(original_ids) != 141
+            or original_ids != sorted(set(original_ids))
+            or not all(isinstance(x, str) and x for x in original_ids)):
+        raise TranslationError("Full historical biography source-ID universe drift")
+    allowed_original_ids = [x for x in original_ids
+                            if x not in donor_ids and x not in prior_ids
+                            and x not in former_ids]
+    if len(allowed_original_ids) < BIOGRAPHY_EXPECTED_GROUPS:
+        raise TranslationError("Fewer than 32 independently eligible original biography texts")
+    top32 = sorted(allowed_original_ids, key=lambda text: (
+        sha256((BIOGRAPHY_HASH_SALT + text).encode("utf-8")).hexdigest(), text
+    ))[:BIOGRAPHY_EXPECTED_GROUPS]
+    if (set(top32) != target_ids
+            or universe.get("selected_group_ids_sorted") != sorted(target_ids)):
+        raise TranslationError("W11 frozen first-32 full-source-universe selection mismatch")
     rank_digests = {
         sha256((BIOGRAPHY_HASH_SALT + name).encode("utf-8")).hexdigest()
         for name in target_ids

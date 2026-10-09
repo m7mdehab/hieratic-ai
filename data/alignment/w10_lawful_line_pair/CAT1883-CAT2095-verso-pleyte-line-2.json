@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0",
+  "investigation_id": "W10-DATA-006-LAWFUL-LINE-PAIR-PILOT-v1",
+  "source": {
+    "institution": "Museo Egizio, Turin",
+    "source_object_id": "Cat.1883 + Cat.2095",
+    "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "view": "verso",
+    "figure_number": 8,
+    "image": {
+      "file_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/8/original.tif",
+      "sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+      "byte_size": 41686648,
+      "dimensions": [6595, 4710],
+      "mime_type": "image/tiff",
+      "license_id": "CC-BY-2.0",
+      "license_evidence_status": "verified",
+      "license_evidence_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+      "coordinate_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+      "attribution": "Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 8"
+    }
+  },
+  "edition": {
+    "edition_id": "PLEYTE-ROSSI-PAPYRUS-DE-TURIN-1876",
+    "witness_source_object_id": "Cat.1883 + Cat.2095",
+    "citation": "W. Pleyte and F. Rossi, Papyrus de Turin, vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX (1869–1876)",
+    "printed_page": 41,
+    "numbered_item": 2,
+    "plate": "XXIX",
+    "license_id": "PDM-1.0",
+    "license_evidence_status": "verified",
+    "license_evidence_url": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin01muse).pdf",
+    "volume_1_sha256": "a387da74c1551158b7e55cccee36969d2189dcfcd69edb3945593910654a46e47",
+    "volume_2_sha256": "cd466c1867bb394c8c69b95aaf4762996ec4b4f70ac8ccff329318570dce7edb",
+    "line_text_embedded": false
+  },
+  "line_pair_candidate": {
+    "candidate_id": "W10-CAT1883-2095-VERSO-PLEYTE-ITEM-2",
+    "edition_line_locator": "vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX",
+    "ambiguity_note": "Candidate only: the approximate envelope has no independent palaeographic review, and Plate XXIX could not be visually cross-checked in this investigation; exact line correspondence remains unresolved.",
+    "geometry": {
+      "coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
+      "bounds": [2800, 1690, 6500, 2020],
+      "coordinate_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+      "geometry_kind": "candidate_line_region",
+      "basis": "Approximate manual envelope on the exact RIME Fig. 8 TIFF; line locator follows the Pleyte/Rossi printed item and RIME verso description; not independently reviewed.",
+      "review_state": "unreviewed"
+    },
+    "mapping_state": "proposed_unreviewed_candidate",
+    "review_state": "unreviewed",
+    "reviewer_id": null,
+    "gold_scoreable": false,
+    "line_text_embedded": false
+  },
+  "data004_annotation_id": null,
+  "benchmark_overlap": "unresolved_quarantined",
+  "training_admission": "blocked",
+  "gold_eligible": false
+}

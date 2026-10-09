@@ -12,10 +12,83 @@ ROOT=Path(__file__).resolve().parents[1]
 ALIGN_SCHEMA=ROOT/"schemas/alignment_manifest.schema.json"
 W9_RIME_REFERENCE_SCHEMA=ROOT/"data/alignment/w9_rime/reference_geometry.schema.json"
 W9_RIME_REFERENCE_PACKET=ROOT/"data/alignment/w9_rime/CAT1883-CAT2095-recto-reference-geometry.json"
+W10_LINE_PAIR_SCHEMA=ROOT/"data/alignment/w10_lawful_line_pair/source_exact_line_pair.schema.json"
+W10_LINE_PAIR_PACKET=ROOT/"data/alignment/w10_lawful_line_pair/CAT1883-CAT2095-verso-pleyte-line-2.json"
 ACQ_SCHEMA=ROOT/"schemas/acquisition_manifest.schema.json"
 ANNOTATION_SCHEMA=ROOT/"schemas/annotation.schema.json"
 REGISTRY=ROOT/"data/sources/registry.yaml"
 class AlignmentError(ValueError):pass
+
+W10_EXPECTED_IMAGE={
+    "source_object_id":"Cat.1883 + Cat.2095",
+    "physical_support_group":"Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "view":"verso",
+    "figure_number":8,
+    "file_url":"https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/8/original.tif",
+    "sha256":"506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+    "byte_size":41686648,
+    "dimensions":[6595,4710],
+    "mime_type":"image/tiff",
+}
+W10_EXPECTED_EDITION={
+    "edition_id":"PLEYTE-ROSSI-PAPYRUS-DE-TURIN-1876",
+    "witness_source_object_id":"Cat.1883 + Cat.2095",
+    "citation":"W. Pleyte and F. Rossi, Papyrus de Turin, vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX (1869–1876)",
+    "printed_page":41,
+    "numbered_item":2,
+    "plate":"XXIX",
+}
+
+def validate_w10_line_pair(packet:Any,schema_path:Path=W10_LINE_PAIR_SCHEMA)->list[str]:
+    """Validate a rights-cleared but unreviewed image-to-edition line-reference pilot.
+
+    This intentionally does not produce a DATA-004 alignment or gold label. The
+    fixed identities below bind the research packet to the exact W10 evidence;
+    a YAML/JSON claim cannot change the source or review authority.
+    """
+    errors=schema_errors(packet,schema_path)
+    if errors:return errors
+    source=packet["source"]
+    image=source["image"]
+    for key,value in W10_EXPECTED_IMAGE.items():
+        observed=source.get(key) if key in {"source_object_id","physical_support_group","view","figure_number"} else image.get(key)
+        if observed!=value:errors.append(f"W10 source identity mismatch for {key}")
+    if image.get("license_id")!="CC-BY-2.0" or image.get("license_evidence_status")!="verified":
+        errors.append("W10 image reuse rights must remain explicitly verified for the exact figure")
+    if image.get("coordinate_asset_sha256")!=image.get("sha256"):
+        errors.append("W10 coordinates must bind to the exact source TIFF bytes; derivative/hash mismatch")
+    edition=packet["edition"]
+    for key,value in W10_EXPECTED_EDITION.items():
+        if edition.get(key)!=value:errors.append(f"W10 edition/source line identity mismatch for {key}")
+    if edition.get("license_id")!="PDM-1.0" or edition.get("license_evidence_status")!="verified":
+        errors.append("W10 edition text rights must remain verified as public-domain source material")
+    if edition.get("line_text_embedded") is not False:
+        errors.append("W10 public packet must not embed the edition's line text")
+    if edition.get("witness_source_object_id")!=source.get("source_object_id"):
+        errors.append("W10 cross-collection/source witness collision")
+    pair=packet["line_pair_candidate"]
+    if pair.get("edition_line_locator")!="vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX":
+        errors.append("W10 line locator is not supported by the cited edition evidence")
+    geometry=pair["geometry"]
+    x0,y0,x1,y1=geometry["bounds"]
+    width,height=image["dimensions"]
+    if x1<=x0 or y1<=y0 or x1>width or y1>height:
+        errors.append("W10 candidate line geometry is empty or outside exact source image")
+    if geometry.get("coordinate_asset_sha256")!=image.get("sha256"):
+        errors.append("W10 candidate line coordinates reference a different image/derivative")
+    if pair.get("mapping_state")!="proposed_unreviewed_candidate":
+        errors.append("W10 line correspondence is a candidate and cannot be self-marked verified")
+    if pair.get("review_state")!="unreviewed" or pair.get("reviewer_id") is not None:
+        errors.append("W10 line correspondence requires an independent human review")
+    if pair.get("gold_scoreable") is not False or packet.get("gold_eligible") is not False:
+        errors.append("W10 source investigation cannot promote this candidate to gold")
+    if pair.get("line_text_embedded") is not False:
+        errors.append("W10 line text must remain a bibliographic pointer only")
+    if packet.get("data004_annotation_id") is not None:
+        errors.append("W10 investigation has no DATA-004 annotation identity")
+    if packet.get("benchmark_overlap")!="unresolved_quarantined" or packet.get("training_admission")!="blocked":
+        errors.append("W10 benchmark/source admission remains blocked pending independent review")
+    return errors
 
 def validate_reference_geometry(packet:Any,schema_path:Path=W9_RIME_REFERENCE_SCHEMA)->list[str]:
     """Validate image-linked bibliographic pointers that are expressly not DATA-006 gold alignments."""
@@ -164,12 +237,20 @@ def main(argv=None)->int:
     q=s.add_parser("validate");q.add_argument("manifest",type=Path);q.add_argument("--acquisition",type=Path,required=True);q.add_argument("--annotation",type=Path,required=True);q.add_argument("--output",type=Path)
     ref=s.add_parser("validate-reference",help="validate image-linked citation pointers with geometry only; never DATA-006 gold")
     ref.add_argument("manifest",type=Path,nargs="?",default=W9_RIME_REFERENCE_PACKET);ref.add_argument("--schema",type=Path,default=W9_RIME_REFERENCE_SCHEMA)
+    w10=s.add_parser("validate-w10-pair",help="validate the W10 lawful image/edition locator candidate; never gold")
+    w10.add_argument("manifest",type=Path,nargs="?",default=W10_LINE_PAIR_PACKET);w10.add_argument("--schema",type=Path,default=W10_LINE_PAIR_SCHEMA)
     a=p.parse_args(argv)
     try:
         if a.cmd=="validate-reference":
             packet=read(a.manifest);errors=validate_reference_geometry(packet,a.schema)
             if errors:raise AlignmentError("\n".join(errors))
             print(json.dumps({"reference_set_id":packet["reference_set_id"],"geometry_region_count":len(packet["geometry_regions"]),"line_level_alignment":False,"gold_scoreable_count":0,"training_admission":packet["rights_boundary"]["training_admission"]},sort_keys=True))
+            return 0
+        if a.cmd=="validate-w10-pair":
+            packet=read(a.manifest);errors=validate_w10_line_pair(packet,a.schema)
+            if errors:raise AlignmentError("\n".join(errors))
+            pair=packet["line_pair_candidate"]
+            print(json.dumps({"investigation_id":packet["investigation_id"],"source_sha256":packet["source"]["image"]["sha256"],"edition_line_locator":pair["edition_line_locator"],"geometry":pair["geometry"]["bounds"],"mapping_state":pair["mapping_state"],"review_state":pair["review_state"],"gold_scoreable":False,"training_admission":"blocked","result":"PASS: lawful source pointers and candidate geometry validated; no line match or gold asserted"},sort_keys=True,indent=2))
             return 0
         alignment=read(a.manifest);acq=read(a.acquisition);ann=read(a.annotation);registry=read(REGISTRY)
         errors,eligible=validate(alignment,acq,ann,registry)

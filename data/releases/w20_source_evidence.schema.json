@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hieratic-ai.example/schemas/w20-source-evidence.schema.json",
+  "title": "Wave 20 source evidence receipt",
+  "description": "Metadata and ephemeral in-memory media evidence. This is not rights admission, benchmark clearance, scholarly gold, or training admission.",
+  "oneOf": [
+    { "$ref": "#/$defs/signCensus" },
+    { "$ref": "#/$defs/museumPhotoIntake" },
+    { "$ref": "#/$defs/receiptManifest" }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signCensus": {
+      "type": "object",
+      "required": ["schema_version", "source", "classification", "discovery", "selection", "summary", "items", "scan_limits", "evidence_sha256"],
+      "properties": {
+        "schema_version": { "const": "w20-akupal-source-census/1.0.0" },
+        "source": { "const": "AKU-PAL Academy Mainz public API" },
+        "classification": { "const": "RESEARCH_INVENTORY_ONLY_NOT_CORPUS_ADMISSION" },
+        "discovery": { "type": "object", "required": ["index_sha256", "unique_indexed_sign_ids", "grapheme_records"], "properties": { "index_sha256": { "$ref": "#/$defs/sha256" }, "unique_indexed_sign_ids": { "type": "integer", "minimum": 1 }, "grapheme_records": { "type": "integer", "minimum": 1 } } },
+        "selection": { "type": "object", "required": ["selected_items"], "properties": { "selected_items": { "type": "integer", "minimum": 1, "maximum": 500 } } },
+        "scan_limits": { "type": "object", "required": ["maximum_concurrency", "media_bytes_written_to_disk"], "properties": { "maximum_concurrency": { "const": 1 }, "media_bytes_written_to_disk": { "const": false } } },
+        "summary": { "type": "object", "required": ["distinct_sign_ids_screened", "exact_item_permissive_license_and_provenance_screened", "verified_sign_media_files", "training_admissions", "gold_labels", "production_corpus", "benchmark_state"], "properties": { "distinct_sign_ids_screened": { "type": "integer", "minimum": 0, "maximum": 500 }, "exact_item_permissive_license_and_provenance_screened": { "type": "integer", "minimum": 0 }, "verified_sign_media_files": { "type": "integer", "minimum": 0 }, "training_admissions": { "const": 0 }, "gold_labels": { "const": 0 }, "production_corpus": { "const": false }, "benchmark_state": { "const": "UNKNOWN_QUARANTINED_ALL_RECORDS" } } },
+        "items": { "type": "array", "items": { "type": "object", "required": ["sign_id", "record_url", "record_sha256", "rights_status", "training_admission", "gold_admission", "benchmark_overlap"], "properties": { "sign_id": { "type": "integer", "minimum": 1 }, "record_sha256": { "$ref": "#/$defs/sha256" }, "rights_status": { "type": "string" }, "training_admission": { "const": false }, "gold_admission": { "const": false }, "benchmark_overlap": { "const": "unknown_quarantined" } } } }
+      },
+      "additionalProperties": true
+    },
+    "museumPhotoIntake": {
+      "type": "object",
+      "required": ["schema_version", "classification", "candidate_count", "distinct_physical_support_groups", "bytes_hashed", "media_bytes_written_to_disk", "items", "grouping", "evidence_sha256"],
+      "properties": {
+        "schema_version": { "const": "w20-museum-photo-intake/1.0.0" },
+        "classification": { "const": "SOURCE_PHOTO_EVIDENCE_ONLY_NOT_DATA002_ADMISSION" },
+        "candidate_count": { "type": "integer", "const": 7 },
+        "distinct_physical_support_groups": { "type": "integer", "const": 3 },
+        "bytes_hashed": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "media_bytes_written_to_disk": { "const": false },
+        "items": { "type": "array", "minItems": 7, "maxItems": 7, "items": { "type": "object", "required": ["candidate_id", "accession", "group_id", "rights_status", "text_rights", "benchmark_overlap", "training_admission", "gold_admission"], "properties": { "candidate_id": { "type": "string" }, "accession": { "type": "string" }, "group_id": { "type": "string" }, "rights_status": { "type": "string" }, "text_rights": { "const": "NOT_VERIFIED_OR_NOT_ASSUMED" }, "benchmark_overlap": { "const": "UNKNOWN_QUARANTINED" }, "training_admission": { "const": false }, "gold_admission": { "const": false }, "publisher_sha1_verified": { "type": "boolean" }, "original_sha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] } } } },
+        "grouping": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "receiptManifest": {
+      "type": "object",
+      "required": ["schema_version", "classification", "source_receipts", "summary", "items", "blocked_release_assessment", "evidence_sha256"],
+      "properties": {
+        "schema_version": { "const": "w20-data008-receipt-manifest/1.0.0" },
+        "classification": { "const": "SOURCE_EVIDENCE_ONLY_NO_DATASET_ADMISSION" },
+        "source_receipts": { "type": "object", "required": ["akupal_evidence_sha256", "museum_photo_evidence_sha256", "r017_public_metadata_sha256", "w19_source_receipt_sha256"], "additionalProperties": { "$ref": "#/$defs/sha256" } },
+        "summary": { "type": "object", "required": ["akupal_sign_ids_screened", "sign_records_with_exact_item_license_identity_and_verified_media", "sign_original_media_files_verified", "museum_photo_files_screened", "museum_original_photo_files_sha256_verified", "museum_physical_support_groups", "gold_labels", "training_admissions", "production_admissions", "sealed_benchmark_records_read", "raw_media_files_committed"] },
+        "items": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["candidate_id", "cohort", "source_identity", "rights_evidence", "media", "benchmark_screen", "disposition"], "properties": { "candidate_id": { "type": "string", "minLength": 1 }, "cohort": { "enum": ["licensed_publisher_sign_record", "cc0_museum_manuscript_photo"] }, "source_identity": { "type": "object" }, "rights_evidence": { "type": "object" }, "media": { "type": "array" }, "benchmark_screen": { "type": "object" }, "disposition": { "type": "object", "required": ["benchmark_overlap", "training_admission", "gold_admission", "production_admission"], "properties": { "benchmark_overlap": { "const": "unknown_quarantined" }, "training_admission": { "const": false }, "gold_admission": { "const": false }, "production_admission": { "const": false } } } } } },
+        "blocked_release_assessment": { "type": "object", "required": ["real_corpus_v1_release", "expert_reviewed_gold", "leakage_safe_train_dev_test", "capability_points_claimed"], "properties": { "real_corpus_v1_release": { "const": false }, "expert_reviewed_gold": { "const": false }, "leakage_safe_train_dev_test": { "const": false }, "capability_points_claimed": { "const": 0 } } },
+        "evidence_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": "w20-data008-blocked-readiness/1.0.0",
+  "as_of": "2026-10-10",
+  "classification": "SOURCE_RESEARCH_AND_RELEASE_READINESS_NOT_CORPUS_ADMISSION",
+  "canonical_state_modified": false,
+  "data008_points_claimed": 0,
+  "real_corpus_v1_release": false,
+  "training_admissions": 0,
+  "expert_gold_labels": 0,
+  "sealed_benchmark_records_read": 0,
+  "source_receipts": {
+    "akupal_report": "data/releases/w20_aku_pal_sign_census.json",
+    "akupal_evidence_sha256": "26516fa4701a050aada1bbb044383035c44afd6496e7acf04cbc2504ac3e48a2",
+    "akupal_index_response_sha256": "7b6b2b3956f7f079220c1de22fa2707c3eef0b8a139ea78a99859e6465fdb3b8",
+    "museum_photo_report": "data/releases/w20_museum_photo_intake.json",
+    "museum_photo_evidence_sha256": "e531f25fcf114059b920db3199c397555521bd65ce35a0257356b770f2f1d871",
+    "combined_item_manifest": "data/releases/w20_item_receipt_manifest.json",
+    "combined_item_manifest_evidence_sha256": "9db85fc1f1c688adbb60905e3b7c8c7d1b7e5ee3f10eac634eb2eefdc983468c",
+    "public_r017_metadata_sha256": "d464a2382b7f8313620d847cf3e01e42007e7b3233192e2fa2fa1b4974f887c7",
+    "w19_original_image_receipt_sha256": "f684b49f74cdfd75487a08bb09b4c2db375d94594c65e3c03e633a7d7878a155",
+    "accepted_r026_canonical_receipt_sha256": "e97ebd9fc919772dde478b5daf4cdb4393f1dad8c78307e3f7a9d1048b03ecaa"
+  },
+  "work_packages": {
+    "A_deterministic_source_census": {
+      "status": "COMPLETED_WITH_RESEARCH_TARGET_GAP",
+      "completed_sign_ids": 240,
+      "source_text_identity_groups": 32,
+      "all_record_inventory_labels_lower_bound": 32,
+      "identity_screened_inventory_labels_lower_bound": 9,
+      "unique_record_fetch_failures": 0,
+      "target_500_attempt": "INTERRUPTED_NO_COMPLETE_RECEIPT_AFTER_APPROXIMATELY_26_MINUTES",
+      "partial_target_attempt_rows_accepted": 0,
+      "approximate_25_support_research_target_met": false
+    },
+    "B_per_item_rights_and_identity": {
+      "status": "SCREENED_FAIL_CLOSED",
+      "cc_by_4_records": 240,
+      "records_passing_hieratic_identity_provenance_and_media_screen": 63,
+      "records_excluded_or_blocked": 177,
+      "rights_authority_onboarding": "PENDING",
+      "all_items_training_admission": false
+    },
+    "C_original_sign_media_integrity_and_dedup": {
+      "status": "BYTE_VERIFIED_IN_MEMORY",
+      "sign_media_files_sha256_verified": 95,
+      "unique_sign_media_hashes": 95,
+      "same_bytes_duplicate_groups": 0,
+      "raw_media_committed": 0,
+      "svg_active_content_checks": "APPLIED"
+    },
+    "D_museum_original_photographs": {
+      "status": "SCREENED_AND_HASHED_IN_MEMORY",
+      "file_revisions_screened": 7,
+      "accession_level_physical_support_groups": 3,
+      "photo_sha256_verified": 7,
+      "cat1880_p01_independent_r026_byte_sha1_size_match": true,
+      "other_photo_publisher_sha1_independently_compared": 0,
+      "text_or_edition_rights_admitted": false,
+      "physical_line_targets_admitted": 0
+    },
+    "E_benchmark_overlap_and_dedup": {
+      "status": "SCREENED_ALL_REMAIN_QUARANTINED",
+      "public_r017_metadata_records": 266,
+      "sealed_records_read": 0,
+      "positive_sign_id_or_inventory_matches": 63,
+      "sign_records_without_literal_match_but_unknown": 177,
+      "museum_photo_literal_accession_matches": 0,
+      "museum_photos_unknown_quarantined": 7,
+      "w19_media_hashes_included_in_dedup_screen": 15,
+      "unique_w20_plus_w19_hashes": 117,
+      "duplicate_hash_groups_across_w20_and_w19": 0,
+      "no_literal_match_is_clearance": false
+    },
+    "F_production_readiness": {
+      "status": "BLOCKED",
+      "production_authorization": "HARD_DISABLED_PENDING_INDEPENDENT_TRUST_ROOT_AND_AUTHORITY_ONBOARDING",
+      "rights_for_modern_scholarly_transcriptions": "NOT_VERIFIED",
+      "independent_expert_gold": false,
+      "leakage_safe_train_dev_test": false,
+      "production_corpus_v1": false
+    },
+    "G_tests_and_reproducibility": {
+      "status": "LOCAL_RUNS_COMPLETE_HOSTED_EXACT_HEAD_CI_PENDING",
+      "focused_corpus_release_tests": "41 tests, 35 passed, 6 Linux-only race/symlink tests skipped on Windows",
+      "projectctl_state_validation": "PASS_54_TASKS_CANONICAL_WEIGHTED_SUM_34.5",
+      "source_registry_validation": "PASS_10_RECORDS",
+      "governance_suite": "PASS_34_TESTS",
+      "worktree_integrity_note": "The default Windows checkout has global core.autocrlf=true and converts exact source/annotation blobs to CRLF. Full suites were rerun from a clean detached test worktree with core.autocrlf=false so byte-pinned source files match Git blobs. The W20 source registry digest code verifies normalized worktree content against pinned Git blobs and hashes the Git bytes directly.",
+      "data_suite": "PASS_221_RUN_206_PASS_15_SKIPPED",
+      "linguistics_suite": "110 tests: 109 passed, 1 error because Windows denies symlink creation (WinError 1314); no linguistic files were changed",
+      "evaluation_suite": "PASS_311_TESTS",
+      "synthetic_release_cli": "PASS_VALIDATE_BUILD_AUDIT_AND_READINESS_ASSESSMENT; FIVE_RELEASE_ARTIFACTS_BYTE_MATCH",
+      "receipt_schema_validation": "PASS_FOR_COMPLETED_240_AND_7_PHOTO_RECEIPTS",
+      "hosted_exact_head_ci": "PENDING"
+    }
+  },
+  "remaining_blockers": [
+    "AKU-PAL sign corpus identities and publisher readings are not independently adjudicated scholarly gold.",
+    "All 63 identity-screened AKU-PAL records had exact public benchmark-source matches; these remain evaluation-only quarantines.",
+    "The remaining 177 sign records are not cleared by lack of a literal public-metadata match.",
+    "Only Cat.1880 p01 has an independent R-026 source SHA-1/size match in this W20 receipt; other six photo SHA-1 values remain unverified against the bytes by an independent receipt.",
+    "No exact Cat.1880 face, historical plate index, stroke sequence, physical line, or licensed modern transcript association is established.",
+    "No independent protected trust root, institutional/reviewer identity verification, substantive rights determination, independent gold, or leakage-safe training split is available.",
+    "The larger 500-ID / 200-text-group scan produced no complete receipt and its partial results were discarded."
+  ],
+  "next_unblocking_work": [
+    "Use overseer-protected authority onboarding and DATA-002 custody controls before any production acquisition or authorization.",
+    "For the source-attested Cat.1880/Pleyte-Rossi relationship, establish one photograph side ↔ exact historical plate ↔ visible physical line using original bytes and independent visual review, then obtain independent Egyptologist adjudication for an explicitly licensed reading.",
+    "Identify genuinely non-overlapping sources with item-level training/development and redistribution rights, and repeat source-object, image, edition-lineage and near-duplicate screening before any split or release."
+  ]
+}

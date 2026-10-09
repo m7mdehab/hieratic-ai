@@ -560,5 +560,28 @@ class W10FrozenArchiveCompositionalTests(unittest.TestCase):
 
 
 
+    def test_archive_item_rights_manifest_and_nonadmission_are_explicit(self):
+        from ling.translation import w10_evaluation as ev
+        manifest = json.loads(
+            (ev.ROOT / "ling/translation/data/w10_archive_rights_manifest.json").read_text(
+                encoding="utf-8"))
+        self.assertEqual("OPEN-SA", manifest["source_record"]["rights_class"])
+        self.assertEqual("CC-BY-SA-4.0", manifest["items"][0]["license"])
+        self.assertEqual("014cccf04235d9e093fca24ed48c62630d235852",
+                         manifest["source_record"]["original_git_blob_sha1"])
+        self.assertFalse(manifest["source_record"]["exact_original_SHA256_available"])
+        self.assertEqual(47, len(manifest["items"]))
+        self.assertEqual(
+            {row["sentence_id"] for row in self.archive["rows"]},
+            {item["original_sentence_id"] for item in manifest["items"]})
+        for item in manifest["items"]:
+            self.assertTrue(item["original_editor"])
+            self.assertEqual("EXTERNAL_EVALUATION_ONLY_NOT_TRAINING", item["split_role"])
+            self.assertFalse(item["training_admission"])
+            self.assertFalse(item["production_release_admission"])
+            self.assertFalse(item["original_item_sha256_verified"])
+            self.assertFalse(item["photographed_manuscript_view_linked"])
+
+
 if __name__ == "__main__":
     unittest.main()

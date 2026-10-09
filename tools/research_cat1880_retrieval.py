@@ -130,10 +130,12 @@ def inspect(item)->dict:
                     from PIL import Image,ImageDraw
                     destination=Path(directory)
                     destination.mkdir(parents=True,exist_ok=True)
-                    for begin in range(0,min(len(pdf),240),40):
+                    # Sparse diagnostic plate locator: avoid expensive 240-page
+                    # full original book image decompression on hosted CI.
+                    for begin in (0,40,80,120):
                         sheet=Image.new("RGB",(8*235,5*305),"white")
                         draw=ImageDraw.Draw(sheet)
-                        for offset in range(40):
+                        for offset in range(0,40,4):
                             number=begin+offset
                             if number>=len(pdf):break
                             page=pdf[number]
@@ -141,10 +143,11 @@ def inspect(item)->dict:
                             pix=page.get_pixmap(matrix=fitz.Matrix(0.20,0.20),alpha=False)
                             image=Image.frombytes("RGB",(pix.width,pix.height),pix.samples)
                             image.thumbnail((225,275))
-                            x=(offset%8)*235+int((235-image.width)/2)
-                            y=(offset//8)*305+22
+                            slot=offset//4
+                            x=(slot%8)*235+int((235-image.width)/2)
+                            y=(slot//8)*305+22
                             sheet.paste(image,(x,y))
-                            draw.text((offset%8*235+8,offset//8*305+4),f"PDF page index: {number}",fill="black")
+                            draw.text((slot%8*235+8,slot//8*305+4),f"PDF page index: {number}",fill="black")
                         sheet.save(destination/f"historical_pdm_pdf_pages_{begin:03d}_{min(begin+39,len(pdf)-1):03d}.jpg",quality=77,optimize=True)
                     out["research_only_thumbnail_grids_generated"]=len(list(destination.glob("*.jpg")))
                 pdf.close()

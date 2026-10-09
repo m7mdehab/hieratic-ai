@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W14_LING003_ORACLE_FREE_TRAIN_GROUP_DIAGNOSTIC_MERGED"
+  current_wave: "W14_DATA006_VLM001_REVISION_REVIEW_PENDING"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,6 +38,8 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
+    - "W14 DATA-006 PR #114 open, exact-head CI success 37978486542, overseer REVISION REQUIRED: modern RIME 2022 physical-description note 17 explicitly says older recto/verso designations were inverted. Historical Plate XXIX nine-line Ramesses II panel may be modern Fig.8 verso (nine lines), so dossier cannot force rejected_side_mismatch on label names alone. Need original plate/figure visual convention crosswalk, page41 item2 text versus line, no expert gold or DATA-008 admission."
+    - "W14 VLM-001 PR #115 open, exact-head CI success 37980108941/37980108894/37980109384, overseer REVISION REQUIRED: implementation would attempt 25 neutral source calls +2 leading full-source calls +8 dual-prompt controls =35, but reported 29 excludes six leading calls. Cross-support Jaccard pools three Cat2044 crops versus one RIME full; script/no-script heuristic and primary papyrus genre attribution unreliable. Missing independently accessible private raw receipt; correct before scientific accept, Grade E NOT_VERIFIED/F STRICTLY_NO, VLM points 0."
     - "DATA-008: W8 CC0 Cat.2044/013 original and W9 RIME Cat.1883+2095 processed figure are source-verified images across two physical manuscript supports. W10 RIME verso Fig.8/Pleyte-Rossi p.41 Plate XXIX is a new source-locked unreviewed bibliographic/candidate line envelope, NOT a verified line-to-text match. Zero independently reviewed aligned readings, zero gold, zero production admissions; benchmark and rights gates remain."
     - "VLM-001: PR #100 fail-closed implementation and W10 #104 tile-scramble/blank/inversion controls merged; Gemini reports fresh 23 Cat.2044 local CPU passes with pinned pixels/weights but protected receipt was not independently rerun by overseer. Negative blank/scrambled controls hallucinated script: Grade E NOT_VERIFIED, Grade F STRICTLY_NO. Zero independent OCR accuracy, 0/2 VLM points."
     - "LING-003 W14: PR #112 merged true non-oracle FORM-to-UPOS-to-UD dependencies from original Egyptian-PC TRAIN (source tree fca8538287cb69fd07b811eb55dcfd25584f3006, original TRAIN blob ea262ee047943b81c0e0db8ff139ec7deb9b7b53), frozen Teti+Neith+Merenre training 790/9157 and retrospective Pepi 829/10329. UPOS 8060/10329 (78.0327%), nonoracle UAS 4757/10329 (46.0548%), LAS 2811/10329 (27.2146%) versus weak baseline 4259 UAS and 750 LAS and privileged gold-POS diagnostic 6489 UAS / 4316 LAS. This is previously exposed TRAIN text, not an independent blind witness evaluation, no later Hieratic image, no fluent/semantic translation; LING-003 remains active 0/2."
@@ -81,33 +83,34 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Wave 14 LING-003 non-oracle original Egyptian-PC TRAIN-only group
-  diagnostic merged PR #112 at main 2a72409d6c100e6f83be038e708632bdbe5b1e8a;
-  exact-head Linux governance 37974824523 SUCCESS after real full-population
-  integer-count assertions. Publisher Old Egyptian CC BY-SA 4.0 original TRAIN
-  tree fca8538287cb69fd07b811eb55dcfd25584f3006, Git blob
-  ea262ee047943b81c0e0db8ff139ec7deb9b7b53. Preregistered W14 train-only
-  Teti/Neith/Merenre 790 sentences/9157 word tokens, heldout Pepi 829/10329.
-  Predicted UPOS 8060/10329 correct; non-oracle UAS 4757/10329, LAS 2811/10329;
-  weak naive baseline UAS 4259/10329, LAS 750/10329; privileged oracle-UPOS
-  diagnostic UAS 6489/10329, LAS 4316/10329. Zero invalid trees and zero
-  train/eval exact ordered-form duplicate sentences. This is source-original
-  grammatical software and authentic scoring, but same original TRAIN corpus
-  whose global training statistics W13 had already exposed; metadata king
-  groups are not verified physically independent scribal witnesses.
-  W13 official DEV labels exposed, official UD TEST unopened/not authorized.
-  No independent later Hieratic image recognition, manuscript gold line-pair,
-  source-external German semantic translation or expert judgment.
-  Preserve verified goal progress 34.5/100, historical research coverage
-  14%, zero validated real Hieratic model experiments, zero trained neural models,
-  LING-003 active 0/2, DATA-008 zero admitted real corpus, VLM-001 0/2.
-  User CONFIRMED both W14 agent briefs sent: Luna DATA-006 physical RIME Fig.8
-  to Pleyte/Rossi Plate XXIX visual identity and separate legal text permission;
-  Anti-Gravity VLM-001 real Figure 6 second-support SmolVLM CPU controls.
-  No agent W14 PR existed at this reconciliation. On receipt, independently
-  inspect live diff, source hashes, exact-head CI and original scientific gates;
-  do not certify image/line gold or recognition absent original expert review.
-  Next overseer work after integration is find truly independent, rights-clear
-  later-period image+line text+translation witness and preregister untouched
-  source test; do not unblind protected benchmarks, download unlicensed texts,
-  make external contacts or incur paid compute without distinct authorization.
+  W14 overseer LING-003 PR #112 accepted and merged (original TRAIN-only
+  non-oracle Egyptian-PC 10,329-token retro group diagnostic); canonical
+  reconciliation PR #113 merged. Current main prior to this review:
+  53ed796d3f887d4fb536148aca061c78246b72d5.
+  Luna DATA-006 W14 PR #114 open at head 1adfcf613fb30020ebb40f1afb236baf7a45c7a8;
+  exact-head governance 37978486542 success, but REVISION REQUIRED.
+  Critical independent source contradiction: RIME 2022 note 17 explicitly
+  states older published recto/verso naming is reversed relative to modern
+  physical fiber-orientation-based definition. Pleyte/Rossi Plate XXIX
+  nine-line royal Ramses II text must be crosswalked to modern Figure 8
+  nine-line verso before claiming physical mismatch; printed page41 item2 is
+  not yet verified image line2. Revise immutable refusal/validator/schema
+  claims, consult exact image pixels, retain 0 reviewed gold, 0 corpus admission.
+  PR feedback at https://github.com/m7mdehab/hieratic-ai/pull/114#issuecomment-6087836476.
+  Anti-Gravity VLM-001 W14 PR #115 open at head
+  224ba9c601547da222af3d8ab97ab6a9b5d6026d; three green
+  exact-head CI runs including 37980108941 but REVISION REQUIRED.
+  Reported live passes 29 omit six leading calls expected from code
+  (25 neutral targets +2 leading manuscript +8 dual-prompt controls =35).
+  Correct per-attempt ledger, matched full/full support comparison,
+  false script heuristics, false funerary/Book-of-the-Dead attribution,
+  actual Figure8 41686648 byte count, overbroad falsification claims,
+  first-use registration and private receipt digests.
+  PR feedback at https://github.com/m7mdehab/hieratic-ai/pull/115#issuecomment-6087837369.
+  Neither PR merged, neither scientific gate accepted. Remain at verified
+  34.5/100 capability, 14% historical research coverage, 0 verified independent
+  expert Hieratic line pairs, LING-003 0/2, VLM-001 0/2,
+  zero verified real Hieratic model benchmark experiments and zero trained models.
+  Re-review revised exact head and artifacts; preserve no access to official
+  Egyptian-PC TEST, released/benchmark gold, unlicensed modern transcription,
+  third-party correspondence or paid inference without separate authorization.

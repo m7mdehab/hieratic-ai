@@ -304,6 +304,12 @@ class W9ContextualPublisherExperimentTests(unittest.TestCase):
         self.assertFalse(self.report["not_fluent_generative_translation"] is False)
         self.assertEqual(0, self.report["physical_original_manuscript_images"])
         self.assertEqual(0, self.report["editorially_blind_gold_references"])
+        print("W9_AUTHENTIC_TEXT_EVALUATION " + json.dumps({
+            "selected_threshold": self.report["selected_threshold"],
+            "heldout": self.report["external_test_metrics"],
+            "dev_thresholds": self.report["internal_threshold_selection"],
+            "report_sha256": self.report["report_sha256"],
+        }, ensure_ascii=False, sort_keys=True))
 
     def test_dev_threshold_is_chosen_without_external_reference(self):
         x = self.report

@@ -71,6 +71,33 @@ class OriginalSignBinaryGates(unittest.TestCase):
         self.assertEqual(1,result["source_binary_images_verified"])
         self.assertFalse(result["training_admission"])
 
+    def test_sha_receipt_contract_cannot_smuggle_unlicensed_images_or_gold(self):
+        import json
+        from pathlib import Path
+        manifest=json.loads((Path(__file__).parents[2]/
+          "data/releases/w19_aku_pal_original_image_receipts.json").read_text("utf-8"))
+        self.assertEqual(8,manifest["record_count"])
+        self.assertEqual(6,manifest["physical_source_witness_count"])
+        self.assertEqual(15,manifest["verified_distinct_media_file_count"])
+        self.assertEqual(8,manifest["verified_file_categories"]["publisher_sign_svg_facsimile"])
+        self.assertEqual(5,manifest["verified_file_categories"]["publication_scan_reproduction"])
+        self.assertEqual(2,manifest["verified_file_categories"]["svg_outline_derivative"])
+        self.assertFalse(manifest["data008_production_admission"])
+        self.assertEqual(0,manifest["binary_bytes_committed"])
+        self.assertEqual(0,manifest["capability_points_awarded"])
+        sha=set()
+        for item in manifest["items"]:
+            self.assertEqual("CC BY 4.0",item["individually_displayed_license"])
+            self.assertFalse(item["training_admission"])
+            for media in item["publisher_media"]:
+                self.assertTrue(p.same_origin(media["publisher_media_url"]))
+                self.assertIn(str(item["id"]),media["publisher_media_url"])
+                self.assertRegex(media["image_sha256"],r"^[a-f0-9]{64}$")
+                self.assertTrue(media["file_signature_checked"])
+                self.assertFalse(media["expert_gold"])
+                sha.add(media["image_sha256"])
+        self.assertEqual(15,len(sha))
+
     def test_unreliable_original_id_cannot_admit(self):
         with patch.object(p,"bounded_get",return_value=(b'{"id":999,"license":"CC BY 4.0"}',"application/json")):
             res=p.inspect_one(6036)

@@ -1,0 +1,311 @@
+{
+  "schema_version": "w19-akupal-original-media-receipt/1.0.0",
+  "publisher": "AKU-PAL — Akademie Mainz",
+  "policy_url": "https://aku-pal.uni-mainz.de/faq",
+  "retrieval": "GitHub isolated runner, original publisher image file bytes read into bounded memory and discarded",
+  "exact_head": "1da00972dcd73b738287498a4a3213cf97b1c15a",
+  "source_job_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/37991651242",
+  "record_count": 8,
+  "physical_source_witness_count": 6,
+  "verified_distinct_media_file_count": 15,
+  "verified_file_categories": {
+    "publisher_sign_svg_facsimile": 8,
+    "publication_scan_reproduction": 5,
+    "svg_outline_derivative": 2
+  },
+  "binary_bytes_committed": 0,
+  "source_annotations_not_independently_reviewed": true,
+  "full_original_manuscript_photos": 0,
+  "complete_original_manuscript_line_transcripts": 0,
+  "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+  "data008_production_admission": false,
+  "capability_points_awarded": 0,
+  "items": [
+    {
+      "id": 6036,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/6036",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Svenja A. Gülden; Tabitha Kraus",
+      "physical_witness": "Petrie Museum UC 32782",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "16",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_6036.svg",
+          "image_sha256": "014a00c70458aa48134d71aa6fa752faf2b58f729d3301ea0bad98ab7d371595",
+          "original_response_bytes": 1463,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/api/svg/ht_6036.svg/outline",
+          "image_sha256": "f779b7a728de2160142aa354e028e501d4a26f55ebcb93ca4e7c11925a70914a",
+          "original_response_bytes": 1455,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "svg_outline_derivative",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 2448,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/2448",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Georg Möller",
+      "physical_witness": "Petrie Museum UC 32782",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "13",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_2448.svg",
+          "image_sha256": "0dcf5be053c323c6d4c4e82441eb93ae14c30ae5838285134d8345aefda4ead5",
+          "original_response_bytes": 6051,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_2448_2.webp",
+          "image_sha256": "683fc41c6948bf652dd458f197e98e0a709a3dd0075240de668effe6f4dbd8cb",
+          "original_response_bytes": 11930,
+          "content_type": "image/webp",
+          "file_signature_checked": true,
+          "image_classification": "publication_scan_reproduction",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 23466,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/23466",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Kyra van der Moezel",
+      "physical_witness": "IFAO Cairo 66",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "4",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_23466.svg",
+          "image_sha256": "0b66ccfdd8350c305f23ea70f712a461808b5a1ae9ca05dcdaca06e2f17ade79",
+          "original_response_bytes": 1574,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/api/svg/ht_23466.svg/outline",
+          "image_sha256": "ca6f84f3528b9a93c64904c23876dc3bddfd529b49a8d14e945eceebeae833b5",
+          "original_response_bytes": 1566,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "svg_outline_derivative",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 6066,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/6066",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Georg Möller",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "2",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_6066.svg",
+          "image_sha256": "a9dec3a8b79ee7b550a864f86be0c868aa95090789c4fee120ccc8bd9b0638cc",
+          "original_response_bytes": 10086,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_6066_2.webp",
+          "image_sha256": "8df84eebb57a71ddaddb94d854d1cefed705073acacbbcb55620a53f2e9c22d0",
+          "original_response_bytes": 13390,
+          "content_type": "image/webp",
+          "file_signature_checked": true,
+          "image_classification": "publication_scan_reproduction",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 32833,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/32833",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Kyra van der Moezel",
+      "physical_witness": "British Museum EA 50728",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "11",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_32833.svg",
+          "image_sha256": "ceaf3f52de6f8c38c3a2cbd16f69f50b0eadec6fda69c92e1b53d0153109f792",
+          "original_response_bytes": 1570,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 56377,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/56377",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Ursula Verhoeven",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "original_witness_count_contribution": null,
+      "side": "recto",
+      "line_locator": "17",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_56377.svg",
+          "image_sha256": "9cf8778b1c73a8ed0c9965c56586027ebfc5fb114a584eb0640b9ddca0398ee3",
+          "original_response_bytes": 5517,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_56377_2.webp",
+          "image_sha256": "9bbdcd8249a7f8421ec8fbf74f4a3871d32fdeb8ee331c2ddbe29364811899d2",
+          "original_response_bytes": 18740,
+          "content_type": "image/webp",
+          "file_signature_checked": true,
+          "image_classification": "publication_scan_reproduction",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 5862,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/5862",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Georg Möller",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "original_witness_count_contribution": null,
+      "side": "verso",
+      "line_locator": "column 9 line 8",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_5862.svg",
+          "image_sha256": "f217a55e36d8981fab4884b7dcfc978e3d6c055a66505675fcc16904ca2c2bf7",
+          "original_response_bytes": 5062,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_5862_2.webp",
+          "image_sha256": "ce16657fcf2eeda384d9640af69b373ff3fad72cbb4e8a2f9f3e0c5a9880fdba",
+          "original_response_bytes": 11112,
+          "content_type": "image/webp",
+          "file_signature_checked": true,
+          "image_classification": "publication_scan_reproduction",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    },
+    {
+      "id": 5447,
+      "source_record_url": "https://aku-pal.uni-mainz.de/api/signs/5447",
+      "individually_displayed_license": "CC BY 4.0",
+      "license_evidence_field": "details[].items[].licenseTxt",
+      "creator": "Georg Möller",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "original_witness_count_contribution": null,
+      "side": "verso",
+      "line_locator": "column 1 line 3",
+      "publisher_media": [
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_5447.svg",
+          "image_sha256": "030fff250e8699076e8b0da3456ae8a62b9a22025292ec0dd0df4dd4e74dfea6",
+          "original_response_bytes": 4118,
+          "content_type": "image/svg+xml",
+          "file_signature_checked": true,
+          "image_classification": "publisher_sign_svg_facsimile",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        },
+        {
+          "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_5447_2.webp",
+          "image_sha256": "0ef0dccd0a81cf900618eb9615990087522c5ac7a51c5311a612e0f1c637c6ca",
+          "original_response_bytes": 9198,
+          "content_type": "image/webp",
+          "file_signature_checked": true,
+          "image_classification": "publication_scan_reproduction",
+          "derived_from_physical_papyrus_photo": false,
+          "expert_gold": false
+        }
+      ],
+      "sign_level_label_source": "publisher_record_only_not_independent_gold",
+      "image_rights_review": "record_licence_verified_binary_hash_verified_institutional_admission_unreviewed",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": false
+    }
+  ]
+}

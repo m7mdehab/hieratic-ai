@@ -72,7 +72,7 @@ def validate_w10_line_pair(packet:Any,schema_path:Path=W10_LINE_PAIR_SCHEMA)->li
     geometry=pair["geometry"]
     x0,y0,x1,y1=geometry["bounds"]
     width,height=image["dimensions"]
-    if x1<=x0 or y1<=y0 or x1>width or y1>height:
+    if x0<0 or y0<0 or x1<=x0 or y1<=y0 or x1>width or y1>height:
         errors.append("W10 candidate line geometry is empty or outside exact source image")
     if geometry.get("coordinate_asset_sha256")!=image.get("sha256"):
         errors.append("W10 candidate line coordinates reference a different image/derivative")

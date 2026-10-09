@@ -568,3 +568,10 @@ Earlier W9 live output reported by the agent remains **historical, independently
 unless rerun against this corrected exact head with protected local inputs and new hashed
 execution evidence. Tests may verify fail-closed behavior without possessing the private
 original or model weights; they must never claim that proves real inference.
+
+
+### Independent reviewer W10 controlled-evidence correction
+
+The Gemini W10 report is a **reported fresh execution on its own protected CPU host**, not an execution independently repeated in hosted CI or the overseer's environment. Green hosted CI verifies deterministic code paths, regression tests and promotion guards; without the private original image/verified weight snapshot those CI runners do **not** authenticate the full 23-pass raw inference receipt.
+
+The original Cat.2044 byte identity and pinned model weight SHA remain hard gates. **Negative-control metrics are heuristic language-prior diagnostics**, not scholarly script recognition. In particular, shuffled spatial tiles retain some strokes within each tile and can leave residual edge strips unpermuted; this is not a label-certified absence of writing. The review strengthened the source-versus-negative-control criterion so that both blank and scrambled-script hallucination inhibit a positive Grade E. The reported W10 controls triggered those conditions, so **Grade E = NOT_VERIFIED**, Grade F = STRICTLY NO, no accepted reading accuracy and 0/2 VLM-001 points. Prior W9 prose asserting A–E automatically passed is superseded by independent review and must not be repeated as current validated scientific status.

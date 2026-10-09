@@ -491,34 +491,54 @@ Before inspecting model predictions, the evaluation protocol is immutably frozen
 
 To establish that predictions are genuinely conditioned on image pixels rather than language model prior bias, every experiment includes:
 1. **Blank Canvas Control:** Uniform neutral-gray ($256 \times 256$, RGB $230, 230, 230$) PNG image.
-2. **Inverted Negative Control:** Photometrically inverted crop image.
-3. **Inter-Crop Differentiation:** Testing whether outputs vary across distinct candidate line regions.
-Sensitivity is confirmed only when $\text{Response}(\text{Hieratic}) \ne \text{Response}(\text{Blank})$.
+2. **Inverted Negative Control:** Photometrically inverted Cat.2044 source image ($1024 \times 572$ px).
+3. **Scrambled Negative Control:** Spatially scrambled Cat.2044 source image ($1024 \times 572$ px, $32 \times 32$ px tiles permuted with fixed seed 42, 544 tiles total) destroying all continuous scribal ink strokes and ligatures while preserving exact color and texture distributions.
+4. **Inter-Crop Differentiation:** Testing whether outputs vary across distinct candidate line regions.
 
-### 10.6 Empirical Findings on SmolVLM-256M-Instruct
+Under Wave 10 evaluation standards, simple response inequality ($\text{Response}(\text{Hieratic}) \ne \text{Response}(\text{Blank})$) is **not** equated with true visual understanding. True visual sensitivity requires that the blank control is recognized as lacking script and that non-text negative controls do not elicit hallucinated script classifications.
 
-- **Visual Grounding:** The model correctly distinguishes cursive ink strokes from blank neutral canvas, identifying cursive script characteristics in its responses.
-- **Palaeographical Limitations:** Generalist vision-language models without domain-specific palaeographical pretraining cannot accurately read isolated Hieratic signs or transliterate continuous text, often generating abstentions or hallucinated interpretations.
-- **Alternative Model Evaluation:**
-  - `SmolVLM-256M-Instruct`: 256M params, 489 MB weights, verified executable on CPU in ~30s per forward pass.
-  - `SmolVLM-500M-Instruct`: 500M params, 960 MB weights, feasible on host RAM as an alternative no-cost route.
-  - `Qwen2-VL-2B-Instruct`: 2.2B params, 4.5 GB weights, marginal on 7.38 GB RAM host due to peak memory pressure.
+### 10.6 Empirical Findings on SmolVLM-256M-Instruct (Wave 10 Live Run)
+
+Across 23 live forward passes executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA devices, $0.00 spend), empirical findings revealed:
+- **Script Identification & Ductus Conditioning:**
+  - Full Cat.2044 manuscript ($1024 \times 572$ px): Identified as `"Hieratic."` (latency: 36,148 ms, 1 token).
+  - Crop 1: `"The script system shown is Hieratic."` (latency: 29,856 ms, 6 tokens).
+  - Crop 2: `"Based on the visible ink strokes, the script system shown is likely Hieratic..."` (latency: 65,511 ms, 57 tokens).
+  - Crop 3: Misclassified as `"The visible ink strokes in this ancient Egyptian manuscript image are hieroglyphics."` (latency: 33,916 ms, 12 tokens).
+- **Prompt Priming & Blank Canvas Hallucination:**
+  - When given the blank neutral-gray canvas under the frozen script-identification prompt, the model responded: `"The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics..."`.
+  - The model hallucinated ink strokes and Egyptian script on a completely blank canvas due to language prior bias from the prompt (`blank_hallucinates_script: True`, `blank_correctly_identified: False`).
+- **Scrambled Non-Text Negative Control:**
+  - When given the 544 scrambled tiles with disrupted scribal strokes, the model still responded: `"Hieratic."` (`scrambled_hallucinates_script: True`).
+  - This confirms that brown papyrus color and prompt framing drive a significant portion of the "Hieratic" classification rather than true scribal ligature parsing (`prompt_priming_observed: True`).
+- **Gardiner Sign Code Priming:**
+  - On full manuscript and crops 2 & 3, the model returned `"A1, G43, M17, N35"`, echoing the exact example sign codes mentioned in the task prompt (`"(e.g., A1, G43, M17, N35)"`).
+- **Transliteration Abstention:**
+  - The model achieved a **100% abstention rate** (`[UNREADABLE]`) across all 4 targets, appropriately refusing to hallucinate ungrounded Egyptian transliterations on unaligned continuous script.
+- **Translation Degeneracy:**
+  - Full manuscript described visual appearance (`"Several lines of large, run-on characters that are brown and white."`).
+  - Candidate crops 2 and 3 degenerated into repetitive token loops (`"The" "The" ...` repeated 37 times; `[` repeated 128 times), showing classic small-model decoding degeneration when forced to translate undeciphered ancient text.
+- **Alternative Model Evaluation (SmolVLM-500M):**
+  - Host available memory was measured at ~680 MB out of 7.38 GB total RAM.
+  - SmolVLM-500M requires ~2.2 GB resident RAM to load and execute; weights were not pre-downloaded on disk.
+  - In accordance with W10 Brief 2 governance, SmolVLM-500M comparison status is truthfully recorded as `UNAVAILABLE_INSUFFICIENT_AVAILABLE_RAM_AND_WEIGHTS_ABSENT` and was **not executed** to prevent out-of-memory host failure.
 
 ### 10.7 Scholarly Boundary & Evidence Grade Matrix
 
-Under the project governance standards (R-024 and `docs/evaluation/W8_SILVER_LABEL_AND_SOURCE_SPLIT_PROTOCOL.md`):
-- Turin Cat.2044/013 has **no certified line-level gold transcription** in the public benchmark.
-- Scholarly provenance (TPOP Document 173 / Ramses Online 3791) provides S0 bibliographic reference only.
-- Model completions are classified strictly as **`unscored_exploratory_reading_hypotheses`**.
-- **Six-Grade Evidence Matrix:**
-  - **Grade A:** Multimodal interface implemented (**PASSED**).
-  - **Grade B:** Fixture tests pass (**PASSED**).
-  - **Grade C:** Real model weights loaded from disk (**PASSED**).
-  - **Grade D:** Actual forward pass executed on authentic Hieratic pixels (**PASSED**).
-  - **Grade E:** Real visual sensitivity observed across Hieratic pixels vs Blank control (**PASSED**).
-  - **Real Hieratic Hypothesis:** Cleared on authentic Cat.2044 pixels (**PASSED**).
-  - **Silver Diagnostic:** S0 bibliographic citation only (`NO_LINE_ALIGNMENT`) (**RECORDED**).
-  - **Grade F:** Independent certified gold evaluation (**STRICTLY NO / 0.0 capability points**).
+Under project governance standards (R-024, ADR-0025, and `W8_SILVER_LABEL_AND_SOURCE_SPLIT_PROTOCOL.md`):
+- Turin Cat.2044/013 has **no certified line-level gold transcription** in the public benchmark (`NO_LINE_ALIGNMENT`).
+- Completed live forward passes are strictly classified as **`unscored_exploratory_reading_hypotheses`** (`noncertifiable_diagnostic`).
+- **Six-Grade Evidence Matrix (Wave 10 Live Run):**
+  | Grade | Status | Audit Finding |
+  |---|---|---|
+  | **Grade A** | **PASSED** | Official `SmolVLMAdapter` image-conditioned execution on CPU. |
+  | **Grade B** | **NOT_VERIFIED_BY_RUNTIME** | CI regression suite must be verified externally by hosted GitHub Actions at exact commit. |
+  | **Grade C** | **PASSED** | Verified exact safetensors bytes on disk (`74dea590...`, 513,028,808 bytes). |
+  | **Grade D** | **PASSED** | Actual forward passes executed on authentic Cat.2044 pixels (`569e8e5b...`, 2,649,239 bytes). |
+  | **Grade E** | **NOT_VERIFIED** | Matched controls executed (blank, inverted, scrambled). While output difference occurred, blank canvas elicited prompt-primed hallucination (`blank_correctly_identified: False`). Real visual sensitivity is unverified. |
+  | **Real Hieratic Hypothesis** | **PASSED_DIAGNOSTIC_ONLY** | Noncertifiable source-bound, unscored hypotheses generated on authentic pixels. |
+  | **Silver Diagnostic** | **RECORDED** | S0 bibliographic citation only (TPOP Doc 173; `NO_LINE_ALIGNMENT`). |
+  | **Grade F** | **STRICTLY NO (0.0 / 2.0)** | Zero capability points claimed; held-out gold benchmark not evaluated. |
 
 
 

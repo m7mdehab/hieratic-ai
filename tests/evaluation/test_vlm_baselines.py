@@ -1830,7 +1830,7 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertFalse(verified_model_weight_sha256(fake))
         class StubLive:
             execution_tier = "live_local_open_weight"
-            weights_dir = None
+            weights_dir = Path("missing_weights_dir_test")
             model_config = {"provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
                             "revision": "7e3e67edbbed1bf9888184d9df282b700a323964"}
         with self.assertRaisesRegex(ImageConditioningError, "Pinned SmolVLM"):
@@ -1854,6 +1854,57 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(TASK_RUNGS["transliteration_hypotheses"], "transliterate")
         self.assertEqual(TASK_RUNGS["translation_hypotheses"], "translate")
         self.assertEqual(TASK_RUNGS["script_identification"], "identify")
+
+    def test_hieratic_scrambled_control_generator(self) -> None:
+        """Verify scrambled control image generator permutes tiles deterministically."""
+        from eval.vlm.hieratic import generate_blank_control, generate_scrambled_control, ImageConditioningError
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow unavailable: scrambled control generator requires decoder")
+
+        sample = generate_blank_control(128, 64)
+        scrambled_1 = generate_scrambled_control(sample, tile_size=16, seed=42)
+        scrambled_2 = generate_scrambled_control(sample, tile_size=16, seed=42)
+        self.assertTrue(scrambled_1.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertEqual(hashlib.sha256(scrambled_1).hexdigest(), hashlib.sha256(scrambled_2).hexdigest())
+
+        with self.assertRaises(ImageConditioningError):
+            generate_scrambled_control(b"not_an_image")
+
+    def test_hieratic_sensitivity_controls_quantitative_metrics(self) -> None:
+        """Verify simulated report includes complete quantitative sensitivity metrics."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_hieratic_experiment(
+            adapter, [{"target_id": "t1", "target_type": "full_manuscript", "image_bytes": b"synthetic_fixture"}],
+            allow_simulated=True,
+        )
+        ctrl = report["sensitivity_controls"]
+        self.assertIn("blank_hallucinates_script", ctrl)
+        self.assertIn("blank_correctly_identified", ctrl)
+        self.assertIn("scrambled_response_text", ctrl)
+        self.assertIn("scrambled_hallucinates_script", ctrl)
+        self.assertIn("prompt_priming_observed", ctrl)
+        self.assertIn("transliteration_abstention_rate", ctrl)
+        self.assertIn("repetition_loop_detected", ctrl)
+        self.assertIn("translation_unsupported_acknowledged", ctrl)
+        self.assertFalse(ctrl["sensitivity_observed"])
+
+    def test_smolvlm_500m_audit_records_unavailable(self) -> None:
+        """Verify SmolVLM-500M status truthfully documents RAM constraints and unavailable status."""
+        from eval.vlm.hieratic import audit_alternative_models
+        audit = audit_alternative_models()
+        self.assertIn("smolvlm_500m_instruct", audit)
+        self.assertEqual(
+            audit["smolvlm_500m_instruct"]["execution_status"],
+            "UNAVAILABLE_INSUFFICIENT_AVAILABLE_RAM_AND_WEIGHTS_ABSENT",
+        )
+        self.assertEqual(
+            audit["smolvlm_500m_instruct"]["comparison_status"],
+            "NOT_EXECUTED_DUE_TO_RAM_LIMITS",
+        )
 
 
 if __name__ == "__main__":

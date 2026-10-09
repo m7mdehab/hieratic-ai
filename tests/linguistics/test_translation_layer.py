@@ -438,5 +438,127 @@ class W9ContextualPublisherExperimentTests(unittest.TestCase):
         self.assertEqual(418, report["total_group_ids"])
 
 
+
+class W10FrozenArchiveCompositionalTests(unittest.TestCase):
+    """Non-copying composition, genuine new publisher domain and leak barriers."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import contextual, w10_evaluation
+        cls.corpus = contextual.load_corpus()
+        cls.archive = w10_evaluation.load_archive(cls.corpus)
+
+    def test_untouched_archive_32_groups_47_translations_no_previous_ids(self):
+        from ling.translation import w10_evaluation as ev
+        self.assertEqual("014cccf04235d9e093fca24ed48c62630d235852",
+                         self.archive["original_sha1"])
+        self.assertEqual("d3d7b57aef7bd10a48df6b1be340be8ff5b36e32",
+                         self.archive["derived_git_blob_sha1"])
+        self.assertEqual(32, len(self.archive["text_ids"]))
+        self.assertEqual(47, len(self.archive["rows"]))
+        self.assertTrue(all(r["german"] for r in self.archive["rows"]))
+        old_ids = {r["text_id"] for group in self.corpus["groups"].values() for r in group}
+        self.assertFalse(old_ids.intersection(self.archive["text_ids"]))
+        self.assertEqual(ev.COHORT_GROUPS, 32)
+
+    def test_publisher_archive_cannot_mutate_pinned_bytes(self):
+        from ling.translation import w10_evaluation as ev
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / ev.COHORT
+            p.parent.mkdir(parents=True)
+            p.write_bytes((ev.ROOT / ev.COHORT).read_bytes() + b" ")
+            with self.assertRaisesRegex(tr.TranslationError, "Git blob mismatch"):
+                ev.load_archive(self.corpus, Path(td))
+
+    def test_original_archive_hash_reproduction_fails_closed_on_fake_source(self):
+        from ling.translation import w10_evaluation as ev
+        with self.assertRaisesRegex(tr.TranslationError, "Git blob mismatch"):
+            ev.project_original_archive(b'{"fake":{}}')
+
+    def test_independent_two_texts_support_reversing_exact_local_pair_only(self):
+        from ling.translation.compositional import ConstrainedComposer
+        training = [
+            {"sentence_id": f"s{i}", "text_id": f"train-{i}", "corpus": "fixture",
+             "forms": ("a", "b"), "glosses": ("Alpha", "Beta"),
+             "german": "Beta Alpha"} for i in range(2)
+        ]
+        probe = {"sentence_id": "p", "text_id": "not-training", "corpus": "probe",
+                 "forms": ("a", "b"), "german": "SECRET TARGET TRANSLATION"}
+        p = ConstrainedComposer(training).predict(probe)
+        self.assertEqual("Beta Alpha", p["prediction"])
+        self.assertEqual([1, 0], p["emitted_slot_order"])
+        self.assertEqual(2, p["learned_adjacent_swaps"][0]["reverse_texts"])
+        self.assertFalse(p["whole_sentence_retrieval"])
+        self.assertFalse(p["target_reference_or_labels_used"])
+        self.assertFalse(p["fluent_or_semantically_certified"])
+        self.assertEqual(p, ConstrainedComposer(training).predict(
+            {**probe, "german": "FORGED REFERENCE", "glosses": ("xx", "yy"),
+             "morphology": "UNSEEN_GOLD"}))
+
+    def test_one_source_repeated_sentences_never_count_as_independent_voters(self):
+        from ling.translation.compositional import ConstrainedComposer
+        training = [
+            {"sentence_id": f"s{i}", "text_id": "one-source", "corpus": "fixture",
+             "forms": ("a", "b"), "glosses": ("Alpha", "Beta"),
+             "german": "Beta Alpha"} for i in range(6)
+        ]
+        x = ConstrainedComposer(training).predict(
+            {"sentence_id": "t", "text_id": "other", "forms": ("a", "b")})
+        self.assertEqual("Alpha Beta", x["prediction"])
+        self.assertEqual([], x["learned_adjacent_swaps"])
+
+    def test_unknown_name_never_imports_foreign_name_from_german_sentence(self):
+        from ling.translation.compositional import ConstrainedComposer
+        train = [{"sentence_id": "s", "text_id": "source",
+                  "forms": ("a", "b"), "glosses": ("Gott", "geben"),
+                  "german": "Gott schenkt Ramses die Sonne"}]
+        probe = {"sentence_id": "t", "text_id": "target",
+                 "forms": ("a", "PRIVATE_NEW_NAME", "b"),
+                 "german": "TARGET REFERENCE FORGED"}
+        out = ConstrainedComposer(train).predict(probe)
+        self.assertEqual("Gott [?] geben", out["prediction"])
+        self.assertNotIn("Ramses", out["prediction"])
+        self.assertEqual(1, out["unknown_abstentions"])
+        self.assertFalse(out["whole_sentence_retrieval"])
+
+    def test_source_group_leakage_is_rejected_even_if_sentence_id_differs(self):
+        from ling.translation.compositional import ConstrainedComposer
+        train = [{"sentence_id": "s1", "text_id": "source",
+                  "forms": ("a",), "glosses": ("der",), "german": "der"}]
+        with self.assertRaisesRegex(tr.TranslationError, "present in training"):
+            ConstrainedComposer(train).predict(
+                {"sentence_id": "different", "text_id": "source", "forms": ("a",)})
+
+    def test_actual_untouched_archive_all_47_are_scored_once_and_three_systems(self):
+        from ling.translation import w10_evaluation as ev
+        report = ev.evaluate_external(self.corpus)
+        fresh = report["new_external"]
+        self.assertEqual(47, fresh["population"]["sentences_seen"])
+        self.assertEqual(47, fresh["population"]["german_refs_present"])
+        self.assertEqual(32, fresh["population"]["source_texts"])
+        self.assertEqual(904, report["internal_fold_population"])
+        self.assertEqual(5, len(report["internal_fold_results"]))
+        for name in ("gloss_control", "w9_contextual_memory", "w10_composition"):
+            self.assertEqual(47, fresh["metrics"][name]["sentences_scored"])
+        self.assertEqual(0.0, report["capability_points"])
+        self.assertFalse(report["verified_physical_manuscript_witness_independence"])
+        self.assertFalse(report["independent_blind_semantic_adjudication"])
+        self.assertFalse(report["image_conditioned_hieratic_reading"])
+        self.assertFalse(report["archive_training_or_tuning"])
+        self.assertFalse(report["prior_revealed_tuebingen_in_training_or_tuning"])
+        self.assertEqual(report, ev.evaluate_external(self.corpus))
+        self.assertEqual(64, len(report["report_sha256"]))
+        print("W10_ARCHIVE_NEW_EXTERNAL_DIAGNOSTIC " + json.dumps({
+            "sha256": report["report_sha256"],
+            "new_external": fresh,
+            "internal_folds": [{
+                "fold": x["fold"],
+                "compositional_micro_word_f1":
+                    x["results"]["metrics"]["w10_composition"]["micro_word_f1"],
+            } for x in report["internal_fold_results"]],
+        }, sort_keys=True, ensure_ascii=False))
+
+
+
 if __name__ == "__main__":
     unittest.main()

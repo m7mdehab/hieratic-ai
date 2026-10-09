@@ -1,0 +1,87 @@
+{
+  "assessment_id": "W9-DATA-008-CAT1883-CAT2095-PAIR-READINESS-v1",
+  "assessment_date": "2026-10-09",
+  "production_corpus_status": "blocked_no_real_items_admitted",
+  "data008_credit_claimed": 0,
+  "canonical_state_modified": false,
+  "source_photo_files_acquired_private": 2,
+  "distinct_physical_supports": 2,
+  "licensed_readings_eligible_for_project_training": 0,
+  "independently_reviewed_line_alignments": 0,
+  "production_items_admitted": 0,
+  "source_registry_records_added": 0,
+  "third_party_raw_assets_committed": false,
+  "benchmark_answers_or_images_accessed_or_committed": false,
+  "source_candidates": [
+    {
+      "candidate_id": "CAT1883-CAT2095-RIME-FIG6-RECTO",
+      "source_object_id": "Cat.1883 + Cat.2095",
+      "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+      "exact_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif",
+      "sha256": "c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9",
+      "image_license": "CC BY 2.0 per RIME author guidelines and Fig. 6 credit",
+      "article_text_license": "unverified",
+      "article_reading_candidate": "Martina Landrino, RIME 6 (2022), DOI 10.29353/rime.2022.4418",
+      "geometry": "three unreviewed approximate column envelopes; no line-level alignment",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": "blocked",
+      "release_disposition": "not_registered_no_text_reuse_no_gold"
+    },
+    {
+      "candidate_id": "CAT2044-013-W8-COMMONS",
+      "source_object_id": "Cat.2044/013",
+      "physical_support_group": "Cat.2044/013",
+      "exact_url": "https://commons.wikimedia.org/wiki/File:Journal_of_year_1_of_Ramesses_VI_on_recto_and_verso_-_Museo_Egizio_Turin_C_2044_p01.jpg",
+      "sha256": "569e8e5bb446588481481bfea823fc95383bb7076270363c666f868b7fa5b912",
+      "image_license": "CC0",
+      "text_license_and_photo_to_writing_unit_match": "unverified",
+      "benchmark_overlap": "unresolved_quarantined",
+      "training_admission": "blocked",
+      "historical_attribution": "Ramesses V versus VI conflict unresolved",
+      "release_disposition": "image_only_no_line_alignment"
+    },
+    {
+      "candidate_id": "CAT1880-STRIKE-PAPYRUS",
+      "source_object_id": "Cat.1880",
+      "physical_support_group": "Cat.1880 all views",
+      "image_license_metadata": "CC0 candidate",
+      "exact_w9_acquisition": false,
+      "edition_benchmark_overlap": "high_risk_unresolved_quarantined",
+      "training_admission": "blocked",
+      "release_disposition": "rejected_for_first_pair_no_download"
+    },
+    {
+      "candidate_group": "R-016-MET-AND-TPOP-15",
+      "candidate_ids": ["TPOP-1896", "TPOP-1971", "TPOP-1966", "TPOP-2021", "TPOP-NECROPOLIS-5", "TPOP-1880", "MET-561345", "MET-561392", "MET-561361", "MET-561391", "MET-561407", "MET-561409", "MET-561410", "MET-561413", "MET-561621"],
+      "exact_w9_image_or_line_reading_acquisitions": 0,
+      "pinned_r017_public_metadata_records_screened": 266,
+      "sealed_records_excluded": 2,
+      "literal_metadata_matches": 0,
+      "overlap_state": "potential_overlap_unresolved",
+      "release_disposition": "all_15_blocked; zero metadata matches do not establish independence"
+    },
+    {
+      "candidate_id": "Pleyte-Rossi-Papyrus-de-Turin-plate-XXIX",
+      "edition_date": "1869-1876",
+      "representation": "historical facsimile, not a current original photograph",
+      "potential_status": "public-domain-reading-lead_not_verified_for_exact-line-map",
+      "release_disposition": "reference_only_no_content_copied"
+    },
+    {
+      "candidate_group": "DATA-001-conditional-or-unknown-collections",
+      "source_ids": ["SRC-DDD", "SRC-PAPYRUS", "SRC-ISUT", "SRC-HIERATICAI", "SRC-HPDB", "SRC-AKU-PAL", "SRC-TLA"],
+      "per_item_image_reading_pair_cleared_in_w9": false,
+      "release_disposition": "preserve registry gates; no assets fetched"
+    }
+  ],
+  "global_blockers": [
+    "independently protected DATA-008 trust-root and authority onboarding",
+    "verified item-specific permission for image, reading, annotation, mapping, training and redistribution",
+    "independently authenticated rights-holder and reviewer identities/roles",
+    "independent scholarly review and DATA-007 adjudication",
+    "reviewed exact image-to-line alignments and score-eligible gold",
+    "registered sources and complete DATA-001/002/003/004/005/006/007 inputs",
+    "leakage-reviewed EVAL-004 train/dev/test splits",
+    "independent corpus adequacy acceptance"
+  ]
+}

@@ -615,7 +615,7 @@ def generate_identity_mark_control(size: tuple[int, int] = (256, 256)) -> bytes:
 
 
 def generate_manuscript_photo_positive(size: tuple[int, int] = (256, 256)) -> bytes:
-    """Generate genuine photographic hieratic positive crop from Cat.2044/013 if available."""
+    """Legacy test-fixture generator; live runs MUST use source-verified loader."""
     if Image is not None:
         candidates = [
             Path.home() / "AppData" / "Local" / "HieraticAI" / "private-artifacts" / "W8" / "CAT2044-013-commons-original.jpg",
@@ -652,6 +652,33 @@ def generate_manuscript_photo_positive(size: tuple[int, int] = (256, 256)) -> by
         return (220, 205, 175)
     return create_png(size[0], size[1], ductus_pix)
 
+
+ORIGINAL_CAT2044_PHOTO_SHA256 = "569e8e5bb446588481481bfea823fc95383bb7076270363c666f868b7fa5b912"
+ORIGINAL_CAT2044_PHOTO_DIMENSIONS = (7063, 3947)
+
+def load_verified_manuscript_photo_positive(size: tuple[int, int] = (256, 256)) -> bytes:
+    """Live-only source-bound original Cat2044 positive; never procedural."""
+    if Image is None:
+        raise ImageConditioningError("Pillow required for authentic photographed control")
+    candidates = [
+        Path.home() / "AppData" / "Local" / "HieraticAI" / "private-artifacts" / "W8" / "CAT2044-013-commons-original.jpg",
+        Path.home() / ".cache" / "hieratic_ai" / "CAT2044-013-commons-original.jpg",
+    ]
+    for location in candidates:
+        if not location.is_file():
+            continue
+        raw = location.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != ORIGINAL_CAT2044_PHOTO_SHA256:
+            raise ImageConditioningError("Cat.2044 original source photo SHA256 mismatch")
+        with Image.open(io.BytesIO(raw)) as im:
+            if im.format != "JPEG" or im.size != ORIGINAL_CAT2044_PHOTO_DIMENSIONS:
+                raise ImageConditioningError("Cat.2044 original image geometry/format mismatch")
+            crop = im.crop((3663, 1742, 3967, 1886)).convert("RGB")
+            crop = crop.resize(size, Image.Resampling.LANCZOS)
+            output = io.BytesIO()
+            crop.save(output, format="PNG")
+            return output.getvalue()
+    raise ImageConditioningError("Live original papyrus positive missing: no synthetic substitution")
 
 def fetch_publisher_media(
     url: str,
@@ -741,6 +768,8 @@ def execute_sign_replay_experiment(
             trans_meta = {"render_method": "simulated_fixture", "raster_sha256": hashlib.sha256(raster_png).hexdigest()}
         elif ctype == "image/svg+xml":
             raster_png, trans_meta = render_svg_to_png(raw_bytes, tuple(RASTER_SIZE))
+            if trans_meta.get("render_method") != "headless_browser":
+                raise ImageConditioningError("Partial pure-Python SVG renderer is not certified for live original-media inference")
         else:
             raster_png, trans_meta = process_webp_to_png(raw_bytes, tuple(RASTER_SIZE))
 
@@ -772,17 +801,24 @@ def execute_sign_replay_experiment(
     ctrl_scrambled = generate_scrambled_control(ref_raster, tile_size=32, seed=42) if not is_simulated else ctrl_blank
     ctrl_inverted = generate_inverted_control(ref_raster) if not is_simulated else ctrl_blank
     ctrl_identity = generate_identity_mark_control((256, 256))
-    ctrl_pos_manuscript = generate_manuscript_photo_positive((256, 256))
+    ctrl_pos_manuscript = (
+        generate_manuscript_photo_positive((256, 256))
+        if is_simulated else load_verified_manuscript_photo_positive((256, 256))
+    )
+    control_positive_original_sha256 = (
+        hashlib.sha256(ctrl_pos_manuscript).hexdigest()
+        if is_simulated else ORIGINAL_CAT2044_PHOTO_SHA256
+    )
 
     controls_specs = [
         ("control_blank", ctrl_blank, "Uniform neutral-gray 256x256 canvas"),
         ("control_procedural_texture", ctrl_texture, "Procedural synthetic papyrus fiber texture"),
         ("control_geometric_marks", ctrl_geom, "Simple geometric non-text marks (circles, cross)"),
         ("control_photo_negative", ctrl_photo_neg, "Photographic textured paper background without writing"),
-        ("control_scrambled_sign", ctrl_scrambled, "Spatially scrambled 32x32 tiles of sign 2448 SVG"),
-        ("control_inverted_sign", ctrl_inverted, "Photometrically inverted sign 2448 SVG"),
-        ("control_identity_mark", ctrl_identity, "Ambiguous non-hieratic artisan/potter mark (hard negative)"),
-        ("control_manuscript_photo_positive", ctrl_pos_manuscript, "Authentic hieratic papyrus line crop from Cat.2044/013"),
+        ("control_scrambled_sign", ctrl_scrambled, "Spatially scrambled 32x32 tiles of sign 6036 SVG; local strokes survive"),
+        ("control_inverted_sign", ctrl_inverted, "Photometrically inverted sign 6036 SVG"),
+        ("control_identity_mark", ctrl_identity, "Synthetic drawn identity-like control; NOT Cat.2169 original photograph"),
+        ("control_manuscript_photo_positive", ctrl_pos_manuscript, "Cat.2044/013 SHA-verified original if live; synthetic if simulated"),
     ]
 
     # Setup Attempt Ledger and Planned Population
@@ -934,8 +970,8 @@ def execute_sign_replay_experiment(
         record_attempt(
             category="control_neutral",
             target_or_control_id=c_id,
-            source_witness="synthetic_control" if "positive" not in c_id else "Cat.2044/013",
-            source_raw_sha256=c_sha,
+            source_witness="Cat.2044/013" if (c_id == "control_manuscript_photo_positive" and not is_simulated) else "synthetic_control",
+            source_raw_sha256=control_positive_original_sha256 if c_id == "control_manuscript_photo_positive" else c_sha,
             stimulus_sha256=c_sha,
             stimulus_dims=RASTER_SIZE,
             task="sign_visual_classification",
@@ -966,8 +1002,8 @@ def execute_sign_replay_experiment(
             record_attempt(
                 category="control_leading",
                 target_or_control_id=c_id,
-                source_witness="synthetic_control" if "positive" not in c_id else "Cat.2044/013",
-                source_raw_sha256=c_sha,
+                source_witness="Cat.2044/013" if (c_id == "control_manuscript_photo_positive" and not is_simulated) else "synthetic_control",
+                source_raw_sha256=control_positive_original_sha256 if c_id == "control_manuscript_photo_positive" else c_sha,
                 stimulus_sha256=c_sha,
                 stimulus_dims=RASTER_SIZE,
                 task="sign_identification_leading",

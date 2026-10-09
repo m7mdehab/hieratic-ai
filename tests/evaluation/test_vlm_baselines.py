@@ -2352,6 +2352,41 @@ class VLMBaselinesTests(unittest.TestCase):
             if tmp_path.is_file():
                 tmp_path.unlink()
 
+    def test_w20_live_manuscript_control_never_substitutes_synthetic_photo(self) -> None:
+        """No genuine original bytes means no 46-live-attempts claim."""
+        from eval.vlm.signs import load_verified_manuscript_photo_positive
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch("eval.vlm.signs.Path.home", return_value=Path(d)):
+                with self.assertRaises(ImageConditioningError):
+                    load_verified_manuscript_photo_positive((256, 256))
+
+    def test_w20_wrong_original_photo_sha_fails_before_image_crop(self) -> None:
+        """A source-looking JPG is not a pinned historical papyrus."""
+        from eval.vlm.signs import load_verified_manuscript_photo_positive
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "AppData" / "Local" / "HieraticAI" / "private-artifacts" / "W8" / "CAT2044-013-commons-original.jpg"
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b"not the pinned original")
+            with mock.patch("eval.vlm.signs.Path.home", return_value=Path(d)):
+                with self.assertRaises(ImageConditioningError):
+                    load_verified_manuscript_photo_positive((256, 256))
+
+    def test_w20_synthetic_mark_not_genuine_museum_photo(self) -> None:
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key":"mock","model_type":"mock"})
+        report = execute_sign_replay_experiment(adapter, allow_simulated=True)
+        identity = [a for a in report["attempt_ledger"]
+                    if a["target_or_control_id"] == "control_identity_mark"]
+        positive = [a for a in report["attempt_ledger"]
+                    if a["target_or_control_id"] == "control_manuscript_photo_positive"]
+        self.assertEqual(2,len(identity))
+        self.assertEqual(2,len(positive))
+        self.assertTrue(all(a["physical_witness"] == "synthetic_control"
+                            for a in identity + positive))
+        self.assertTrue(all(a["source_raw_sha256"] == a["stimulus_sha256"]
+                            for a in identity + positive))
+
+
 
 if __name__ == "__main__":
     unittest.main()

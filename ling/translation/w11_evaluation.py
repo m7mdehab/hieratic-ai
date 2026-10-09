@@ -35,7 +35,7 @@ VERSION = "ling003-w11-expanded-archive-v1"
 
 
 def git_blob_sha1(content: bytes) -> str:
-    return sha1(b"blob " + str(len(content)).encode("ascii") + b"\\0" + content).hexdigest()
+    return sha1(b"blob " + str(len(content)).encode("ascii") + b"\0" + content).hexdigest()
 
 
 def pinned_json(root: Path, path: Path, digest: str, max_bytes: int) -> dict[str, Any]:

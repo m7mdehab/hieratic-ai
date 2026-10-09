@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0.0",
+  "dossier_id": "W14-DATA-006-CAT1883-2095-PLATE-XXIX-v1",
+  "physical_support": {
+    "institution": "Museo Egizio, Turin",
+    "source_object_id": "Cat.1883 + Cat.2095",
+    "support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "support_count_in_group": 1,
+    "image_view": "verso",
+    "identity_evidence_url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/"
+  },
+  "image_asset": {
+    "figure": 8,
+    "file_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/8/original.tif",
+    "sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+    "byte_size": 41686648,
+    "dimensions": [6595, 4710],
+    "mime_type": "image/tiff",
+    "coordinate_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+    "license_id": "CC-BY-2.0",
+    "license_evidence_status": "verified",
+    "license_evidence_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+    "attribution": "Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 8"
+  },
+  "edition_assets": {
+    "edition_id": "PLEYTE-ROSSI-PAPYRUS-DE-TURIN-1869-1876",
+    "volume_1_url": "https://archive.org/download/papyrusdeturin01muse/papyrusdeturin01muse.pdf",
+    "volume_1_sha256": "a387da74c1551158b7e55ccee36969d2189dcfcd69edb3945593910654a46e47",
+    "volume_1_rights_evidence_url": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin01muse).pdf",
+    "volume_2_url": "https://archive.org/download/papyrusdeturin02muse/papyrusdeturin02muse.pdf",
+    "volume_2_sha256": "cd466c1867bb394c8c69b95aaf4762996ec4b4f70ac8ccff329318570dce7edb",
+    "volume_2_rights_evidence_url": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin02muse).pdf",
+    "edition_rights": "PDM-1.0",
+    "rights_evidence_status": "verified",
+    "modern_transcription_included": false
+  },
+  "candidate_locator": {
+    "volume_1_printed_page": 41,
+    "volume_1_pdf_physical_page": 49,
+    "numbered_item": 2,
+    "volume_2_plate": "XXIX",
+    "volume_2_pdf_physical_page": 71,
+    "semantics": "bibliographic numbered edition text item; not a manuscript physical line identifier",
+    "original_candidate_bounds": [2800, 1690, 6500, 2020],
+    "coordinate_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"
+  },
+  "inspection": {
+    "plate_actually_visually_inspected": true,
+    "renderer": "Poppler pdftoppm 26.07.0",
+    "rendered_assets": [
+      {
+        "asset_id": "pleyte_vol1_printed_page_41",
+        "pdf_physical_page": 49,
+        "dpi": 180,
+        "dimensions": [1740, 2323],
+        "byte_size": 612534,
+        "sha256": "e632aaca571603c04daff17422c8c12de460c5771212b17d6aa69dc433dbfd1f"
+      },
+      {
+        "asset_id": "pleyte_vol2_plate_xxix",
+        "pdf_physical_page": 71,
+        "dpi": 220,
+        "dimensions": [3510, 2169],
+        "byte_size": 927350,
+        "sha256": "d7d29b1c6ae17d61ed776389e1d47608f5793b5b411f676bf5c8faf8fa3a5706"
+      }
+    ],
+    "transformations": [
+      "PDF page rendered upright with Poppler at recorded DPI; no crop, rotation, mirroring, or geometric warp applied to the source page"
+    ],
+    "visual_regions": [
+      {
+        "region_id": "vol1-page41-item2-block",
+        "asset_id": "pleyte_vol1_printed_page_41",
+        "bounds": [250, 720, 1510, 1570],
+        "description": "Printed page heading and numbered text entries; item 2 is a numbered edition text entry, not itself a manuscript physical line number.",
+        "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
+      },
+      {
+        "region_id": "plate-xxix-main-ramesses-panel",
+        "asset_id": "pleyte_vol2_plate_xxix",
+        "bounds": [1820, 270, 3360, 1800],
+        "description": "Main right-hand panel captioned in the historical edition as the Ramses II text, with nine numbered rows. Its historical side label must be interpreted through the published recto/verso reversal; it is a candidate for the RIME current-mounted verso.",
+        "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
+      },
+      {
+        "region_id": "plate-xxix-reverse-panel",
+        "asset_id": "pleyte_vol2_plate_xxix",
+        "bounds": [70, 130, 1745, 1160],
+        "description": "Upper-left panel captioned by the historical edition as the reverse of the Ramses II text, with sparse remnants numbered one through seven. Under the published side-label reversal this caption maps by convention to the RIME current-mounted recto; physical image confirmation remains unresolved.",
+        "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
+      },
+      {
+        "region_id": "plate-xxvii-unrelated-reverse-panel",
+        "asset_id": "pleyte_vol2_plate_xxix",
+        "bounds": [120, 1190, 1450, 2010],
+        "description": "Lower-left panel is captioned as the reverse of Plate XXVII and is not part of the Cat.1883 plus Cat.2095 candidate comparison.",
+        "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
+      }
+    ],
+    "observations": [
+      "RIME Figure 8 is identified as the current-mounted verso of the single joined Cat.1883 plus Cat.2095 five-fragment support; the TIFF is 6595 by 4710 pixels.",
+      "RIME 6 (2022), physical-description footnote 17, reports that earlier studies reversed the recto and verso labels. Historical Plate XXIX side labels therefore cannot be compared literally with modern mounting labels.",
+      "The Plate XXIX main Ramses panel has nine numbered rows, matching the published count for the RIME current-mounted verso; both have a royal-name/cartouche-like group at the first row. These are candidate-level visual cues, not a diagnostic sign sequence.",
+      "Plate XXIX is a historical illustration rather than a photograph, so papyrus-fiber detail cannot be compared. Shared support and candidate layout do not establish individual line identity.",
+      "The W10 box [2800,1690,6500,2020] remains an approximate envelope in original TIFF pixels. Page 41 numbered item 2 is an edition text-item locator, not a manuscript physical line number. No source transcription is copied."
+    ]
+  },
+  "historical_side_crosswalk": {
+    "source_reference": "RIME 6 (2022), physical-description footnote 17",
+    "source_url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+    "evidence_state": "source_attested_convention",
+    "mappings": [
+      {"historical_label": "recto", "rime_current_mount_label": "verso"},
+      {"historical_label": "verso", "rime_current_mount_label": "recto"}
+    ],
+    "pixel_level_confirmation": "unresolved",
+    "note": "The published reversal resolves the nomenclature convention only. It does not independently prove that a particular illustrated panel or line is the same physical surface or line as a photographed region."
+  },
+  "visual_candidate_comparison": {
+    "historical_main_panel_line_count": 9,
+    "rime_current_verso_line_count": 9,
+    "royal_name_at_first_line": "candidate_observed_both",
+    "diagnostic_stroke_sequence": "not_established",
+    "fiber_comparison": "unavailable_historical_plate_is_illustration",
+    "line_correspondence": "unresolved",
+    "reviewer_id": null
+  },
+  "coordinate_comparison": {
+    "source_image_bounds": [2800, 1690, 6500, 2020],
+    "source_bounds_coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
+    "source_bounds_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+    "edition_regions": ["vol1-page41-item2-block", "plate-xxix-main-ramesses-panel"],
+    "mapping_state": "unresolved_historical_side_convention",
+    "transform_chain": [
+      "original TIFF coordinate system retained for the historical approximate box",
+      "PDF pages rendered upright at their recorded DPI; historical side labels crosswalked using RIME 6 (2022) footnote 17; no line-level geometric mapping to the TIFF is asserted"
+    ],
+    "affine_transform": null,
+    "reason": "The published recto/verso reversal makes the historical main panel a plausible current-verso candidate. The drawing and photograph lack an independently established diagnostic stroke sequence and comparable fiber detail, so no numeric transform or physical line identity is asserted."
+  },
+  "finding": {
+    "candidate_state": "UNRESOLVED_HISTORICAL_SIDE_CONVENTION",
+    "candidate_image_side": "rime_current_mount_verso",
+    "candidate_edition_panel_side": "historical_recto_label_crosswalks_to_current_verso",
+    "exact_line_correspondence": "unresolved",
+    "plate_reverse_panel_line_correspondence": "unresolved",
+    "independent_physical_supports_inspected": 1,
+    "independent_expert_reviewed_line_pairs": 0,
+    "scoreable_gold": false,
+    "training_admission": "blocked",
+    "benchmark_overlap": "unresolved_quarantined",
+    "reviewer_id": null,
+    "rationale": [
+      "RIME 6 (2022), physical-description footnote 17, documents that earlier publications reversed recto and verso labels; after applying that source-attested convention, Plate XXIX main-panel recto nomenclature is compatible with the modern current-mounted verso label.",
+      "The historical main Ramses panel and the RIME current-mounted verso each have nine lines, and a royal-name/cartouche-like group appears in the first row of both. These observations make the panel a plausible candidate but do not establish line identity.",
+      "The Plate XXIX source is an illustration, not a photograph, and no independent diagnostic stroke sequence, fiber comparison, or expert review establishes exact correspondence. The result stays unresolved; zero gold and training admission remain blocked."
+    ]
+  }
+}

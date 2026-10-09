@@ -304,6 +304,17 @@ class W9ContextualPublisherExperimentTests(unittest.TestCase):
         self.assertFalse(self.report["not_fluent_generative_translation"] is False)
         self.assertEqual(0, self.report["physical_original_manuscript_images"])
         self.assertEqual(0, self.report["editorially_blind_gold_references"])
+        # Preserve the *negative* reserved-domain result as a falsifiable benchmark.
+        self.assertEqual(0.15275625, ref["micro_word_f1"])
+        self.assertEqual(0.14259102, improved["micro_word_f1"])
+        self.assertLess(improved["micro_word_f1"], ref["micro_word_f1"])
+        self.assertEqual(40, improved["prediction_modes"]["CROSS_TEXT_SENTENCE_RETRIEVAL"])
+        self.assertEqual(40, improved["retrievals_with_nonidentical_source_sequence"])
+        self.assertEqual(0.0, self.report["selected_threshold"])
+        self.assertEqual(
+            "3e8b42915d0a5cfce9a1a8cde78d503b319c18cbd3ed3ec28cafa745167402aa",
+            self.report["report_sha256"])
+
         print("W9_AUTHENTIC_TEXT_EVALUATION " + json.dumps({
             "selected_threshold": self.report["selected_threshold"],
             "heldout": self.report["external_test_metrics"],

@@ -1,0 +1,33 @@
+name: W24 DDD Original Publisher Document Holdout and Prior Baseline
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/research_ddd_prior_baseline.py"
+      - "tests/research/test_ddd_prior_baseline.py"
+      - "docs/research/R029_DDD_REAL_ANNOTATION_HOLDOUT.md"
+      - "docs/research/R029_DDD_REAL_ANNOTATION_BASELINE_RECEIPTS.json"
+      - ".github/workflows/w24-ddd-annotation-baseline.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publisher-annotation-prior:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.12"}
+      - name: Negative tests and provenance sanity
+        run: python -m unittest tests.research.test_ddd_prior_baseline -v
+      - name: Compute original source schema and document-aware metadata diagnostics
+        run: python -m tools.research_ddd_prior_baseline --output "$RUNNER_TEMP/w24-ddd-real-annotation-holdout.json"
+      - name: Archive aggregate-only source statistics
+        uses: actions/upload-artifact@v4
+        with:
+          name: w24-ddd-real-annotation-audit-no-media-or-label-rows
+          path: /home/runner/work/_temp/w24-ddd-real-annotation-holdout.json
+          if-no-files-found: error
+          retention-days: 30

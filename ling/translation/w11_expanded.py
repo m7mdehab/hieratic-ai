@@ -48,7 +48,7 @@ def build_locked_rows(root: Path = ROOT) -> tuple[list[dict[str, Any]], list[dic
                       OLD_ARCHIVE_TEST_BLOB, 400_000)
     exposed_ids = {x["text"] for x in exposed.values()}
     donor = _pinned(root, DONOR_PATH, DONOR_BLOB, 4_000_000)
-    heldout = _pinned(root, TEST_PATH, "W11_BIOGRAPHY_BLOB_TO_BE_PINNED", 600_000)
+    heldout = _pinned(root, TEST_PATH, "7e5654b5d8194c3deb764cf37a8e2bce2c624855ED", 600_000)
     old_ids = {x["text_id"] for group in corpus["groups"].values() for x in group}
     archive_training = []
     for sid, row in sorted(donor.items()):

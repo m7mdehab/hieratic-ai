@@ -1,3 +1,15 @@
+
+## 2026-10-09 — W13 independently reconciled; first original pre-Coptic Egyptian dependency diagnostic merged; W14 staged
+
+- **Current main at review:** `54c4dd8651fb65b756ed9d9b6fd80da9bd12545f`; W8 #83/#86/#87, W9 #96–#100, W10–W12 #101–#108 and W13 #110 are merged. Redundant W11 PR #109 is closed **unmerged** (substantive W11 #105 was already merged). No open PRs at review. W13 source and published evaluation manually inspected; exact-head hosted governance [37929827457](https://github.com/m7mdehab/hieratic-ai/actions/runs/37929827457) SUCCESS.
+- **W13 first-use verified source artifact:** Original UD Egyptian-PC University of Jaén Old Egyptian Pyramid Texts, CC BY-SA 4.0, train 1,619 sentences / 19,486 words, DEV 230 / 3,167 words. Frozen preregistered train-only UPOS/head/direction/DEPREL count system, privileged **gold DEV UPOS**. Baseline→model UAS 1,390→1,849 correct (43.890117%→58.383328%); LAS 554→1,143 (17.492895%→36.090938%); zero invalid predicted trees. `W13_EGYPTIAN_PC_DEPENDENCY_RESULTS.md` includes original blob identity and result SHA `da5710ab3ea140f34d68fba5457ad4cf56d1d0a7e4cf2a0ec7a050086e736f70`.
+- **Non-negotiable science:** Official DEV gold exposed post-evaluation, not a fresh future heldout. Official TEST **unopened**; its public blob ID is NOT permission to unblind. Gold POS at inference is an oracle; different sentence IDs are not independent witnesses. No demonstrated later Hieratic image reading, source line gold, fluent translation, exact rights-clear training corpus, or blind semantic adequacy. No 2-point LING-003 acceptance.
+- **Canonical unchanged numerically:** goal **34.5/100** (65.5 remaining), historical research coverage **14%**, P2 **8.5/10**, P3 **17/20**, P6 **4/10**, validated Hieratic model experiments **0**, trained neural models **0**, last weighted acceptance LING-002. Active LING-003, DATA-008, VLM-001, EVAL-003. External model access/cost EVAL-003 separately gated; privately claimed VLM runs are not independently reproduced.
+- **Immediate new work:** `docs/governance/W14_DISPATCH_BRIEFS.md` stages three substantial **not-yet-dispatched** lanes: Luna/DATA-006 exact image↔edition physical-line investigation; Anti-Gravity/VLM-001 second-support matched source-pixel falsification; overseer/LING-003 original new-source, oracle-free grammar/semantic generalization. User forwards agents' prompts, then overseer starts its own lane concurrently. No premature status, rights, benchmark-test exposure or capability award.
+- **Decision:** ADR-0028. Preserve prior exposed AES W9–W12B and UD W13 DEV labels as permanently exposed; every new first-use score must be preregistered and use an independent lawful source.
+
+---
+
 ## 2026-10-09 — W12B Egyptian grammatical evidence (PR #107 integrated; 34.5/100 unchanged)
 
 - **Latest substantive execution:** LING-003 source-grounded W12 original temple corpus was preregistered before source exposure; had only 11 original source-text IDs, below fixed 24 → **blocked**, no sample-size relaxing or reuse of temple annotations as training.

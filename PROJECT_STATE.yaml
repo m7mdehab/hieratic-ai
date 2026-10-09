@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W12B_AMARNA_EDITORIAL_POS_MORPHOLOGY_AND_W10_W11_INTEGRATED"
+  current_wave: "W13_EGYPTIAN_PC_DEPENDENCY_DIAGNOSTIC_MERGED"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -42,6 +42,7 @@ state:
     - "VLM-001: PR #100 fail-closed implementation and W10 #104 tile-scramble/blank/inversion controls merged; Gemini reports fresh 23 Cat.2044 local CPU passes with pinned pixels/weights but protected receipt was not independently rerun by overseer. Negative blank/scrambled controls hallucinated script: Grade E NOT_VERIFIED, Grade F STRICTLY_NO. Zero independent OCR accuracy, 0/2 VLM points."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
     - "LING-003: W10 #102 original archive 47 translations failed lexical compositional generalization; W11 #105 3925 lawful AES developer sentences raised new biography German word F1 to 0.10791969 on 178 references, but no syntactic swaps/independent semantic adequacy. W12 #107 temple corpus FAILED frozen group requirement (11 vs 24) and W12B newly preregistered Amarna editor-original POS/morphology test scored 780/1649 POS labels (47.301395% all-label accuracy), baseline 773/1649, POS coverage 954/1649 (57.853244%), context correctly chooses 7 net more labels. Publisher word-class tags are NOT source image reading, independently blind grammatical roles, dependency parsing, or sentence meaning; morphology recall low. All W9-W12 original evaluation cohorts exposed. LING-003 0/2 points, no certified translation."
+    - "LING-003 W13: PR #110 genuine UD Egyptian-PC Old Egyptian oracle-UPOS dependency parser evidence merged 54c4dd8651fb65b756ed9d9b6fd80da9bd12545f after exact-head governance success. Official DEV 230 sentences / 3167 tokens: UAS 1390/3167 baseline -> 1849/3167 model; LAS 554/3167 -> 1143/3167. Gold dev UPOS was supplied as input; DEV HEAD/DEPREL now exposed; official TEST was NOT opened. Same Pyramid Texts literary family, no independent Hieratic manuscript, no end-to-end semantic translation, and 0/2 LING-003 points."
 
 canonical_files:
   start: "START_HERE.md"
@@ -79,40 +80,35 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  Integrated W9-W11 source evidence and W12B independently preregistered
-  Egyptian POS/morphology evidence. Most recent LING-003 PR #107 merged as
-  e321b82031b4e2eec7ec493162f9c2aaffdad5e1; exact-head hosted
-  governance and data/linguistic/evaluation suites passed. W12 temple
-  first preregistered corpus attempt BLOCKED because its original 11 source
-  text IDs missed the frozen 24-group minimum; no silent retuning.
-  A separate W12B original Amarna publisher CC BY-SA corpus was preregistered
-  before opening its gold: 24 novel whole source-text groups, 163 authentic
-  editorial sentences, 1691 Egyptian written-form tokens, 1649 published
-  POS labels; 3925 train sentences across 1526 original source text IDs
-  never include W9 Tuebingen, W10 archive, W11 biographies or W12 temple.
-  Frozen text-only, train-attested POS tagging: base 773/1649 = 46.876895%
-  vs context 780/1649 = 47.301395% full-denominator accuracy; 954/1649
-  POS-labeled tokens covered, conditional contextual 780/954 = 81.761006%.
-  Morphology candidate recall remains low, POS bigram evidence is not an
-  Egyptian subject/object or dependency parse, and no fluent German
-  translation or original Hieratic manuscript reading was evaluated.
-  W12B Amarna labels are now exposed and must not guide model tuning
-  presented as new heldout science. All W9-W12 original source-text
-  tests are already exposed, and source-ID distinctness still cannot
-  establish independent papyrus/work/editor genealogy. DATA-006 has one
-  unreviewed lawful RIME verso bibliographic line-envelope candidate,
-  no verified exact image-line/transcription match, no DATA-008 release.
-  VLM W10 Gemini source/weights local 23 passes remain private agent
-  reported, not overseer-reproduced, and blank/scramble hallucinations
-  keep Grades E/F unearned. EVAL-003 requires permitted provider access.
-  Next substantial effort: independently sourced publishable ancient
-  Egyptian grammatical role/dependency supervision and genuinely NEW
-  rights-cleared source/witness-based semantic evaluation, plus actual
-  source-exact manuscript line alignment for end-to-end tests.
-  Never retune on exposed Tuebingen, archive, biographies, temple or
-  Amarna as though they are heldout. No automatic hiring, paid access,
-  sealed gold, source reuse or fabricated expert validation.
-  Canonical capability 34.5/100, historical research coverage 14%,
-  zero validated real Hieratic model experiments, zero trained neural
-  models, last accepted weighted LING-002. Active LING-003, DATA-008,
-  VLM-001 and EVAL-003, with zero new points from W10-W12B.
+  Wave 13 LING-003 original UD Egyptian-PC Old Egyptian dependency research
+  merged in PR #110 at main 54c4dd8651fb65b756ed9d9b6fd80da9bd12545f.
+  Original train 1619 sentences / 19486 tokens and official DEV 230 sentences /
+  3167 tokens, CC BY-SA 4.0, publisher source revision pinned. Frozen
+  train-only frequency parser with oracle gold DEV UPOS improved UAS
+  1390/3167 -> 1849/3167 and LAS 554/3167 -> 1143/3167 over a weak
+  previous-token control. No invalid predicted trees. Exact-head
+  governance run 37929827457 passed. DEV dependency labels have been
+  exposed after scoring and must not be treated as novel unseen evidence.
+  Official UD TEST original blob f40982ca7dc7b67a5ed6d6bc90f4fe8dcd8085f6
+  was identified but not read, evaluated or unblinded; do not access it
+  without explicit, separately reviewed scientific authorization.
+  The source is Old Egyptian Pyramid Texts with editorial oracle UPOS,
+  not later Hieratic image reading, grammar-free language understanding,
+  fluent German translation, independent expert gold or manuscript
+  generalization. Remain at 34.5/100 verified capability, 14% historical
+  research coverage, 0 validated real Hieratic model experiments, 0
+  trained neural models, LING-003 active 0/2. Other active tasks:
+  DATA-008, VLM-001, EVAL-003. Last weighted accepted LING-002.
+  Next safe research wave is staged in docs/governance/W14_DISPATCH_BRIEFS.md:
+  Luna DATA-006 resolves original physical-view/line/edition-rights link;
+  one Anti-Gravity VLM-001 lane investigates second-support private
+  negative-control stability with all actual receipts and no accuracy
+  claims; overseer LING-003 owns genuinely non-oracle Egyptian grammar
+  and source-external semantic tests, preregistered before any new labels.
+  User forwards prompts to agents; on return, overseer starts its own
+  substantial nonconflicting lane. Nothing new is marked dispatched.
+  Do not reuse exposed W9 Tuebingen, W10 archive, W11 biographies, W12
+  temple, W12B Amarna or W13 official DEV as fresh heldout results.
+  DATA-008 admission remains zero; no license inferred from public
+  images or scholarly PDFs, no protected benchmark/official test release,
+  paid inference, third-party contact or expert approval without consent.

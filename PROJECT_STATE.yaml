@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W8_AUTHENTIC_CC0_IMAGES_LIGHT_VLM_AND_REAL_SCHOLARLY_LINGUISTICS"
+  current_wave: "W9_RIME_SOURCE_EVIDENCE_VLM_CPU_DIAGNOSTIC_AND_LING003_EXTERNAL_TEST"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,8 +38,8 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "DATA-008: one source-pinned CC0 Cat.2044 original is now acquired for quarantined private nontraining inspection, but no rights-and-scholarship-admitted trainable Hieratic image/text corpus or clean physical-support train/dev/test splits exist."
-    - "VLM-001: W8 CPU SmolVLM-256M local real image-conditioned forward and shape/control visual sensitivity reported with pinned open weights; no eligible Hieratic manuscript gold evaluation, certified reading result, independently verified few-shot cohort or authentic benchmark generalization (Grade F NO)."
+    - "DATA-008: W8 CC0 Cat.2044 original JPEG and W9 CC BY 2.0 RIME processed figure TIFF exist in private vault across two physical supports, but neither has independently verified reusable line readings, real reviewed alignments, cleared overlap, or production admission; corpus_v1 remains blocked."
+    - "VLM-001: W9 PR #100 fail-closed authentic-image CPU diagnostic engineering merged and exact-head hosted CI passed; old 21-pass agent report is historical and not independently reverified after remediation. No score-eligible manuscript gold, few-shot cohort or held-out benchmark accuracy; Grade F NO and 0/2 points."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
     - "LING-003: real 444-sentence AED/AES source-text-heldout translation diagnostic and LING-002 interpretation integration merged in PRs #91/#92; only 14 complete other-source published parallels and 15.21% corpus micro word F1, not independent fluent semantic adequacy or manuscript-level blind verification."
 
@@ -79,46 +79,21 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-
-  W8 LING-003 has moved from ready to active following accepted noncertifiable
-  substantial translation engineering. PR #91 provided genuine AES 445 source
-  sentences (444 German translations), source-text-heldout bilingual prediction
-  and scored 15.21% micro word-overlap F1 with 14 other-source exact full
-  sentence translation parallels; PR #92 added immutable LING-002 downstream
-  interpretation integration and alternative-preserving German meaning outputs.
-  Hosted regression and write-scope checks passed. This is real measured
-  linguistic progress but not defensible fluent semantic translation or
-  independent held-out manuscript evaluation. No LING-003 capability points
-  awarded until that gap is genuinely closed; goal progress remains 34.5/100.
-  W8 owner directive: use fully lawful free online sources; research and test
-  alternatives exhaustively before asserting genuinely terminal blockers.
-  Independent R-024 source/edition research and a noncertifiable silver-label
-  protocol merged in PR #82. Additional DATA-005 real 937-row HPDB concordance
-  metadata integration merged in PR #84 with zero duplicate capability credit.
-  The completed pending LING-002 milestone was accepted in PR #88 (source
-  provenance prerequisite PR #85), satisfying defensible real published
-  Egyptological lexical and morphological candidate analysis on 35,052
-  AED-TEI dictionary entries plus 445 genuine AES sentences, 2,526 tokens,
-  311 original source text IDs, and 2,305 published lemma gold labels.
-  Strict original-source Git blob pinning, publisher CC BY-SA 4.0 text rights,
-  source-text-held-out diagnostic and full exact-head GitHub CI are verified.
-  Cross-text publisher editorial reference metrics: 1,621/2,305 correct
-  lemma contained in candidate set, 1,062/1,102 correct when one candidate
-  returned, and 449/753 observed morphology bundles recovered in candidates.
-  Evidence digest 26ad977c29fdd8659157cb02bec04323b6b544dc8ca9425a13825ea629acedee.
-  These are authentic published text diagnostics, NOT blind two-reader gold,
-  source-independent manuscript reading, real image recognition, heldout
-  model evaluation, training or translation. LING-002 has earned its original
-  2.0/2.0 roadmap points once, so overall capability is 34.5/100 and P6 is
-  4.0/10; historical research coverage 14% remains unrecalibrated; no
-  validated real model experiment and no trained model. LING-003 translation
-  layer is now dependency-ready and may work with the open licensed Egyptian
-  English-gloss and published sentence translation resources under separate
-  benchmark/publication rights. Current user-dispatched Luna W8 source-image
-  lane and Gemini 3.8 Flash W8 lightweight real VLM lane are still independent
-  and await returned PR evidence; no premature completion claim or file
-  collision. DATA-008 production admission and VLM-001 certification stay
-  hard-disabled; EVAL-003 remains active and requires approved access/budget
-  for actual proprietary provider inference. Next independently inspect and
-  integrate exact heads from Luna/Gemini, patch bounded defects, and plan
-  LING-003 as a genuine separately-scored task.
+  W9 PRs #96, #97, #98, #99 and corrective #100 are merged. Last merge
+  c6f59103b7168b7b26ede0e696fa356e01ea5b29. The updated VLM code
+  refuses corrupt/missing/altered source pixels, unsupported image decoding,
+  unverified weights, and crop-manifest mismatches; mock controls never earn
+  real evidence grades. Hosted exact-head Governance, VLM Preflight and
+  Error Analysis passed on corrective head 8ee5d5b9b1fe5eee3e2b1cda930f1d3bfa0e8675.
+  This accepts engineering remediation, not a newly reverified live 21-pass
+  experiment or Grade F gold. All W9 data source image acquisitions, geometry
+  and source-pair readiness preserve legal/scholarship quarantine and 0 admitted
+  training items. LING-003 contextual model failed external generalization;
+  do not retune on revealed Tuebingen references. Canonical verified goal
+  progress 34.5/100, research coverage historical 14%, zero validated
+  model experiments and zero trained models; last weighted task LING-002.
+  W10 dispatch brief is docs/governance/W10_DISPATCH_BRIEFS.md:
+  Luna owns independent DATA-006 rights-safe image/edition pilot,
+  Gemini owns VLM-001 fresh post-remediation real CPU evidence,
+  overseer owns LING-003 genuinely compositional translation and independent
+  new-source generalization. No duplicate write scopes or unauthorised spending.

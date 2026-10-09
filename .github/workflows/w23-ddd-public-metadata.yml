@@ -1,0 +1,34 @@
+name: W23 Publisher Original DDD 2026 Rights and Physical Witness Audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/research_ddd_public_metadata.py"
+      - "tests/research/test_ddd_research_metadata.py"
+      - "docs/research/R028_DDD_PUBLISHER_RESEARCH_ROUTE.md"
+      - "docs/research/R028_DDD_ORIGINAL_PUBLIC_METADATA_RECEIPTS.json"
+      - ".github/workflows/w23-ddd-public-metadata.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-source-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.12"}
+      - name: Rights, paired object and provenance adversarial regression tests
+        run: python -m unittest tests.research.test_ddd_research_metadata -v
+      - name: Probe original 2026 DDD publisher metadata, per-image copyright and exact source digests
+        run: python -m tools.research_ddd_public_metadata --output "$RUNNER_TEMP/w23-ddd-source-only-audit.json"
+      - name: Archive ONLY aggregate provenance counts, no source images/crops/annotations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w23-ddd-2026-research-only-publisher-metadata
+          path: /home/runner/work/_temp/w23-ddd-source-only-audit.json
+          if-no-files-found: warn
+          retention-days: 30

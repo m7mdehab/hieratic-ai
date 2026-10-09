@@ -1,0 +1,34 @@
+name: W21 Cat1880 Original CC0 Photo and PDM Plate Forensic Preflight
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/w21-original-source-preflight.yml"
+      - "tools/research_cat1880_retrieval.py"
+      - "tests/research/test_cat1880_retrieval.py"
+      - "docs/research/R026_CAT1880_ORIGINAL_MEDIA_PREFLIGHT.md"
+      - "docs/research/R026_CAT1880_ORIGINAL_MEDIA_RECEIPTS.json"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-public-media-hash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.12"}
+      - name: Run strict resource, exact-title and permission regression tests
+        run: python -m unittest tests.research.test_cat1880_retrieval -v
+      - name: Verify exact primary photograph and historic PDM original PDF bytes
+        run: python -m tools.research_cat1880_retrieval --output "$RUNNER_TEMP/w21-signed-not-admitted-original-source-hashes.json"
+      - name: Store receipts only, no photograph/PDF source bytes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w21-cat1880-original-bytes-metadata-no-source-assets
+          path: /home/runner/work/_temp/w21-signed-not-admitted-original-source-hashes.json
+          if-no-files-found: warn
+          retention-days: 30

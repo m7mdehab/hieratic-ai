@@ -149,6 +149,15 @@ def inspect(item)->dict:
                             sheet.paste(image,(x,y))
                             draw.text((slot%8*235+8,slot//8*305+4),f"PDF page index: {number}",fill="black")
                         sheet.save(destination/f"historical_pdm_pdf_pages_{begin:03d}_{min(begin+39,len(pdf)-1):03d}.jpg",quality=77,optimize=True)
+                    # Higher-resolution fixed page candidates for human
+                    # plate-number/letterform review (not auto-certified gold).
+                    for number in (64,68,70,72,74,76,78,80,82,84,86,88,90,92):
+                        if number>=len(pdf):continue
+                        pix=pdf[number].get_pixmap(matrix=fitz.Matrix(0.55,0.55),alpha=False)
+                        page_image=Image.frombytes("RGB",(pix.width,pix.height),pix.samples)
+                        page_image.thumbnail((1320,1200))
+                        page_image.save(destination/f"inspect_plate_pdf_page_{number:03d}.jpg",
+                                        quality=85,optimize=True)
                     out["research_only_thumbnail_grids_generated"]=len(list(destination.glob("*.jpg")))
                 pdf.close()
         out["source_pixels_not_exported"]=True

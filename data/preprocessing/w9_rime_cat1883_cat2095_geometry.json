@@ -1,0 +1,34 @@
+{
+  "profile_id": "w9-rime-cat1883-cat2095-recto-geometry",
+  "profile_version": "1.0.0",
+  "engine_version": "W9-RIME-TIFF-BOUNDS-1.0.0",
+  "source_lock": {
+    "source_object_id": "Cat.1883 + Cat.2095",
+    "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "view": "recto as currently mounted in RIME Fig. 6",
+    "exact_file_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif",
+    "source_sha256": "c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9",
+    "byte_size": 36023444,
+    "dimensions": [6585, 4718],
+    "mime_type": "image/tiff",
+    "image_license": "CC BY 2.0",
+    "text_reuse": "BLOCKED_UNVERIFIED_LICENSE"
+  },
+  "limits": {
+    "maximum_bytes": 41943040,
+    "maximum_pixels": 35000000,
+    "maximum_preview_side": 1800,
+    "outer_content_threshold_grayscale_below": 248
+  },
+  "method": "Decode exact TIFF bytes after hash verification; apply image metadata orientation; convert to RGB; identify only the bounding rectangle of pixels below the fixed grayscale threshold; emit deterministic private PNG overlay. The rectangle encloses photographed contents, including scale, and is not segmentation of papyrus, writing, columns, lines, or signs.",
+  "outputs": {
+    "storage": "user-local private artifact vault outside Git",
+    "source_registry_status": "NOT_REGISTERED",
+    "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+    "training_admission": "BLOCKED",
+    "development_admission": "BLOCKED",
+    "evaluation_admission": "NOT_AUTHORIZED",
+    "article_text_reuse": "BLOCKED_UNVERIFIED_LICENSE",
+    "annotation_or_gold": "NONE"
+  }
+}

@@ -1828,9 +1828,13 @@ class VLMBaselinesTests(unittest.TestCase):
         from eval.vlm.hieratic import verified_model_weight_sha256, execute_hieratic_experiment
         fake = MockVLMAdapter({"key": "synthetic", "model_type": "mock"})
         self.assertFalse(verified_model_weight_sha256(fake))
-        fake.execution_tier = "live_local_open_weight"
+        class StubLive:
+            execution_tier = "live_local_open_weight"
+            weights_dir = None
+            model_config = {"provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+                            "revision": "7e3e67edbbed1bf9888184d9df282b700a323964"}
         with self.assertRaisesRegex(ImageConditioningError, "Pinned SmolVLM"):
-            execute_hieratic_experiment(fake, [{"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"junk"}])
+            execute_hieratic_experiment(StubLive(), [{"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"junk"}])
 
     def test_hieratic_mock_report_cannot_promote_response_difference(self) -> None:
         from eval.vlm.hieratic import execute_hieratic_experiment

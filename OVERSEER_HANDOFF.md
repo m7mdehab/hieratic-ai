@@ -1,3 +1,14 @@
+## 2026-10-09 — Wave 14: overseer LING-003 oracle-free real original TRAIN group diagnostic merged
+
+- **Current verified main after accepted software/research PR #112:** `2a72409d6c100e6f83be038e708632bdbe5b1e8a`, PR #112 accepted/merged after exact-head hosted Linux [run 37974824523](https://github.com/m7mdehab/hieratic-ai/actions/runs/37974824523) SUCCESS; six paths exactly inside LING-003 scope; prereg was independently committed first at `b7424bf379616adecec7f96548cc808e3b6cde85`.
+- **Source:** original university CC BY-SA Egyptian-PC TRAIN corpus, 1,619 sentences/19,486 words, original TRAIN blob `ea262ee047943b81c0e0db8ff139ec7deb9b7b53`, derived frozen split Git blob `2b42a078e6ec4277a5ab7016d6f966c3545a7894`; no official DEV nor TEST data fetched for W14.
+- **Actual holdout:** train groups Teti+Neith+Merenre 790 sentences/9,157 words, retro evaluation Pepi 829/10,329. Strict FORM-only inferencing predicts UPOS from train-only form and suffix frequencies; same W13 dependency model retrained from only W14 train groups. Weak previous-token+train-majority UAS 4259/10329, LAS 750/10329; **nonoracle UAS 4757/10329 (46.0548%), LAS 2811/10329 (27.2146%)**, predicted UPOS 8060/10329 (78.0327%), macro-F1 0.62421625; gold oracle UPOS diagnostic UAS 6489, LAS 4316. All 829 outputs have valid single-root acyclic graphs; no identical complete original FORM-sequence duplicates across train/heldout groups.
+- **Claims frozen:** original W13 TRAIN aggregated statistics had already been published; current source/witness grouping is not verified independent papyrus support/scribe, so this is **retrospective internal text diagnostic** not unseen science or certified generalization. No original Hieratic image, line transcription, later-period transfer, fluent German semantic adequacy or expert independently scored image/line pair. Remain LING-003 active **0/2**, capability **34.5/100**, research coverage **14%**, validated original real Hieratic model experiments **0**, trained neural models **0**, last accepted weighted LING-002.
+- **Agent dispatch:** user confirmed W14 Luna DATA-006 and Anti-Gravity VLM-001 prompts have been forwarded; neither had returned a W14 PR by this reconciliation. Agent review must verify actual new evidence and CI rather than forward confirmation alone.
+- **Next action:** review W14 DATA-006 and VLM-001 PRs when they appear. Independently resolve actual figure/plate line identity, true matched model controls and rights without gold promotion; later plan a genuinely independent untouched license-compatible later Hieratic witness/meaning evaluation. W13 official DEV exposed; original UD official TEST must remain unopened without explicit independent authorization.
+
+---
+
 
 ## 2026-10-09 — W13 independently reconciled; first original pre-Coptic Egyptian dependency diagnostic merged; W14 staged
 

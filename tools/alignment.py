@@ -1,6 +1,6 @@
 """Validate DATA-002/DATA-004-linked alignments and compute score eligibility."""
 from __future__ import annotations
-import argparse,json,sys
+import argparse,hashlib,json,struct,sys
 from pathlib import Path
 from typing import Any
 import yaml
@@ -14,6 +14,8 @@ W9_RIME_REFERENCE_SCHEMA=ROOT/"data/alignment/w9_rime/reference_geometry.schema.
 W9_RIME_REFERENCE_PACKET=ROOT/"data/alignment/w9_rime/CAT1883-CAT2095-recto-reference-geometry.json"
 W10_LINE_PAIR_SCHEMA=ROOT/"data/alignment/w10_lawful_line_pair/source_exact_line_pair.schema.json"
 W10_LINE_PAIR_PACKET=ROOT/"data/alignment/w10_lawful_line_pair/CAT1883-CAT2095-verso-pleyte-line-2.json"
+W14_DOSSIER_SCHEMA=ROOT/"data/alignment/w14_physical_line_evidence/physical_line_correspondence.schema.json"
+W14_DOSSIER_PACKET=ROOT/"data/alignment/w14_physical_line_evidence/plate_xxix_correspondence.json"
 ACQ_SCHEMA=ROOT/"schemas/acquisition_manifest.schema.json"
 ANNOTATION_SCHEMA=ROOT/"schemas/annotation.schema.json"
 REGISTRY=ROOT/"data/sources/registry.yaml"
@@ -38,6 +40,128 @@ W10_EXPECTED_EDITION={
     "numbered_item":2,
     "plate":"XXIX",
 }
+
+W14_EXPECTED={
+    "physical_support_id":"Cat.1883 + Cat.2095",
+    "support_group":"Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "image_sha256":"506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
+    "volume_1_sha256":"a387da74c1551158b7e55ccee36969d2189dcfcd69edb3945593910654a46e47",
+    "volume_2_sha256":"cd466c1867bb394c8c69b95aaf4762996ec4b4f70ac8ccff329318570dce7edb",
+    "page71_render_sha256":"d7d29b1c6ae17d61ed776389e1d47608f5793b5b411f676bf5c8faf8fa3a5706",
+    "page49_render_sha256":"e632aaca571603c04daff17422c8c12de460c5771212b17d6aa69dc433dbfd1f",
+    "image_rights_url":"https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+    "image_attribution":"Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 8",
+    "volume_1_url":"https://archive.org/download/papyrusdeturin01muse/papyrusdeturin01muse.pdf",
+    "volume_2_url":"https://archive.org/download/papyrusdeturin02muse/papyrusdeturin02muse.pdf",
+    "volume_1_rights_url":"https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin01muse).pdf",
+    "volume_2_rights_url":"https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin02muse).pdf",
+}
+
+def validate_w14_correspondence(packet:Any,schema_path:Path=W14_DOSSIER_SCHEMA)->list[str]:
+    """Validate the fixed-source W14 visual investigation and its fail-closed result."""
+    errors=schema_errors(packet,schema_path)
+    if errors:return errors
+    support=packet["physical_support"]
+    image=packet["image_asset"]
+    edition=packet["edition_assets"]
+    inspection=packet["inspection"]
+    finding=packet["finding"]
+    for key,value in (("source_object_id",W14_EXPECTED["physical_support_id"]),("support_group",W14_EXPECTED["support_group"]),("support_count_in_group",1)):
+        if support.get(key)!=value:errors.append(f"W14 physical support identity mismatch for {key}")
+    if support.get("image_view")!="verso":errors.append("W14 source image must remain identified as the verso")
+    if image.get("sha256")!=W14_EXPECTED["image_sha256"]:errors.append("W14 source image hash mismatch")
+    if image.get("coordinate_asset_sha256")!=image.get("sha256"):errors.append("W14 image coordinates must bind to original TIFF bytes")
+    if image.get("license_id")!="CC-BY-2.0" or image.get("license_evidence_status")!="verified" or image.get("license_evidence_url")!=W14_EXPECTED["image_rights_url"]:errors.append("W14 image rights evidence is absent or not verified for the exact figure")
+    if image.get("attribution")!=W14_EXPECTED["image_attribution"]:errors.append("W14 image attribution changed")
+    if edition.get("volume_1_sha256")!=W14_EXPECTED["volume_1_sha256"]:errors.append("W14 volume 1 source hash mismatch")
+    if edition.get("volume_2_sha256")!=W14_EXPECTED["volume_2_sha256"]:errors.append("W14 volume 2 source hash mismatch")
+    if edition.get("volume_1_url")!=W14_EXPECTED["volume_1_url"] or edition.get("volume_2_url")!=W14_EXPECTED["volume_2_url"]:errors.append("W14 historical edition source URL mismatch")
+    if edition.get("edition_rights")!="PDM-1.0" or edition.get("rights_evidence_status")!="verified" or edition.get("volume_1_rights_evidence_url")!=W14_EXPECTED["volume_1_rights_url"] or edition.get("volume_2_rights_evidence_url")!=W14_EXPECTED["volume_2_rights_url"]:errors.append("W14 historical edition rights evidence is absent or not verified separately for both volumes")
+    if edition.get("modern_transcription_included") is not False:errors.append("W14 dossier must not reproduce the modern article transcription")
+    renders={r["asset_id"]:r for r in inspection["rendered_assets"]}
+    expected_renders={
+        "pleyte_vol2_plate_xxix":{"pdf_physical_page":71,"dpi":220,"dimensions":[3510,2169],"byte_size":927350,"sha256":W14_EXPECTED["page71_render_sha256"]},
+        "pleyte_vol1_printed_page_41":{"pdf_physical_page":49,"dpi":180,"dimensions":[1740,2323],"byte_size":612534,"sha256":W14_EXPECTED["page49_render_sha256"]},
+    }
+    for asset_id,expected in expected_renders.items():
+        observed=renders.get(asset_id,{})
+        for field,value in expected.items():
+            if observed.get(field)!=value:
+                errors.append(f"W14 rendered asset {field} mismatch for {asset_id}")
+    if inspection.get("plate_actually_visually_inspected") is not True:errors.append("W14 Plate XXIX must be visually inspected")
+    if inspection.get("transformations")!=["PDF page rendered upright with Poppler at recorded DPI; no crop, rotation, mirroring, or geometric warp applied to the source page"]:errors.append("W14 page transformation history is incomplete or altered")
+    if finding.get("candidate_state")!="rejected_side_mismatch":errors.append("W14 p. 41 item 2 candidate cannot be promoted past the observed side mismatch")
+    if finding.get("candidate_image_side")!="verso" or finding.get("candidate_edition_panel_side")!="recto":errors.append("W14 side comparison contradicts the inspected evidence")
+    if finding.get("exact_line_correspondence") is not False:errors.append("W14 investigation cannot claim exact line correspondence")
+    if finding.get("plate_reverse_panel_line_correspondence")!="unresolved":errors.append("W14 separate reverse panel correspondence must remain unresolved")
+    if finding.get("independent_expert_reviewed_line_pairs")!=0:errors.append("W14 has no independent expert-reviewed line pair")
+    if finding.get("independent_physical_supports_inspected")!=1:errors.append("W14 physical support count must not split joined catalog numbers")
+    if finding.get("scoreable_gold") is not False or finding.get("training_admission")!="blocked":errors.append("W14 source investigation cannot promote to gold or training")
+    if finding.get("benchmark_overlap")!="unresolved_quarantined":errors.append("W14 benchmark overlap must remain unresolved and quarantined")
+    if finding.get("reviewer_id") is not None:errors.append("W14 execution owner cannot invent or assign an independent reviewer")
+    locator=packet["candidate_locator"]
+    if locator.get("volume_1_printed_page")!=41 or locator.get("numbered_item")!=2 or locator.get("volume_2_plate")!="XXIX":errors.append("W14 historical edition locator changed")
+    if locator.get("original_candidate_bounds")!=[2800,1690,6500,2020]:errors.append("W14 historical approximate source-image envelope was altered")
+    if locator.get("semantics")!="bibliographic text item and recto text-panel locus; not a verso line identifier":errors.append("W14 item 2 must not be misrepresented as a verso line identifier")
+    comparison=packet["coordinate_comparison"]
+    if comparison.get("source_image_bounds")!=locator.get("original_candidate_bounds") or comparison.get("source_bounds_asset_sha256")!=image.get("sha256"):errors.append("W14 coordinate comparison is detached from the historical original-image candidate")
+    if comparison.get("mapping_state")!="not_mappable_side_mismatch" or comparison.get("affine_transform") is not None:errors.append("W14 cannot invent a cross-side coordinate transform")
+    if comparison.get("edition_regions")!=["vol1-page41-item2-block","plate-xxix-recto-panel"]:errors.append("W14 coordinate comparison targets changed edition regions")
+    for region in inspection["visual_regions"]:
+        bounds=region["bounds"]
+        if len(bounds)!=4 or bounds[2]<=bounds[0] or bounds[3]<=bounds[1]:errors.append(f"W14 invalid visual-region geometry: {region['region_id']}")
+    return errors
+
+def tiff_dimensions(path:Path)->tuple[int,int]:
+    """Read width/height tags from a classic TIFF IFD using only the stdlib."""
+    with path.open("rb") as stream:
+        header=stream.read(8)
+        if len(header)!=8 or header[:2] not in (b"II",b"MM"):
+            raise AlignmentError(f"{path}: invalid TIFF header")
+        endian="<" if header[:2]==b"II" else ">"
+        version,ifd_offset=struct.unpack(endian+"HI",header[2:])
+        if version!=42:raise AlignmentError(f"{path}: unsupported TIFF version {version}; expected classic TIFF 42")
+        stream.seek(ifd_offset);count_bytes=stream.read(2)
+        if len(count_bytes)!=2:raise AlignmentError(f"{path}: truncated TIFF IFD")
+        count=struct.unpack(endian+"H",count_bytes)[0]
+        found={}
+        for _ in range(count):
+            entry=stream.read(12)
+            if len(entry)!=12:raise AlignmentError(f"{path}: truncated TIFF IFD entry")
+            tag,kind,n,value=struct.unpack(endian+"HHII",entry)
+            if tag not in (256,257):continue
+            if kind==3 and n==1:
+                dimension=struct.unpack(endian+"H",entry[8:10])[0]
+            elif kind==4 and n==1:dimension=value
+            else:raise AlignmentError(f"{path}: unsupported TIFF dimension tag encoding for {tag}")
+            found[tag]=dimension
+        if 256 not in found or 257 not in found or found[256]<1 or found[257]<1:
+            raise AlignmentError(f"{path}: TIFF width/height tags are missing or invalid")
+        return found[256],found[257]
+
+def verify_w14_assets(image_path:Path,volume_1_path:Path,volume_2_path:Path)->dict[str,Any]:
+    """Hash local original assets and inspect the TIFF dimensions without modifying them."""
+    assets=(
+        ("rime_fig8_image",image_path,W14_EXPECTED["image_sha256"],41686648),
+        ("pleyte_volume_1",volume_1_path,W14_EXPECTED["volume_1_sha256"],17706032),
+        ("pleyte_volume_2",volume_2_path,W14_EXPECTED["volume_2_sha256"],17581142),
+    )
+    result={}
+    for asset_id,path,expected_hash,expected_bytes in assets:
+        digest=hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda:stream.read(1024*1024),b""):digest.update(chunk)
+        actual_hash=digest.hexdigest()
+        actual_bytes=path.stat().st_size
+        if actual_hash!=expected_hash:raise AlignmentError(f"{asset_id}: SHA-256 mismatch ({actual_hash})")
+        if actual_bytes!=expected_bytes:raise AlignmentError(f"{asset_id}: byte-size mismatch ({actual_bytes})")
+        record={"sha256":actual_hash,"byte_size":actual_bytes}
+        if asset_id=="rime_fig8_image":
+            dimensions=tiff_dimensions(path)
+            if list(dimensions)!=[6595,4710]:raise AlignmentError(f"{asset_id}: dimension mismatch ({dimensions[0]}x{dimensions[1]})")
+            record["dimensions"]=list(dimensions)
+        result[asset_id]=record
+    return result
 
 def validate_w10_line_pair(packet:Any,schema_path:Path=W10_LINE_PAIR_SCHEMA)->list[str]:
     """Validate a rights-cleared but unreviewed image-to-edition line-reference pilot.
@@ -239,6 +363,10 @@ def main(argv=None)->int:
     ref.add_argument("manifest",type=Path,nargs="?",default=W9_RIME_REFERENCE_PACKET);ref.add_argument("--schema",type=Path,default=W9_RIME_REFERENCE_SCHEMA)
     w10=s.add_parser("validate-w10-pair",help="validate the W10 lawful image/edition locator candidate; never gold")
     w10.add_argument("manifest",type=Path,nargs="?",default=W10_LINE_PAIR_PACKET);w10.add_argument("--schema",type=Path,default=W10_LINE_PAIR_SCHEMA)
+    w14=s.add_parser("validate-w14-dossier",help="validate the W14 visual correspondence dossier; never gold")
+    w14.add_argument("manifest",type=Path,nargs="?",default=W14_DOSSIER_PACKET);w14.add_argument("--schema",type=Path,default=W14_DOSSIER_SCHEMA)
+    assets=s.add_parser("verify-w14-assets",help="verify locally obtained W14 originals by exact hash, size, and TIFF dimensions")
+    assets.add_argument("--rime-image",type=Path,required=True);assets.add_argument("--volume-1",type=Path,required=True);assets.add_argument("--volume-2",type=Path,required=True)
     a=p.parse_args(argv)
     try:
         if a.cmd=="validate-reference":
@@ -251,6 +379,15 @@ def main(argv=None)->int:
             if errors:raise AlignmentError("\n".join(errors))
             pair=packet["line_pair_candidate"]
             print(json.dumps({"investigation_id":packet["investigation_id"],"source_sha256":packet["source"]["image"]["sha256"],"edition_line_locator":pair["edition_line_locator"],"geometry":pair["geometry"]["bounds"],"mapping_state":pair["mapping_state"],"review_state":pair["review_state"],"gold_scoreable":False,"training_admission":"blocked","result":"PASS: lawful source pointers and candidate geometry validated; no line match or gold asserted"},sort_keys=True,indent=2))
+            return 0
+        if a.cmd=="validate-w14-dossier":
+            packet=read(a.manifest);errors=validate_w14_correspondence(packet,a.schema)
+            if errors:raise AlignmentError("\n".join(errors))
+            finding=packet["finding"]
+            print(json.dumps({"dossier_id":packet["dossier_id"],"image_sha256":packet["image_asset"]["sha256"],"edition_volume_1_sha256":packet["edition_assets"]["volume_1_sha256"],"edition_volume_2_sha256":packet["edition_assets"]["volume_2_sha256"],"plate_visually_inspected":packet["inspection"]["plate_actually_visually_inspected"],"candidate_state":finding["candidate_state"],"reverse_panel_line_correspondence":finding["plate_reverse_panel_line_correspondence"],"independent_physical_supports":finding["independent_physical_supports_inspected"],"expert_reviewed_line_pairs":finding["independent_expert_reviewed_line_pairs"],"gold_scoreable":False,"training_admission":"blocked","result":"PASS: exact-source visual dossier validated; p. 41 item 2 side mismatch preserved; no gold asserted"},sort_keys=True,indent=2))
+            return 0
+        if a.cmd=="verify-w14-assets":
+            print(json.dumps(verify_w14_assets(a.rime_image,a.volume_1,a.volume_2),sort_keys=True,indent=2))
             return 0
         alignment=read(a.manifest);acq=read(a.acquisition);ann=read(a.annotation);registry=read(REGISTRY)
         errors,eligible=validate(alignment,acq,ann,registry)

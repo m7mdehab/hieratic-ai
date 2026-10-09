@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/data/alignment/w14_physical_line_evidence/physical_line_correspondence.schema.json",
+  "title": "W14 source-exact physical image and edition correspondence dossier",
+  "description": "Fixed-source visual investigation. A rejected side mismatch or unresolved panel comparison is never gold or training admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dossier_id", "physical_support", "image_asset", "edition_assets", "candidate_locator", "inspection", "coordinate_comparison", "finding"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "dossier_id": {"const": "W14-DATA-006-CAT1883-2095-PLATE-XXIX-v1"},
+    "physical_support": {
+      "type": "object", "additionalProperties": false,
+      "required": ["institution", "source_object_id", "support_group", "support_count_in_group", "image_view", "identity_evidence_url"],
+      "properties": {
+        "institution": {"const": "Museo Egizio, Turin"},
+        "source_object_id": {"const": "Cat.1883 + Cat.2095"},
+        "support_group": {"const": "Cat.1883 + Cat.2095 (one joined five-fragment support)"},
+        "support_count_in_group": {"const": 1},
+        "image_view": {"const": "verso"},
+        "identity_evidence_url": {"type": "string", "format": "uri"}
+      }
+    },
+    "image_asset": {
+      "type": "object", "additionalProperties": false,
+      "required": ["figure", "file_url", "sha256", "byte_size", "dimensions", "mime_type", "coordinate_asset_sha256", "license_id", "license_evidence_status", "license_evidence_url", "attribution"],
+      "properties": {
+        "figure": {"const": 8},
+        "file_url": {"const": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/8/original.tif"},
+        "sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"},
+        "byte_size": {"const": 41686648},
+        "dimensions": {"const": [6595, 4710]},
+        "mime_type": {"const": "image/tiff"},
+        "coordinate_asset_sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"},
+        "license_id": {"const": "CC-BY-2.0"},
+        "license_evidence_status": {"const": "verified"},
+        "license_evidence_url": {"type": "string", "format": "uri"},
+        "attribution": {"type": "string", "minLength": 20}
+      }
+    },
+    "edition_assets": {
+      "type": "object", "additionalProperties": false,
+      "required": ["edition_id", "volume_1_url", "volume_1_sha256", "volume_1_rights_evidence_url", "volume_2_url", "volume_2_sha256", "volume_2_rights_evidence_url", "edition_rights", "rights_evidence_status", "modern_transcription_included"],
+      "properties": {
+        "edition_id": {"const": "PLEYTE-ROSSI-PAPYRUS-DE-TURIN-1869-1876"},
+        "volume_1_url": {"type": "string", "format": "uri"},
+        "volume_1_sha256": {"const": "a387da74c1551158b7e55ccee36969d2189dcfcd69edb3945593910654a46e47"},
+        "volume_1_rights_evidence_url": {"type": "string", "format": "uri"},
+        "volume_2_url": {"type": "string", "format": "uri"},
+        "volume_2_sha256": {"const": "cd466c1867bb394c8c69b95aaf4762996ec4b4f70ac8ccff329318570dce7edb"},
+        "volume_2_rights_evidence_url": {"type": "string", "format": "uri"},
+        "edition_rights": {"const": "PDM-1.0"},
+        "rights_evidence_status": {"const": "verified"},
+        "modern_transcription_included": {"const": false}
+      }
+    },
+    "candidate_locator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["volume_1_printed_page", "volume_1_pdf_physical_page", "numbered_item", "volume_2_plate", "volume_2_pdf_physical_page", "semantics", "original_candidate_bounds", "coordinate_asset_sha256"],
+      "properties": {
+        "volume_1_printed_page": {"const": 41},
+        "volume_1_pdf_physical_page": {"const": 49},
+        "numbered_item": {"const": 2},
+        "volume_2_plate": {"const": "XXIX"},
+        "volume_2_pdf_physical_page": {"const": 71},
+        "semantics": {"const": "bibliographic text item and recto text-panel locus; not a verso line identifier"},
+        "original_candidate_bounds": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "minItems": 4, "maxItems": 4},
+        "coordinate_asset_sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"}
+      }
+    },
+    "inspection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plate_actually_visually_inspected", "renderer", "rendered_assets", "transformations", "visual_regions", "observations"],
+      "properties": {
+        "plate_actually_visually_inspected": {"const": true},
+        "renderer": {"const": "Poppler pdftoppm 26.07.0"},
+        "rendered_assets": {
+          "type": "array", "minItems": 2,
+          "items": {"type": "object", "additionalProperties": false, "required": ["asset_id", "pdf_physical_page", "dpi", "dimensions", "byte_size", "sha256"], "properties": {
+            "asset_id": {"enum": ["pleyte_vol1_printed_page_41", "pleyte_vol2_plate_xxix"]},
+            "pdf_physical_page": {"type": "integer"}, "dpi": {"type": "integer"},
+            "dimensions": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}], "minItems": 2, "maxItems": 2},
+            "byte_size": {"type": "integer", "minimum": 1}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }}
+        },
+        "transformations": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "visual_regions": {
+          "type": "array", "minItems": 3,
+          "items": {"type": "object", "additionalProperties": false, "required": ["region_id", "asset_id", "bounds", "description", "coordinate_meaning"], "properties": {
+            "region_id": {"type": "string"}, "asset_id": {"enum": ["pleyte_vol1_printed_page_41", "pleyte_vol2_plate_xxix"]},
+            "bounds": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "minItems": 4, "maxItems": 4},
+            "description": {"type": "string", "minLength": 10}, "coordinate_meaning": {"const": "approximate inspection envelope in rendered-page pixels; not a source-image line box"}
+          }}
+        },
+        "observations": {"type": "array", "items": {"type": "string", "minLength": 10}, "minItems": 3}
+      }
+    },
+    "coordinate_comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_image_bounds", "source_bounds_coordinate_system", "source_bounds_asset_sha256", "edition_regions", "mapping_state", "transform_chain", "affine_transform", "reason"],
+      "properties": {
+        "source_image_bounds": {"const": [2800, 1690, 6500, 2020]},
+        "source_bounds_coordinate_system": {"const": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive"},
+        "source_bounds_asset_sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"},
+        "edition_regions": {"const": ["vol1-page41-item2-block", "plate-xxix-recto-panel"]},
+        "mapping_state": {"const": "not_mappable_side_mismatch"},
+        "transform_chain": {"const": ["original TIFF coordinate system retained for the historical approximate box", "PDF pages rendered upright at their recorded DPI; no geometric mapping to the TIFF attempted because the locator resolves to the opposite side"]},
+        "affine_transform": {"type": "null"},
+        "reason": {"const": "The source locator is a recto text locus and the pinned photograph is the verso; a numeric transform would imply false physical line identity."}
+      }
+    },
+    "finding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_state", "candidate_image_side", "candidate_edition_panel_side", "exact_line_correspondence", "plate_reverse_panel_line_correspondence", "independent_physical_supports_inspected", "independent_expert_reviewed_line_pairs", "scoreable_gold", "training_admission", "benchmark_overlap", "reviewer_id", "rationale"],
+      "properties": {
+        "candidate_state": {"const": "rejected_side_mismatch"},
+        "candidate_image_side": {"const": "verso"}, "candidate_edition_panel_side": {"const": "recto"},
+        "exact_line_correspondence": {"const": false}, "plate_reverse_panel_line_correspondence": {"const": "unresolved"},
+        "independent_physical_supports_inspected": {"const": 1}, "independent_expert_reviewed_line_pairs": {"const": 0},
+        "scoreable_gold": {"const": false}, "training_admission": {"const": "blocked"},
+        "benchmark_overlap": {"const": "unresolved_quarantined"}, "reviewer_id": {"type": "null"},
+        "rationale": {"type": "array", "items": {"type": "string", "minLength": 15}, "minItems": 3}
+      }
+    }
+  }
+}

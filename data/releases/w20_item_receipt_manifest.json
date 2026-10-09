@@ -9,7 +9,7 @@
     "unresolved_benchmark_overlap": true
   },
   "classification": "SOURCE_EVIDENCE_ONLY_NO_DATASET_ADMISSION",
-  "evidence_sha256": "4590d2fb0f58c0f75be57b3d002f2ffde3fa70aac17a6166e0ba2ab6c8ab0f77",
+  "evidence_sha256": "9db85fc1f1c688adbb60905e3b7c8c7d1b7e5ee3f10eac634eb2eefdc983468c",
   "items": [
     {
       "benchmark_screen": {
@@ -13479,11 +13479,11 @@
   ],
   "schema_version": "w20-data008-receipt-manifest/1.0.0",
   "source_receipts": {
-    "akupal_evidence_sha256": "010e97fcfb2f16ceb5c52849ceef975ea4794ae8196929ca88f36d144d281616",
-    "museum_photo_evidence_sha256": "44e8cbfb64c97a4b253145c5d9d9f51cb91c5a2337c50e41403af1ed834e8241",
-    "r017_public_metadata_sha256": "252404fdcf8ac3e0b71e9619c85b78d2968d3acd82a93e707d7d62e5c4ad7678",
+    "akupal_evidence_sha256": "26516fa4701a050aada1bbb044383035c44afd6496e7acf04cbc2504ac3e48a2",
+    "museum_photo_evidence_sha256": "e531f25fcf114059b920db3199c397555521bd65ce35a0257356b770f2f1d871",
+    "r017_public_metadata_sha256": "d464a2382b7f8313620d847cf3e01e42007e7b3233192e2fa2fa1b4974f887c7",
     "r026_accepted_source_receipt_sha256": "e97ebd9fc919772dde478b5daf4cdb4393f1dad8c78307e3f7a9d1048b03ecaa",
-    "w19_source_receipt_sha256": "64ae4db150c43fb7657cbf0e41a5014d432f17984077a9c43cb4a5d39d877de4"
+    "w19_source_receipt_sha256": "f684b49f74cdfd75487a08bb09b4c2db375d94594c65e3c03e633a7d7878a155"
   },
   "summary": {
     "akupal_sign_ids_screened": 240,

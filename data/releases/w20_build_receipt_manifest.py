@@ -214,7 +214,8 @@ def main(argv=None) -> int:
     r026_path = ROOT / "docs/research/R026_ORIGINAL_SOURCE_BYTE_RECEIPTS.json"
     r026 = read_receipt(r026_path) if r026_path.is_file() else None
     w19_path = ROOT / "data/releases/w19_aku_pal_original_image_receipts.json"
-    w19_raw = w19_path.read_bytes()
+    from data.releases.w20_aku_pal_source_audit import repository_evidence_bytes
+    w19_raw = repository_evidence_bytes(w19_path, root=ROOT)
     w19 = read_receipt(w19_path)
     manifest = build_manifest(read_receipt(args.census), read_receipt(args.photos), r026, w19, hashlib.sha256(w19_raw).hexdigest())
     errors = validate_manifest(manifest)

@@ -243,9 +243,10 @@ def write_json_atomic(path: Path, value: dict[str, Any]) -> None:
 
 
 def apply_benchmark_screen(items: list[dict[str, Any]], *, root: Path | None = None) -> dict[str, Any]:
+    from data.releases.w20_aku_pal_source_audit import repository_evidence_bytes
     repository = root or Path(__file__).resolve().parents[2]
     public_path = repository / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl"
-    raw = public_path.read_bytes()
+    raw = repository_evidence_bytes(public_path, root=repository)
     rows = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
     if len(rows) != 266:
         raise PhotoAuditError(f"pinned public R-017 census expected 266 rows, got {len(rows)}")

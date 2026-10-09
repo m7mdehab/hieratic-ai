@@ -1445,10 +1445,10 @@
     "no_literal_match_is_clearance": false,
     "positive_public_metadata_overlaps": 63,
     "public_r017_row_count": 266,
-    "public_r017_sha256": "252404fdcf8ac3e0b71e9619c85b78d2968d3acd82a93e707d7d62e5c4ad7678",
+    "public_r017_sha256": "d464a2382b7f8313620d847cf3e01e42007e7b3233192e2fa2fa1b4974f887c7",
     "screened_sign_ids": 240,
     "sealed_records_read": 0,
-    "w19_receipt_sha256": "64ae4db150c43fb7657cbf0e41a5014d432f17984077a9c43cb4a5d39d877de4"
+    "w19_receipt_sha256": "f684b49f74cdfd75487a08bb09b4c2db375d94594c65e3c03e633a7d7878a155"
   },
   "caveats": [
     "AKU-PAL record licenses apply only to the exact individually licensed images under the published FAQ; repository inventory is not independently protected authority onboarding.",
@@ -1467,7 +1467,7 @@
     "retrieved_url": "https://aku-pal.uni-mainz.de/api/graphemes",
     "unique_indexed_sign_ids": 48127
   },
-  "evidence_sha256": "010e97fcfb2f16ceb5c52849ceef975ea4794ae8196929ca88f36d144d281616",
+  "evidence_sha256": "26516fa4701a050aada1bbb044383035c44afd6496e7acf04cbc2504ac3e48a2",
   "expansion_attempt": {
     "completed_240_id_receipt_retained": true,
     "completion_state": "INTERRUPTED_NO_COMPLETE_RECEIPT",

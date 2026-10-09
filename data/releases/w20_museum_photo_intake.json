@@ -4,14 +4,14 @@
     "no_literal_match_count": 7,
     "no_literal_match_is_clearance": false,
     "public_r017_row_count": 266,
-    "public_r017_sha256": "252404fdcf8ac3e0b71e9619c85b78d2968d3acd82a93e707d7d62e5c4ad7678",
+    "public_r017_sha256": "d464a2382b7f8313620d847cf3e01e42007e7b3233192e2fa2fa1b4974f887c7",
     "sealed_records_read": 0
   },
   "bytes_hashed": 7,
   "candidate_count": 7,
   "classification": "SOURCE_PHOTO_EVIDENCE_ONLY_NOT_DATA002_ADMISSION",
   "distinct_physical_support_groups": 3,
-  "evidence_sha256": "44e8cbfb64c97a4b253145c5d9d9f51cb91c5a2337c50e41403af1ed834e8241",
+  "evidence_sha256": "e531f25fcf114059b920db3199c397555521bd65ce35a0257356b770f2f1d871",
   "global_boundaries": [
     "No image bytes or TPOP partner text stored in the repository.",
     "Commons file-page rights and museum accession references are item-specific evidence; they do not authorize the scholarly transcription.",

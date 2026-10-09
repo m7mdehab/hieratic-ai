@@ -13,6 +13,7 @@ import html
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import time
@@ -66,6 +67,23 @@ def canonical(value: Any) -> bytes:
 
 def digest(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def repository_evidence_bytes(path: Path, *, root: Path | None = None) -> bytes:
+    """Return pinned Git bytes while rejecting real content drift, independent of checkout EOL conversion."""
+    repository = root or Path(__file__).resolve().parents[2]
+    working = path.read_bytes()
+    git_dir = repository / ".git"
+    if not git_dir.exists():  # isolated test fixtures, not a repository checkout
+        return working
+    try:
+        relative = path.resolve().relative_to(repository.resolve()).as_posix()
+        blob = subprocess.check_output(["git", "show", f"HEAD:{relative}"], cwd=repository)
+    except (ValueError, subprocess.CalledProcessError, OSError) as exc:
+        raise AuditError(f"pinned repository evidence unavailable for {path.name}") from exc
+    if working.replace(b"\r\n", b"\n") != blob:
+        raise AuditError(f"repository evidence drift detected for {path.name}")
+    return blob
 
 
 def bounded_get(url: str, limit: int, accept: str) -> tuple[bytes, str, str]:
@@ -371,8 +389,8 @@ def benchmark_registry(root: Path | None = None) -> tuple[dict[int, list[dict[st
     repository = root or Path(__file__).resolve().parents[2]
     public_path = repository / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl"
     w19_path = repository / "data/releases/w19_aku_pal_original_image_receipts.json"
-    public_raw = public_path.read_bytes()
-    w19_raw = w19_path.read_bytes()
+    public_raw = repository_evidence_bytes(public_path, root=repository)
+    w19_raw = repository_evidence_bytes(w19_path, root=repository)
     public_rows = []
     for line in public_raw.decode("utf-8").splitlines():
         if not line.strip():

@@ -896,6 +896,23 @@ class CorpusReleaseTests(unittest.TestCase):
         self.assertEqual(plan_a, plan_b)
         self.assertEqual(len(set(selected_a)), len(selected_a))
 
+    def test_w20_registry_hashes_use_git_blob_not_windows_checkout_newlines(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "docs/research").mkdir(parents=True)
+            path = root / "docs/research/public.jsonl"
+            path.write_bytes(b'{"id":1}\r\n')
+            self.assertEqual(b'{"id":1}\r\n', akupal_w20.repository_evidence_bytes(path, root=root))
+            (root / ".git").write_text("fixture", encoding="utf-8")
+            with patch.object(akupal_w20.subprocess, "check_output", return_value=b'{"id":2}\n'):
+                with self.assertRaisesRegex(akupal_w20.AuditError, "drift detected"):
+                    akupal_w20.repository_evidence_bytes(path, root=root)
+        _, _, receipt = akupal_w20.benchmark_registry()
+        public_path = ROOT / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl"
+        pinned_public = akupal_w20.repository_evidence_bytes(public_path)
+        self.assertEqual(akupal_w20.digest(pinned_public), receipt["public_r017_sha256"])
+        self.assertEqual(266, receipt["public_r017_row_count"])
+
 
 if __name__ == "__main__":
     unittest.main()

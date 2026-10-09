@@ -167,8 +167,10 @@ def generate_scrambled_control(
 ) -> bytes:
     """Generate deterministic scrambled control image permuting spatial tiles.
 
-    Preserves exact global color histogram and texture statistics while disrupting
-    all continuous scribal ink strokes, ligatures, and glyph morphology.
+    Reorders complete spatial tiles while preserving their pixel histograms;
+    within-tile ink strokes and incomplete edge strips remain recognizable.
+    This is an *exploratory corrupted-layout control*, not a certified blank
+    or proof that all Hieratic sign structure was destroyed.
     """
     if not isinstance(image_bytes, bytes) or not image_bytes or len(image_bytes) > 40 * 1024 * 1024:
         raise ImageConditioningError("Invalid or oversized image bytes for scrambling")
@@ -535,6 +537,7 @@ def execute_hieratic_experiment(
     control_verified = (
         not is_simulated and successful_pair and inverted_valid and scrambled_valid
         and different_text and blank_correctly_identified
+        and not blank_hallucinates_script and not scrambled_hallucinates_script
     )
     sensitivity_controls = {
         "blank_control_sha256": hashlib.sha256(blank).hexdigest(),

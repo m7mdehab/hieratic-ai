@@ -1,0 +1,35 @@
+name: W19 AKU-PAL Individual CC BY Image Identity Audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "data/releases/w19_aku_pal_binary_probe.py"
+      - "data/releases/W19_ORIGINAL_SIGN_IMAGE_EVIDENCE.md"
+      - "tests/data/test_aku_pal_binary_probe.py"
+      - ".github/workflows/w19-akupal-binary-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-exact-licensed-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Run adversarial per-image rights and input identity checks
+        run: python -m unittest tests.data.test_aku_pal_binary_probe -v
+      - name: Independently verify eight real publisher individual sign JSON and license gated binaries
+        run: |
+          python -m data.releases.w19_aku_pal_binary_probe "$RUNNER_TEMP/w19-sign-image-hashes-only.json"
+      - name: Preserve licensed image hashes and structured source proof only
+        uses: actions/upload-artifact@v4
+        with:
+          name: w19-akupal-original-image-digests-no-binaries
+          path: /home/runner/work/_temp/w19-sign-image-hashes-only.json
+          if-no-files-found: error
+          retention-days: 30

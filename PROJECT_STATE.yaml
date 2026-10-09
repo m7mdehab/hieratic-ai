@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W15_TLA_TRANSFER_READINESS_MERGED_W14_AGENT_REVISIONS_PENDING"
+  current_wave: "W16_TLA_REAL_CORPUS_TRANSFER_NEGATIVE_RESULT_MERGED"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,7 +38,7 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "W15 LING-003 external Late Egyptian TLA v19 premium: publisher 3606 sentence German paired scholarly corpus CC BY-SA 4.0 verified, BUT original publisher train.jsonl unavailable as byte-verified local asset despite public web preview; no 3606 scored predictions; dataset omits independent manuscript/witness IDs and shared TLA/AES editorial lineage requires separate review. PR #117 implementation merged at d3d4d8f02f33cdb212071b0d391dce0525aecb2f, hosted governance 37982594956 success. LING-003 still 0/2; no capability credit."
+    - "W16 LING-003 source access barrier RESOLVED: actual published TLA 3606 Late Egyptian German source rows verified on hosted runner (original Git blob 74a058b192314b165bec33278fb882ba1333b172, SHA256 dfded75c7d34bc1f2f12e18af6936394dc0c5cadacd1229dc28d46751d6389df, 1904138 bytes), but genuine preregistered AES-only transfer is poor: 7069/24437 Egyptian tokens attested (28.927446%), German word micro F1 0.01803378 on 3606 complete target references. No TLA physical witness IDs, independent editorial genealogy or fluent semantic evidence. Requires new source/expert gold before LING-003 acceptance; points 0/2. Hosted source/score run 37986861986."
     - "W14 DATA-006 PR #114 open, exact-head CI success 37978486542, overseer REVISION REQUIRED: modern RIME 2022 physical-description note 17 explicitly says older recto/verso designations were inverted. Historical Plate XXIX nine-line Ramesses II panel may be modern Fig.8 verso (nine lines), so dossier cannot force rejected_side_mismatch on label names alone. Need original plate/figure visual convention crosswalk, page41 item2 text versus line, no expert gold or DATA-008 admission."
     - "W14 VLM-001 PR #115 open, exact-head CI success 37980108941/37980108894/37980109384, overseer REVISION REQUIRED: implementation would attempt 25 neutral source calls +2 leading full-source calls +8 dual-prompt controls =35, but reported 29 excludes six leading calls. Cross-support Jaccard pools three Cat2044 crops versus one RIME full; script/no-script heuristic and primary papyrus genre attribution unreliable. Missing independently accessible private raw receipt; correct before scientific accept, Grade E NOT_VERIFIED/F STRICTLY_NO, VLM points 0."
     - "DATA-008: W8 CC0 Cat.2044/013 original and W9 RIME Cat.1883+2095 processed figure are source-verified images across two physical manuscript supports. W10 RIME verso Fig.8/Pleyte-Rossi p.41 Plate XXIX is a new source-locked unreviewed bibliographic/candidate line envelope, NOT a verified line-to-text match. Zero independently reviewed aligned readings, zero gold, zero production admissions; benchmark and rights gates remain."
@@ -84,34 +84,40 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W15 substantive overseer LING-003 execution completed as source-locked
-  experimental SOFTWARE READINESS PR #117, merged on main
-  d3d4d8f02f33cdb212071b0d391dce0525aecb2f after exact-head
-  Project Governance 37982594956 success. Independent published target
-  discovered: Berlin/Saxon Academies TLA Late Egyptian sentences corpus v19,
-  premium 3606 original Egyptian transliteration to German translations,
-  rights CC BY-SA 4.0; exact HF dataset revision
-  8af85941783ba575d5a8985c80c688f948c50040, original JSONL unacquired
-  locally and SHA256 unverified. Preregistration committed first at
-  319f7baf3bf15df0b29c9d79053f311648bc9a19. Train-only German
-  gloss/sentence retrieval uses published W11 AES donor 3021/1130 text groups.
-  Deterministic predictor, source identity and rights guards, complete 3606
-  row evaluator, adversarial tests and readiness docs merged. NO REAL
-  target evaluation was executed; do not claim TLA results. TLA release
-  has no physical manuscript IDs and shares editorial genealogy with AES;
-  cannot claim independent source/witness or fluent German semantic adequacy.
-  W14 Luna DATA-006 PR #114 still revision required: RIME recto/verso
-  historical side-naming inversion; correction execution prompt at
-  https://github.com/m7mdehab/hieratic-ai/pull/114#issuecomment-6087992068.
-  W14 Anti-Gravity VLM-001 PR #115 still revision required: 35 potential
-  forward calls versus 29 counted and invalid unmatched cross-support
-  comparison; correction execution prompt at
-  https://github.com/m7mdehab/hieratic-ai/pull/115#issuecomment-6087992630.
-  Recheck exact PR heads and review revised source pixels and authentic
-  private inference receipts before merging either. Preserve 34.5/100
-  capability, 14% historical research coverage, LING-003 0/2, VLM-001
-  0/2, DATA-008 zero admitted, zero independent Hieratic manuscript
-  reviewed gold lines, zero accepted real Hieratic benchmark evaluations,
-  zero new neural models. Do not access official Egyptian-PC TEST,
-  protected benchmark answers, unlicensed modern editorial transcription,
-  external expert contacts or paid compute without separate authorization.
+  W16 REAL ORIGINAL SOURCE EVALUATION PASSED on GitHub hosted isolated Linux
+  run 37986861986, with Project Governance 37986861883 PASS.
+  Original CC BY-SA 4.0 TLA Late Egyptian v19 premium public publisher
+  Git blob 74a058b192314b165bec33278fb882ba1333b172,
+  original SHA256 dfded75c7d34bc1f2f12e18af6936394dc0c5cadacd1229dc28d46751d6389df,
+  1904138 bytes and exactly 3606 published scholarly text-only
+  Egyptian transliterations with German editorial sentence references.
+  W15 frozen AES-only lexical method preregistered independently before
+  target file acquisition; donor 3021 sentences / 1130 source text groups.
+  All 3606 target sentences scored, 0 missing references.
+  Source transliteration tokens 24437, seen in donor 7069 (28.927446%);
+  unseen 17368. Predicted German words 8729; gold German words 35854;
+  overlapping German unigram words 402; micro precision .04605339,
+  recall .01121214, F1 .01803378 and sentence macro F1 .01598327.
+  All 3606 cases used word-gloss fallback, zero full parallel-sentence
+  matches. The weak transfer is real negative evidence, not semantics.
+  Aggregate report SHA256 8052aec23e95dff0d5491ac779b8bddaf64ef0caad92ff7a61fc8fd49c664431;
+  hosted artifact id 11643212416 stores ONLY numeric metrics and digests.
+  W16 implementation PR #119 merged at
+  2a450638b070b3c9d8ee3317b683b895bb7fe1d5.
+  TLA original published 8-field extract has NO physical manuscript IDs,
+  and TLA/AES editorial genealogy may overlap; no independent physical
+  generalization or expert semantic adequacy is certified. Keep
+  verified capability 34.5/100, historical research coverage 14%,
+  original accepted task LING-002, LING-003 active 0/2,
+  zero trained models, zero Hieratic image benchmark experiments.
+  Priority for REAL 3.0-point unlocking: DATA-008 original
+  rights-cleared sign/line image AND target correspondence, independent
+  reviewer/license/benchmark authorization. Do not bypass blocked
+  production admission or modify weights to manufacture progress.
+  W14 DATA-006 Luna PR #114 head 1adfcf613fb30020ebb40f1afb236baf7a45c7a8
+  needs corrected 19th-v-2022 recto/verso crosswalk; Gemini VLM-001
+  PR #115 head 224ba9c601547da222af3d8ab97ab6a9b5d6026d needs
+  35-v-29 actual inference ledger and matched full/full comparisons.
+  Both PRs still unmerged, scientific REVISION REQUIRED.
+  Official Egyptian-PC TEST, sealed HieraticBench and protected
+  modern transcription remain strictly unaccessed or excluded.

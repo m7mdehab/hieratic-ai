@@ -1,0 +1,36 @@
+name: W17 AKU-PAL Original Sign Record Provenance Probe
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/w17-aku-pal-sign-probe.yml"
+      - "data/releases/w17_aku_pal_source_probe.py"
+      - "data/releases/w17_aku_pal_candidate_manifest.json"
+      - "tests/data/test_aku_pal_source_probe.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-source-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Test bounded source-host and admission-refusal logic
+        run: python -m unittest tests.data.test_aku_pal_source_probe -v
+      - name: Independently probe exact eight publisher metadata pages (NO image fetch)
+        run: |
+          python -m data.releases.w17_aku_pal_source_probe "$RUNNER_TEMP/w17-akupal-metadata-only.json"
+      - name: Archive only original-page hashes, endpoint receipt and probe limits
+        uses: actions/upload-artifact@v4
+        with:
+          name: w17-akupal-source-metadata-probe
+          path: |
+            /home/runner/work/_temp/w17-akupal-metadata-only.json
+          if-no-files-found: error
+          retention-days: 30

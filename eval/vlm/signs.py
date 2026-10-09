@@ -26,7 +26,14 @@ import sys
 import tempfile
 from typing import Any
 
-from PIL import Image, ImageDraw, ImageOps
+try:
+    from PIL import Image, ImageDraw, ImageOps
+except ImportError:
+    Image = None  # type: ignore[assignment]
+    ImageDraw = None  # type: ignore[assignment]
+    ImageOps = None  # type: ignore[assignment]
+
+from eval.vlm.smoke import create_png
 
 from eval.vlm.adapter import (
     BaseVLMAdapter,
@@ -497,6 +504,8 @@ def process_webp_to_png(
     target_size: tuple[int, int] = (256, 256),
 ) -> tuple[bytes, dict[str, Any]]:
     """Decode and pad WebP image to square PNG preserving aspect ratio on white background."""
+    if Image is None:
+        raise ImageConditioningError("Pillow is required for WebP decoding in live execution tier")
     with Image.open(io.BytesIO(webp_bytes)) as original:
         orig_w, orig_h = original.size
         ratio = min(target_size[0] / orig_w, target_size[1] / orig_h)
@@ -525,6 +534,19 @@ def process_webp_to_png(
 
 def generate_geometric_marks_control(size: tuple[int, int] = (256, 256)) -> bytes:
     """Generate simple non-text geometric marks control (circles, cross, square)."""
+    if Image is None:
+        def geom_pix(x: int, y: int) -> tuple[int, int, int]:
+            dx, dy = x - 128, y - 128
+            dist2 = dx * dx + dy * dy
+            if 62 * 62 <= dist2 <= 66 * 66:
+                return (0, 0, 0)
+            if abs(dx) <= 1 and 48 <= y <= 208:
+                return (0, 0, 0)
+            if abs(dy) <= 1 and 48 <= x <= 208:
+                return (0, 0, 0)
+            return (255, 255, 255)
+        return create_png(size[0], size[1], geom_pix)
+
     im = Image.new("RGB", size, (255, 255, 255))
     draw = ImageDraw.Draw(im)
     draw.ellipse([64, 64, 192, 192], outline=(0, 0, 0), width=3)
@@ -537,9 +559,20 @@ def generate_geometric_marks_control(size: tuple[int, int] = (256, 256)) -> byte
 
 def generate_photo_negative_control(size: tuple[int, int] = (256, 256), seed: int = 101) -> bytes:
     """Generate photographic paper grain background without characters or marks."""
-    im = Image.new("RGB", size, (240, 235, 220))
     import random
     rng = random.Random(seed)
+    if Image is None:
+        noise = [
+            (
+                max(0, min(255, 235 + rng.randint(-8, 8))),
+                max(0, min(255, 228 + rng.randint(-8, 8))),
+                max(0, min(255, 212 + rng.randint(-8, 8))),
+            )
+            for _ in range(size[0] * size[1])
+        ]
+        return create_png(size[0], size[1], lambda x, y: noise[y * size[0] + x])
+
+    im = Image.new("RGB", size, (240, 235, 220))
     pixels = im.load()
     for y in range(size[1]):
         for x in range(size[0]):
@@ -556,9 +589,22 @@ def generate_photo_negative_control(size: tuple[int, int] = (256, 256), seed: in
 
 def generate_identity_mark_control(size: tuple[int, int] = (256, 256)) -> bytes:
     """Generate ambiguous non-hieratic artisan/potter identity mark (hard negative)."""
+    if Image is None:
+        def ident_pix(x: int, y: int) -> tuple[int, int, int]:
+            if abs(x - 128) <= 2 and 40 <= y <= 216:
+                return (0, 0, 0)
+            if abs(y - 216) <= 1 and 60 <= x <= 196:
+                return (0, 0, 0)
+            if 96 <= y <= 150:
+                if abs((y - 96) - int(0.96 * (x - 72))) <= 2 and 72 <= x <= 128:
+                    return (0, 0, 0)
+                if abs((y - 96) - int(-0.96 * (x - 184))) <= 2 and 128 <= x <= 184:
+                    return (0, 0, 0)
+            return (255, 255, 255)
+        return create_png(size[0], size[1], ident_pix)
+
     im = Image.new("RGB", size, (255, 255, 255))
     draw = ImageDraw.Draw(im)
-    # Trident / star mason's mark
     draw.line([128, 40, 128, 216], fill=(0, 0, 0), width=4)
     draw.line([72, 96, 128, 150], fill=(0, 0, 0), width=4)
     draw.line([184, 96, 128, 150], fill=(0, 0, 0), width=4)
@@ -570,36 +616,41 @@ def generate_identity_mark_control(size: tuple[int, int] = (256, 256)) -> bytes:
 
 def generate_manuscript_photo_positive(size: tuple[int, int] = (256, 256)) -> bytes:
     """Generate genuine photographic hieratic positive crop from Cat.2044/013 if available."""
-    # Check if Cat.2044 original is in local private custody
-    candidates = [
-        Path.home() / "AppData" / "Local" / "HieraticAI" / "private-artifacts" / "W8" / "CAT2044-013-commons-original.jpg",
-        Path.home() / ".cache" / "hieratic_ai" / "CAT2044-013-commons-original.jpg",
-    ]
-    for c in candidates:
-        if c.is_file():
-            try:
-                with Image.open(c) as original:
-                    # Crop around known line 1 characters [3663, 1742, 3967, 1886]
-                    crop = original.crop((3663, 1742, 3967, 1886)).convert("RGB")
-                    crop = crop.resize(size, Image.Resampling.LANCZOS)
-                    out = io.BytesIO()
-                    crop.save(out, format="PNG")
-                    return out.getvalue()
-            except Exception:
-                pass
+    if Image is not None:
+        candidates = [
+            Path.home() / "AppData" / "Local" / "HieraticAI" / "private-artifacts" / "W8" / "CAT2044-013-commons-original.jpg",
+            Path.home() / ".cache" / "hieratic_ai" / "CAT2044-013-commons-original.jpg",
+        ]
+        for c in candidates:
+            if c.is_file():
+                try:
+                    with Image.open(c) as original:
+                        crop = original.crop((3663, 1742, 3967, 1886)).convert("RGB")
+                        crop = crop.resize(size, Image.Resampling.LANCZOS)
+                        out = io.BytesIO()
+                        crop.save(out, format="PNG")
+                        return out.getvalue()
+                except Exception:
+                    pass
 
-    # Deterministic high-contrast synthetic scribal ductus crop if private original is unmounted
-    im = Image.new("RGB", size, (220, 205, 175))
-    draw = ImageDraw.Draw(im)
-    # Scribal cursive ligature stroke
-    points = [
-        (48, 180), (60, 140), (80, 110), (120, 95), (160, 105), (190, 140),
-        (205, 180), (190, 160), (150, 135), (105, 145), (75, 175),
-    ]
-    draw.line(points, fill=(35, 30, 25), width=6)
-    out = io.BytesIO()
-    im.save(out, format="PNG")
-    return out.getvalue()
+        im = Image.new("RGB", size, (220, 205, 175))
+        draw = ImageDraw.Draw(im)
+        points = [
+            (48, 180), (60, 140), (80, 110), (120, 95), (160, 105), (190, 140),
+            (205, 180), (190, 160), (150, 135), (105, 145), (75, 175),
+        ]
+        draw.line(points, fill=(35, 30, 25), width=6)
+        out = io.BytesIO()
+        im.save(out, format="PNG")
+        return out.getvalue()
+
+    def ductus_pix(x: int, y: int) -> tuple[int, int, int]:
+        if 95 <= y <= 180 and 48 <= x <= 205:
+            arc_y = int(95 + 85 * ((x - 120) / 75) ** 2)
+            if abs(y - arc_y) <= 4:
+                return (35, 30, 25)
+        return (220, 205, 175)
+    return create_png(size[0], size[1], ductus_pix)
 
 
 def fetch_publisher_media(

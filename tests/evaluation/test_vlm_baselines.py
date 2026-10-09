@@ -1696,6 +1696,10 @@ class VLMBaselinesTests(unittest.TestCase):
         from eval.vlm.hieratic import resize_image_aspect_ratio, generate_blank_control
         # 400x200 image -> max 200 -> should be 200x100
         sample = generate_blank_control(400, 200)
+        try:
+            from PIL import Image  # noqa: F401; true pixel-preserving resize requires decoder
+        except ImportError:
+            self.skipTest("Pillow unavailable: genuine resizing correctly fails closed")
         resized_bytes, dims = resize_image_aspect_ratio(sample, max_dimension=200)
         self.assertLessEqual(max(dims), 200)
         self.assertEqual(round(dims[0] / dims[1], 1), 2.0)
@@ -1743,7 +1747,9 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(len(report["targets"]), 2)
         # 2 targets * 5 tasks = 10 hypotheses
         self.assertEqual(len(report["reading_hypotheses"]), 10)
-        self.assertTrue(report["sensitivity_controls"]["sensitivity_observed"])
+        self.assertFalse(report["sensitivity_controls"]["sensitivity_observed"])
+        self.assertTrue(report["model_info"]["simulated_mode"])
+        self.assertFalse(report["source_image"]["source_bytes_verified"])
 
     def test_hieratic_experiment_fails_closed_without_allow_simulated(self) -> None:
         """Verify mock adapter without allow_simulated=True raises ImageConditioningError."""
@@ -1796,9 +1802,54 @@ class VLMBaselinesTests(unittest.TestCase):
         grades = report["evidence_grades"]
         self.assertEqual(grades["grade_f_authentic_hieratic_gold_evaluation"]["status"], "STRICTLY_NO")
         self.assertEqual(grades["silver_diagnostic_cleared"]["status"], "S0_BIBLIOGRAPHIC_CITATION_ONLY")
-        self.assertEqual(grades["grade_a_multimodal_interface"]["status"], "PASSED")
-        self.assertEqual(grades["grade_b_fixture_tests"]["status"], "PASSED")
-        self.assertEqual(grades["grade_e_visual_sensitivity_observed"]["status"], "PASSED")
+        for name in (
+            "grade_a_multimodal_interface", "grade_b_fixture_tests",
+            "grade_c_real_weights_loaded", "grade_d_actual_hieratic_forward_pass",
+            "grade_e_visual_sensitivity_observed", "real_hieratic_hypothesis_cleared",
+        ):
+            self.assertEqual(grades[name]["status"], "SIMULATED_TEST_DOUBLE")
+
+
+    def test_hieratic_decoder_rejects_invalid_bytes_without_silent_replacement(self) -> None:
+        from eval.vlm.hieratic import resize_image_aspect_ratio
+        for bad in (b"", b"junk", b"\\x89PNG\\r\\n\\x1a\\n" + b"x" * 50, b"\\xff\\xd8\\xff" + b"x" * 32):
+            with self.subTest(bad=repr(bad[:8])), self.assertRaises(ImageConditioningError):
+                resize_image_aspect_ratio(bad)
+        with self.assertRaises(ImageConditioningError):
+            resize_image_aspect_ratio(b"synthetic_marker_not_real")
+
+    def test_hieratic_missing_pillow_cannot_fabricate_real_pixels(self) -> None:
+        from eval.vlm.hieratic import generate_blank_control, resize_image_aspect_ratio
+        with mock.patch.dict("sys.modules", {"PIL": None}):
+            with self.assertRaisesRegex(ImageConditioningError, "Pillow"):
+                resize_image_aspect_ratio(generate_blank_control())
+
+    def test_hieratic_weight_check_refuses_simulated_and_missing_real_weights(self) -> None:
+        from eval.vlm.hieratic import verified_model_weight_sha256, execute_hieratic_experiment
+        fake = MockVLMAdapter({"key": "synthetic", "model_type": "mock"})
+        self.assertFalse(verified_model_weight_sha256(fake))
+        fake.execution_tier = "live_local_open_weight"
+        with self.assertRaisesRegex(ImageConditioningError, "Pinned SmolVLM"):
+            execute_hieratic_experiment(fake, [{"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"junk"}])
+
+    def test_hieratic_mock_report_cannot_promote_response_difference(self) -> None:
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_hieratic_experiment(
+            adapter, [{"target_id": "t1", "target_type": "full_manuscript", "image_bytes": b"synthetic_fixture"}],
+            allow_simulated=True,
+        )
+        self.assertFalse(report["sensitivity_controls"]["sensitivity_observed"])
+        self.assertFalse(report["sensitivity_controls"]["inter_crop_discrimination_tested"])
+        self.assertEqual(report["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluation"]["status"], "STRICTLY_NO")
+        self.assertTrue(all(h["grounding_assessment"] == "synthetic_ci_fixture" for h in report["reading_hypotheses"]))
+
+    def test_hieratic_rung_mapping_is_task_specific(self) -> None:
+        from eval.vlm.hieratic import TASK_RUNGS
+        self.assertEqual(TASK_RUNGS["sign_hypotheses"], "signs")
+        self.assertEqual(TASK_RUNGS["transliteration_hypotheses"], "transliterate")
+        self.assertEqual(TASK_RUNGS["translation_hypotheses"], "translate")
+        self.assertEqual(TASK_RUNGS["script_identification"], "identify")
 
 
 if __name__ == "__main__":

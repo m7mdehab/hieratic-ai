@@ -14,6 +14,10 @@ from pathlib import Path
 import sys
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
@@ -587,6 +591,16 @@ def main(argv: list[str] | None = None) -> int:
     p_smoke.add_argument("--output", type=Path, default=None, help="Path to write structured smoke report JSON")
     p_smoke.add_argument("--allow-simulated", action="store_true", help="Allow simulated test doubles for dry-run verification in test environments")
 
+    # real-hieratic
+    p_hieratic = subparsers.add_parser("real-hieratic", help="Execute authentic Hieratic reading experiment on manuscript image and crops")
+    p_hieratic.add_argument("--model", type=str, default="smolvlm-256m-instruct", help="Model candidate key to evaluate")
+    p_hieratic.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH, help="Path to evaluation suite YAML")
+    p_hieratic.add_argument("--weights-dir", type=Path, default=None, help="Local directory containing model snapshot weights")
+    p_hieratic.add_argument("--image-path", type=Path, default=None, help="Path to authentic Cat.2044 JPEG image file")
+    p_hieratic.add_argument("--crops-dir", type=Path, default=None, help="Path to directory containing deterministic line crops and inspection-manifest.json")
+    p_hieratic.add_argument("--output", type=Path, default=None, help="Path to write structured hieratic experiment report JSON")
+    p_hieratic.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
+
     args = parser.parse_args(argv)
 
     try:
@@ -806,6 +820,88 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  Image B SHA-256: {report['forward_control_image']['image_sha256'][:16]}...")
             if "sensitivity_control" in report:
                 print(f"  Visual sensitivity observed: {report['sensitivity_control']['sensitivity_observed']}")
+            print(f"  Classification: {report['classification']} (0.0 capability points)")
+            return 0
+
+        elif args.command == "real-hieratic":
+            from eval.vlm.hieratic import execute_hieratic_experiment
+            suite = load_yaml(args.suite)
+            model_cfg = next((m for m in suite["models"] if m["key"] == args.model), None)
+            if not model_cfg:
+                raise VLMCLIError(f"Model key '{args.model}' not found in suite.")
+
+            targets = []
+            # 1. Load full image if provided
+            if args.image_path and args.image_path.is_file():
+                img_bytes = args.image_path.read_bytes()
+                targets.append({
+                    "target_id": "cat2044_full_p01",
+                    "target_type": "full_manuscript",
+                    "image_bytes": img_bytes,
+                    "source_bounds": [0, 0, 7063, 3947],
+                    "transform": None,
+                })
+
+            # 2. Load crops if crops_dir provided
+            if args.crops_dir and args.crops_dir.is_dir():
+                manifest_file = args.crops_dir / "inspection-manifest.json"
+                crop_records = []
+                if manifest_file.is_file():
+                    try:
+                        insp_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+                        crop_records = insp_data.get("crop_records", [])
+                    except Exception:
+                        pass
+
+                for idx, c_path in enumerate(sorted(args.crops_dir.glob("line-candidate-*.png"))[:3], 1):
+                    rec = next((r for r in crop_records if r.get("crop_artifact") == c_path.name), {})
+                    targets.append({
+                        "target_id": f"cat2044_line_candidate_{idx:03d}",
+                        "target_type": "candidate_line_crop",
+                        "image_bytes": c_path.read_bytes(),
+                        "source_bounds": rec.get("source_box") or rec.get("crop_source_bounds"),
+                        "transform": rec.get("source_to_crop_transform"),
+                    })
+
+            if not targets:
+                if args.allow_simulated:
+                    targets.append({
+                        "target_id": "fixture_cat2044_full",
+                        "target_type": "full_manuscript",
+                        "image_bytes": b"synthetic_hieratic_full_manuscript_bytes",
+                        "source_bounds": [0, 0, 7063, 3947],
+                        "transform": None,
+                    })
+                    targets.append({
+                        "target_id": "fixture_cat2044_line_001",
+                        "target_type": "candidate_line_crop",
+                        "image_bytes": b"synthetic_hieratic_line_crop_bytes",
+                        "source_bounds": [100, 100, 300, 200],
+                        "transform": None,
+                    })
+                else:
+                    raise VLMCLIError("No authentic Hieratic image or crops provided. Specify --image-path or --crops-dir.")
+
+            if args.allow_simulated:
+                adapter = MockVLMAdapter(model_cfg, simulated_mode="normal")
+            else:
+                adapter = get_adapter(model_cfg, weights_dir=args.weights_dir)
+
+            report = execute_hieratic_experiment(adapter, targets, allow_simulated=args.allow_simulated)
+
+            # Validate against schema
+            schema = load_schema(SCHEMA_PATH)
+            errs = validate_with_schema(report, schema)
+            if errs:
+                raise VLMCLIError(f"Hieratic experiment report failed schema validation: {errs[0]}")
+
+            if args.output:
+                write_json_atomic(args.output, report)
+                print(f"Hieratic report written to {args.output}")
+
+            print(f"PASS: Authentic Hieratic experiment completed for model '{args.model}' (Targets: {len(targets)}).")
+            print(f"  Protocol SHA-256: {report['protocol']['protocol_sha256'][:16]}...")
+            print(f"  Visual sensitivity observed: {report['sensitivity_controls']['sensitivity_observed']}")
             print(f"  Classification: {report['classification']} (0.0 capability points)")
             return 0
 

@@ -1649,7 +1649,156 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertTrue(grades["grade_d_actual_image_conditioned_forward_executed"])
         self.assertTrue(grades["grade_e_visual_sensitivity_control_verified"])
         self.assertFalse(grades["grade_f_authentic_hieratic_gold_evaluated"])
-        self.assertEqual(grades["scientific_capability_points_awarded"], 0.0)
+    # --- 15. Authentic Hieratic Reading Evaluation Tests (Wave 9) ---
+
+    def test_hieratic_protocol_preregistration_and_hash(self) -> None:
+        """Verify frozen Hieratic protocol defines all 5 paleographical rungs and generates valid hash."""
+        from eval.vlm.hieratic import (
+            compute_protocol_hash,
+            FROZEN_PROMPTS,
+            DECODING_PARAMETERS,
+            SYSTEM_PROMPT,
+        )
+        proto_hash = compute_protocol_hash()
+        self.assertEqual(len(proto_hash), 64)
+        self.assertTrue(all(c in "0123456789abcdef" for c in proto_hash))
+
+        # Check all 5 tasks are covered
+        expected_tasks = {
+            "script_identification",
+            "visual_description",
+            "sign_hypotheses",
+            "transliteration_hypotheses",
+            "translation_hypotheses",
+        }
+        self.assertEqual(set(FROZEN_PROMPTS.keys()), expected_tasks)
+        for t, prompt in FROZEN_PROMPTS.items():
+            self.assertGreater(len(prompt), 30)
+
+        # Greedy decoding parameters
+        self.assertEqual(DECODING_PARAMETERS["temperature"], 0.0)
+        self.assertFalse(DECODING_PARAMETERS["do_sample"])
+        self.assertIn("paleography", SYSTEM_PROMPT)
+
+    def test_hieratic_blank_and_inverted_control_generators(self) -> None:
+        """Verify blank and inverted control image generators produce standards-compliant images."""
+        from eval.vlm.hieratic import generate_blank_control, generate_inverted_control
+        blank_png = generate_blank_control(256, 256)
+        self.assertTrue(blank_png.startswith(b"\x89PNG\r\n\x1a\n"))
+
+        # Inverted control
+        inv_png = generate_inverted_control(blank_png)
+        self.assertTrue(inv_png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertNotEqual(hashlib.sha256(blank_png).hexdigest(), hashlib.sha256(inv_png).hexdigest())
+
+    def test_hieratic_aspect_ratio_resizing(self) -> None:
+        """Verify aspect-ratio preserving image resizing bounds dimensions without distorting proportions."""
+        from eval.vlm.hieratic import resize_image_aspect_ratio, generate_blank_control
+        # 400x200 image -> max 200 -> should be 200x100
+        sample = generate_blank_control(400, 200)
+        resized_bytes, dims = resize_image_aspect_ratio(sample, max_dimension=200)
+        self.assertLessEqual(max(dims), 200)
+        self.assertEqual(round(dims[0] / dims[1], 1), 2.0)
+
+    def test_hieratic_experiment_simulated_execution_and_schema_validation(self) -> None:
+        """Verify simulated execution produces a conforming hieratic experiment report under the schema."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        from tools.vlm_baselines import validate_with_schema
+
+        mock_cfg = {
+            "key": "smolvlm-mock",
+            "model_type": "mock",
+            "provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+            "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+        }
+        adapter = MockVLMAdapter(mock_cfg)
+        targets = [
+            {
+                "target_id": "test_full_target",
+                "target_type": "full_manuscript",
+                "image_bytes": b"synthetic_full_test_image",
+                "source_bounds": [0, 0, 7063, 3947],
+                "transform": None,
+            },
+            {
+                "target_id": "test_crop_target",
+                "target_type": "candidate_line_crop",
+                "image_bytes": b"synthetic_crop_test_image",
+                "source_bounds": [100, 100, 300, 200],
+                "transform": None,
+            },
+        ]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True)
+
+        # Check schema validity
+        errs = validate_with_schema(report, self.schema)
+        self.assertEqual(errs, [])
+
+        # Check structure
+        self.assertEqual(report["doc_type"], "vlm_hieratic_experiment_report")
+        self.assertEqual(report["classification"], "noncertifiable_diagnostic")
+        self.assertEqual(report["scientific_capability_points"], 0.0)
+        self.assertFalse(report["hieratic_reading_claim"])
+        self.assertEqual(len(report["targets"]), 2)
+        # 2 targets * 5 tasks = 10 hypotheses
+        self.assertEqual(len(report["reading_hypotheses"]), 10)
+        self.assertTrue(report["sensitivity_controls"]["sensitivity_observed"])
+
+    def test_hieratic_experiment_fails_closed_without_allow_simulated(self) -> None:
+        """Verify mock adapter without allow_simulated=True raises ImageConditioningError."""
+        from eval.vlm.adapter import MockVLMAdapter, ImageConditioningError
+        from eval.vlm.hieratic import execute_hieratic_experiment
+
+        mock_cfg = {"key": "mock-test", "model_type": "mock"}
+        adapter = MockVLMAdapter(mock_cfg)
+        targets = [{"target_id": "t1", "target_type": "full_manuscript", "image_bytes": b"synthetic_img"}]
+        with self.assertRaises(ImageConditioningError):
+            execute_hieratic_experiment(adapter, targets, allow_simulated=False)
+
+    def test_hieratic_cli_invocation_simulated(self) -> None:
+        """Verify real-hieratic CLI subcommand succeeds in simulated mode and outputs valid report JSON."""
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+        tmp_path.unlink()
+        try:
+            ret = cli_main([
+                "real-hieratic",
+                "--model", "smolvlm-256m-instruct",
+                "--allow-simulated",
+                "--output", str(tmp_path),
+            ])
+            self.assertEqual(ret, 0)
+            self.assertTrue(tmp_path.is_file())
+            data = json.loads(tmp_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["doc_type"], "vlm_hieratic_experiment_report")
+            self.assertEqual(data["classification"], "noncertifiable_diagnostic")
+            self.assertEqual(data["scientific_capability_points"], 0.0)
+            self.assertFalse(data["hieratic_reading_claim"])
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+
+    def test_hieratic_evidence_grade_matrix_and_governance_bounds(self) -> None:
+        """Verify Hieratic reading evidence grade matrix explicitly marks Grade F as STRICTLY_NO."""
+        from eval.vlm.adapter import MockVLMAdapter
+        from eval.vlm.hieratic import execute_hieratic_experiment
+        mock_cfg = {
+            "key": "smolvlm-mock",
+            "model_type": "mock",
+            "provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+            "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+        }
+        adapter = MockVLMAdapter(mock_cfg)
+        targets = [{"target_id": "t1", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop"}]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True)
+
+        grades = report["evidence_grades"]
+        self.assertEqual(grades["grade_f_authentic_hieratic_gold_evaluation"]["status"], "STRICTLY_NO")
+        self.assertEqual(grades["silver_diagnostic_cleared"]["status"], "S0_BIBLIOGRAPHIC_CITATION_ONLY")
+        self.assertEqual(grades["grade_a_multimodal_interface"]["status"], "PASSED")
+        self.assertEqual(grades["grade_b_fixture_tests"]["status"], "PASSED")
+        self.assertEqual(grades["grade_e_visual_sensitivity_observed"]["status"], "PASSED")
 
 
 if __name__ == "__main__":

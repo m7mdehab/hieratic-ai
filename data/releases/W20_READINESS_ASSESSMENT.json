@@ -86,7 +86,7 @@
       "source_registry_validation": "PASS_10_RECORDS",
       "governance_suite": "PASS_34_TESTS",
       "worktree_integrity_note": "The default Windows checkout has global core.autocrlf=true and converts exact source/annotation blobs to CRLF. Full suites were rerun from a clean detached test worktree with core.autocrlf=false so byte-pinned source files match Git blobs. The W20 source registry digest code verifies normalized worktree content against pinned Git blobs and hashes the Git bytes directly.",
-      "data_suite": "PASS_220_RUN_205_PASS_15_SKIPPED",
+      "data_suite": "PASS_221_RUN_206_PASS_15_SKIPPED",
       "linguistics_suite": "110 tests: 109 passed, 1 error because Windows denies symlink creation (WinError 1314); no linguistic files were changed",
       "evaluation_suite": "PASS_311_TESTS",
       "synthetic_release_cli": "PASS_VALIDATE_BUILD_AUDIT_AND_READINESS_ASSESSMENT; FIVE_RELEASE_ARTIFACTS_BYTE_MATCH",

@@ -177,3 +177,16 @@ This is **Old Egyptian grammar applied to authentic scholarly token forms**, not
 The separate source-external **semantic adequacy evaluation is blocked**: this wave did not identify and preregister a new, independently licensed Egyptian↔modern-language expert reference set outside the already exposed W9–W12 AES cohorts; the existing W13 treebank is grammatical annotations, not full German parallel translation; zero authenticated image/text/semantic-gold alignments exist. No semantic score or human adjudication is inferred.
 
 Do not upgrade LING-003 from active 0/2, verified capability 34.5/100, trained-model count zero or validated real Hieratic manuscript experiment count zero until original scientific acceptance gates are separately satisfied. Scientific report must distinguish a source-validated internal retrospective grammatical experiment from any independent unseen evaluation.
+
+
+---
+
+## W15 — Later-period TLA text transfer source and strict evaluation firewall
+
+Source and rights: [TLA Academies' original 2025 raw-data publication](https://aaew.bbaw.de/daten-veroeffentlichungen), published [TLA Late Egyptian v19 premium 3,606 sentences](https://huggingface.co/datasets/thesaurus-linguae-aegyptiae/tla-late_egyptian-v19-premium), CC BY-SA 4.0. This separately licensed publisher release is NOT a blanket grant over live TLA website or manuscript images.
+
+A new preregistered source-external **corpus-transfer** code path in \`ling/translation/w15_tla_transfer.py\` uses only authentic previously-pinned W11 AES TRAIN donor form/cotext German glosses. Target input is Late Egyptian \`transliteration\` alone; generation cannot see TLA translation, glossary, POS or reference annotations. Full targets, once original bytes are accessible and cryptographically verified, will be scored against actual German publisher translations on all reported rows, explicitly as lexical German word-overlap diagnostics rather than semantic adequacy.
+
+**Present status:** target exact raw publisher file has not been acquired as trustworthy bytes in the current execution environment; real new-cohort scoring remains **BLOCKED** and no numeric performance claim is made. The reproducibility contract and synthetic/adversarial tests may be run without target data. Main note: the TLA dataset card contains eight fields but **no document/witness ID**, and the same editorial ecosystem may underlie historic AES; therefore no independent source/witness split can be asserted on this target, even after file acquisition. Original UD Egyptian-PC TEST is still unopened. No new project capability awarded.
+
+Method, acquired-source blockers, rights, and complete preregistration: \`ling/translation/experiments/W15_TLA_LATE_EGYPTIAN_TRANSFER_READINESS.md\` and \`W15_PREREG_TLA_LATE_EGYPTIAN_TRANSFER.md\`.

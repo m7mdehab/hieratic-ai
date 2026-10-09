@@ -4,9 +4,9 @@ Open research project for teaching multimodal AI systems to **read, transliterat
 
 ## Project status
 
-- **Verified goal progress:** 2.5 / 100
+- **Verified goal progress:** 34.5 / 100
 - **Research coverage:** ~14%
-- **Current stage:** Research foundation + project control plane bootstrap
+- **Current stage:** P2 Evaluation; W9 image evidence and VLM diagnostic engineering integrated; real corpus and held-out Hieratic recognition still blocked
 - **Validated experiments:** 0
 
 Progress is capability-based, not time-based. Work only earns goal-progress points after predefined acceptance criteria are met and the evidence is reviewed.

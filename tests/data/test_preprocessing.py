@@ -321,4 +321,47 @@ def run_from_payload(payload, base, out):
     manifest=base/"manifest.yaml"; manifest.write_text(yaml.safe_dump(payload, sort_keys=True), encoding="utf-8")
     return run(manifest, out)
 
+class W9RimeGeometryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.base=Path(self.temp.name)
+        self.local=self.base/"local";self.vault=self.local/"HieraticAI/private-artifacts/W9";self.vault.mkdir(parents=True)
+        self.previous_localappdata=os.environ.get("LOCALAPPDATA")
+        os.environ["LOCALAPPDATA"]=str(self.local)
+        self.image=self.vault/"CAT1883-CAT2095-RIME-fig6-recto-original.tif"
+        try:
+            from PIL import Image,ImageDraw
+        except ImportError:self.skipTest("Pillow optional image runtime unavailable")
+        source=Image.new("RGB",(32,24),"white");ImageDraw.Draw(source).rectangle((4,5,27,18),fill=(110,80,48));source.save(self.image,format="TIFF",compression="raw")
+        self.data=self.image.read_bytes();self.digest=hashlib.sha256(self.data).hexdigest()
+        self.evidence=self.vault/"CAT1883-CAT2095-FIG6.json"
+        self.packet={"source_sha256":self.digest,"source_byte_size":len(self.data),"source_object_id":"Cat.1883 + Cat.2095","physical_support_group":"Cat.1883 + Cat.2095 (one joined five-fragment support)","exact_original_file_url":"https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif","use_boundary":{"source_registry_status":"NOT_REGISTERED","training_admission":"BLOCKED","gold_or_transcription":"NONE"}}
+        self.evidence.write_text(json.dumps(self.packet),encoding="utf-8")
+        self.profile=self.base/"profile.json"
+        self.profile.write_text(json.dumps({"profile_id":"w9-rime-cat1883-cat2095-recto-geometry","profile_version":"1.0.0","engine_version":"W9-test","source_lock":{"source_sha256":self.digest,"byte_size":len(self.data),"dimensions":[32,24],"exact_file_url":self.packet["exact_original_file_url"]},"outputs":{"training_admission":"BLOCKED","annotation_or_gold":"NONE","article_text_reuse":"BLOCKED_UNVERIFIED_LICENSE"}}),encoding="utf-8")
+        self.locks=mock.patch.multiple(pp,W9_RIME_SHA256=self.digest,W9_RIME_BYTES=len(self.data),W9_RIME_DIMENSIONS=[32,24])
+        self.locks.start()
+    def tearDown(self):
+        self.locks.stop()
+        if self.previous_localappdata is None:os.environ.pop("LOCALAPPDATA",None)
+        else:os.environ["LOCALAPPDATA"]=self.previous_localappdata
+        self.temp.cleanup()
+    def test_geometry_only_tiff_overlay_is_deterministic_and_unlabelled(self):
+        one=pp.inspect_w9_rime_image(self.profile,self.image,self.evidence,self.vault/"out-1")
+        two=pp.inspect_w9_rime_image(self.profile,self.image,self.evidence,self.vault/"out-2")
+        self.assertEqual(one["processing_id"],two["processing_id"])
+        self.assertEqual(one["overlay"]["sha256"],two["overlay"]["sha256"])
+        self.assertEqual("NONE",one["line_alignment"]);self.assertFalse(one["gold_or_annotation_created"])
+        self.assertEqual("BLOCKED",one["training_admission"])
+    def test_source_hash_and_evidence_mutations_fail_closed(self):
+        self.image.write_bytes(self.data+b"x")
+        with self.assertRaisesRegex(pp.PreprocessingError,"byte size, TIFF signature, or hash"):
+            pp.inspect_w9_rime_image(self.profile,self.image,self.evidence,self.vault/"bad-source")
+        self.image.write_bytes(self.data);self.packet["source_object_id"]="Cat.1880";self.evidence.write_text(json.dumps(self.packet),encoding="utf-8")
+        with self.assertRaisesRegex(pp.PreprocessingError,"evidence identity or rights boundary"):
+            pp.inspect_w9_rime_image(self.profile,self.image,self.evidence,self.vault/"bad-evidence")
+    def test_profile_rights_promotion_is_rejected(self):
+        profile=json.loads(self.profile.read_text(encoding="utf-8"));profile["outputs"]["training_admission"]="ALLOWED";self.profile.write_text(json.dumps(profile),encoding="utf-8")
+        with self.assertRaisesRegex(pp.PreprocessingError,"promote rights or scholarly status"):
+            pp.inspect_w9_rime_image(self.profile,self.image,self.evidence,self.vault/"promoted")
+
 if __name__ == "__main__": unittest.main()

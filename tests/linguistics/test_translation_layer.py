@@ -729,5 +729,141 @@ class W11ExpandedTrainingFreshBiographyTests(unittest.TestCase):
                 ev.pinned_json(Path(folder), ev.BIOGRAPHY_UNIVERSE,
                                ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
 
+
+class W12BFrozenGrammarEvidenceTests(unittest.TestCase):
+    """True AES publisher POS evidence, negative rights, source and gold leakage checks."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import w12b_evaluation as ev
+        cls.ev = ev
+        cls.training, cls.inputs, _ = ev.load()
+
+    def test_completeness_and_strict_new_24_text_id_population(self):
+        self.assertEqual(3925, len(self.training))
+        self.assertEqual(163, len(self.inputs))
+        self.assertEqual(24, len({x["text"] for x in self.inputs.values()}))
+        self.assertEqual(1691, sum(len(x["forms"]) for x in self.inputs.values()))
+        self.assertFalse({x["text"] for x in self.inputs.values()} &
+                         {x["text"] for x in self.training.values()})
+
+    def test_original_source_universe_reproduces_rank_not_only_cutoff(self):
+        from hashlib import sha256
+        u = self.ev.pinned(self.ev.ROOT, "w12b_amarna_source_universe.json")
+        original = u["all_source_ids_sorted"]
+        expected = sorted(original, key=lambda t: (
+            sha256((self.ev.SEED + t).encode("utf-8")).hexdigest(), t))[:24]
+        self.assertEqual(expected, u["selected_ids_ranked"])
+        self.assertEqual("5e512681dc0d1ac7177a62531582b3473a0a11f2",
+                         u["original_git_blob"])
+        self.assertEqual(399, len(original))
+
+    def test_a_genuine_unknown_form_must_abstain_and_decline_roles(self):
+        from ling.translation.grammar_evidence import GrammarEvidence
+        model = GrammarEvidence({"test-s": {
+            "text": "training-only", "owner": "test", "tokens": [
+                {"form": "a", "pos": "substantive", "features": {"genus": "feminine"}}
+            ]
+        }})
+        out = model.predict(["a", "never_seen"], "new_source_group")
+        self.assertEqual("substantive", out["units"][0]["context_pos"])
+        self.assertIsNone(out["units"][1]["context_pos"])
+        self.assertEqual([], out["units"][1]["alternatives"])
+        self.assertEqual("UNKNOWN_NOT_INFERRED", out["units"][0]["semantic_role"])
+        self.assertEqual("NOT_PREDICTED", out["units"][0]["syntactic_dependency"])
+        self.assertFalse(out["fluent_translation_claim"])
+
+    def test_repeated_same_text_cannot_forge_independent_context_support(self):
+        from ling.translation.grammar_evidence import GrammarEvidence
+        training = {
+            "s1": {"text": "same-text", "owner": "test", "tokens": [
+                {"form": "L", "pos": "pronoun", "features": {}},
+                {"form": "H", "pos": "verb", "features": {}},
+                {"form": "R", "pos": "substantive", "features": {}}]},
+            "s2": {"text": "same-text", "owner": "test", "tokens": [
+                {"form": "L", "pos": "pronoun", "features": {}},
+                {"form": "H", "pos": "verb", "features": {}},
+                {"form": "R", "pos": "substantive", "features": {}}]},
+            "s3": {"text": "other-training", "owner": "test", "tokens": [
+                {"form": "H", "pos": "adjective", "features": {}}]},
+        }
+        p = GrammarEvidence(training).predict(["L", "H", "R"], "heldout")
+        self.assertEqual("FORM_MAJORITY", p["units"][1]["pos_decision"])
+        self.assertEqual(2, len(p["units"][1]["alternatives"]))
+        self.assertEqual("adjective", p["units"][1]["baseline_pos"])
+        self.assertEqual("adjective", p["units"][1]["context_pos"])
+        self.assertEqual("verb", p["units"][1]["alternatives"][1]["pos"])
+
+    def test_contextual_tag_needs_two_distinct_source_groups(self):
+        from ling.translation.grammar_evidence import GrammarEvidence
+        training = {}
+        for idx in range(2):
+            training[f"ctx{idx}"] = {"text": f"ctx-{idx}", "owner": "test", "tokens": [
+                {"form": "L", "pos": "pronoun", "features": {}},
+                {"form": "H", "pos": "verb", "features": {}},
+                {"form": "R", "pos": "substantive", "features": {}}]}
+        for idx in range(3):
+            training[f"other{idx}"] = {"text": f"other-{idx}", "owner": "test", "tokens": [
+                {"form": "H", "pos": "adjective", "features": {}}]}
+        p = GrammarEvidence(training).predict(["L", "H", "R"], "heldout")
+        self.assertEqual("adjective", p["units"][1]["baseline_pos"])
+        self.assertEqual("verb", p["units"][1]["context_pos"])
+        self.assertEqual("TWO_SIDED", p["units"][1]["pos_decision"])
+        self.assertEqual(2, p["units"][1]["selected_pos_distinct_training_texts"])
+
+    def test_heldout_pos_reference_cannot_enter_prediction(self):
+        from ling.translation.grammar_evidence import GrammarEvidence
+        model = GrammarEvidence(self.training)
+        sent, inp = next(iter(self.inputs.items()))
+        before = model.predict(inp["forms"], inp["text"])
+        # Target POS/German/morphology are NOT accepted by the predict signature;
+        # even an externally forged record has no chance to enter the method.
+        forged = {"forms": list(inp["forms"]), "text": inp["text"],
+                  "pos": ["FORGED"] * len(inp["forms"]),
+                  "german": "FORGED GERMAN", "lemmaID": "FORGED"}
+        self.assertEqual(before, model.predict(forged["forms"], forged["text"]))
+
+    def test_target_source_group_overlap_is_rejected(self):
+        from ling.translation.grammar_evidence import GrammarEvidence
+        model = GrammarEvidence(self.training)
+        original = next(iter(self.training.values()))
+        with self.assertRaisesRegex(tr.TranslationError, "overlaps"):
+            model.predict([original["tokens"][0]["form"]], original["text"])
+
+    def test_hash_tampering_fails_closed_without_gold_substitution(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / self.ev.REL / "w12b_amarna_inputs.json"
+            p.parent.mkdir(parents=True)
+            p.write_bytes((self.ev.ROOT / self.ev.REL /
+                           "w12b_amarna_inputs.json").read_bytes() + b" ")
+            with self.assertRaisesRegex(tr.TranslationError, "Git blob identity mismatch"):
+                self.ev.pinned(Path(td), "w12b_amarna_inputs.json")
+
+    def test_all_historic_source_rights_and_nonadmission(self):
+        rights = self.ev.pinned(self.ev.ROOT, "w12b_amarna_rights_manifest.json")
+        self.assertEqual("CC-BY-SA-4.0", rights["license"])
+        self.assertEqual(163, len(rights["rights"]))
+        self.assertTrue(all(x["rights_class"] == "OPEN-SA"
+                            and x["test_only"] is True
+                            and x["production_admission"] is False
+                            and x["train_admission"] is False
+                            for x in rights["rights"]))
+
+    def test_first_use_original_editorial_pos_and_morphology_are_evaluated(self):
+        out = self.ev.evaluate()
+        self.assertEqual(3925, out["train_sentences"])
+        self.assertEqual(24, out["new_publisher_test_groups"])
+        self.assertEqual(1691, out["metrics"]["pos"]["original_egyptian_tokens"])
+        self.assertEqual(1649, out["metrics"]["pos"]["publisher_pos_labels"])
+        self.assertFalse(out["metrics"]["certified_subject_object_agent_roles"])
+        self.assertFalse(out["metrics"]["original_manuscript_heldout_gold"])
+        self.assertEqual(0, out["raw_publisher_images_evaluated"])
+        self.assertEqual(0.0, out["scientific_capability_points"])
+        self.assertEqual(out, self.ev.evaluate())
+        self.assertEqual(64, len(out["report_sha256"]))
+        print("W12B_FRESH_EDITORIAL_POS_HELDOUT " + json.dumps(out, sort_keys=True,
+                                                               ensure_ascii=False))
+
+
 if __name__ == "__main__":
     unittest.main()

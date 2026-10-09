@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/schemas/source_exact_line_pair.schema.json",
+  "title": "W10 source-exact image and edition line locator candidate",
+  "description": "A source-bound research candidate packet. It is not a DATA-004 alignment, reviewed line match, gold transcription, or training admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "investigation_id", "source", "edition", "line_pair_candidate", "data004_annotation_id", "benchmark_overlap", "training_admission", "gold_eligible"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "investigation_id": {"const": "W10-DATA-006-LAWFUL-LINE-PAIR-PILOT-v1"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["institution", "source_object_id", "physical_support_group", "view", "figure_number", "image"],
+      "properties": {
+        "institution": {"const": "Museo Egizio, Turin"},
+        "source_object_id": {"const": "Cat.1883 + Cat.2095"},
+        "physical_support_group": {"const": "Cat.1883 + Cat.2095 (one joined five-fragment support)"},
+        "view": {"const": "verso"},
+        "figure_number": {"const": 8},
+        "image": {
+          "type": "object", "additionalProperties": false,
+          "required": ["file_url", "sha256", "byte_size", "dimensions", "mime_type", "license_id", "license_evidence_status", "license_evidence_url", "coordinate_asset_sha256", "attribution"],
+          "properties": {
+            "file_url": {"const": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/8/original.tif"},
+            "sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"},
+            "byte_size": {"const": 41686648},
+            "dimensions": {"const": [6595, 4710]},
+            "mime_type": {"const": "image/tiff"},
+            "license_id": {"const": "CC-BY-2.0"},
+            "license_evidence_status": {"const": "verified"},
+            "license_evidence_url": {"const": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf"},
+            "coordinate_asset_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "attribution": {"const": "Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 8"}
+          }
+        }
+      }
+    },
+    "edition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["edition_id", "witness_source_object_id", "citation", "printed_page", "numbered_item", "plate", "license_id", "license_evidence_status", "license_evidence_url", "volume_1_sha256", "volume_2_sha256", "line_text_embedded"],
+      "properties": {
+        "edition_id": {"const": "PLEYTE-ROSSI-PAPYRUS-DE-TURIN-1876"},
+        "witness_source_object_id": {"const": "Cat.1883 + Cat.2095"},
+        "citation": {"const": "W. Pleyte and F. Rossi, Papyrus de Turin, vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX (1869–1876)"},
+        "printed_page": {"const": 41},
+        "numbered_item": {"const": 2},
+        "plate": {"const": "XXIX"},
+        "license_id": {"const": "PDM-1.0"},
+        "license_evidence_status": {"const": "verified"},
+        "license_evidence_url": {"const": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin01muse).pdf"},
+        "volume_1_sha256": {"const": "a387da74c1551158b7e55cccee36969d2189dcfcd69edb3945593910654a46e47"},
+        "volume_2_sha256": {"const": "cd466c1867bb394c8c69b95aaf4762996ec4b4f70ac8ccff329318570dce7edb"},
+        "line_text_embedded": {"const": false}
+      }
+    },
+    "line_pair_candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "edition_line_locator", "geometry", "ambiguity_note", "mapping_state", "review_state", "reviewer_id", "gold_scoreable", "line_text_embedded"],
+      "properties": {
+        "candidate_id": {"const": "W10-CAT1883-2095-VERSO-PLEYTE-ITEM-2"},
+        "edition_line_locator": {"const": "vol. 1, printed p. 41, numbered item 2; vol. 2, Plate XXIX"},
+        "ambiguity_note": {"const": "Candidate only: the approximate envelope has no independent palaeographic review, and Plate XXIX could not be visually cross-checked in this investigation; exact line correspondence remains unresolved."},
+        "geometry": {
+          "type": "object", "additionalProperties": false,
+          "required": ["coordinate_system", "bounds", "coordinate_asset_sha256", "geometry_kind", "basis", "review_state"],
+          "properties": {
+            "coordinate_system": {"const": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive"},
+            "bounds": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "minItems": 4, "maxItems": 4},
+            "coordinate_asset_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "geometry_kind": {"const": "candidate_line_region"},
+            "basis": {"const": "Approximate manual envelope on the exact RIME Fig. 8 TIFF; line locator follows the Pleyte/Rossi printed item and RIME verso description; not independently reviewed."},
+            "review_state": {"const": "unreviewed"}
+          }
+        },
+        "mapping_state": {"const": "proposed_unreviewed_candidate"},
+        "review_state": {"const": "unreviewed"},
+        "reviewer_id": {"type": "null"},
+        "gold_scoreable": {"const": false},
+        "line_text_embedded": {"const": false}
+      }
+    },
+    "data004_annotation_id": {"type": "null"},
+    "benchmark_overlap": {"const": "unresolved_quarantined"},
+    "training_admission": {"const": "blocked"},
+    "gold_eligible": {"const": false}
+  }
+}

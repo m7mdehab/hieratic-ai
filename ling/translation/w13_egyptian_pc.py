@@ -19,8 +19,8 @@ from tools.translation_layer import TranslationError, _canonical
 ROOT = Path(__file__).resolve().parents[2]
 TRAIN_FILE = ROOT / "ling/translation/data/w13_egyptian_pc_train_stats_ccby_sa.json"
 DEV_FILE = ROOT / "ling/translation/data/w13_egyptian_pc_dev_gold_ccby_sa.json"
-TRAIN_BLOB = "W13_TRAIN_BLOB_LOCK"
-DEV_BLOB = "W13_DEV_BLOB_LOCK"
+TRAIN_BLOB = "4bedc6cd872cc9e93339bd0fad4bba780b5cda49"
+DEV_BLOB = "2694c4aa14dd6712b9fb45d714caead1c8856d64"
 REVISION_TREE = "fca8538287cb69fd07b811eb55dcfd25584f3006"
 VERSION = "w13-pre-coptic-oracle-POS-dependency-diagnostic/1.0.0"
 

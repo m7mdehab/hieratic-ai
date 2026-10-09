@@ -1,3 +1,11 @@
+## W24 source-grounded autonomous research acceptance — REAL 17,885 labels, 50 manuscripts, +2 research-space coverage
+
+W23 [#138](https://github.com/m7mdehab/hieratic-ai/pull/138) and W24 [#139](https://github.com/m7mdehab/hieratic-ai/pull/139) are merged and independently verified on original published 2026 DDD source records. First real source-label-only baseline with physically grouped 50 witnesses, 15,426 train / 893 dev / 1,566 test labels, 0 group crossover, 81/1,566 (5.172414%) **NONVISUAL** class-prior control; sample-random would contaminate 49 of 50 distinct physical papyri. **No images trained, no legitimate Hieratic reading score.** Dataset licensed CC BY-NC-SA 4.0 with differing per-image original rights, so production corpus and model capability blocked. This is a big material improvement in empirical research readiness while remaining scientifically honest.
+
+**Overseer explicit measurement decision:** research-space exploration (qualitative) 14.0→**16.0** (+1 authentic independently verified 2026 published sign-annotation source/rights/physical grouping; +1 actually reproduced 17,885-source real-label grouped heldout empirical prior/leakage test); **capability remains 34.5/100**, DATA-008 0/3, no trained accepted real recognition model. Full accountability: [coverage rationale](docs/research/R030_RESEARCH_COVERAGE_ACCEPTANCE.md), [empirical result](docs/research/R029_DDD_REAL_ANNOTATION_BASELINE_RECEIPTS.json). The immediate next substantial work is a licensed actual-pixel research classifier on allowed noncommercial DDD material, not waiting for a new Egyptologist.
+
+---
+
 ## 2026-10-10 W21 R026 — Original museum papyrus pixels and public-domain original facsimile book independently source-hashed
 
 - **Big genuine source improvement (research only):** exact full-sized CC0 **Museo Egizio Cat.1880 p01 source JPEG** original actual bytes SHA256 `2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5`, 30,364,719 bytes / 17,704×7,983. Exact **Pleyte–Rossi vol2 original PDM PDF** SHA256 `deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0`, 16,926,761 bytes / **400 PDF pages**. Both publisher original file SHA1, MIME, file size, individual file license confirmed from actual Wikimedia original API. Zero source bytes committed, no raw pages in artifacts; host source content erased at end.

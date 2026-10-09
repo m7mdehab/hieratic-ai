@@ -1,0 +1,77 @@
+{
+  "baseline_majority_class_training_frequency": 939,
+  "baseline_name": "train_label_majority_nonvisual_negative_control",
+  "baseline_original_document_holdout_accuracy": 0.05172414,
+  "baseline_original_document_holdout_correct": 81,
+  "baseline_original_document_holdout_total": 1566,
+  "benchmark_overlap": "UNKNOWN_QUARANTINED",
+  "cat1880_group_partition": "train",
+  "cat1880_variant_ids": [
+    "003",
+    "004"
+  ],
+  "cat1880_variant_source_cluster_count": 1,
+  "distinct_publisher_classes_by_partition": {
+    "dev": 180,
+    "test": 219,
+    "train": 490
+  },
+  "empirical_hieratic_image_recognition_accuracy": null,
+  "exact_source_item_copyright_strings": 48,
+  "heldout_images_retrieved": 0,
+  "image_model_trained": false,
+  "independent_blind_expert_gold": false,
+  "physical_witness_splits": {
+    "dev": 7,
+    "test": 8,
+    "train": 35
+  },
+  "protocol": "R029_source_original_17k_publisher_annotation_nonvisual_negative_control_v1",
+  "publisher_licence": "CC_BY_NC_SA_4_0_RESEARCH_ONLY",
+  "sample_observed_class_labels": 504,
+  "sample_random_control_document_clusters_contaminated": 49,
+  "sample_random_control_total_clusters": 50,
+  "sample_splits": {
+    "dev": 893,
+    "test": 1566,
+    "train": 15426
+  },
+  "source_class_definitions": 504,
+  "source_distinct_manuscripts": 50,
+  "source_images_rights_explicitly_cleared_for_training": 0,
+  "source_images_with_annotation": 159,
+  "source_object_partition_intersection_count": 0,
+  "source_originals_never_committed": true,
+  "source_papyri_images": 159,
+  "source_record": "https://zenodo.org/records/20553713",
+  "source_samples": 17885,
+  "source_sha256_proofs": {
+    "classes.json": {
+      "bytes": 203550,
+      "md5": "14ebe82d6624cfb6def19880b3b82376",
+      "sha256": "5ff0181de57e1018058ba53e8e436e6e67a19fca290568ed0f9ea341af7afe18"
+    },
+    "papyri.json": {
+      "bytes": 56679,
+      "md5": "4b9fa9f29cdbf080cacfecbf8e77a55f",
+      "sha256": "33265df94656e79a27c1c158756f0a2479173d00184c5212159ec1bb8414eb62"
+    },
+    "samples.json": {
+      "bytes": 12113887,
+      "md5": "33c09acf76497a237394919cc55ee645",
+      "sha256": "763944b29e06643131fa9fdbd14a2b169afe5961df80394fecfd152203584e46"
+    }
+  },
+  "split_status": "NEW_FIXED_SEED_RESEARCH_DIAGNOSTIC_NOT_OFFICIAL_DDD_C-B",
+  "test_class_count": 219,
+  "test_classes_unseen_in_train": 10,
+  "test_sample_count": 1566,
+  "test_samples_with_train_attested_class": 1555,
+  "test_samples_with_train_attested_class_fraction": 0.99297573,
+  "training_or_development_corpus_admitted": false,
+  "weighted_capability_points_awarded": 0,
+  "original_hosted_verified_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38006184794",
+  "program_head_sha": "85373ece88e6b4855b9aef6e485bb98f6388bc42",
+  "reproducible_command": "python -m tools.research_ddd_prior_baseline --output /tmp/r029.json",
+  "license_and_science_boundary": "NONVISUAL_LABEL_PRIOR_ONLY__NC_METADATA__NO_ORIGINAL_IMAGES"
+}

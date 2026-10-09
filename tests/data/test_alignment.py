@@ -159,16 +159,19 @@ class W14PhysicalCorrespondenceTests(unittest.TestCase):
     def setUp(self):
         self.packet=read(ROOT/"data/alignment/w14_physical_line_evidence/plate_xxix_correspondence.json")
 
-    def test_visual_dossier_validates_and_preserves_negative_scientific_result(self):
+    def test_visual_dossier_validates_and_preserves_unresolved_candidate(self):
         self.assertEqual([],validate_w14_correspondence(self.packet))
         finding=self.packet["finding"]
-        self.assertEqual("rejected_side_mismatch",finding["candidate_state"])
-        self.assertFalse(finding["exact_line_correspondence"])
+        self.assertEqual("UNRESOLVED_HISTORICAL_SIDE_CONVENTION",finding["candidate_state"])
+        self.assertEqual("unresolved",finding["exact_line_correspondence"])
         self.assertEqual("unresolved",finding["plate_reverse_panel_line_correspondence"])
         self.assertEqual(1,finding["independent_physical_supports_inspected"])
         self.assertEqual(0,finding["independent_expert_reviewed_line_pairs"])
         self.assertFalse(finding["scoreable_gold"])
         self.assertEqual("blocked",finding["training_admission"])
+        self.assertEqual({("recto","verso"),("verso","recto")}, {(m["historical_label"],m["rime_current_mount_label"]) for m in self.packet["historical_side_crosswalk"]["mappings"]})
+        self.assertEqual(9,self.packet["visual_candidate_comparison"]["historical_main_panel_line_count"])
+        self.assertEqual("candidate_observed_both",self.packet["visual_candidate_comparison"]["royal_name_at_first_line"])
 
     def test_cli_is_deterministic_and_reports_visual_inspection(self):
         command=[sys.executable,"-m","tools.alignment","validate-w14-dossier"]
@@ -177,7 +180,7 @@ class W14PhysicalCorrespondenceTests(unittest.TestCase):
         self.assertEqual(0,first.returncode,first.stderr)
         self.assertEqual(first.stdout,second.stdout)
         self.assertIn('"plate_visually_inspected": true',first.stdout)
-        self.assertIn('"candidate_state": "rejected_side_mismatch"',first.stdout)
+        self.assertIn('"candidate_state": "UNRESOLVED_HISTORICAL_SIDE_CONVENTION"',first.stdout)
         self.assertIn('"expert_reviewed_line_pairs": 0',first.stdout)
 
     def test_adversarial_identity_and_nearby_line_substitutions_are_rejected(self):
@@ -220,6 +223,33 @@ class W14PhysicalCorrespondenceTests(unittest.TestCase):
         bad=copy.deepcopy(self.packet);bad["coordinate_comparison"].update(mapping_state="mapped",affine_transform=[1,0,0,1,0,0])
         self.assertTrue(validate_w14_correspondence(bad))
 
+    def test_adversarial_historical_side_swap_is_rejected_but_candidate_stays_unresolved(self):
+        bad=copy.deepcopy(self.packet)
+        bad["historical_side_crosswalk"]["mappings"]=[
+            {"historical_label":"recto","rime_current_mount_label":"recto"},
+            {"historical_label":"verso","rime_current_mount_label":"verso"},
+        ]
+        self.assertTrue(any("crosswalk" in e or "reversal" in e for e in validate_w14_correspondence(bad)),validate_w14_correspondence(bad))
+        bad=copy.deepcopy(self.packet);bad["finding"]["candidate_state"]="matched"
+        self.assertTrue(validate_w14_correspondence(bad))
+        bad=copy.deepcopy(self.packet);bad["finding"]["exact_line_correspondence"]=True
+        self.assertTrue(validate_w14_correspondence(bad))
+
+    def test_nine_line_royal_panel_is_candidate_evidence_not_identity_or_gold(self):
+        comparison=self.packet["visual_candidate_comparison"]
+        self.assertEqual(comparison["historical_main_panel_line_count"],comparison["rime_current_verso_line_count"])
+        self.assertEqual("candidate_observed_both",comparison["royal_name_at_first_line"])
+        self.assertEqual("not_established",comparison["diagnostic_stroke_sequence"])
+        self.assertEqual("unavailable_historical_plate_is_illustration",comparison["fiber_comparison"])
+        self.assertEqual("unresolved",comparison["line_correspondence"])
+        self.assertEqual(0,self.packet["finding"]["independent_expert_reviewed_line_pairs"])
+        self.assertFalse(self.packet["finding"]["scoreable_gold"])
+
+    def test_page_41_item_two_cannot_be_promoted_to_physical_line_identity(self):
+        bad=copy.deepcopy(self.packet)
+        bad["candidate_locator"]["semantics"]="physical manuscript line 2"
+        self.assertTrue(validate_w14_correspondence(bad))
+
     def test_stdlib_tiff_inspector_reads_dimension_tags_and_rejects_bad_header(self):
         content=b"II"+struct.pack("<HI",42,8)+struct.pack("<H",2)
         content+=struct.pack("<HHII",256,4,1,6595)+struct.pack("<HHII",257,4,1,4710)+struct.pack("<I",0)
@@ -233,6 +263,6 @@ class W14PhysicalCorrespondenceTests(unittest.TestCase):
         historical=read(ROOT/"data/alignment/w10_lawful_line_pair/CAT1883-CAT2095-verso-pleyte-line-2.json")
         self.assertEqual("proposed_unreviewed_candidate",historical["line_pair_candidate"]["mapping_state"])
         self.assertIn("could not be visually cross-checked",historical["line_pair_candidate"]["ambiguity_note"])
-        self.assertEqual("rejected_side_mismatch",self.packet["finding"]["candidate_state"])
+        self.assertEqual("UNRESOLVED_HISTORICAL_SIDE_CONVENTION",self.packet["finding"]["candidate_state"])
 
 if __name__=="__main__":unittest.main()

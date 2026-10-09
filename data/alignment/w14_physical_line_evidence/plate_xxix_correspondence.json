@@ -40,7 +40,7 @@
     "numbered_item": 2,
     "volume_2_plate": "XXIX",
     "volume_2_pdf_physical_page": 71,
-    "semantics": "bibliographic text item and recto text-panel locus; not a verso line identifier",
+    "semantics": "bibliographic numbered edition text item; not a manuscript physical line identifier",
     "original_candidate_bounds": [2800, 1690, 6500, 2020],
     "coordinate_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"
   },
@@ -73,21 +73,21 @@
         "region_id": "vol1-page41-item2-block",
         "asset_id": "pleyte_vol1_printed_page_41",
         "bounds": [250, 720, 1510, 1570],
-        "description": "Printed page heading and numbered text entries; item 2 is a textual edition entry, with its line locus represented on the recto panel of Plate XXIX.",
+        "description": "Printed page heading and numbered text entries; item 2 is a numbered edition text entry, not itself a manuscript physical line number.",
         "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
       },
       {
-        "region_id": "plate-xxix-recto-panel",
+        "region_id": "plate-xxix-main-ramesses-panel",
         "asset_id": "pleyte_vol2_plate_xxix",
         "bounds": [1820, 270, 3360, 1800],
-        "description": "Right-hand panel captioned as the text from the time of Ramses II, with nine numbered rows; this is the recto text panel associated with the printed-page text entries.",
+        "description": "Main right-hand panel captioned in the historical edition as the Ramses II text, with nine numbered rows. Its historical side label must be interpreted through the published recto/verso reversal; it is a candidate for the RIME current-mounted verso.",
         "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
       },
       {
-        "region_id": "plate-xxix-verso-panel",
+        "region_id": "plate-xxix-reverse-panel",
         "asset_id": "pleyte_vol2_plate_xxix",
         "bounds": [70, 130, 1745, 1160],
-        "description": "Upper-left panel captioned as the reverse of the Ramses II text, with sparse remnants numbered one through seven; this is distinct from item 2's recto text-panel locus.",
+        "description": "Upper-left panel captioned by the historical edition as the reverse of the Ramses II text, with sparse remnants numbered one through seven. Under the published side-label reversal this caption maps by convention to the RIME current-mounted recto; physical image confirmation remains unresolved.",
         "coordinate_meaning": "approximate inspection envelope in rendered-page pixels; not a source-image line box"
       },
       {
@@ -99,30 +99,51 @@
       }
     ],
     "observations": [
-      "RIME Figure 8 is explicitly identified as the verso of the single joined Cat.1883 plus Cat.2095 five-fragment support; the TIFF is 6595 by 4710 pixels.",
-      "The volume 1 printed page 41 item 2 is an edition text entry; Plate XXIX's right-hand nine-row panel is the recto text panel, while a separate upper-left panel depicts the reverse.",
-      "The historical reverse panel is sparse and numbered one through seven. Figure 8 shows a photographed verso with a different, fuller visible layout; a shared support and a broadly similar line orientation do not identify a particular line across the drawing and photograph.",
-      "The previous image box [2800,1690,6500,2020] is expressed in original TIFF pixels, but there is no valid geometric transform from the p. 41 item 2 recto text locus to this verso box. No line box or sign sequence was copied from modern RIME editorial text."
+      "RIME Figure 8 is identified as the current-mounted verso of the single joined Cat.1883 plus Cat.2095 five-fragment support; the TIFF is 6595 by 4710 pixels.",
+      "RIME 6 (2022), physical-description footnote 17, reports that earlier studies reversed the recto and verso labels. Historical Plate XXIX side labels therefore cannot be compared literally with modern mounting labels.",
+      "The Plate XXIX main Ramses panel has nine numbered rows, matching the published count for the RIME current-mounted verso; both have a royal-name/cartouche-like group at the first row. These are candidate-level visual cues, not a diagnostic sign sequence.",
+      "Plate XXIX is a historical illustration rather than a photograph, so papyrus-fiber detail cannot be compared. Shared support and candidate layout do not establish individual line identity.",
+      "The W10 box [2800,1690,6500,2020] remains an approximate envelope in original TIFF pixels. Page 41 numbered item 2 is an edition text-item locator, not a manuscript physical line number. No source transcription is copied."
     ]
+  },
+  "historical_side_crosswalk": {
+    "source_reference": "RIME 6 (2022), physical-description footnote 17",
+    "source_url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+    "evidence_state": "source_attested_convention",
+    "mappings": [
+      {"historical_label": "recto", "rime_current_mount_label": "verso"},
+      {"historical_label": "verso", "rime_current_mount_label": "recto"}
+    ],
+    "pixel_level_confirmation": "unresolved",
+    "note": "The published reversal resolves the nomenclature convention only. It does not independently prove that a particular illustrated panel or line is the same physical surface or line as a photographed region."
+  },
+  "visual_candidate_comparison": {
+    "historical_main_panel_line_count": 9,
+    "rime_current_verso_line_count": 9,
+    "royal_name_at_first_line": "candidate_observed_both",
+    "diagnostic_stroke_sequence": "not_established",
+    "fiber_comparison": "unavailable_historical_plate_is_illustration",
+    "line_correspondence": "unresolved",
+    "reviewer_id": null
   },
   "coordinate_comparison": {
     "source_image_bounds": [2800, 1690, 6500, 2020],
     "source_bounds_coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
     "source_bounds_asset_sha256": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1",
-    "edition_regions": ["vol1-page41-item2-block", "plate-xxix-recto-panel"],
-    "mapping_state": "not_mappable_side_mismatch",
+    "edition_regions": ["vol1-page41-item2-block", "plate-xxix-main-ramesses-panel"],
+    "mapping_state": "unresolved_historical_side_convention",
     "transform_chain": [
       "original TIFF coordinate system retained for the historical approximate box",
-      "PDF pages rendered upright at their recorded DPI; no geometric mapping to the TIFF attempted because the locator resolves to the opposite side"
+      "PDF pages rendered upright at their recorded DPI; historical side labels crosswalked using RIME 6 (2022) footnote 17; no line-level geometric mapping to the TIFF is asserted"
     ],
     "affine_transform": null,
-    "reason": "The source locator is a recto text locus and the pinned photograph is the verso; a numeric transform would imply false physical line identity."
+    "reason": "The published recto/verso reversal makes the historical main panel a plausible current-verso candidate. The drawing and photograph lack an independently established diagnostic stroke sequence and comparable fiber detail, so no numeric transform or physical line identity is asserted."
   },
   "finding": {
-    "candidate_state": "rejected_side_mismatch",
-    "candidate_image_side": "verso",
-    "candidate_edition_panel_side": "recto",
-    "exact_line_correspondence": false,
+    "candidate_state": "UNRESOLVED_HISTORICAL_SIDE_CONVENTION",
+    "candidate_image_side": "rime_current_mount_verso",
+    "candidate_edition_panel_side": "historical_recto_label_crosswalks_to_current_verso",
+    "exact_line_correspondence": "unresolved",
     "plate_reverse_panel_line_correspondence": "unresolved",
     "independent_physical_supports_inspected": 1,
     "independent_expert_reviewed_line_pairs": 0,
@@ -131,9 +152,9 @@
     "benchmark_overlap": "unresolved_quarantined",
     "reviewer_id": null,
     "rationale": [
-      "The W10 p. 41 item 2 locator resolves to the recto text panel of Plate XXIX, but the pinned RIME Figure 8 is the verso; the proposed source-exact pair therefore fails side identity.",
-      "Plate XXIX also includes a separate reverse panel, but its sparse drawing cannot be assigned to a diagnostic line of the photograph from support identity, orientation, and line count alone. That second comparison remains unresolved.",
-      "No independent palaeographic reviewer was available. The result is a negative candidate decision, not DATA-004 gold, training admission, benchmark clearance, or a reviewed line pair."
+      "RIME 6 (2022), physical-description footnote 17, documents that earlier publications reversed recto and verso labels; after applying that source-attested convention, Plate XXIX main-panel recto nomenclature is compatible with the modern current-mounted verso label.",
+      "The historical main Ramses panel and the RIME current-mounted verso each have nine lines, and a royal-name/cartouche-like group appears in the first row of both. These observations make the panel a plausible candidate but do not establish line identity.",
+      "The Plate XXIX source is an illustration, not a photograph, and no independent diagnostic stroke sequence, fiber comparison, or expert review establishes exact correspondence. The result stays unresolved; zero gold and training admission remain blocked."
     ]
   }
 }

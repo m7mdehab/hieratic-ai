@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://m7mdehab.github.io/hieratic-ai/data/alignment/w14_physical_line_evidence/physical_line_correspondence.schema.json",
   "title": "W14 source-exact physical image and edition correspondence dossier",
-  "description": "Fixed-source visual investigation. A rejected side mismatch or unresolved panel comparison is never gold or training admission.",
+  "description": "Fixed-source visual investigation with a source-attested historical side-label crosswalk. Candidate line identity remains unresolved and is never gold or training admission.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "dossier_id", "physical_support", "image_asset", "edition_assets", "candidate_locator", "inspection", "coordinate_comparison", "finding"],
+  "required": ["schema_version", "dossier_id", "physical_support", "image_asset", "edition_assets", "candidate_locator", "inspection", "historical_side_crosswalk", "visual_candidate_comparison", "coordinate_comparison", "finding"],
   "properties": {
     "schema_version": {"const": "1.0.0"},
     "dossier_id": {"const": "W14-DATA-006-CAT1883-2095-PLATE-XXIX-v1"},
@@ -63,7 +63,7 @@
         "numbered_item": {"const": 2},
         "volume_2_plate": {"const": "XXIX"},
         "volume_2_pdf_physical_page": {"const": 71},
-        "semantics": {"const": "bibliographic text item and recto text-panel locus; not a verso line identifier"},
+        "semantics": {"const": "bibliographic numbered edition text item; not a manuscript physical line identifier"},
         "original_candidate_bounds": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "minItems": 4, "maxItems": 4},
         "coordinate_asset_sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"}
       }
@@ -87,12 +87,35 @@
         "visual_regions": {
           "type": "array", "minItems": 3,
           "items": {"type": "object", "additionalProperties": false, "required": ["region_id", "asset_id", "bounds", "description", "coordinate_meaning"], "properties": {
-            "region_id": {"type": "string"}, "asset_id": {"enum": ["pleyte_vol1_printed_page_41", "pleyte_vol2_plate_xxix"]},
+            "region_id": {"enum": ["vol1-page41-item2-block", "plate-xxix-main-ramesses-panel", "plate-xxix-reverse-panel", "plate-xxvii-unrelated-reverse-panel"]}, "asset_id": {"enum": ["pleyte_vol1_printed_page_41", "pleyte_vol2_plate_xxix"]},
             "bounds": {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "integer"}, {"type": "integer"}, {"type": "integer"}], "minItems": 4, "maxItems": 4},
             "description": {"type": "string", "minLength": 10}, "coordinate_meaning": {"const": "approximate inspection envelope in rendered-page pixels; not a source-image line box"}
           }}
         },
         "observations": {"type": "array", "items": {"type": "string", "minLength": 10}, "minItems": 3}
+      }
+    },
+    "historical_side_crosswalk": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_reference", "source_url", "evidence_state", "mappings", "pixel_level_confirmation", "note"],
+      "properties": {
+        "source_reference": {"const": "RIME 6 (2022), physical-description footnote 17"},
+        "source_url": {"const": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/"},
+        "evidence_state": {"const": "source_attested_convention"},
+        "mappings": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["historical_label", "rime_current_mount_label"], "properties": {"historical_label": {"enum": ["recto", "verso"]}, "rime_current_mount_label": {"enum": ["recto", "verso"]}}}},
+        "pixel_level_confirmation": {"const": "unresolved"},
+        "note": {"type": "string", "minLength": 40}
+      }
+    },
+    "visual_candidate_comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["historical_main_panel_line_count", "rime_current_verso_line_count", "royal_name_at_first_line", "diagnostic_stroke_sequence", "fiber_comparison", "line_correspondence", "reviewer_id"],
+      "properties": {
+        "historical_main_panel_line_count": {"const": 9}, "rime_current_verso_line_count": {"const": 9},
+        "royal_name_at_first_line": {"const": "candidate_observed_both"},
+        "diagnostic_stroke_sequence": {"const": "not_established"},
+        "fiber_comparison": {"const": "unavailable_historical_plate_is_illustration"},
+        "line_correspondence": {"const": "unresolved"}, "reviewer_id": {"type": "null"}
       }
     },
     "coordinate_comparison": {
@@ -102,20 +125,20 @@
         "source_image_bounds": {"const": [2800, 1690, 6500, 2020]},
         "source_bounds_coordinate_system": {"const": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive"},
         "source_bounds_asset_sha256": {"const": "506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1"},
-        "edition_regions": {"const": ["vol1-page41-item2-block", "plate-xxix-recto-panel"]},
-        "mapping_state": {"const": "not_mappable_side_mismatch"},
-        "transform_chain": {"const": ["original TIFF coordinate system retained for the historical approximate box", "PDF pages rendered upright at their recorded DPI; no geometric mapping to the TIFF attempted because the locator resolves to the opposite side"]},
+        "edition_regions": {"const": ["vol1-page41-item2-block", "plate-xxix-main-ramesses-panel"]},
+        "mapping_state": {"const": "unresolved_historical_side_convention"},
+        "transform_chain": {"const": ["original TIFF coordinate system retained for the historical approximate box", "PDF pages rendered upright at their recorded DPI; historical side labels crosswalked using RIME 6 (2022) footnote 17; no line-level geometric mapping to the TIFF is asserted"]},
         "affine_transform": {"type": "null"},
-        "reason": {"const": "The source locator is a recto text locus and the pinned photograph is the verso; a numeric transform would imply false physical line identity."}
+        "reason": {"const": "The published recto/verso reversal makes the historical main panel a plausible current-verso candidate. The drawing and photograph lack an independently established diagnostic stroke sequence and comparable fiber detail, so no numeric transform or physical line identity is asserted."}
       }
     },
     "finding": {
       "type": "object", "additionalProperties": false,
       "required": ["candidate_state", "candidate_image_side", "candidate_edition_panel_side", "exact_line_correspondence", "plate_reverse_panel_line_correspondence", "independent_physical_supports_inspected", "independent_expert_reviewed_line_pairs", "scoreable_gold", "training_admission", "benchmark_overlap", "reviewer_id", "rationale"],
       "properties": {
-        "candidate_state": {"const": "rejected_side_mismatch"},
-        "candidate_image_side": {"const": "verso"}, "candidate_edition_panel_side": {"const": "recto"},
-        "exact_line_correspondence": {"const": false}, "plate_reverse_panel_line_correspondence": {"const": "unresolved"},
+        "candidate_state": {"const": "UNRESOLVED_HISTORICAL_SIDE_CONVENTION"},
+        "candidate_image_side": {"const": "rime_current_mount_verso"}, "candidate_edition_panel_side": {"const": "historical_recto_label_crosswalks_to_current_verso"},
+        "exact_line_correspondence": {"const": "unresolved"}, "plate_reverse_panel_line_correspondence": {"const": "unresolved"},
         "independent_physical_supports_inspected": {"const": 1}, "independent_expert_reviewed_line_pairs": {"const": 0},
         "scoreable_gold": {"const": false}, "training_admission": {"const": "blocked"},
         "benchmark_overlap": {"const": "unresolved_quarantined"}, "reviewer_id": {"type": "null"},

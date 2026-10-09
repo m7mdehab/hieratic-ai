@@ -68,7 +68,7 @@ def validate_w14_correspondence(packet:Any,schema_path:Path=W14_DOSSIER_SCHEMA)-
     finding=packet["finding"]
     for key,value in (("source_object_id",W14_EXPECTED["physical_support_id"]),("support_group",W14_EXPECTED["support_group"]),("support_count_in_group",1)):
         if support.get(key)!=value:errors.append(f"W14 physical support identity mismatch for {key}")
-    if support.get("image_view")!="verso":errors.append("W14 source image must remain identified as the verso")
+    if support.get("image_view")!="verso":errors.append("W14 source image must remain identified as the current-mounted verso")
     if image.get("sha256")!=W14_EXPECTED["image_sha256"]:errors.append("W14 source image hash mismatch")
     if image.get("coordinate_asset_sha256")!=image.get("sha256"):errors.append("W14 image coordinates must bind to original TIFF bytes")
     if image.get("license_id")!="CC-BY-2.0" or image.get("license_evidence_status")!="verified" or image.get("license_evidence_url")!=W14_EXPECTED["image_rights_url"]:errors.append("W14 image rights evidence is absent or not verified for the exact figure")
@@ -90,9 +90,20 @@ def validate_w14_correspondence(packet:Any,schema_path:Path=W14_DOSSIER_SCHEMA)-
                 errors.append(f"W14 rendered asset {field} mismatch for {asset_id}")
     if inspection.get("plate_actually_visually_inspected") is not True:errors.append("W14 Plate XXIX must be visually inspected")
     if inspection.get("transformations")!=["PDF page rendered upright with Poppler at recorded DPI; no crop, rotation, mirroring, or geometric warp applied to the source page"]:errors.append("W14 page transformation history is incomplete or altered")
-    if finding.get("candidate_state")!="rejected_side_mismatch":errors.append("W14 p. 41 item 2 candidate cannot be promoted past the observed side mismatch")
-    if finding.get("candidate_image_side")!="verso" or finding.get("candidate_edition_panel_side")!="recto":errors.append("W14 side comparison contradicts the inspected evidence")
-    if finding.get("exact_line_correspondence") is not False:errors.append("W14 investigation cannot claim exact line correspondence")
+    crosswalk=packet["historical_side_crosswalk"]
+    if crosswalk.get("source_reference")!="RIME 6 (2022), physical-description footnote 17":errors.append("W14 historical side reversal must cite RIME footnote 17")
+    if crosswalk.get("evidence_state")!="source_attested_convention":errors.append("W14 historical side convention must remain source-attested")
+    directions={(item.get("historical_label"),item.get("rime_current_mount_label")) for item in crosswalk.get("mappings",[])}
+    if directions!={("recto","verso"),("verso","recto")}:errors.append("W14 historical recto/verso labels must crosswalk to the reversed RIME mounting labels")
+    if crosswalk.get("pixel_level_confirmation")!="unresolved":errors.append("W14 side-label convention cannot be treated as pixel-level confirmation")
+    visual=packet["visual_candidate_comparison"]
+    if visual.get("historical_main_panel_line_count")!=9 or visual.get("rime_current_verso_line_count")!=9:errors.append("W14 nine-line candidate evidence must be retained")
+    if visual.get("royal_name_at_first_line")!="candidate_observed_both":errors.append("W14 first-line royal-name candidate observation must be retained")
+    if visual.get("diagnostic_stroke_sequence")!="not_established":errors.append("W14 must not claim an unestablished diagnostic stroke sequence")
+    if visual.get("fiber_comparison")!="unavailable_historical_plate_is_illustration":errors.append("W14 must disclose that the historical drawing has no comparable photographed fibers")
+    if finding.get("candidate_state")!="UNRESOLVED_HISTORICAL_SIDE_CONVENTION":errors.append("W14 candidate must remain unresolved under the historically reversed side convention")
+    if finding.get("candidate_image_side")!="rime_current_mount_verso" or finding.get("candidate_edition_panel_side")!="historical_recto_label_crosswalks_to_current_verso":errors.append("W14 candidate sides must reflect the source-attested reversal without claiming physical proof")
+    if finding.get("exact_line_correspondence")!="unresolved":errors.append("W14 investigation must retain unresolved exact line correspondence")
     if finding.get("plate_reverse_panel_line_correspondence")!="unresolved":errors.append("W14 separate reverse panel correspondence must remain unresolved")
     if finding.get("independent_expert_reviewed_line_pairs")!=0:errors.append("W14 has no independent expert-reviewed line pair")
     if finding.get("independent_physical_supports_inspected")!=1:errors.append("W14 physical support count must not split joined catalog numbers")
@@ -102,11 +113,11 @@ def validate_w14_correspondence(packet:Any,schema_path:Path=W14_DOSSIER_SCHEMA)-
     locator=packet["candidate_locator"]
     if locator.get("volume_1_printed_page")!=41 or locator.get("numbered_item")!=2 or locator.get("volume_2_plate")!="XXIX":errors.append("W14 historical edition locator changed")
     if locator.get("original_candidate_bounds")!=[2800,1690,6500,2020]:errors.append("W14 historical approximate source-image envelope was altered")
-    if locator.get("semantics")!="bibliographic text item and recto text-panel locus; not a verso line identifier":errors.append("W14 item 2 must not be misrepresented as a verso line identifier")
+    if locator.get("semantics")!="bibliographic numbered edition text item; not a manuscript physical line identifier":errors.append("W14 item 2 must not be misrepresented as a manuscript line identifier")
     comparison=packet["coordinate_comparison"]
     if comparison.get("source_image_bounds")!=locator.get("original_candidate_bounds") or comparison.get("source_bounds_asset_sha256")!=image.get("sha256"):errors.append("W14 coordinate comparison is detached from the historical original-image candidate")
-    if comparison.get("mapping_state")!="not_mappable_side_mismatch" or comparison.get("affine_transform") is not None:errors.append("W14 cannot invent a cross-side coordinate transform")
-    if comparison.get("edition_regions")!=["vol1-page41-item2-block","plate-xxix-recto-panel"]:errors.append("W14 coordinate comparison targets changed edition regions")
+    if comparison.get("mapping_state")!="unresolved_historical_side_convention" or comparison.get("affine_transform") is not None:errors.append("W14 cannot invent a coordinate transform while side and line identity remain unresolved")
+    if comparison.get("edition_regions")!=["vol1-page41-item2-block","plate-xxix-main-ramesses-panel"]:errors.append("W14 coordinate comparison must target the candidate main Ramses panel")
     for region in inspection["visual_regions"]:
         bounds=region["bounds"]
         if len(bounds)!=4 or bounds[2]<=bounds[0] or bounds[3]<=bounds[1]:errors.append(f"W14 invalid visual-region geometry: {region['region_id']}")
@@ -384,7 +395,7 @@ def main(argv=None)->int:
             packet=read(a.manifest);errors=validate_w14_correspondence(packet,a.schema)
             if errors:raise AlignmentError("\n".join(errors))
             finding=packet["finding"]
-            print(json.dumps({"dossier_id":packet["dossier_id"],"image_sha256":packet["image_asset"]["sha256"],"edition_volume_1_sha256":packet["edition_assets"]["volume_1_sha256"],"edition_volume_2_sha256":packet["edition_assets"]["volume_2_sha256"],"plate_visually_inspected":packet["inspection"]["plate_actually_visually_inspected"],"candidate_state":finding["candidate_state"],"reverse_panel_line_correspondence":finding["plate_reverse_panel_line_correspondence"],"independent_physical_supports":finding["independent_physical_supports_inspected"],"expert_reviewed_line_pairs":finding["independent_expert_reviewed_line_pairs"],"gold_scoreable":False,"training_admission":"blocked","result":"PASS: exact-source visual dossier validated; p. 41 item 2 side mismatch preserved; no gold asserted"},sort_keys=True,indent=2))
+            print(json.dumps({"dossier_id":packet["dossier_id"],"image_sha256":packet["image_asset"]["sha256"],"edition_volume_1_sha256":packet["edition_assets"]["volume_1_sha256"],"edition_volume_2_sha256":packet["edition_assets"]["volume_2_sha256"],"plate_visually_inspected":packet["inspection"]["plate_actually_visually_inspected"],"candidate_state":finding["candidate_state"],"reverse_panel_line_correspondence":finding["plate_reverse_panel_line_correspondence"],"independent_physical_supports":finding["independent_physical_supports_inspected"],"expert_reviewed_line_pairs":finding["independent_expert_reviewed_line_pairs"],"gold_scoreable":False,"training_admission":"blocked","result":"PASS: exact-source dossier validated; historical side convention recorded; line correspondence unresolved; no gold asserted"},sort_keys=True,indent=2))
             return 0
         if a.cmd=="verify-w14-assets":
             print(json.dumps(verify_w14_assets(a.rime_image,a.volume_1,a.volume_2),sort_keys=True,indent=2))

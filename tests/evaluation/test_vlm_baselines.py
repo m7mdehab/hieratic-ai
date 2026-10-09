@@ -1863,11 +1863,13 @@ class VLMBaselinesTests(unittest.TestCase):
         except ImportError:
             self.skipTest("Pillow unavailable: scrambled control generator requires decoder")
 
-        sample = generate_blank_control(128, 64)
+        from eval.vlm.smoke import generate_geometric_test_image
+        sample = generate_geometric_test_image()
         scrambled_1 = generate_scrambled_control(sample, tile_size=16, seed=42)
         scrambled_2 = generate_scrambled_control(sample, tile_size=16, seed=42)
         self.assertTrue(scrambled_1.startswith(b"\x89PNG\r\n\x1a\n"))
         self.assertEqual(hashlib.sha256(scrambled_1).hexdigest(), hashlib.sha256(scrambled_2).hexdigest())
+        self.assertNotEqual(hashlib.sha256(sample).hexdigest(), hashlib.sha256(scrambled_1).hexdigest())
 
         with self.assertRaises(ImageConditioningError):
             generate_scrambled_control(b"not_an_image")

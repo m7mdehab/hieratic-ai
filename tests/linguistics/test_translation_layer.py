@@ -1101,3 +1101,138 @@ class W14OriginalTrainGroupTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+# W15 regression gates — **no TLA target rows needed for software tests**.
+from ling.translation import w15_tla_transfer as tla_w15
+
+class W15TlaLateEgyptianEvidenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.donor = tla_w15.load_donor()
+        cls.index = tla_w15.FrozenAESIndex(cls.donor)
+
+    def test_genuine_pinned_preexisting_train_population_rights_source(self):
+        self.assertEqual(3021, len(self.donor))
+        self.assertEqual(1130, len({s["text"] for s in self.donor.values()}))
+        self.assertEqual("1354bbfd832680953bec25fb5742502599763bc1", tla_w15.DONOR_BLOB)
+        self.assertEqual("8af85941783ba575d5a8985c80c688f948c50040",
+                         tla_w15.TLA_REVISION)
+        self.assertEqual(3606, tla_w15.TLA_TARGET_SENTENCES)
+
+    def test_prediction_only_accepts_original_transliteration_str(self):
+        for forbidden in ([{"transliteration": "x", "translation": "GOLD"}],
+                          {"transliteration": "x", "translation": "GOLD"}, None, 42):
+            with self.subTest(forbidden=forbidden):
+                with self.assertRaises(TranslationError):
+                    self.index.predict(forbidden)
+        item = self.index.predict("dḏw ⸗f unknown-not-in-donor")
+        self.assertFalse(item["target_translation_or_UPOS_used"])
+        self.assertFalse(item["generates_fluent_translation"])
+        self.assertEqual(3, item["word_count"])
+        self.assertEqual(3, len(item["units"]))
+
+    def test_whitespace_and_unicode_identity_are_not_silently_morphed(self):
+        a = self.index.predict("dḏw   ⸗f")
+        b = self.index.predict("dḏw\n⸗f")
+        self.assertEqual(a["output_german"], b["output_german"])
+        self.assertEqual(a["word_count"], b["word_count"])
+        self.assertEqual(["dḏw", "⸗f"], a["word_forms"])
+
+    def test_unknown_forms_explicitly_abstain(self):
+        out = self.index.predict("⟨UNATTESTED-SAMPLE-v99999⟩")
+        self.assertEqual(1, out["unknown_words"])
+        self.assertEqual(0, out["exact_lexical_matches"])
+        self.assertEqual("[?]", out["output_german"])
+        self.assertEqual(0, out["units"][0]["distinct_aes_text_support"])
+        self.assertEqual("ABSTAIN_NO_TRAIN_ATTESTATION", out["units"][0]["evidence"])
+
+    def test_frozen_train_only_exact_sentence_parallel_has_original_publisher_provenance(self):
+        # A training sentence is a TEST FIXTURE for interface behavior; never
+        # included in the actual external 3606 TLA scored population.
+        example = next(s for s in self.donor.values() if s["sentence_translation"] and s["token"])
+        raw_forms = " ".join(token["written_form"] for token in example["token"])
+        pred = self.index.predict(raw_forms)
+        self.assertEqual("AES_TRAIN_ONLY_FULL_ORDERED_SENTENCE_PARALLEL", pred["mode"])
+        self.assertGreater(pred["full_sentence_parallel_distinct_train_source_groups"], 0)
+        self.assertIsInstance(pred["output_german"], str)
+        self.assertTrue(pred["output_german"])
+
+    def test_reference_morphology_glossing_mutations_cannot_affect_prediction(self):
+        rows = [
+            {"transliteration": "dḏw ⸗f", "translation": "SECRET ONE",
+             "UPOS": "FORGED", "glossing": "SECRET MORPH"},
+        ]
+        original = self.index.predict(rows[0]["transliteration"])
+        rows[0]["translation"] = "SECRET TWO"
+        rows[0]["UPOS"] = "OVERWRITTEN POS"
+        rows[0]["glossing"] = "OVERWRITTEN GOLD"
+        self.assertEqual(original, self.index.predict(rows[0]["transliteration"]))
+        self.assertNotIn("SECRET ONE", original["output_german"])
+        self.assertNotIn("SECRET TWO", original["output_german"])
+
+    def test_score_is_not_prediction_and_is_gold_sensitive(self):
+        candidate = self.index.predict("dḏw")["output_german"]
+        good = tla_w15.word_f1(candidate, candidate)
+        bad = tla_w15.word_f1(candidate, "completely unrelated German reference")
+        self.assertGreaterEqual(good["f1"], bad["f1"])
+        self.assertEqual(1.0, good["f1"])
+
+    def test_source_jsonl_parser_has_strict_original_eight_field_contract(self):
+        row = {
+            "hieroglyphs": "𓁹", "transliteration": "r", "lemmatization": "1|r",
+            "UPOS": "NOUN", "glossing": "N.m", "translation": "Wort",
+            "dateNotBefore": "-1200", "dateNotAfter": "-1000"
+        }
+        raw = (json.dumps(row, ensure_ascii=False) + "\n").encode("utf-8")
+        self.assertEqual([row], tla_w15.parse_target_raw(raw))
+        for alter in ("extra", "missing", "wrong_value", "malformed", "oversize", "empty"):
+            bad = copy.deepcopy(row)
+            if alter == "extra": bad["forged_field"] = "gold"
+            if alter == "missing": del bad["translation"]
+            if alter == "wrong_value": bad["translation"] = 7
+            if alter == "malformed": payload = b"{this is not json}"
+            elif alter == "oversize": payload = (json.dumps({**row, "translation":"X"*200100}) + "\n").encode()
+            elif alter == "empty": payload = b""
+            else: payload = (json.dumps(bad, ensure_ascii=False) + "\n").encode()
+            with self.subTest(alter=alter):
+                with self.assertRaises(TranslationError):
+                    tla_w15.parse_target_raw(payload)
+
+    def test_original_3606_source_count_and_byte_hash_required_before_scoring(self):
+        with self.assertRaisesRegex(TranslationError, "population mismatch"):
+            tla_w15.evaluate(self.donor, {
+                "publisher_git_blob": tla_w15.TLA_PUBLISHER_GIT_BLOB,
+                "publisher_revision": tla_w15.TLA_REVISION, "rights": "CC-BY-SA-4.0",
+                "witness_ids_provided_by_source": False, "rows": []
+            })
+        with self.assertRaisesRegex(TranslationError, "Refusing non-publisher"):
+            tla_w15.evaluate(self.donor, {
+                "publisher_git_blob": "forged",
+                "publisher_revision": tla_w15.TLA_REVISION, "rights": "CC-BY-SA-4.0",
+                "witness_ids_provided_by_source": False, "rows": [{}]*3606
+            })
+
+    def test_local_target_copy_must_match_pinned_publisher_blob(self):
+        with tempfile.TemporaryDirectory() as d:
+            target = Path(d) / "train.jsonl"
+            target.write_text('{"fake":"frozen source"}\n', encoding="utf-8")
+            with self.assertRaisesRegex(TranslationError, "raw JSONL not verified"):
+                tla_w15.load_target(target)
+            target.unlink()
+            with self.assertRaisesRegex(TranslationError, "missing or linked"):
+                tla_w15.load_target(target)
+            target.symlink_to(Path(d) / "nonexistent")
+            with self.assertRaisesRegex(TranslationError, "missing or linked"):
+                tla_w15.load_target(target)
+
+    def test_cli_verify_train_and_source_missing_fail_closed(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(0, tla_w15.main(["verify-train"]))
+        self.assertEqual(3021, json.loads(out.getvalue())["donor_sentences"])
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(1, tla_w15.main(["evaluate"]))
+            self.assertEqual(1, tla_w15.main(["verify-target"]))
+            self.assertEqual(1, tla_w15.main(["predict"]))

@@ -57,6 +57,20 @@ class OriginalSignBinaryGates(unittest.TestCase):
         self.assertEqual("VERIFIED_PUBLISHER_JSON",res["record"])
         self.assertEqual(1,res["source_binary_images_verified"])
 
+    def test_nested_item_licence_and_image(self):
+        import json
+        doc={"id":6036,"images":[{"type":"SVG","values":["/img/data/ht/svg/ht_6036.svg"]}],
+             "details":[{"items":[
+                 {"key":"license","label":"Lizenz","values":["CC BY 4.0"]}]}]}
+        def mockfetch(url,*args):
+            if "/api/signs/" in url:return json.dumps(doc).encode(),"application/json"
+            return b'<svg xmlns="http://www.w3.org/2000/svg"></svg>',"image/svg+xml"
+        with patch.object(p,"bounded_get",side_effect=mockfetch):
+            result=p.inspect_one(6036)
+        self.assertTrue(result["license_per_item_confirmed"])
+        self.assertEqual(1,result["source_binary_images_verified"])
+        self.assertFalse(result["training_admission"])
+
     def test_unreliable_original_id_cannot_admit(self):
         with patch.object(p,"bounded_get",return_value=(b'{"id":999,"license":"CC BY 4.0"}',"application/json")):
             res=p.inspect_one(6036)

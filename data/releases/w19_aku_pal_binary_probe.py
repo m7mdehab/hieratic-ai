@@ -82,6 +82,32 @@ def candidates_from_metadata(leaves:list[dict])->list[dict]:
     return result[:MAX_LINKS_PER_SIGN]
 
 
+
+def nested_item_licenses(data:dict)->list[dict]:
+    """AKU-PAL details[].items[].key/label/values bind the license to the item."""
+    items=[]
+    for group in data.get("details",[]):
+        if not isinstance(group,dict):continue
+        for item in group.get("items",[]):
+            if not isinstance(item,dict):continue
+            identifier=str(item.get("key") or "")
+            label=str(item.get("label") or "")
+            if not LICENSE_KEY.search(identifier+" "+label):continue
+            strings=[]
+            def visit(x,depth=0):
+                if depth>3:return
+                if isinstance(x,str):strings.append(x[:250])
+                elif isinstance(x,list):
+                    for v in x[:8]:visit(v,depth+1)
+                elif isinstance(x,dict):
+                    for k,v in list(x.items())[:12]:
+                        if str(k).lower() in ("value","label","name","text","url","title"):
+                            visit(v,depth+1)
+            visit(item.get("values",[]))
+            items.append({"field":identifier,"label":label,"values":strings})
+    return items
+
+
 def inspect_one(rid:int)->dict:
     if rid not in IDS:raise ValueError("not an audited item ID")
     url=ORIGIN+"/api/signs/"+str(rid)
@@ -112,13 +138,18 @@ def inspect_one(rid:int)->dict:
         text=raw.decode("utf-8")
         if not re.search(r"(?:\b|_)"+str(rid)+r"(?:\b|_)",text):raise ValueError("item ID not identified")
         rights=[x for x in leaves if LICENSE_KEY.search(x["key"])]
-        exact_license=any(re.search(r"\bCC[\s\u00a0-]*BY[\s\u00a0-]*4(?:\.0)?\b",str(x.get("safe_metadata_value") or ""),re.I) for x in rights)
+        detail_rights=nested_item_licenses(data)
+        exact_license=any(re.search(r"\bCC[\s\u00a0-]*BY[\s\u00a0-]*4(?:\.0)?\b",str(v),re.I)
+            for v in ([x.get("safe_metadata_value") for x in rights]+
+                [v for entry in detail_rights for v in entry["values"]]))
         # Exact publisher-record license, not coincidental external/example license.
         out.update({"record":"VERIFIED_PUBLISHER_JSON","source_record_sha256":hashlib.sha256(raw).hexdigest(),
                     "record_bytes":len(raw),"license_per_item_confirmed":bool(exact_license),
                     "field_keys":[x["key"] for x in leaves][:100],
-                    "rights_fields":rights[:20]})
-        links=candidates_from_metadata(leaves)
+                    "rights_fields":rights[:20],"nested_license_items":detail_rights[:20]})
+        # A generic HG hieroglyph is NOT this Hieratogram HT sign original.
+        links=[q for q in candidates_from_metadata(leaves)
+               if re.search(r"/ht_(?:%d)(?:_|\.)" % rid,q["url"],re.I)]
         out["publisher_asset_candidates"]=links
         if not exact_license:
             out["media_status"]="BLOCKED_NOT_CONFIRMED_EXACT_RECORD_RIGHTS"
@@ -180,9 +211,14 @@ if __name__=="__main__":
         "original_image_bytes_verified":report["original_image_bytes_verified"],
         "signs":[{"id":x["id"],"fields":x.get("field_keys",[])[:40],
          "rights":x.get("rights_fields",[]),
+         "nested_license_items":x.get("nested_license_items",[]),
          "media_status":x.get("media_status"),"asset_candidates":x.get("publisher_asset_candidates",[]),
          "error":x.get("error")}
         for x in report["records"]]},sort_keys=True,ensure_ascii=False))
     if report["record_json_verified"]!=len(IDS):
         raise SystemExit("SOURCE_AUDIT_BLOCKED: not all eight source-specific records verified")
+    if report["per_item_cc_by_confirmed"]==0:
+        raise SystemExit("RIGHTS_AUDIT_BLOCKED: no exact per-item license proven")
+    if report["original_image_bytes_verified"]==0:
+        raise SystemExit("MEDIA_AUDIT_BLOCKED: no actual publisher original image binary verified")
 

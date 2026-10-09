@@ -125,6 +125,8 @@ class W10LawfulLinePairTests(unittest.TestCase):
             lambda p:p["source"]["image"].update(license_evidence_status="unknown"),
             lambda p:p["edition"].update(license_evidence_status="unverified"),
             lambda p:p["line_pair_candidate"]["geometry"].update(bounds=[1,2,1,4]),
+            lambda p:p["line_pair_candidate"]["geometry"].update(bounds=[-3,2,17,14]),
+            lambda p:p["line_pair_candidate"]["geometry"].update(bounds=[1,-2,17,14]),
         )
         for mutate in mutations:
             bad=copy.deepcopy(self.packet);mutate(bad)

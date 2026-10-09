@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W9_RIME_SOURCE_EVIDENCE_VLM_CPU_DIAGNOSTIC_AND_LING003_EXTERNAL_TEST"
+  current_wave: "W11_BIOGRAPHY_SOURCE_GENERALIZATION_AND_W10_DATA_VLM_INTEGRATED"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,10 +38,10 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
-    - "DATA-008: W8 CC0 Cat.2044 original JPEG and W9 CC BY 2.0 RIME processed figure TIFF exist in private vault across two physical supports, but neither has independently verified reusable line readings, real reviewed alignments, cleared overlap, or production admission; corpus_v1 remains blocked."
-    - "VLM-001: W9 PR #100 fail-closed authentic-image CPU diagnostic engineering merged and exact-head hosted CI passed; old 21-pass agent report is historical and not independently reverified after remediation. No score-eligible manuscript gold, few-shot cohort or held-out benchmark accuracy; Grade F NO and 0/2 points."
+    - "DATA-008: W8 CC0 Cat.2044/013 original and W9 RIME Cat.1883+2095 processed figure are source-verified images across two physical manuscript supports. W10 RIME verso Fig.8/Pleyte-Rossi p.41 Plate XXIX is a new source-locked unreviewed bibliographic/candidate line envelope, NOT a verified line-to-text match. Zero independently reviewed aligned readings, zero gold, zero production admissions; benchmark and rights gates remain."
+    - "VLM-001: PR #100 fail-closed implementation and W10 #104 tile-scramble/blank/inversion controls merged; Gemini reports fresh 23 Cat.2044 local CPU passes with pinned pixels/weights but protected receipt was not independently rerun by overseer. Negative blank/scrambled controls hallucinated script: Grade E NOT_VERIFIED, Grade F STRICTLY_NO. Zero independent OCR accuracy, 0/2 VLM points."
     - "EVAL-003: provider execution requires separately approved model access, credentials, rights, costs, and independent scoring."
-    - "LING-003: real 444-sentence AED/AES source-text-heldout translation diagnostic and LING-002 interpretation integration merged in PRs #91/#92; only 14 complete other-source published parallels and 15.21% corpus micro word F1, not independent fluent semantic adequacy or manuscript-level blind verification."
+    - "LING-003: Wave 10 #102 source-compositional method failed on first-use AES archive 47 references (word F1 0.02285714 vs gloss 0.02312139); Wave 11 #105 expanded lawful AES train from 904 to 3925 and improved new biography editorial text word F1 from 0.09667330 to 0.10791969 on 178 references, but no local grammar swaps, 846/2264 unsupported Egyptian tokens, and whole-sentence memory copied 50 nonidentical texts. Publisher text IDs do not prove physical witness independence or semantic quality; 0/2 task points."
 
 canonical_files:
   start: "START_HERE.md"
@@ -79,21 +79,31 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W9 PRs #96, #97, #98, #99 and corrective #100 are merged. Last merge
-  c6f59103b7168b7b26ede0e696fa356e01ea5b29. The updated VLM code
-  refuses corrupt/missing/altered source pixels, unsupported image decoding,
-  unverified weights, and crop-manifest mismatches; mock controls never earn
-  real evidence grades. Hosted exact-head Governance, VLM Preflight and
-  Error Analysis passed on corrective head 8ee5d5b9b1fe5eee3e2b1cda930f1d3bfa0e8675.
-  This accepts engineering remediation, not a newly reverified live 21-pass
-  experiment or Grade F gold. All W9 data source image acquisitions, geometry
-  and source-pair readiness preserve legal/scholarship quarantine and 0 admitted
-  training items. LING-003 contextual model failed external generalization;
-  do not retune on revealed Tuebingen references. Canonical verified goal
-  progress 34.5/100, research coverage historical 14%, zero validated
-  model experiments and zero trained models; last weighted task LING-002.
-  W10 dispatch brief is docs/governance/W10_DISPATCH_BRIEFS.md:
-  Luna owns independent DATA-006 rights-safe image/edition pilot,
-  Gemini owns VLM-001 fresh post-remediation real CPU evidence,
-  overseer owns LING-003 genuinely compositional translation and independent
-  new-source generalization. No duplicate write scopes or unauthorised spending.
+  Waves 10 and 11 have been independently integrated. PR #102 W10 LING-003
+  compositional archive negative test, #105 W11 3925-sentence training expansion
+  and new 178-reference biographies test, #103 Luna DATA-006 lawful RIME verso
+  versus Pleyte-Rossi bibliographic candidate, and #104 Gemini VLM-001 reported
+  fresh 23-pass CPU negative controls are merged. Exact-head hosted CI passed
+  on all; last merge dbc65cadee4466d45910669e2d1cd8454254b188, with
+  main post-merge verification separate. W11 first-use external composer micro
+  German word F1 0.10791969 versus original 904-trained 0.09667330,
+  103 fewer unknown source tokens, but 846/2264 remain unsupported, no
+  German unit-order swaps activated, and 50 whole-sentence contextual retrievals
+  copied nonidentical source sequences. This is publisher text overlap,
+  NOT Egyptian semantic adequacy or Hieratic image understanding. W9 Tuebingen,
+  W10 archive and W11 biographies external cohorts are all exposed and
+  must never be retuned and claimed independently held out. DATA-006 remains
+  one unreviewed candidate without independently cross-checked original
+  edition Plate XXIX line correspondence or rights-admitted manuscript gold;
+  DATA-008 is blocked. W10 VLM local host's 23-pass receipt is agent reported,
+  reviewer host did not independently execute it; blank/scrambled hallucinations
+  invalidate Grade E, Grade F remains STRICTLY_NO and VLM-001 unearned.
+  Next owner action: independently source a lawfully reusable exact original
+  manuscript-line/edition pair with genuine witness and rights review, establish
+  blinded review/evaluation cohort, and investigate independently supervised
+  ancient Egyptian grammar/role realization on *new* source material. Do not
+  hire experts or spend money automatically; execute licensed-online research
+  and rigorous source audits first. Canonical score remains 34.5/100,
+  research coverage historical 14%, 0 accepted model experiments, 0 trained
+  models, last weighted accepted LING-002; active LING-003, DATA-008,
+  VLM-001, EVAL-003. No ability/phase points from W10/W11 engineering.

@@ -341,3 +341,14 @@ The project owner's explicit preference is to exhaust viable public licensed fre
 **Explicit limits:** AED and AES derive from overlapping published scholarship. Original AES text IDs do not prove independent physical papyri or scribes. No licensed original image, OCR, hand-written recognition, second blind Egyptologist reading, model tuning, sealed benchmark or statistically independent real-model performance was demonstrated. The 2 points acknowledge the **linguistic interpretation milestone only** and do not change DATA-008 production, VLM scientific certification, real-model experiment count, independent gold/benchmark or P4/P5 capability status.
 
 Canonical score: **32.5 → 34.5/100**, P6 **2 → 4/10**; LING-002 status **validated** and LING-003 becomes dependency-ready. Research coverage retains its historic 14% uncalibrated value, validated real model experiments **0**, trained models **0**. Neither publisher source licensing nor a task-oriented weight award is independent of original-image use rights.
+
+
+## ADR-0025 — Require byte-preserving original-image VLM evidence and independent controls
+
+**Status:** Accepted · **Date:** 2026-10-09 · **Authority:** Overseer independent source review and W9 PR #100 remediation, exact-head hosted CI.
+
+A readable response to a prompted Hieratic image is not automatically a real scientific model result. All real-image diagnostics must verify source-image identity (exact content hash, size and physical-source provenance), preserve pixels during decoding and resizing, refuse altered/missing/corrupt images, and verify the exact model weight bytes. **There is no fallback that fabricates a blank substitute image in a live run.** Candidate crops need a pinned source inspection manifest and matching artifact hashes. Simulated/test-double outputs must not carry authentic-weight, authentic-image or verified-sensitivity grades.
+
+Blank-image response differences alone are not a scientific visual sensitivity pass, and descriptive/sign/transliteration/translation outputs must be routed and labeled honestly. Runtime fingerprint hashes are not an independently preregistered protocol. Any published historical 21-pass W9 result predating the corrections is unverified under the new gates; a new private genuine-CPU run must produce source-linked hashes, statuses, control outputs, environment and weight receipts. **No gold benchmark, no independent manuscript reading accuracy, no VLM-001 points** follow from this software acceptance. The Gate F prohibition is unchanged.
+
+PR #100 merged with fail-closed code, negative tests, guarded README/task documentation and three green hosted checks on exact corrective head `8ee5d5b9b1fe5eee3e2b1cda930f1d3bfa0e8675`. It did not independently execute the original CPU weights in GitHub CI.

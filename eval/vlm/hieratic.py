@@ -178,7 +178,7 @@ def resize_image_aspect_ratio(
     if image_bytes.startswith(b"synthetic_") and simulated_marker_ok:
         width = min(max_dimension, 256)
         return generate_blank_control(width, width), [width, width]
-    if not (image_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n") or image_bytes.startswith(b"\\xff\\xd8\\xff")):
+    if not (image_bytes.startswith(b"\x89PNG\r\n\x1a\n") or image_bytes.startswith(b"\xff\xd8\xff")):
         raise ImageConditioningError("Only genuine PNG/JPEG image bytes are supported")
     try:
         from PIL import Image, ImageOps

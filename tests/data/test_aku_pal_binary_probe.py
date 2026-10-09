@@ -17,14 +17,14 @@ class OriginalSignBinaryGates(unittest.TestCase):
         with self.assertRaises(ValueError):p.inspect_one(99999)
 
     def test_only_media_fields_in_official_record_are_candidates(self):
-        leaves=[{"key":"image.url","safe_metadata_value":"/media/a.svg"},
+        leaves=[{"key":"image.url","safe_metadata_value":"/img/data/ht/svg/ht_6036.svg"},
                 {"key":"description","safe_metadata_value":"/api/admin/export"},
                 {"key":"image.external","safe_metadata_value":"https://evil.test/a.svg"},
                 {"key":"image.query","safe_metadata_value":"/media/a.svg?token=secret"}]
-        self.assertEqual([{"field":"image.url","url":p.ORIGIN+"/media/a.svg"}],p.candidates_from_metadata(leaves))
+        self.assertEqual([{"field":"image.url","url":p.ORIGIN+"/img/data/ht/svg/ht_6036.svg"}],p.candidates_from_metadata(leaves))
 
     def test_unlicensed_record_never_fetches_image(self):
-        fake={"id":6036,"license":"CC BY-NC-SA 4.0","image":{"url":"/media/a.svg"}}
+        fake={"id":6036,"license":"CC BY-NC-SA 4.0","image":{"url":"/img/data/ht/svg/ht_6036.svg"}}
         def fake_get(url,*args):
             self.assertIn("/api/signs/",url)
             import json
@@ -37,7 +37,7 @@ class OriginalSignBinaryGates(unittest.TestCase):
 
     def test_licensed_binary_success_without_gold_admission(self):
         import json
-        fake={"id":6036,"license":"CC BY 4.0","image":{"url":"/media/a.svg"}}
+        fake={"id":6036,"license":"CC BY 4.0","image":{"url":"/img/data/ht/svg/ht_6036.svg"}}
         def fake_get(url,*args):
             if "/api/signs/" in url:return json.dumps(fake).encode(),"application/json"
             return b'<svg xmlns="http://www.w3.org/2000/svg"></svg>',"image/svg+xml"
@@ -49,7 +49,7 @@ class OriginalSignBinaryGates(unittest.TestCase):
 
     def test_single_item_wrapped_publisher_array(self):
         import json
-        obj=[{"id":6036,"license":"CC BY 4.0","image":{"url":"/media/a.svg"}}]
+        obj=[{"id":6036,"license":"CC BY 4.0","image":{"url":"/img/data/ht/svg/ht_6036.svg"}}]
         with patch.object(p,"bounded_get",side_effect=lambda url,*args:
               (json.dumps(obj).encode(),"application/json") if "/api/signs/" in url
               else (b'<svg xmlns="http://www.w3.org/2000/svg"></svg>',"image/svg+xml")):

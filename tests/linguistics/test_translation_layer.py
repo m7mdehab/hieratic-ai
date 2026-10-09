@@ -583,5 +583,151 @@ class W10FrozenArchiveCompositionalTests(unittest.TestCase):
             self.assertFalse(item["photographed_manuscript_view_linked"])
 
 
+
+class W11ExpandedTrainingFreshBiographyTests(unittest.TestCase):
+    """Frozen expanded training; W10 and exposed Tuebingen data excluded."""
+
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import contextual, w11_evaluation
+        cls.corpus = contextual.load_corpus()
+        cls.data = w11_evaluation.load(cls.corpus)
+
+    def test_original_archive_3021_donor_1130_groups_and_quarantined_w10(self):
+        self.assertEqual(3021, len(self.data["donor"]))
+        self.assertEqual(1130, len(self.data["donor_text_ids"]))
+        self.assertEqual(32, len(self.data["prior_heldout_text_ids"]))
+        self.assertEqual(
+            {"Stephan Seidlmayer": 550, "Stefan Grunert": 2463, "Ingelore Hafemann": 8},
+            self.data["donor_owners"])
+        donor_ids = set(self.data["donor_text_ids"])
+        prior_w10 = set(self.data["prior_heldout_text_ids"])
+        previous = {r["text_id"] for grp in self.corpus["groups"].values() for r in grp}
+        self.assertFalse(donor_ids & prior_w10)
+        self.assertFalse(donor_ids & previous)
+        self.assertFalse(set(self.data["test_text_ids"]) & (donor_ids | prior_w10 | previous))
+
+    def test_new_biographies_180_sentences_32_groups_and_178_refs(self):
+        self.assertEqual(180, len(self.data["test"]))
+        self.assertEqual(32, len(self.data["test_text_ids"]))
+        self.assertEqual(178, sum(bool(row["german"]) for row in self.data["test"]))
+        self.assertTrue(all(all(g is None for g in row["glosses"])
+                            for row in self.data["test"]))
+        self.assertTrue(all(row["corpus"] == "bbawhistbiospzt" for row in self.data["test"]))
+
+    def test_original_digest_locks_reject_mutated_external_and_donor(self):
+        from ling.translation import w11_evaluation as ev
+        for path, expected, max_bytes in (
+            (ev.DONOR, ev.DONOR_BLOB, 3_000_000),
+            (ev.BIOGRAPHIES, ev.BIOGRAPHY_BLOB, 400_000),
+        ):
+            original = (ev.ROOT / path).read_bytes()
+            with tempfile.TemporaryDirectory() as temp:
+                item = Path(temp) / path
+                item.parent.mkdir(parents=True)
+                item.write_bytes(original + b" ")
+                with self.assertRaisesRegex(tr.TranslationError, "Git blob identity mismatch"):
+                    ev.pinned_json(Path(temp), path, expected, max_bytes)
+
+    def test_duplicate_train_group_and_fake_reference_cannot_improve_predictions(self):
+        from ling.translation.compositional import ConstrainedComposer
+        from ling.translation import contextual
+        train = [row for name in contextual.DEV_CORPORA
+                 for row in self.corpus["groups"][name] if row["german"]]
+        composer = ConstrainedComposer(train)
+        original = self.data["test"][0]
+        result = composer.predict(original)
+        fake = {**original, "german": "A FORGED GERMAN TARGET SENTENCE",
+                "glosses": tuple("secret" for _ in original["forms"])}
+        self.assertEqual(result, composer.predict(fake))
+        with self.assertRaisesRegex(tr.TranslationError, "in training"):
+            composer.predict({**original, "text_id": train[0]["text_id"]})
+
+    def test_frozen_w11_five_way_full_population_and_negative_controls(self):
+        from ling.translation import w11_evaluation as ev
+        report = ev.evaluate(self.corpus)
+        self.assertEqual(904, report["training"]["old_w9_translated_sentences"])
+        self.assertEqual(3021, report["training"]["additional_archive_translated_sentences"])
+        self.assertEqual(3925, report["training"]["total_training_translated_sentences"])
+        self.assertEqual(32, report["training"]["w10_quarantined_group_count"])
+        self.assertEqual(180, report["new_external"]["total_original_sentences"])
+        self.assertEqual(178, report["new_external"]["publisher_german_references"])
+        self.assertEqual(32, report["new_external"]["original_source_text_groups"])
+        self.assertEqual({
+            "w9_904_gloss", "w10_904_composer", "w11_expanded_gloss",
+            "w11_expanded_composer", "w11_expanded_memory_threshold_0",
+        }, set(report["new_external"]["metrics"]))
+        for value in report["new_external"]["metrics"].values():
+            self.assertEqual(178, value["sentences_scored"])
+        self.assertFalse(report["science_is_full_semantic_translation"])
+        self.assertFalse(report["independent_expert_gold"])
+        self.assertFalse(report["independently_verified_distinct_physical_manuscripts"])
+        self.assertEqual(0, report["original_ling003_capability_points"])
+        self.assertEqual(report, ev.evaluate(self.corpus))
+        self.assertEqual(40, len(ev.git_blob_sha1(b"test")))
+        print("W11_FRESH_BIOGRAPHY_EXTERNAL " + json.dumps({
+            "training": report["training"],
+            "external": report["new_external"],
+            "sha256": tr.sha256(tr._canonical(report)).hexdigest(),
+        }, sort_keys=True, ensure_ascii=False))
+
+
+    def test_biography_original_editors_share_alike_and_quarantine_manifest(self):
+        from ling.translation import w11_evaluation as ev
+        records = json.loads(
+            (ev.ROOT / "ling/translation/data/w11_biography_rights_manifest.json")
+            .read_text(encoding="utf-8"))
+        self.assertEqual(180, len(records["items"]))
+        self.assertEqual(32, records["population"]["source_text_groups"])
+        self.assertEqual(178, records["population"]["translated_sentences"])
+        self.assertEqual({"Silke Grallert": 101, "Gunnar Sperveslage": 8,
+                          "Roberto A. Díaz Hernández": 57, "John M. Iskander": 14},
+                         records["population"]["original_editor_distribution"])
+        self.assertEqual("CC-BY-SA-4.0", records["source"]["publisher_license"])
+        self.assertEqual(ev.BIOGRAPHY_BLOB, records["source"]["derived_git_blob"])
+        self.assertEqual(32, records["quarantine"]["prior_w10_exposed_archive_groups_excluded_from_training"])
+        self.assertFalse(records["quarantine"]["data008_admission"])
+        self.assertEqual(
+            {row["sentence_id"] for row in self.data["test"]},
+            {item["source_sentence_id"] for item in records["items"]})
+        for item in records["items"]:
+            self.assertTrue(item["source_owner"])
+            self.assertFalse(item["development_or_training_use"])
+            self.assertFalse(item["original_image_matched"])
+            self.assertFalse(item["blind_egyptologist_gold"])
+            self.assertFalse(item["physical_manuscript_independence_verified"])
+
+
+
+    def test_w11_biography_cohort_is_exact_global_sha256_top32(self):
+        from ling.translation import w11_evaluation as ev
+        import hashlib
+        universe = ev.pinned_json(ev.ROOT, ev.BIOGRAPHY_UNIVERSE,
+                                  ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
+        original_ids = universe["source_text_ids_sorted"]
+        self.assertEqual(141, len(original_ids))
+        self.assertEqual(1110, universe["original_sentence_count"])
+        self.assertEqual(1095, universe["original_translated_sentence_count"])
+        disallowed = set(self.data["donor_text_ids"])
+        disallowed.update(self.data["prior_heldout_text_ids"])
+        disallowed.update(r["text_id"] for group in self.corpus["groups"].values()
+                          for r in group)
+        ranked = sorted((x for x in original_ids if x not in disallowed),
+                        key=lambda x: (hashlib.sha256(
+                            (ev.BIOGRAPHY_HASH_SALT + x).encode("utf-8")).hexdigest(), x))
+        self.assertEqual(set(ranked[:32]), set(self.data["test_text_ids"]))
+        self.assertEqual(universe["selected_group_ids_sorted"],
+                         sorted(self.data["test_text_ids"]))
+
+    def test_w11_biography_original_universe_identity_drift_fails_closed(self):
+        from ling.translation import w11_evaluation as ev
+        with tempfile.TemporaryDirectory() as folder:
+            location = Path(folder) / ev.BIOGRAPHY_UNIVERSE
+            location.parent.mkdir(parents=True, exist_ok=True)
+            location.write_bytes((ev.ROOT / ev.BIOGRAPHY_UNIVERSE).read_bytes() + b" ")
+            with self.assertRaisesRegex(tr.TranslationError, "Git blob identity mismatch"):
+                ev.pinned_json(Path(folder), ev.BIOGRAPHY_UNIVERSE,
+                               ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
+
 if __name__ == "__main__":
     unittest.main()

@@ -95,3 +95,24 @@ This work provides a genuinely new **source-group-blocked publisher text referen
 
 
 **Per-item attribution and release gate:** `ling/translation/data/w10_archive_rights_manifest.json` captures all **47** publisher original sentence IDs, original source text IDs, original AES `owner` editor attribution, original pinned Git blob, derived cohort Git blob, `CC-BY-SA-4.0`/`OPEN-SA`, and explicit nonadmission to production training or DATA-008. The original full source's independently computed SHA-256 and source-to-photographic-physical identity are not available in this artifact; they are transparently marked unverified. This test-only licensed editorial data is not represented as a fully item-audited public training corpus.
+
+
+## W11 — archive-only training expansion with fresh source-ID-locked biographies cohort
+
+**Preregistered BEFORE opening biography publisher sentences:** `ling/translation/experiments/W11_PREREG_SCALED_TRAIN_BIOGRAPHY_HOLDOUT.md`, commit `c3f88e9274ce1f088619f45aef5ea74be21dcedb`. At that point, original source/blob IDs, source split, 32-group hash rule, exclusions, exact model classes, weights/thresholds and metrics were frozen.
+
+The **additional training corpus** consists of 3,021 usable German-translated original AES archive sentences from 1,130 source-text IDs (owners Stephan Seidlmayer, Stefan Grunert and Ingelore Hafemann), added to the previously isolated 904 W9 training sentences. The full upstream archive Git blob is `014cccf04235d9e093fca24ed48c62630d235852`. The new derived training Git blob is `1354bbfd832680953bec25fb5742502599763bc1`. Exclusions are source-group-wide: all 32 earlier W10 archive test IDs, every Tübingen test source, all source IDs in earlier AES corpora and the new biographies target. One eligible translated original archive sentence with malformed tokens is explicitly excluded; 12 original archive rows lack publisher German translation. Training population is exactly **3,925** sentences (904 + 3,021), not an inferred figure.
+
+The **new test** is AES published historical-biography corpus `_aes_bbawhistbiospzt.json`: exact upstream Git blob `6f26021ee4243e87657ff8afd59847f126d6ca65`, **6,279,800 original bytes**, 1,110 publisher sentences from 141 text IDs, of which the 32 predeclared SHA-256-sorted source-ID groups supply **180 whole-group sentences**, including **178 publisher German references** and 2 missing references. Derived Git blob is `7e5654b5d8194c3deb764cf37a8e2bce2c624855`. Source text-ID overlap against training, original W9 corpora, exposed Tübingen and W10 archive is **0**; independently verified distinct physical works, scribes or editorial lineages is unknown.
+
+**Identical, frozen methods** (no parameter/search modification on revealed W10 archive): W9 904-sentence glossary and original W10 composer; expanded 3,925-sentence glossary and identical W10 composer; expanded whole-sentence retrieval at the previously selected W9 threshold 0.0 for copying-risk diagnosis only. Existing W10 compositional code is unchanged: contextual glosses need two independent train source IDs, local German unit reversal needs two independent train source IDs and >2x reverse versus original order; unknown tokens abstain, no invented agent-patient structure or unverified English→German conversion.
+
+Executable evaluator and protections: `ling/translation/w11_evaluation.py`; publisher snippets `ling/translation/data/w11_archive_training_excluding_w10.json` and `ling/translation/data/w11_biography_external_32groups_ccby_sa.json`; per-sentence original editor attribution and source rights `ling/translation/data/w11_biography_rights_manifest.json`. Publisher source text and derived datasets retain CC BY-SA 4.0; physical-image source and trained-model release rights are separate. The corpus is **experimental editor-text evidence**, not admitted as DATA-008 train/test pixels or blind manuscript gold.
+
+Reproduce on current main after review:
+
+    python -m ling.translation.w11_evaluation verify
+    python -m ling.translation.w11_evaluation evaluate
+    python -m unittest tests.linguistics.test_translation_layer -v
+
+Scoring reports all original groups and 178 scoreable publisher German references, including the 2 unscored missing-reference rows in the source census; German word multiset F1 and in-house character n-gram F2 are **not** expert semantic adequacy or original Hieratic OCR scores. This new biographies test becomes exposed after first execution and may not be used in future tuning. LING-003 milestone remains active, 0/2 points until scientifically independent fluency/semantic and manuscript-linked gold validation.

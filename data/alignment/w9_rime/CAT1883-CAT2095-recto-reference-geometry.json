@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "reference_set_id": "W9-RIME-CAT1883-CAT2095-RECTO-REFERENCE-GEOMETRY-v1",
+  "source": {
+    "institution": "Museo Egizio, Turin",
+    "source_object_id": "Cat.1883 + Cat.2095",
+    "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+    "view": "recto as currently mounted, RIME Fig. 6",
+    "exact_file_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif",
+    "source_sha256": "c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9",
+    "source_dimensions": [6585, 4718],
+    "acquisition_evidence_id": "W9-RIME-CAT1883-CAT2095-FIG6-RECTO-v1"
+  },
+  "rights_boundary": {
+    "figure_image_license": "CC BY 2.0",
+    "article_text_license": "UNVERIFIED",
+    "line_text_included": false,
+    "source_registry_status": "NOT_REGISTERED",
+    "benchmark_overlap": "UNRESOLVED_QUARANTINED",
+    "training_admission": "BLOCKED",
+    "gold_or_transcription": "NONE"
+  },
+  "edition_reference": {
+    "citation": "Martina Landrino, RIME 6 (2022), DOI 10.29353/rime.2022.4418",
+    "url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+    "coordinate_source": "Fig. 6 image geometry and article §1.1 dimensions; pointers only, no published transcription reused",
+    "reference_only": true
+  },
+  "geometry_regions": [
+    {
+      "region_id": "rime-recto-column-1",
+      "coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
+      "source_bounds": [5528, 370, 6535, 4140],
+      "region_kind": "column_envelope_candidate",
+      "edition_pointer": "RIME 6 (2022), §2.1.1 Col. 1",
+      "published_line_count": 4,
+      "mapping_state": "COLUMN_ENVELOPE_ONLY_NOT_LINE_ALIGNED",
+      "geometry_basis": "manual estimate from Fig. 6 scan using article's 410 mm support width and published column widths/gaps; not independently reviewed",
+      "review_state": "unreviewed",
+      "gold_scoreable": false
+    },
+    {
+      "region_id": "rime-recto-column-2",
+      "coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
+      "source_bounds": [4474, 370, 5451, 4140],
+      "region_kind": "column_envelope_candidate",
+      "edition_pointer": "RIME 6 (2022), §2.1.2 Col. 2",
+      "published_line_count": 12,
+      "mapping_state": "COLUMN_ENVELOPE_ONLY_NOT_LINE_ALIGNED",
+      "geometry_basis": "manual estimate from Fig. 6 scan using article's 410 mm support width and published column widths/gaps; not independently reviewed",
+      "review_state": "unreviewed",
+      "gold_scoreable": false
+    },
+    {
+      "region_id": "rime-recto-column-3",
+      "coordinate_system": "original_image_pixels; origin top-left; left/top inclusive, right/bottom exclusive",
+      "source_bounds": [259, 370, 3730, 4140],
+      "region_kind": "column_envelope_candidate",
+      "edition_pointer": "RIME 6 (2022), §2.1.3 Col. 3",
+      "published_line_count": 12,
+      "mapping_state": "COLUMN_ENVELOPE_ONLY_NOT_LINE_ALIGNED",
+      "geometry_basis": "manual estimate from Fig. 6 scan using article's 410 mm support width and published column widths/gaps; not independently reviewed",
+      "review_state": "unreviewed",
+      "gold_scoreable": false
+    }
+  ],
+  "ambiguity_note": "Landrino discusses a disputed line-1 assignment between adjacent columns in §2.1.2; this packet preserves section pointers only and does not adjudicate line ordering or scope.",
+  "data004_annotation_id": null,
+  "line_level_alignment": false,
+  "scientific_status": "REFERENCE_GEOMETRY_ONLY_NOT_ALIGNMENT_GOLD"
+}

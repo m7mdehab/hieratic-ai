@@ -1,5 +1,5 @@
 import copy, unittest
-from tools.alignment import ROOT, read, validate
+from tools.alignment import ROOT, read, validate, validate_reference_geometry
 
 class AlignmentTests(unittest.TestCase):
     def setUp(self):
@@ -69,5 +69,33 @@ class AlignmentTests(unittest.TestCase):
         errors,_=validate(bad,self.acquisition,self.annotation,self.registry);self.assertTrue(any("cardinality contradicts" in e for e in errors))
         bad=copy.deepcopy(self.alignment);bad["alignments"][0]["hypotheses"]=[{"hypothesis_id":"h1","targets":[{"target_type":"line","target_id":"ghost-line"}],"confidence":.3,"evidence_ref":"synthetic:alternative"}]
         errors,_=validate(bad,self.acquisition,self.annotation,self.registry);self.assertTrue(any("broken DATA-004 hypothesis reference" in e for e in errors))
+
+class ReferenceOnlyGeometryTests(unittest.TestCase):
+    def setUp(self):
+        self.packet=read(ROOT/"data/alignment/w9_rime/CAT1883-CAT2095-recto-reference-geometry.json")
+    def test_real_rime_pointer_geometry_validates_but_is_not_line_alignment(self):
+        self.assertEqual([],validate_reference_geometry(self.packet))
+        self.assertEqual(3,len(self.packet["geometry_regions"]))
+        self.assertFalse(self.packet["line_level_alignment"])
+        self.assertIsNone(self.packet["data004_annotation_id"])
+        self.assertTrue(all(region["gold_scoreable"] is False for region in self.packet["geometry_regions"]))
+    def test_source_hash_wrong_support_and_out_of_bounds_are_rejected(self):
+        for mutate in (
+            lambda packet: packet["source"].update(source_sha256="0"*64),
+            lambda packet: packet["source"].update(physical_support_group="Cat.1883 only"),
+            lambda packet: packet["geometry_regions"][0].update(source_bounds=[0,0,7000,100]),
+        ):
+            bad=copy.deepcopy(self.packet);mutate(bad)
+            self.assertTrue(validate_reference_geometry(bad))
+    def test_cannot_promote_reference_geometry_to_text_or_gold(self):
+        bad=copy.deepcopy(self.packet);bad["rights_boundary"]["line_text_included"]=True
+        self.assertTrue(validate_reference_geometry(bad))
+        bad=copy.deepcopy(self.packet);bad["line_level_alignment"]=True
+        self.assertTrue(validate_reference_geometry(bad))
+        bad=copy.deepcopy(self.packet);bad["geometry_regions"][0]["gold_scoreable"]=True
+        self.assertTrue(validate_reference_geometry(bad))
+    def test_duplicate_region_ids_are_rejected(self):
+        bad=copy.deepcopy(self.packet);bad["geometry_regions"][1]["region_id"]=bad["geometry_regions"][0]["region_id"]
+        self.assertTrue(any("duplicate reference geometry" in error for error in validate_reference_geometry(bad)))
 
 if __name__=="__main__":unittest.main()

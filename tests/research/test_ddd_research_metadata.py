@@ -61,4 +61,20 @@ class DDDResearchRightsTests(unittest.TestCase):
   source,bench=fixture();d=inspect_metadata(source,bench)
   self.assertEqual([],d["R017_public_literal_cat1880_matches"])
   self.assertFalse(d["sealed_benchmark_unblinded"])
+
+ def test_real_w23_publisher_source_receipt_unchanged(self):
+  from pathlib import Path
+  from tools.research_ddd_public_metadata import FILES
+  source=Path(__file__).resolve().parents[2]/"docs/research/R028_DDD_ORIGINAL_PUBLIC_METADATA_RECEIPTS.json"
+  receipt=json.loads(source.read_text(encoding="utf8"))
+  self.assertEqual(159,receipt["publisher_images"])
+  self.assertEqual(50,receipt["actual_cluster_count"])
+  self.assertEqual(504,receipt["source_classes_length"])
+  self.assertEqual(17885,receipt["source_samples_length"])
+  self.assertEqual(5,len(receipt["verified_publisher_files"]))
+  self.assertEqual(set(FILES),{x["file"] for x in receipt["verified_publisher_files"]})
+  self.assertEqual(0,receipt["original_image_files_retrieved"])
+  self.assertFalse(receipt["data008_production_corpus_admission"])
+  self.assertEqual([1],receipt["cat1880_same_physical_cluster"])
+
 if __name__=="__main__":unittest.main()

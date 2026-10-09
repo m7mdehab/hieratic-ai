@@ -17,6 +17,9 @@ import yaml
 
 from tools import preprocessing, release_corpus, split_system
 from tools.source_registry import load_yaml
+from data.releases import w20_aku_pal_source_audit as akupal_w20
+from data.releases import w20_museum_photo_intake as museum_w20
+from data.releases import w20_build_receipt_manifest as w20_manifest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -722,6 +725,159 @@ class CorpusReleaseTests(unittest.TestCase):
                 release_corpus.publish(result, output, path)
         self.assertFalse(output.exists())
         self.assertEqual([], list(self.root.glob(".never-published.staging-*")))
+
+    def test_w20_aku_pal_exact_identity_and_source_asset_path_gates(self):
+        self.assertTrue(akupal_w20.media_path_allowed("/img/data/ht/svg/ht_1234.svg", 1234))
+        self.assertFalse(akupal_w20.media_path_allowed("/img/data/ht/svg/ht_9999.svg", 1234))
+        self.assertFalse(akupal_w20.media_path_allowed("https://evil.example/img/data/ht/svg/ht_1234.svg", 1234))
+        self.assertFalse(akupal_w20.media_path_allowed("/img/data/ht/svg/ht_1234.svg/../ht_9999.svg", 1234))
+
+    def test_w20_aku_pal_missing_noncommercial_and_wrong_license_are_excluded(self):
+        self.assertIsNone(akupal_w20._license(None)["license_id"])
+        for value in [
+            "<a href='https://creativecommons.org/licenses/by-nc/4.0/'>CC BY-NC 4.0</a>",
+            "CC BY 4.0",
+            "<a href='https://example.org/cc-by/4.0'>CC BY 4.0</a>",
+        ]:
+            with self.subTest(value=value):
+                parsed = akupal_w20._license({"values": [value]})
+                self.assertIsNone(parsed["license_id"])
+
+    def test_w20_aku_pal_api_record_identity_and_content_drift_are_detected(self):
+        row = {"sign_id": 1234, "text_ids": [77], "text_labels": ["synthetic"], "index_grapheme_ids": [9]}
+        mismatch = json.dumps([{"id": 9999}]).encode("utf-8")
+        result = akupal_w20._record_summary(mismatch, row, fetch_media=False)
+        self.assertEqual("IDENTITY_MISMATCH", result["metadata_state"])
+        self.assertEqual("blocked_missing_or_incompatible_item_rights_or_identity", result["rights_status"])
+        self.assertNotEqual(akupal_w20.digest(b"record revision 1"), akupal_w20.digest(b"record revision 2"))
+
+    def test_w20_aku_pal_svg_active_content_is_rejected(self):
+        bad_svgs = [
+            b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
+            b'<svg xmlns="http://www.w3.org/2000/svg"><image href="https://evil.example/a.png"/></svg>',
+            b'<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>',
+            b'<!DOCTYPE svg [<!ENTITY x SYSTEM "file:///etc/passwd">]><svg/>',
+        ]
+        for body in bad_svgs:
+            with self.subTest(body=body[:40]):
+                safe, reason, _ = akupal_w20._svg_check(body)
+                self.assertFalse(safe)
+                self.assertTrue(reason)
+        safe, reason, dimensions = akupal_w20._svg_check(b'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8"><path d="M0 0"/></svg>')
+        self.assertTrue(safe)
+        self.assertIsNone(reason)
+        self.assertEqual([12, 8], dimensions)
+
+    def test_w20_photo_accession_does_not_accept_wrong_support_or_fuzzy_match(self):
+        candidate = {"accession": "Cat.1880"}
+        correct = {"commons_title": "File:Photo - Museo Egizio Turin C 1880 p01.jpg", "categories": []}
+        wrong = {"commons_title": "File:Photo C 2169 p01.jpg", "categories": ["Category:Cat.2169"]}
+        self.assertTrue(museum_w20.accession_evidence(candidate, correct)["matched"])
+        self.assertFalse(museum_w20.accession_evidence(candidate, wrong)["matched"])
+        self.assertFalse(museum_w20.accession_evidence({"accession": "S.6759"}, {"commons_title": "File:SA63451.tif", "categories": []})["matched"])
+        category_evidence = museum_w20.accession_evidence({"accession": "S.6759"}, {"commons_title": "File:SA63451.tif", "categories": ["Category:Hieratic ostracon Museo Egizio S 6759"]})
+        self.assertTrue(category_evidence["matched"])
+        self.assertEqual("Category:Hieratic ostracon Museo Egizio S 6759", category_evidence["matching_accession_category"])
+
+    def test_w20_benchmark_screen_reports_positive_and_keeps_negative_quarantined(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "docs/research").mkdir(parents=True)
+            (root / "data/releases").mkdir(parents=True)
+            public_rows = [{"id": f"aku-{i:04d}", "source_url": "", "source_file_url": "", "object_name": "unrelated", "source_group": "aku", "corpus_status": "QUARANTINE_EVAL_ONLY"} for i in range(266)]
+            public_rows[0].update({"source_url": "https://aku-pal.uni-mainz.de/signs/1234", "object_name": "British Museum EA 100"})
+            (root / "docs/research/R017_PUBLIC_BENCHMARK_SOURCE_METADATA.jsonl").write_text("".join(json.dumps(row) + "\n" for row in public_rows), encoding="utf-8")
+            (root / "data/releases/w19_aku_pal_original_image_receipts.json").write_text(json.dumps({"items": [{"id": 5678, "physical_witness": "Petrie UC 1"}]}), encoding="utf-8")
+            registry, _, receipt = akupal_w20.benchmark_registry(root)
+            self.assertIn(1234, registry)
+            self.assertIn(5678, registry)
+            self.assertEqual(266, receipt["public_r017_row_count"])
+            report = {"items": [{"sign_id": 1234}, {"sign_id": 9999}]}
+            screened = akupal_w20.apply_benchmark_screen(report, root=root)
+            self.assertEqual("POSITIVE_PUBLIC_METADATA_ID_OVERLAP_QUARANTINED", screened["items"][0]["benchmark_screen"]["state"])
+            self.assertEqual("NO_LITERAL_MATCH_PUBLIC_METADATA_ONLY_STILL_UNKNOWN_QUARANTINED", screened["items"][1]["benchmark_screen"]["state"])
+            self.assertTrue(all(item["benchmark_overlap"] == "unknown_quarantined" for item in screened["items"]))
+
+    def test_w20_schema_rejects_training_and_gold_promotion(self):
+        photo = {"schema_version": "w20-museum-photo-intake/1.0.0", "classification": "SOURCE_PHOTO_EVIDENCE_ONLY_NOT_DATA002_ADMISSION",
+            "candidate_count": 7, "distinct_physical_support_groups": 3, "bytes_hashed": 0, "media_bytes_written_to_disk": False,
+            "items": [], "grouping": {}}
+        self.assertTrue(museum_w20.validate_schema(photo))
+
+    def test_w20_checked_receipts_validate_and_timestamp_is_not_identity(self):
+        census = json.loads((ROOT / "data/releases/w20_aku_pal_sign_census.json").read_text(encoding="utf-8"))
+        photos = json.loads((ROOT / "data/releases/w20_museum_photo_intake.json").read_text(encoding="utf-8"))
+        self.assertEqual([], akupal_w20.validate_report(census))
+        self.assertEqual([], akupal_w20.validate_schema(census))
+        self.assertEqual([], museum_w20.validate_report(photos))
+        self.assertEqual([], museum_w20.validate_schema(photos))
+        timestamp_mutation = copy.deepcopy(census)
+        timestamp_mutation["retrieved_at_utc"] = "2099-01-01T00:00:00+00:00"
+        self.assertEqual([], akupal_w20.validate_report(timestamp_mutation))
+        tampered = copy.deepcopy(census)
+        tampered["items"][0]["record_sha256"] = "f" * 64
+        self.assertTrue(akupal_w20.validate_report(tampered))
+
+    def test_w20_item_manifest_binds_inputs_and_cannot_promote_candidates(self):
+        census = {"schema_version": "w20-akupal-source-census/1.0.0", "source": "AKU-PAL Academy Mainz public API",
+            "classification": "RESEARCH_INVENTORY_ONLY_NOT_CORPUS_ADMISSION", "discovery": {"index_sha256": "a" * 64, "unique_indexed_sign_ids": 2, "grapheme_records": 1},
+            "selection": {"selected_items": 1}, "scan_limits": {"maximum_concurrency": 1, "media_bytes_written_to_disk": False},
+            "summary": {"distinct_sign_ids_screened": 1, "exact_item_permissive_license_and_provenance_screened": 1, "verified_sign_media_files": 1,
+                "training_admissions": 0, "gold_labels": 0, "production_corpus": False, "benchmark_state": "UNKNOWN_QUARANTINED_ALL_RECORDS",
+                "unique_media_byte_hashes": 1, "duplicate_media_hash_groups": 0, "unique_publisher_inventory_labels_lower_bound": 1},
+            "items": [{"sign_id": 1234, "record_url": "https://aku-pal.uni-mainz.de/api/signs/1234", "record_sha256": "b" * 64,
+                "source_text_record_id": 9, "source_inventory_label": "Synthetic witness X1", "side": "recto", "line_locator": "1", "script_type": "Hieratisch",
+                "rights_status": "per_item_license_and_public_provenance_screened_not_institutionally_admitted", "license_id": "CC-BY-4.0",
+                "license_url": "https://creativecommons.org/licenses/by/4.0/", "media": [{"url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_1234.svg",
+                    "asset_role": "publisher_sign_svg", "publisher_image_type": "sign", "status": "BYTES_HASHED_IN_MEMORY", "sha256": "c" * 64,
+                    "byte_size": 120, "content_type": "image/svg+xml", "dimensions": [10, 10], "safe_svg": True}],
+                "training_admission": False, "gold_admission": False, "benchmark_overlap": "unknown_quarantined", "source_inventory_label": None,
+                "benchmark_screen": {"state": "NO_LITERAL_MATCH_PUBLIC_METADATA_ONLY_STILL_UNKNOWN_QUARANTINED", "matches": []}}],
+            "benchmark_screen": {"public_r017_sha256": "d" * 64, "w19_receipt_sha256": "e" * 64}}
+        photo_item = {"accession": "Cat.1880", "group_id": "MUSEO:CAT1880", "rights_status": "FILE_PAGE_CC0",
+            "text_rights": "NOT_VERIFIED_OR_NOT_ASSUMED", "benchmark_overlap": "UNKNOWN_QUARANTINED", "training_admission": False, "gold_admission": False,
+            "original_sha256": None, "metadata": {}, "object_url": "https://example.invalid/object", "intended_role": "synthetic test"}
+        photos = {"schema_version": "w20-museum-photo-intake/1.0.0", "classification": "SOURCE_PHOTO_EVIDENCE_ONLY_NOT_DATA002_ADMISSION",
+            "candidate_count": 7, "distinct_physical_support_groups": 3, "bytes_hashed": 0, "media_bytes_written_to_disk": False,
+            "items": [dict(photo_item, candidate_id=f"photo-{i}") for i in range(7)], "grouping": {}}
+        photos["evidence_sha256"] = hashlib.sha256(w20_manifest.canonical(photos)).hexdigest()
+        census["benchmark_screen"].update({"screened_sign_ids": 1, "positive_public_metadata_overlaps": 0, "no_literal_match_is_clearance": False})
+        census["evidence_sha256"] = hashlib.sha256(w20_manifest.canonical({key: value for key, value in census.items() if key != "evidence_sha256"})).hexdigest()
+        photos["evidence_sha256"] = hashlib.sha256(w20_manifest.canonical({key: value for key, value in photos.items() if key != "evidence_sha256"})).hexdigest()
+        manifest = w20_manifest.build_manifest(census, photos)
+        self.assertEqual([], w20_manifest.validate_manifest(manifest))
+        manifest["items"][0]["disposition"]["training_admission"] = True
+        self.assertIn("AKU-PAL-HT-1234: promotion flag must remain false", w20_manifest.validate_manifest(manifest))
+
+    def test_w20_photo_original_bytes_require_mime_magic_and_publisher_hash(self):
+        raw = b"\xff\xd8synthetic-jpeg-bytes"
+        info = {"original_url": "https://upload.wikimedia.org/file.jpg", "mime": "image/jpeg", "file_sha1_publisher_claim": hashlib.sha1(raw).hexdigest()}
+        self.assertTrue(museum_w20.original_bytes_match(raw, "image/jpeg", info))
+        self.assertFalse(museum_w20.original_bytes_match(raw + b"altered", "image/jpeg", info))
+        self.assertFalse(museum_w20.original_bytes_match(raw, "image/png", info))
+        self.assertFalse(museum_w20.original_bytes_match(b"not-an-image", "image/jpeg", info))
+
+    def test_w20_report_validator_refuses_admission_and_text_rights_escalation(self):
+        report = {"schema_version": "w20-museum-photo-intake/1.0.0", "media_bytes_written_to_disk": False, "candidate_count": 1,
+            "bytes_hashed": 0, "items": [{"candidate_id": "x", "training_admission": False, "gold_admission": False,
+            "benchmark_overlap": "UNKNOWN_QUARANTINED", "text_rights": "NOT_VERIFIED_OR_NOT_ASSUMED", "group_id": "g"}],
+            "distinct_physical_support_groups": 1, "grouping": {"g": ["x"]}}
+        self.assertEqual([], museum_w20.validate_report(report))
+        report["items"][0]["training_admission"] = True
+        report["items"][0]["text_rights"] = "CLEARED"
+        self.assertEqual(2, len(museum_w20.validate_report(report)))
+
+    def test_w20_source_selection_is_deterministic_and_deduplicates_ids(self):
+        rows = [
+            {"sign_id": 1, "text_ids": [10]}, {"sign_id": 2, "text_ids": [10]},
+            {"sign_id": 3, "text_ids": [20]}, {"sign_id": 4, "text_ids": [20]},
+        ]
+        selected_a, plan_a = akupal_w20.select_ids(rows, 4, 2)
+        selected_b, plan_b = akupal_w20.select_ids(rows, 4, 2)
+        self.assertEqual([1, 3, 2, 4], selected_a)
+        self.assertEqual(selected_a, selected_b)
+        self.assertEqual(plan_a, plan_b)
+        self.assertEqual(len(set(selected_a)), len(selected_a))
 
 
 if __name__ == "__main__":

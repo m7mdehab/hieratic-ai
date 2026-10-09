@@ -664,12 +664,38 @@ class W11ExpandedTrainingFreshBiographyTests(unittest.TestCase):
         self.assertFalse(report["independently_verified_distinct_physical_manuscripts"])
         self.assertEqual(0, report["original_ling003_capability_points"])
         self.assertEqual(report, ev.evaluate(self.corpus))
-        self.assertEqual(64, len(ev.git_blob_sha1(b"test")) + 24)
+        self.assertEqual(40, len(ev.git_blob_sha1(b"test")))
         print("W11_FRESH_BIOGRAPHY_EXTERNAL " + json.dumps({
             "training": report["training"],
             "external": report["new_external"],
             "sha256": tr.sha256(tr._canonical(report)).hexdigest(),
         }, sort_keys=True, ensure_ascii=False))
+
+
+    def test_biography_original_editors_share_alike_and_quarantine_manifest(self):
+        from ling.translation import w11_evaluation as ev
+        records = json.loads(
+            (ev.ROOT / "ling/translation/data/w11_biography_rights_manifest.json")
+            .read_text(encoding="utf-8"))
+        self.assertEqual(180, len(records["items"]))
+        self.assertEqual(32, records["population"]["source_text_groups"])
+        self.assertEqual(178, records["population"]["translated_sentences"])
+        self.assertEqual({"Silke Grallert": 101, "Gunnar Sperveslage": 8,
+                          "Roberto A. Díaz Hernández": 57, "John M. Iskander": 14},
+                         records["population"]["original_editor_distribution"])
+        self.assertEqual("CC-BY-SA-4.0", records["source"]["publisher_license"])
+        self.assertEqual(ev.BIOGRAPHY_BLOB, records["source"]["derived_git_blob"])
+        self.assertEqual(32, records["quarantine"]["prior_w10_exposed_archive_groups_excluded_from_training"])
+        self.assertFalse(records["quarantine"]["data008_admission"])
+        self.assertEqual(
+            {row["sentence_id"] for row in self.data["test"]},
+            {item["source_sentence_id"] for item in records["items"]})
+        for item in records["items"]:
+            self.assertTrue(item["source_owner"])
+            self.assertFalse(item["development_or_training_use"])
+            self.assertFalse(item["original_image_matched"])
+            self.assertFalse(item["blind_egyptologist_gold"])
+            self.assertFalse(item["physical_manuscript_independence_verified"])
 
 
 if __name__ == "__main__":

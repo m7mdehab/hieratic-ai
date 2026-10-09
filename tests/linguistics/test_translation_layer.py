@@ -729,5 +729,82 @@ class W11ExpandedTrainingFreshBiographyTests(unittest.TestCase):
                 ev.pinned_json(Path(folder), ev.BIOGRAPHY_UNIVERSE,
                                ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
 
+
+class W11NeverReuseArchiveHoldoutTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from ling.translation import w11_expanded as w
+        cls.w = w
+        cls.baseline, cls.donor, cls.test = w.build_locked_rows()
+
+    def test_exposed_w10_32_archive_groups_never_reenter_training(self):
+        from ling.translation import w10_evaluation as x
+        cohort = x.load_archive(__import__("ling.translation.contextual", fromlist=["load_corpus"]).load_corpus())
+        exposed = set(cohort["text_ids"])
+        ids = {row["text_id"] for row in self.donor}
+        self.assertFalse(ids & exposed)
+        self.assertEqual(32, len(exposed))
+        self.assertEqual(904, len(self.baseline))
+        self.assertGreater(len(self.donor), 2800)
+
+    def test_new_external_is_32_groups_180_rows_178_scored(self):
+        rows = self.test["biography"]
+        self.assertEqual(32, len({x["text_id"] for x in rows}))
+        self.assertEqual(180, len(rows))
+        self.assertEqual(178, sum(bool(x["german"]) for x in rows))
+        training = {x["text_id"] for x in self.baseline + self.donor}
+        self.assertFalse(training & {x["text_id"] for x in rows})
+        self.assertEqual("37bde0beda59cec1a6b53e513ab5a5e77f75a8866728136f5d9ae52c7706ae26",
+                         self.w.COHORT_CUTOFF_SHA256)
+
+    def test_corrupt_biography_and_archive_bytes_fail(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for path, expected in ((self.w.TEST_PATH,
+                                    "7e5654b5d8194c3deb764cf37a8e2bce2c624855"),
+                                   (self.w.DONOR_PATH, self.w.DONOR_BLOB)):
+                assert len(expected) == 40
+                p = root / path
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text('{"tampered": true}', encoding="utf-8")
+                with self.assertRaisesRegex(tr.TranslationError, "Git blob mismatch"):
+                    self.w._pinned(root, path, expected, 4_000_000)
+
+    def test_group_leakage_is_explicitly_blocked(self):
+        target = self.test["biography"][0]
+        with self.assertRaisesRegex(tr.TranslationError, "leaked"):
+            self.w.method_score([target], self.donor + [target], method="gloss")
+
+    def test_target_references_cannot_affect_prediction(self):
+        from ling.translation.compositional import ConstrainedComposer
+        model = ConstrainedComposer(self.baseline + self.donor)
+        row = self.test["biography"][0]
+        p = model.predict(row)
+        q = model.predict({**row, "german": "FORGED_TARGET_PUBLISHER_REFERENCE",
+                           "glosses": tuple("LEAK" for _ in row["forms"])})
+        self.assertEqual(p, q)
+        self.assertFalse(p["whole_sentence_retrieval"])
+        self.assertFalse(p["target_reference_or_labels_used"])
+
+    def test_same_frozen_methods_scored_with_complete_population(self):
+        report = self.w.evaluate()
+        self.assertEqual(180, report["new_biography_external_sentence_count"])
+        self.assertEqual(178, report["new_biography_translated_sentence_count"])
+        self.assertEqual(32, report["new_biography_external_group_count"])
+        self.assertFalse(report["scientific_model_achievement_accepted"])
+        self.assertEqual(0.0, report["capability_points"])
+        for name, item in report["results"].items():
+            self.assertEqual(178, item["metrics"]["sentences_scored"], name)
+            self.assertEqual(32, item["metrics"]["source_text_groups"], name)
+        self.assertEqual(report, self.w.evaluate())
+        print("W11_BIOGRAPHIES_NEW_EXTERNAL " + json.dumps({
+            "report_sha256": report["report_sha256"],
+            "baseline_rows": report["original_training_rows"],
+            "donor_rows": report["additional_archive_training_rows"],
+            "donor_groups": report["additional_archive_training_text_groups"],
+            "results": {k: v["metrics"] for k, v in report["results"].items()},
+        }, sort_keys=True))
+
+
 if __name__ == "__main__":
     unittest.main()

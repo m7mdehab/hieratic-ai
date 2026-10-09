@@ -522,3 +522,29 @@ Under the project governance standards (R-024 and `docs/evaluation/W8_SILVER_LAB
 
 
 
+
+### W9 overseer correction: scientific-integrity hard stops (2026-10-09)
+
+The original W9 report described authentic Cat.2044 CPU predictions, but its first implementation
+could silently substitute blank pixels on decode errors and mark simulated/failed controls as
+PASSED. That implementation is **not accepted evidence**. The corrected diagnostic path:
+
+- requires the exact original JPEG byte identity, an actually decoded pixel image, and a pinned
+  SHA-256 model weight snapshot; no text-only, missing-Pillow, or corrupt-image fallback;
+- requires the original image before any crop; each private crop is hashed against its matching
+  inspection-manifest artifact and retains original-source provenance;
+- keeps mock CI outputs strictly `SIMULATED_TEST_DOUBLE`, including interface/weights/live
+  forward and visual sensitivity grades; fixture CI passes do not prove a local live run;
+- runs a blank-control and inverted-image control on the same script-identification prompt
+  for real execution, distinguishing simple output inequality from a blank correctly recognized
+  as lacking text; non-certifiable outputs are never promoted to independent reading accuracy;
+- routes sign, transliteration and translation prompts through their corresponding task rungs;
+  descriptive auxiliary output is not an official scored rung;
+- marks the protocol hash as a **runtime fingerprint**, not independent preregistration;
+- deliberately retains Grade F as `STRICTLY_NO`, zero scored manuscript line readings and
+  0/2 VLM-001 capability points.
+
+Earlier W9 live output reported by the agent remains **historical, independently unaudited**
+unless rerun against this corrected exact head with protected local inputs and new hashed
+execution evidence. Tests may verify fail-closed behavior without possessing the private
+original or model weights; they must never claim that proves real inference.

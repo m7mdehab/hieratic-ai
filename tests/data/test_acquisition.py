@@ -650,5 +650,59 @@ class CommonsImageAcquisitionTests(unittest.TestCase):
         self.assertTrue(all(item["benchmark_overlap"].split(";")[0].endswith("QUARANTINED") for item in candidates.values()))
 
 
+class RimeFigureAcquisitionTests(unittest.TestCase):
+    def test_pinned_rime_figure_is_private_and_text_rights_remain_blocked(self):
+        payload = b"II*\x00synthetic TIFF payload"
+        with tempfile.TemporaryDirectory() as directory:
+            def transport(host, path, limit):
+                self.assertEqual(acquisition.RIME_FIGURE_HOST, host)
+                self.assertEqual(acquisition.RIME_FIGURE_PATH, path)
+                self.assertEqual(acquisition.MAX_RIME_FIGURE_BYTES, limit)
+                return 200, "image/tiff", payload, {"etag": '"fixture"'}
+            with unittest.mock.patch.object(acquisition, "RIME_FIGURE_BYTES", len(payload)), \
+                 unittest.mock.patch.object(acquisition, "RIME_FIGURE_SHA256", hashlib.sha256(payload).hexdigest()):
+                packet, path = acquisition.acquire_rime_cat1883_2095_figure6(
+                    transport=transport, vault_root=Path(directory),
+                    now=dt.datetime(2026, 10, 9, tzinfo=dt.timezone.utc))
+            self.assertEqual(payload, path.read_bytes())
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), packet["source_sha256"])
+            self.assertEqual("CC BY 2.0", packet["license"]["identifier"])
+            self.assertEqual("UNVERIFIED", packet["use_boundary"]["article_text_license_status"])
+            self.assertEqual("NOT_REGISTERED", packet["use_boundary"]["source_registry_status"])
+            self.assertEqual("UNRESOLVED_QUARANTINED", packet["use_boundary"]["benchmark_overlap_status"])
+            self.assertEqual("BLOCKED", packet["use_boundary"]["training_admission"])
+            self.assertEqual("NONE", packet["use_boundary"]["gold_or_transcription"])
+            self.assertFalse(packet["private_storage"]["path_published"])
+
+    def test_rime_fetch_rejects_redirect_wrong_mime_size_hash_and_non_tiff(self):
+        payload = b"II*\x00synthetic TIFF payload"
+        with tempfile.TemporaryDirectory() as directory:
+            def attempt(result):
+                return lambda *_args: result
+            with unittest.mock.patch.object(acquisition, "RIME_FIGURE_BYTES", len(payload)), \
+                 unittest.mock.patch.object(acquisition, "RIME_FIGURE_SHA256", hashlib.sha256(payload).hexdigest()):
+                for result, code in [
+                    ((302, "image/tiff", payload, {}), "RESPONSE_INVALID"),
+                    ((200, "text/html", payload, {}), "RESPONSE_INVALID"),
+                    ((200, "image/tiff", payload + b"x", {}), "BYTE_SIZE_MISMATCH"),
+                    ((200, "image/tiff", b"XX*\x00" + payload[4:], {}), "TIFF_MAGIC_INVALID"),
+                    ((200, "image/tiff", b"II*\x00" + b"x" * (len(payload) - 4), {}), "PINNED_SHA256_MISMATCH"),
+                ]:
+                    with self.subTest(code=code), self.assertRaisesRegex(acquisition.AcquisitionError, code):
+                        acquisition.acquire_rime_cat1883_2095_figure6(
+                            transport=attempt(result), vault_root=Path(directory))
+
+    def test_rime_private_publication_is_no_clobber_and_filename_scoped(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "CAT1883-CAT2095-RIME-fig6-recto-original.tif"
+            target.write_bytes(b"do not replace")
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "TARGET_EXISTS"):
+                acquisition._publish_private_file(root, target.name, b"replacement")
+            self.assertEqual(b"do not replace", target.read_bytes())
+            with self.assertRaisesRegex(acquisition.AcquisitionError, "FILENAME_NOT_ALLOWLISTED"):
+                acquisition._publish_private_file(root, "attacker.tif", b"bytes")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,55 @@
+{
+  "record_schema_version": "1.0.0",
+  "evidence_id": "W9-RIME-CAT1883-CAT2095-FIG6-RECTO-v1",
+  "candidate_id": "CAT1883-CAT2095-RIME-FIG6-RECTO",
+  "institution": "Museo Egizio, Turin",
+  "source_object_id": "Cat.1883 + Cat.2095",
+  "physical_support_group": "Cat.1883 + Cat.2095 (one joined five-fragment support)",
+  "article": {
+    "citation": "Martina Landrino, Papyrus Turin Cat. 1883 + Cat. 2095: A New Edition of an Already Known Papyrus, RIME 6 (2022), DOI 10.29353/rime.2022.4418",
+    "url": "https://rivista.museoegizio.it/article/papyrus-turin-cat-1883-cat-2095-a-new-edition-of-an-already-known-papyrus/",
+    "text_reuse_status": "UNVERIFIED_NO_TRANSCRIPTION_COPIED"
+  },
+  "view": "recto",
+  "exact_original_file_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/articles/4418/content/6/original.tif",
+  "caption_summary": "Recto in its present mounting; scan attributed to Museo Egizio; digital processing credited to Martina Landrino.",
+  "image_representation": "article-hosted TIFF scan, digitally processed for publication; not represented as first-generation museum master",
+  "source_sha256": "c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9",
+  "source_byte_size": 36023444,
+  "mime_type": "image/tiff",
+  "dimensions": [6585, 4718],
+  "retrieved_at": "2026-10-09T03:09:39+03:00",
+  "source_response": {
+    "etag": "\"225ac94-5efc6de23bb40\"",
+    "last_modified": "Wed, 14 Dec 2022 10:04:53 GMT",
+    "content_length": "36023444"
+  },
+  "license": {
+    "identifier": "CC BY 2.0",
+    "url": "https://creativecommons.org/licenses/by/2.0/",
+    "evidence_url": "https://rivista.museoegizio.it/wp-content/themes/annotum-base/assets/pdf/Guidelines_for_authors.pdf",
+    "scope": "RIME figure-image terms and exact figure credit; does not establish article-text or transcription reuse rights",
+    "attribution": "Museo Egizio, Turin; scan by Museo Egizio; digital processing by Martina Landrino; RIME 6 (2022), Fig. 6"
+  },
+  "reading_reference": {
+    "line_text_copied": false,
+    "bibliographic_reference_only": true,
+    "line_identity_reviewed_against_pixels": false,
+    "independent_expert_review": false,
+    "published_reading_use_for_training": "BLOCKED_PENDING_TEXT_PERMISSION_AND_INDEPENDENT_REVIEW"
+  },
+  "use_boundary": {
+    "purpose": "private research inspection and geometry-only diagnostics",
+    "source_registry_status": "NOT_REGISTERED",
+    "benchmark_overlap_status": "UNRESOLVED_QUARANTINED",
+    "training_admission": "BLOCKED",
+    "development_admission": "BLOCKED",
+    "evaluation_admission": "NOT_AUTHORIZED",
+    "gold_or_transcription": "NONE"
+  },
+  "private_storage": {
+    "storage_class": "user_local_private_artifact_vault",
+    "asset_filename": "CAT1883-CAT2095-RIME-fig6-recto-original.tif",
+    "path_published": false
+  }
+}

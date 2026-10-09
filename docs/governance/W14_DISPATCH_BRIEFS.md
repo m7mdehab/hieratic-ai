@@ -1,6 +1,6 @@
 # Hieratic-AI — Wave 14 substantial parallel execution briefs
 
-**Status:** PREPARED, NOT DISPATCHED. Do not report any of the three tasks as started from this document alone. The user dispatches Luna and the single Anti-Gravity model lane; the overseer then begins its own safe work immediately under ADR-0022.
+**Status (updated 2026-10-09):** W14 Luna and Anti-Gravity prompts **USER-CONFIRMED FORWARDED**, but no agent W14 PR at the latest reconciliation. Overseer LING-003 research lane **executed and merged** as PR #112 (head `652744ea1169f7bb896aa930a89c984837af868e`, squash main `2a72409d6c100e6f83be038e708632bdbe5b1e8a`; CI 37974824523 SUCCESS). Original briefs below preserve dispatch wording as historical instructions. They are not proof of completed agent scientific work; progress 34.5/100, LING-003 0/2.
 
 **Authority:** `START_HERE.md`, `AGENTS.md`, `PROJECT_STATE.yaml`, `TASKS.yaml`, `DECISIONS.md` ADR-0009/0022/0024–0028, `docs/governance/TASK_WRITE_SCOPES.yaml`, task briefs, and `docs/governance/REVIEW_REPORTING_PROTOCOL.md`.
 

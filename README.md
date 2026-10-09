@@ -6,7 +6,7 @@ Open research project for teaching multimodal AI systems to **read, transliterat
 
 - **Verified goal progress:** 34.5 / 100
 - **Research coverage:** ~14%
-- **Current stage:** P2 Evaluation; W9 image evidence and VLM diagnostic engineering integrated; real corpus and held-out Hieratic recognition still blocked
+- **Current stage:** P2 Evaluation; W10 data/VLM diagnostics and W11 publisher-text external generalization research integrated; original Hieratic line gold, semantic translation and independent reading accuracy remain blocked
 - **Validated experiments:** 0
 
 Progress is capability-based, not time-based. Work only earns goal-progress points after predefined acceptance criteria are met and the evidence is reviewed.

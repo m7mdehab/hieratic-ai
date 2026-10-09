@@ -1,0 +1,300 @@
+{
+  "R017_public_benchmark_metadata_count": 266,
+  "R017_public_literal_cat1880_matches": [],
+  "actual_cluster_count": 50,
+  "annotations_zip_structure": {
+    "file_count": 138,
+    "json_labelme_file_count": 134,
+    "masked_or_image_file_count": 0,
+    "total_declared_uncompressed_bytes": 19600386
+  },
+  "benchmark_overlap": "UNKNOWN_QUARANTINED",
+  "cat1880_original_document_images": [
+    {
+      "copyright": "P. Turin Cat. 1880 rt © Federico Taverni/Museo Egizio",
+      "document_cluster": 1,
+      "id": "003",
+      "source_document": "https://papyri.museoegizio.it/d/131",
+      "source_name": "C1880rt_rotated"
+    },
+    {
+      "copyright": "P. Turin Cat. 1880 rt © Federico Taverni/Museo Egizio",
+      "document_cluster": 1,
+      "id": "004",
+      "source_document": "https://papyri.museoegizio.it/d/131",
+      "source_name": "C1880rt"
+    }
+  ],
+  "cat1880_same_physical_cluster": [
+    1
+  ],
+  "data008_production_corpus_admission": false,
+  "dataset_licensing_source": "https://zenodo.org/records/20553713",
+  "doi": "10.5281/zenodo.20553713",
+  "expert_gold_status": "PUBLISHER_ANNOTATIONS_NOT_PROJECT_INDEPENDENT_BLIND_ADJUDICATION",
+  "hieratic_model_accuracy_claim": false,
+  "image_rights": "SEPARATE_PER_PAPYRUS_COPYRIGHT_ITEM_RIGHTS_REVIEW_REQUIRED",
+  "item_level_copyright_claims": [
+    {
+      "copyright": "-",
+      "images": 38
+    },
+    {
+      "copyright": "P. Turin CGT 54019 rt © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin CGT 54020 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin CGT 54020 vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin CGT 54042 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin CGT 54076 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin CGT 54076/002 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin CGT 54079 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1876 rt © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 1880 rt © Federico Taverni/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 1881 + 2080 + 2092 rt © Scan/Museo Egizio",
+      "images": 3
+    },
+    {
+      "copyright": "P. Turin Cat. 1881 + 2080 + 2092 vs © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 1882 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1886 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1889 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1906 + 2047 + 1939  rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1906 + 2047 + 1939  vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1928 + 1963/001 + 2051 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1928 + 1963/001 + 2051 vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1940 + 1941 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1946 + 1949 rt © Scan/Museo Egizio",
+      "images": 6
+    },
+    {
+      "copyright": "P. Turin Cat. 1946 + 1949 vs © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 1966 rt © Scan/Museo Egizio",
+      "images": 10
+    },
+    {
+      "copyright": "P. Turin Cat. 1966 vs © Scan/Museo Egizio",
+      "images": 8
+    },
+    {
+      "copyright": "P. Turin Cat. 1971 rt © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 1971 vs © Scan/Museo Egizio",
+      "images": 4
+    },
+    {
+      "copyright": "P. Turin Cat. 1973 rt © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 1973 vs © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 1975 rt © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 1975 vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1977 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1978 rt © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 1978 vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 1979 rt © Scan/Museo Egizio",
+      "images": 3
+    },
+    {
+      "copyright": "P. Turin Cat. 1979 vs © Scan/Museo Egizio",
+      "images": 3
+    },
+    {
+      "copyright": "P. Turin Cat. 1981 rt © Scan/Museo Egizio",
+      "images": 3
+    },
+    {
+      "copyright": "P. Turin Cat. 1981 vs © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 1995 + 1996 + 2114/502 + 2114/503 rt © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 2021 rt © Scan/Museo Egizio",
+      "images": 4
+    },
+    {
+      "copyright": "P. Turin Cat. 2029 + 2078/162 + 2001 + 2078/161 + 2005 rt © Scan/Museo Egizio",
+      "images": 2
+    },
+    {
+      "copyright": "P. Turin Cat. 2059/062 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 2059/065 + 2059/064 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 2082/173 + 2082/175 + 2083/179 + 2083/181 + 2083/183 + 2073/145 + 1945/002 rt © Scan/Museo Egizio",
+      "images": 3
+    },
+    {
+      "copyright": "P. Turin Cat. 2082/173 + 2082/175 + 2083/179 + 2083/181 + 2083/183 + 2073/145 + 1945/002 vs © Scan/Museo Egizio",
+      "images": 5
+    },
+    {
+      "copyright": "P. Turin Cat. 2087/198 + 2050/039 + 2068/120 + 1921/009 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 2093/236 rt © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 2093/236 vs © Scan/Museo Egizio",
+      "images": 1
+    },
+    {
+      "copyright": "P. Turin Cat. 2107/423 + 105/355 + 2105/375 + 1964 + 2099/296 + 2048/034 + 2093/234 rt © Scan/Museo Egizio",
+      "images": 3
+    }
+  ],
+  "item_level_copyright_distinct_labels": 48,
+  "largest_document_cluster_images": 18,
+  "licence_for_dataset_annotations": "CC-BY-NC-SA-4.0_PUBLISHER_CLAIM_NONCOMMERCIAL",
+  "official_published_split_names": [
+    "C-A",
+    "C-B",
+    "C-C",
+    "C-D",
+    "D-B",
+    "O-A",
+    "O-B"
+  ],
+  "original_image_files_retrieved": 0,
+  "original_publisher_source_count": 5,
+  "other_split_zip_files_retrieved": 0,
+  "publisher_claim_class_categories": 504,
+  "publisher_claim_distinct_documents": 50,
+  "publisher_date": "2026-06-26",
+  "publisher_images": 159,
+  "research_track": "SEPARATE_NONCOMMERCIAL_INTERNAL_RESEARCH_ONLY",
+  "scientific_capability_points_awarded": 0,
+  "sealed_benchmark_unblinded": false,
+  "source_classes_length": 504,
+  "source_classes_top_level_type": "dict",
+  "source_dataset": "DDD - Diagnostic Deir el-Medina Dataset",
+  "source_image_bytes_committed": 0,
+  "source_original_papyri_metadata_sha256": "33265df94656e79a27c1c158756f0a2479173d00184c5212159ec1bb8414eb62",
+  "source_samples_length": 17885,
+  "source_samples_top_level_type": "dict",
+  "verified_publisher_files": [
+    {
+      "file": "papyri.json",
+      "original_bytes": 56679,
+      "original_md5": "4b9fa9f29cdbf080cacfecbf8e77a55f",
+      "original_sha256": "33265df94656e79a27c1c158756f0a2479173d00184c5212159ec1bb8414eb62",
+      "publisher_record": "https://zenodo.org/records/20553713"
+    },
+    {
+      "file": "classes.json",
+      "original_bytes": 203550,
+      "original_md5": "14ebe82d6624cfb6def19880b3b82376",
+      "original_sha256": "5ff0181de57e1018058ba53e8e436e6e67a19fca290568ed0f9ea341af7afe18",
+      "publisher_record": "https://zenodo.org/records/20553713"
+    },
+    {
+      "file": "samples.json",
+      "original_bytes": 12113887,
+      "original_md5": "33c09acf76497a237394919cc55ee645",
+      "original_sha256": "763944b29e06643131fa9fdbd14a2b169afe5961df80394fecfd152203584e46",
+      "publisher_record": "https://zenodo.org/records/20553713"
+    },
+    {
+      "file": "DDD_annotations.zip",
+      "original_bytes": 1486187,
+      "original_md5": "c3405016b676cd1a09b9ce989a89ecbb",
+      "original_sha256": "4e21fb35ba6b58febc8a7aaa2d003da26a9330fbcbe7c89b26cd62a8efaa8161",
+      "publisher_record": "https://zenodo.org/records/20553713"
+    },
+    {
+      "file": "Readme - Splits.txt",
+      "original_bytes": 4420,
+      "original_md5": "2798ef1aa90b85d0fb874ecc0f9078df",
+      "original_sha256": "36f9c6e277c51c0ea75dc0ec7bdd3747fbf53be4fc50fc70dc3f1cd8701a85be",
+      "publisher_record": "https://zenodo.org/records/20553713"
+    }
+  ],
+  "source_independently_executed_at_run_url": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38005433657",
+  "document_split_disjoint_policy": "C-B closed-set and O-B open-set only; reject C-C/C-D as random samples",
+  "scientific_acceptance": "ORIGINAL_SOURCE_AND_RIGHTS_METADATA_ONLY_NO_MODEL_TRAINING"
+}

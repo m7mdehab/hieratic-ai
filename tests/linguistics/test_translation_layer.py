@@ -698,5 +698,36 @@ class W11ExpandedTrainingFreshBiographyTests(unittest.TestCase):
             self.assertFalse(item["physical_manuscript_independence_verified"])
 
 
+
+    def test_w11_biography_cohort_is_exact_global_sha256_top32(self):
+        from ling.translation import w11_evaluation as ev
+        import hashlib
+        universe = ev.pinned_json(ev.ROOT, ev.BIOGRAPHY_UNIVERSE,
+                                  ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
+        original_ids = universe["source_text_ids_sorted"]
+        self.assertEqual(141, len(original_ids))
+        self.assertEqual(1110, universe["original_sentence_count"])
+        self.assertEqual(1095, universe["original_translated_sentence_count"])
+        disallowed = set(self.data["donor_text_ids"])
+        disallowed.update(self.data["prior_heldout_text_ids"])
+        disallowed.update(r["text_id"] for group in self.corpus["groups"].values()
+                          for r in group)
+        ranked = sorted((x for x in original_ids if x not in disallowed),
+                        key=lambda x: (hashlib.sha256(
+                            (ev.BIOGRAPHY_HASH_SALT + x).encode("utf-8")).hexdigest(), x))
+        self.assertEqual(set(ranked[:32]), set(self.data["test_text_ids"]))
+        self.assertEqual(universe["selected_group_ids_sorted"],
+                         sorted(self.data["test_text_ids"]))
+
+    def test_w11_biography_original_universe_identity_drift_fails_closed(self):
+        from ling.translation import w11_evaluation as ev
+        with tempfile.TemporaryDirectory() as folder:
+            location = Path(folder) / ev.BIOGRAPHY_UNIVERSE
+            location.parent.mkdir(parents=True, exist_ok=True)
+            location.write_bytes((ev.ROOT / ev.BIOGRAPHY_UNIVERSE).read_bytes() + b" ")
+            with self.assertRaisesRegex(tr.TranslationError, "Git blob identity mismatch"):
+                ev.pinned_json(Path(folder), ev.BIOGRAPHY_UNIVERSE,
+                               ev.BIOGRAPHY_UNIVERSE_BLOB, 30_000)
+
 if __name__ == "__main__":
     unittest.main()

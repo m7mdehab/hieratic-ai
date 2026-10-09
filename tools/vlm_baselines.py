@@ -842,25 +842,41 @@ def main(argv: list[str] | None = None) -> int:
                     "transform": None,
                 })
 
-            # 2. Load crops if crops_dir provided
-            if args.crops_dir and args.crops_dir.is_dir():
+            # 2. Refuse unconstrained crops: manifest + source identity + artifact hashes required.
+            if not args.allow_simulated and (not targets or targets[0]["target_type"] != "full_manuscript"):
+                raise VLMCLIError("Live Hieratic mode requires the pinned Cat.2044 original --image-path.")
+            if args.crops_dir:
+                from eval.vlm.hieratic import CAT2044_SOURCE_SHA256
+                if not args.crops_dir.is_dir():
+                    raise VLMCLIError("The requested private crop directory does not exist.")
                 manifest_file = args.crops_dir / "inspection-manifest.json"
-                crop_records = []
-                if manifest_file.is_file():
-                    try:
-                        insp_data = json.loads(manifest_file.read_text(encoding="utf-8"))
-                        crop_records = insp_data.get("crop_records", [])
-                    except Exception:
-                        pass
-
+                if not manifest_file.is_file():
+                    raise VLMCLIError("Unverified private crop directory: inspection manifest absent")
+                inspection = json.loads(manifest_file.read_text(encoding="utf-8"))
+                if inspection.get("source_sha256") != CAT2044_SOURCE_SHA256 or inspection.get("gold_or_reading_created") is not False:
+                    raise VLMCLIError("Crop manifest provenance or annotation boundary mismatch")
+                crop_records = inspection.get("crop_records", [])
+                artifact_records = inspection.get("artifacts", [])
+                if not isinstance(crop_records, list) or not isinstance(artifact_records, list):
+                    raise VLMCLIError("Crop manifest is malformed")
+                artifacts = {x.get("path"): x for x in artifact_records if isinstance(x, dict)}
                 for idx, c_path in enumerate(sorted(args.crops_dir.glob("line-candidate-*.png"))[:3], 1):
-                    rec = next((r for r in crop_records if r.get("crop_artifact") == c_path.name), {})
+                    if c_path.is_symlink() or c_path.parent.resolve() != args.crops_dir.resolve():
+                        raise VLMCLIError("Crop path escapes private directory")
+                    record = next((x for x in crop_records if x.get("crop_artifact") == c_path.name), None)
+                    artifact = artifacts.get(c_path.name)
+                    if record is None or artifact is None:
+                        raise VLMCLIError("Crop is absent from pinned private manifest")
+                    raw_crop = c_path.read_bytes()
+                    sha = hashlib.sha256(raw_crop).hexdigest()
+                    if sha != artifact.get("sha256") or len(raw_crop) != artifact.get("byte_size"):
+                        raise VLMCLIError("Crop hash or byte size mismatch against manifest")
                     targets.append({
                         "target_id": f"cat2044_line_candidate_{idx:03d}",
                         "target_type": "candidate_line_crop",
-                        "image_bytes": c_path.read_bytes(),
-                        "source_bounds": rec.get("source_box") or rec.get("crop_source_bounds"),
-                        "transform": rec.get("source_to_crop_transform"),
+                        "image_bytes": raw_crop, "expected_sha256": sha,
+                        "source_bounds": record.get("crop_source_bounds"),
+                        "transform": record.get("source_to_crop_transform"),
                     })
 
             if not targets:

@@ -1046,6 +1046,16 @@ class W14OriginalTrainGroupTests(unittest.TestCase):
         first = w14.evaluate(self.bundle)
         second = w14.evaluate(self.bundle)
         self.assertEqual(first, second)
+        # Frozen W14 full-population values independently reconstructed
+        # directly from the pinned publisher TRAIN-only rows.
+        self.assertEqual(8060, first["predicted_UPOS_correct"])
+        self.assertEqual(4259, first["models"]["weak_baseline"]["correct_head"])
+        self.assertEqual(750, first["models"]["weak_baseline"]["correct_head_and_relation"])
+        self.assertEqual(4757, first["models"]["nonoracle"]["correct_head"])
+        self.assertEqual(2811, first["models"]["nonoracle"]["correct_head_and_relation"])
+        self.assertEqual(6489, first["models"]["oracle_UPOS_diagnostic"]["correct_head"])
+        self.assertEqual(4316, first["models"]["oracle_UPOS_diagnostic"]["correct_head_and_relation"])
+        self.assertEqual(0, first["heldout_sentences_with_exact_training_form_sequence"])
         self.assertEqual("CC-BY-SA-4.0", first["license"])
         self.assertEqual(10329, first["evaluation_tokens"])
         self.assertEqual(829, first["evaluation_sentences"])

@@ -2051,6 +2051,171 @@ class VLMBaselinesTests(unittest.TestCase):
         self.assertEqual(s2["alignment_status"], "NO_LINE_ALIGNMENT")
         self.assertEqual(s2["text_reuse_status"], "BLOCKED_UNVERIFIED_LICENSE")
 
+    def test_w14_counting_adapter_attempt_ledger_and_attempt_counts(self) -> None:
+        """Verify that every forward pass is recorded in attempt_ledger with exact attempt counts.
+        
+        Asserts:
+        - 5 targets (2 full manuscripts + 3 candidate line crops):
+          5 targets * 5 neutral = 25
+          + 2 full targets * 1 leading = 2
+          + 4 controls * 1 neutral = 4
+          + 4 controls * 1 leading = 4
+          Total = 35 actual predictions.
+          Ledger has 35 entries (29 neutral, 6 leading).
+        - 2 targets (1 full manuscript + 1 crop):
+          2 targets * 5 neutral = 10
+          + 1 full target * 1 leading = 1
+          + 4 controls * 1 neutral = 4
+          + 4 controls * 1 leading = 4
+          Total = 19 actual predictions.
+          Ledger has 19 entries (14 neutral, 5 leading).
+        """
+        from eval.vlm.hieratic import execute_hieratic_experiment
+
+        class CountingVLMAdapter(MockVLMAdapter):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.call_count = 0
+                self.recorded_calls = []
+
+            def predict(self, *args, **kwargs):
+                self.call_count += 1
+                self.recorded_calls.append((args, kwargs))
+                return super().predict(*args, **kwargs)
+
+        # 5 targets
+        adapter5 = CountingVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets5 = [
+            {"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"synthetic_img1"},
+            {"target_id": "cat1883_2095_full_fig6", "target_type": "full_manuscript", "image_bytes": b"synthetic_img2"},
+            {"target_id": "candidate_crop_01", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop1"},
+            {"target_id": "candidate_crop_02", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop2"},
+            {"target_id": "candidate_crop_03", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop3"},
+        ]
+        report5 = execute_hieratic_experiment(adapter5, targets5, allow_simulated=True, run_leading_ablation=True)
+        self.assertEqual(adapter5.call_count, 35)
+        self.assertEqual(len(report5["attempt_ledger"]), 35)
+        self.assertEqual(report5["attempt_counts"]["total_attempts_recorded"], 35)
+        self.assertEqual(report5["attempt_counts"]["successful_actual_passes"], 35)
+        self.assertEqual(report5["attempt_counts"]["by_prompt_variant"]["neutral"], 29)
+        self.assertEqual(report5["attempt_counts"]["by_prompt_variant"]["leading"], 6)
+        self.assertEqual(report5["attempt_counts"]["by_category"]["manuscript_neutral"], 25)
+        self.assertEqual(report5["attempt_counts"]["by_category"]["manuscript_leading_ablation"], 2)
+        self.assertEqual(report5["attempt_counts"]["by_category"]["control_neutral"], 4)
+        self.assertEqual(report5["attempt_counts"]["by_category"]["control_leading_ablation"], 4)
+
+        # Verify ledger structure on first and last entries
+        entry0 = report5["attempt_ledger"][0]
+        self.assertEqual(entry0["attempt_index"], 0)
+        self.assertIn("attempt_id", entry0)
+        self.assertIn("prompt_sha256", entry0)
+        self.assertIn("output_sha256", entry0)
+        self.assertEqual(entry0["status"], "success")
+
+        # 2 targets
+        adapter2 = CountingVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets2 = [
+            {"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"synthetic_img1"},
+            {"target_id": "candidate_crop_01", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop1"},
+        ]
+        report2 = execute_hieratic_experiment(adapter2, targets2, allow_simulated=True, run_leading_ablation=True)
+        self.assertEqual(adapter2.call_count, 19)
+        self.assertEqual(len(report2["attempt_ledger"]), 19)
+        self.assertEqual(report2["attempt_counts"]["total_attempts_recorded"], 19)
+        self.assertEqual(report2["attempt_counts"]["by_prompt_variant"]["neutral"], 14)
+        self.assertEqual(report2["attempt_counts"]["by_prompt_variant"]["leading"], 5)
+
+    def test_w14_classify_script_claim_categories(self) -> None:
+        """Verify classify_script_claim categorizes utterances into 4 explicit classes."""
+        from eval.vlm.hieratic import classify_script_claim
+
+        # 1. Affirmative script claim
+        res1 = classify_script_claim("The script shown is Hieratic.")
+        self.assertEqual(res1["category"], "affirmative_script_claim")
+        self.assertTrue(res1["script_claimed"])
+        self.assertFalse(res1["no_script_claimed"])
+        self.assertIn("hieratic", res1["identified_scripts"])
+
+        res2 = classify_script_claim("The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics.")
+        self.assertEqual(res2["category"], "affirmative_script_claim")
+        self.assertTrue(res2["script_claimed"])
+
+        # 2. Negative script claim
+        res3 = classify_script_claim("There is no writing, text, or script present in the image.")
+        self.assertEqual(res3["category"], "negative_script_claim")
+        self.assertFalse(res3["script_claimed"])
+        self.assertTrue(res3["no_script_claimed"])
+
+        res4 = classify_script_claim("Blank surface with no characters.")
+        self.assertEqual(res4["category"], "negative_script_claim")
+        self.assertTrue(res4["no_script_claimed"])
+
+        # 3. Mixed or uncertain
+        res5 = classify_script_claim("There is no text, but visible ink strokes resemble hieratic.")
+        self.assertEqual(res5["category"], "mixed_or_uncertain")
+        self.assertFalse(res5["script_claimed"])
+        self.assertTrue(res5["is_uncertain_or_mixed"])
+
+        res6 = classify_script_claim("It is not Hieratic, possibly demotic or decorative.")
+        self.assertEqual(res6["category"], "mixed_or_uncertain")
+        self.assertTrue(res6["is_uncertain_or_mixed"])
+
+        # 4. Descriptive only
+        res7 = classify_script_claim("A grayscale image showing fiber textures and paper edges.")
+        self.assertEqual(res7["category"], "descriptive_only")
+        self.assertFalse(res7["script_claimed"])
+        self.assertFalse(res7["no_script_claimed"])
+
+        res8 = classify_script_claim("Rough papyrus fibers with mottled dark areas.")
+        self.assertEqual(res8["category"], "descriptive_only")
+        self.assertFalse(res8["script_claimed"])
+
+    def test_w14_matched_cross_support_and_isolated_crop_analysis(self) -> None:
+        """Verify matched full-vs-full cross-support comparison and isolated crop_analysis."""
+        from eval.vlm.hieratic import execute_hieratic_experiment
+
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        targets = [
+            {"target_id": "cat2044_full_p01", "target_type": "full_manuscript", "image_bytes": b"synthetic_img1"},
+            {"target_id": "cat1883_2095_full_fig6", "target_type": "full_manuscript", "image_bytes": b"synthetic_img2"},
+            {"target_id": "candidate_crop_01", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop1"},
+            {"target_id": "candidate_crop_02", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop2"},
+            {"target_id": "candidate_crop_03", "target_type": "candidate_line_crop", "image_bytes": b"synthetic_crop3"},
+        ]
+        report = execute_hieratic_experiment(adapter, targets, allow_simulated=True)
+
+        # Cross-support analysis must be strictly matched full-vs-full
+        cs = report.get("cross_support_analysis")
+        self.assertIsNotNone(cs)
+        self.assertEqual(cs["comparison_scope"], "matched_full_manuscript_only")
+        self.assertEqual(cs["support_1"], "Cat.2044/013")
+        self.assertEqual(cs["support_2"], "Cat.1883 + Cat.2095 (RIME Fig. 6)")
+        self.assertEqual(cs["matched_task_count"], 5)
+
+        # Crop analysis must isolate the 3 candidate crops
+        crop = report.get("crop_analysis")
+        self.assertIsNotNone(crop)
+        self.assertEqual(crop["candidate_crops_evaluated"], 3)
+        self.assertEqual(crop["crop_hypotheses_count"], 15)
+
+    def test_w14_primary_source_metadata_administrative_text_and_byte_sizes(self) -> None:
+        """Verify primary source metadata documents Deir el-Medina administrative text and exact byte sizes."""
+        from eval.vlm.hieratic import (
+            get_scholarly_provenance,
+            RIME_FIG6_BYTE_SIZE,
+            RIME_FIG8_VERSO_BYTE_SIZE,
+        )
+
+        prov = get_scholarly_provenance()
+        s2 = prov["supports"][1]
+        self.assertIn("administrative Deir el-Medina text", s2["historical_context"])
+        self.assertIn("accounts, lists, and royal dating", s2["historical_context"])
+        self.assertIn("Not Book of the Dead or funerary liturgy", s2["historical_context"])
+
+        # Check exact byte size constants
+        self.assertEqual(RIME_FIG6_BYTE_SIZE, 36023444)
+        self.assertEqual(RIME_FIG8_VERSO_BYTE_SIZE, 41686648)
+
 
 if __name__ == "__main__":
     unittest.main()

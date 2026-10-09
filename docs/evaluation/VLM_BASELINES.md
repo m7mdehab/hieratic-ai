@@ -597,19 +597,19 @@ To test cross-support generalization and falsify single-document overfitting, th
    - Source: Rivista del Museo Egizio (RIME), 2022, Figure 6 (open-access academic article).
    - SHA-256: `c4b878ca5b6b6c22d0b4b1574d4f8e95072d651c38cb03d49f3cf73c5f6052b9`.
    - Dimensions: $6585 \times 4718$ px (36,023,444 bytes, uncompressed TIFF).
-   - Scholarly Lineage: Turin Cat.1883 and Cat.2095 fragments, identified by G. Rosati (2022) as belonging to a **single physical manuscript support** (papiro ieratico, Book of the Dead / funerary liturgy).
+   - Scholarly Lineage: Turin Cat.1883 and Cat.2095 fragments, identified by G. Rosati (2022) as belonging to a **single physical manuscript support** containing an administrative Deir el-Medina text with accounts, lists, and royal dating (papiro ieratico, not Book of the Dead or funerary liturgy).
    - Alignment: `NO_LINE_ALIGNMENT`.
    - Text Reuse: `BLOCKED_UNVERIFIED_LICENSE` (scholarly image reference only; no text extraction permitted).
 3. **Fail-Closed Exclusion of RIME Figure 8 Verso:**
-   - Figure 8 Verso (`506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1`, 41,073,436 bytes) represents the verso text and is bibliographically, physically, and cryptographically distinct.
-   - The protocol enforces a hard rejection gate against Figure 8 Verso (`RimeFigureMismatchError`), ensuring images are never conflated.
+   - Figure 8 Verso (`506e0b536aa5824bbd18cb0a0b372e057a67e48218a02004ad464ca0958bbeb1`, 41,686,648 bytes) represents the verso text and is bibliographically, physically, and cryptographically distinct.
+   - The protocol enforces a hard rejection gate against Figure 8 Verso (`ImageConditioningError`), ensuring images are never conflated or substituted.
 
 ### 11.3 Four-Condition Visual Control Suite
 To eliminate artifacts from local texture preservation, four distinct control stimuli are evaluated:
 1. **Uniform Neutral Blank Control:** Uniform neutral-gray ($256 \times 256$, RGB $230, 230, 230$) PNG canvas.
 2. **Photometrically Inverted Negative Control:** Inverted Cat.2044 image ($1024 \times 572$ px), reversing luminance polarity.
-3. **Spatially Scrambled Destructive Control:** Cat.2044 source scrambled into $32 \times 32$ px tiles (seed 42, 544 tiles), disrupting all continuous scribal ductus and ligatures while maintaining color histograms.
-4. **Procedural Natural Non-Text Control:** Pure-Python procedural organic gradient texture ($256 \times 256$ px, seed 42) with multi-scale sinusoidal noise, simulating organic fiber-like variations without any characters, symbols, or text strokes.
+3. **Spatially Scrambled Destructive Control:** Cat.2044 source scrambled into $32 \times 32$ px tiles (seed 42, 544 tiles), disrupting all continuous scribal ductus and ligatures while maintaining color histograms. (Note: this is an exploratory scrambled-layout control; individual tiles retain local ink morphology).
+4. **Procedural Synthetic Non-Text Control:** Pure-Python procedural synthetic organic gradient texture ($256 \times 256$ px, seed 42) with multi-scale sinusoidal noise, simulating organic fiber-like variations without any characters, symbols, or text strokes. (Explicitly documented as synthetic procedural texture, not a natural photograph).
 
 ### 11.4 Prompt-Priming Differential Ablation Protocol
 To separate visual feature extraction from prompt priming, all targets and controls are evaluated under two frozen prompt regimes:
@@ -617,32 +617,44 @@ To separate visual feature extraction from prompt priming, all targets and contr
   - `script_identification`: *"Examine the image carefully. Describe what is visible in the image, and if any writing or script system is present, identify it. If no writing, text, or script is present, state that clearly."*
 - **Frozen Leading Prompts (Ablation Condition):** Prompts containing explicit domain framing:
   - `script_identification`: *"Examine this ancient Egyptian manuscript image carefully. Identify the script system shown (e.g., Hieratic, Cursive Hieroglyphs, Epigraphic Hieroglyphs, Demotic, or non-Egyptian)..."*
+- **Protocol Preregistration Status:** The protocol SHA-256 fingerprint is recorded as a **retrospective runtime execution fingerprint** (`runtime_fingerprint_only_not_independent_preregistration`), not an externally anchored clinical trial preregistration.
 
 ### 11.5 Empirical Evidence & Scientific Findings (Host CPU Live Run)
 Executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA GPUs, float32, $0.00 spend):
 - **Model Snapshot:** `HuggingFaceTB/SmolVLM-256M-Instruct` at revision `7e3e67edbbed1bf9888184d9df282b700a323964` (safetensors SHA-256 `74dea590...`).
-- **Total Forward Passes:** 29 live forward passes completed across 5 targets (Cat.2044 full, Cat.1883+2095 RIME Fig. 6 full, 3 line crops), 4 neutral controls, and 4 leading ablation controls.
+- **Total Forward Passes Recorded:** **35 live forward passes** captured in an append-only `attempt_ledger` and validated in `attempt_counts`:
+  - 25 neutral manuscript passes (5 targets $\times$ 5 neutral tasks)
+  - 2 leading ablation passes (2 full manuscripts $\times$ 1 leading task)
+  - 4 neutral control passes (4 controls $\times$ 1 neutral task)
+  - 4 leading ablation control passes (4 controls $\times$ 1 leading task)
+  - Breakdown by prompt variant: 29 neutral, 6 leading ablation.
 
 #### Key Findings:
 1. **Decisive Prompt Priming Falsification:**
    - **Under Leading Prompts:** When primed with "ancient Egyptian manuscript" and "Hieratic", SmolVLM-256M claimed "Hieratic" or "ancient Egyptian ink strokes" on **100% of controls**:
-     - Blank white canvas: claimed *"The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics..."* (`blank_leading_claims_script: True`).
+     - Blank canvas: claimed *"The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics..."* (`blank_leading_claims_script: True`).
      - Scrambled tiles: claimed `"Hieratic."` (`scrambled_leading_claims_script: True`).
-     - Natural non-text procedural texture: claimed *"The visible ink strokes in this ancient Egyptian manuscript image are hieroglyphics."* (`natural_nontext_leading_claims_script: True`).
+     - Procedural non-text synthetic texture: claimed *"The visible ink strokes in this ancient Egyptian manuscript image are hieroglyphics."* (`natural_nontext_leading_claims_script: True`).
      - Inverted image: claimed `"Hieratic."` (`inverted_leading_claims_script: True`).
    - **Under Neutral Prompts:** When prompts lacked priming terms, the model **completely stopped claiming Hieratic or Egyptian writing**:
-     - Blank canvas: described as a simple book cover rectangle (`blank_hallucinates_script: False`).
-     - Inverted image: described as abstract artwork / stenciled blocks (`inverted_identifies_hieratic: False`).
-     - Scrambled tiles: explicitly reported: *"There is no writing, text, or script present in the image."* (`scrambled_hallucinates_script: False`).
-     - Natural non-text texture: explicitly reported: *"No writing, text, or script system is present."* (`natural_nontext_hallucinates_script: False`, `natural_nontext_correctly_identified: True`).
-   - **Scientific Conclusion:** Prior claims that small open-weight VLMs identify Hieratic script were **100% false positives induced by prompt priming**. The model does not visually identify Hieratic writing.
-2. **Cross-Support Vocabulary Divergence:**
-   - Jaccard vocabulary similarity between Support 1 (Cat.2044) and Support 2 (Cat.1883+2095) under neutral prompts was only **0.1796** (17.96% token overlap).
-   - On Cat.2044 (high-contrast black ink on papyrus), the model generated 259 unique tokens noting rough paper texture and cursive strokes (without identifying the script).
-   - On Cat.1883+2095 (fragment montage), the model generated only 15 unique tokens, concluding: *"No writing, text, or script is present."*
-3. **Transliteration & Translation Grounding:**
-   - Transliteration abstention rate remained high (**80%** abstention on crops and Support 2: `[UNREADABLE]`, `[NO_TEXT]`).
-   - On full Cat.2044, translation hallucinated *"Chinese characters"*, and on candidate crop 1, *"a single black horizontal line"*.
+     - Blank canvas: described as a simple book cover rectangle (`blank_hallucinates_script: False`, `category: descriptive_only`).
+     - Inverted image: described as abstract artwork / stenciled blocks (`inverted_identifies_hieratic: False`, `category: descriptive_only`).
+     - Scrambled tiles: explicitly reported: *"There is no writing, text, or script present in the image."* (`scrambled_hallucinates_script: False`, `category: negative_script_claim`).
+     - Procedural non-text texture: explicitly reported: *"No writing, text, or script system is present."* (`natural_nontext_hallucinates_script: False`, `category: negative_script_claim`).
+   - **Scientific Calibration:** These findings decisively falsify claims that this small-parameter open-weight model (`SmolVLM-256M-Instruct`) possesses genuine visual script discrimination under diagnostic prompts; prior positive classifications were artifacts of prompt priming. This is a calibrated empirical finding for the evaluated architecture, not an overbroad theoretical claim of universal VLM impossibility across all foundation model families.
+2. **Matched Full-vs-Full Cross-Support Vocabulary Comparison:**
+   - Strictly comparing full manuscript Support 1 (Cat.2044) vs Support 2 (Cat.1883+2095 RIME Fig. 6) across the 5 identical neutral tasks (excluding crops from cross-support denominator):
+   - **Jaccard vocabulary similarity:** **0.2244** (22.44% token overlap; 66 shared tokens, 294 union tokens).
+   - On Cat.2044 (high-contrast black ink on papyrus), the model generated 259 unique tokens noting cursive writing and rough paper texture.
+   - On Cat.1883+2095 (fragment montage), the model generated only 101 unique tokens, concluding on script identification: *"No writing, text, or script is present."* (script divergence observed: True).
+3. **Isolated Candidate Crop Analysis:**
+   - The 3 candidate line crops (Cat.2044 lines 1, 2, 3) were evaluated across 15 neutral hypotheses in a dedicated `crop_analysis` block:
+   - 227 unique tokens generated across crops.
+   - 3 distinct script identification responses across the crops (`inter_crop_discrimination_observed: True`).
+   - 100% transliteration abstention rate on candidate crops (`crop_transliteration_abstention_rate: 1.0`), appropriately returning `[UNREADABLE]` / `[DAMAGED]`.
+4. **Transliteration & Translation Grounding:**
+   - Transliteration hypotheses strictly abstained on fragmentary and continuous sections (`[UNREADABLE]`, `[NO_TEXT]`).
+   - Full Cat.2044 translation hallucinated unrelated historical artwork commentary; candidate crop 1 described a simple line; translation unsupported acknowledged across hypotheses.
 
 ### 11.6 Evidence Grade Matrix (Wave 14)
 | Grade | Status | Audit Finding |

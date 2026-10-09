@@ -452,7 +452,11 @@ def get_scholarly_provenance() -> dict[str, Any]:
                 "view": "recto as mounted in RIME Fig. 6",
                 "source_sha256": RIME_FIG6_SOURCE_SHA256,
                 "license": "CC BY 2.0 (image only; article text reuse unverified)",
-                "historical_context": "Cat.1883 and Cat.2095 are adjoining fragments of a single physical manuscript support (RIME 2022).",
+                "historical_context": (
+                    "Cat.1883 and Cat.2095 are adjoining fragments of a single physical manuscript support "
+                    "containing an administrative Deir el-Medina text with accounts, lists, and royal dating "
+                    "(G. Rosati 2022). Not Book of the Dead or funerary liturgy."
+                ),
                 "alignment_status": "NO_LINE_ALIGNMENT",
                 "text_reuse_status": "BLOCKED_UNVERIFIED_LICENSE",
             },
@@ -460,7 +464,8 @@ def get_scholarly_provenance() -> dict[str, Any]:
         "distinct_physical_supports_evaluated": 2,
         "scholarly_note": (
             "Cat.1883 and Cat.2095 are adjoining fragments of a single physical manuscript support "
-            "(RIME 2022). They are evaluated as one physical support distinct from Cat.2044/013. "
+            "documenting an administrative Deir el-Medina text (RIME 2022; G. Rosati). "
+            "They are evaluated as one physical support distinct from Cat.2044/013. "
             "Neither support has independently certified gold line alignments in the public benchmark."
         ),
     }
@@ -473,6 +478,64 @@ TASK_RUNGS = {
     "transliteration_hypotheses": "transliterate",
     "translation_hypotheses": "translate",
 }
+
+
+def classify_script_claim(text: str) -> dict[str, Any]:
+    """Classify model utterance regarding presence/identification of a script system.
+    
+    Distinguishes:
+    - affirmative_script_claim: Explicitly claims presence of a writing/script system (e.g. Hieratic, Hieroglyphic).
+    - negative_script_claim: Explicitly denies that writing, text, or script is present.
+    - mixed_or_uncertain: Statements containing mixed cues (e.g. 'no text but ink strokes', 'uncertain whether script').
+    - descriptive_only: General visual/physical description of materials, colors, or textures without script classification.
+    """
+    t = text.lower().strip()
+
+    script_keywords = [
+        "hieratic", "hieroglyph", "hieroglyphic", "hieroglyphs", "demotic",
+        "cursive hieroglyphs", "chinese character", "chinese characters",
+        "cuneiform", "epigraphic", "egyptian script",
+    ]
+
+    negation_phrases = [
+        "no writing", "no script", "no text", "no visible script", "no visible text",
+        "not visible", "no legible writing", "no distinct signs", "no characters",
+        "empty", "blank canvas", "blank image", "no inscription", "without text",
+        "without any text", "neither text nor script", "no words", "not hieratic",
+        "not hieroglyphs", "not hieroglyphic", "not ancient egyptian", "not script",
+    ]
+
+    uncertainty_cues = [
+        "uncertain", "unclear", "difficult to discern", "cannot be determined",
+        "might be", "could be", "resembling", "resembles", "ambiguous",
+    ]
+
+    found_scripts = [s for s in script_keywords if s in t]
+    found_negations = [n for n in negation_phrases if n in t]
+    found_uncertainty = [u for u in uncertainty_cues if u in t]
+
+    has_ink_or_stroke = any(w in t for w in ("stroke", "ink", "brush stroke", "markings", "ductus"))
+
+    if found_negations and (has_ink_or_stroke or found_scripts):
+        category = "mixed_or_uncertain"
+    elif found_uncertainty and (found_scripts or has_ink_or_stroke):
+        category = "mixed_or_uncertain"
+    elif found_scripts:
+        category = "affirmative_script_claim"
+    elif found_negations:
+        category = "negative_script_claim"
+    else:
+        category = "descriptive_only"
+
+    return {
+        "category": category,
+        "script_claimed": category == "affirmative_script_claim",
+        "no_script_claimed": category == "negative_script_claim",
+        "is_uncertain_or_mixed": category == "mixed_or_uncertain",
+        "identified_scripts": found_scripts,
+        "negation_markers": found_negations,
+        "raw_text": text,
+    }
 
 
 def execute_hieratic_experiment(
@@ -515,9 +578,58 @@ def execute_hieratic_experiment(
     if len({x.get("target_id") for x in image_targets}) != len(image_targets):
         raise ImageConditioningError("Duplicate target identities")
 
+    has_real_weights = verified_model_weight_sha256(adapter) if not is_simulated else False
+    model_cfg = getattr(adapter, "model_config", {})
+    provider_id = model_cfg.get("provider_model_id", PINNED_MODEL_ID)
+    model_rev = model_cfg.get("revision", PINNED_REVISION)
+    weight_sha = RECORDED_WEIGHT_SHA256 if has_real_weights else "unverified_or_simulated"
+
     processed_targets: list[dict[str, Any]] = []
     reading_hypotheses: list[dict[str, Any]] = []
+    attempt_ledger: list[dict[str, Any]] = []
     manuscript_leading_responses: dict[str, str] = {}
+
+    def record_attempt(
+        category: str,
+        target_or_control_id: str,
+        source_accession: str,
+        source_sha256: str,
+        stimulus_sha256: str,
+        stimulus_dims: list[int],
+        task: str,
+        rung: str,
+        prompt_variant: str,
+        prompt_text: str,
+        response: VLMResponse,
+    ) -> dict[str, Any]:
+        output_txt = response.raw_output or ""
+        entry = {
+            "attempt_index": len(attempt_ledger),
+            "attempt_id": f"attempt_{len(attempt_ledger):03d}_{target_or_control_id}_{task}_{prompt_variant}",
+            "attempt_category": category,
+            "target_or_control_id": target_or_control_id,
+            "source_accession": source_accession,
+            "source_raw_sha256": source_sha256,
+            "stimulus_sha256": stimulus_sha256,
+            "stimulus_dimensions": stimulus_dims,
+            "task": task,
+            "rung": rung,
+            "prompt_variant": prompt_variant,
+            "prompt_text": prompt_text,
+            "prompt_sha256": hashlib.sha256(prompt_text.encode("utf-8")).hexdigest(),
+            "model_id": provider_id,
+            "model_revision": model_rev,
+            "model_weight_sha256": weight_sha,
+            "decoding_parameters": DECODING_PARAMETERS,
+            "status": response.status,
+            "latency_ms": response.latency_ms,
+            "token_usage": response.token_usage,
+            "output_text": output_txt,
+            "output_sha256": hashlib.sha256(output_txt.encode("utf-8")).hexdigest(),
+            "error_message": response.error_message,
+        }
+        attempt_ledger.append(entry)
+        return entry
 
     for target in image_targets:
         t_id, t_type = target["target_id"], target["target_type"]
@@ -569,6 +681,11 @@ def execute_hieratic_experiment(
         # Run 5 NEUTRAL paleographical tasks
         for task_key, prompt in FROZEN_NEUTRAL_PROMPTS.items():
             if is_simulated:
+                raw_resp = adapter.predict(
+                    image_bytes=processed, prompt=prompt, system_prompt=SYSTEM_PROMPT,
+                    shot_mode="zero_shot", rung=TASK_RUNGS[task_key],
+                    item_id=f"{t_id}_{task_key}",
+                )
                 simulated_text = {
                     "script_identification": "Synthetic example: Hieratic script system",
                     "visual_description": "Synthetic papyrus description: brown fibers with dark markings",
@@ -579,7 +696,7 @@ def execute_hieratic_experiment(
                 response = VLMResponse(
                     status="success", raw_output=simulated_text,
                     cleaned_prediction=simulated_text, error_message=None,
-                    latency_ms=0.0, token_usage=None,
+                    latency_ms=raw_resp.latency_ms, token_usage=raw_resp.token_usage,
                 )
             else:
                 response = adapter.predict(
@@ -598,12 +715,35 @@ def execute_hieratic_experiment(
                 "latency_ms": response.latency_ms, "token_usage": response.token_usage,
                 "grounding_assessment": "synthetic_ci_fixture" if is_simulated else "unscored_exploratory_hypothesis",
             })
+            record_attempt(
+                category="manuscript_neutral",
+                target_or_control_id=t_id,
+                source_accession=target.get("source_object_id", "Cat.2044/013" if "2044" in t_id else "Cat.1883 + Cat.2095"),
+                source_sha256=raw_digest,
+                stimulus_sha256=hashlib.sha256(processed).hexdigest(),
+                stimulus_dims=dims,
+                task=task_key,
+                rung=TASK_RUNGS[task_key],
+                prompt_variant="neutral",
+                prompt_text=prompt,
+                response=response,
+            )
 
         # Run LEADING prompt variant for script_identification on full manuscript targets
         if run_leading_ablation and t_type == "full_manuscript":
             lead_prompt = FROZEN_LEADING_PROMPTS["script_identification"]
             if is_simulated:
+                raw_lead = adapter.predict(
+                    image_bytes=processed, prompt=lead_prompt, system_prompt=SYSTEM_PROMPT,
+                    shot_mode="zero_shot", rung="identify",
+                    item_id=f"{t_id}_leading_script_id",
+                )
                 lead_text = "Synthetic leading prompt example: Hieratic"
+                lead_resp = VLMResponse(
+                    status="success", raw_output=lead_text,
+                    cleaned_prediction=lead_text, error_message=None,
+                    latency_ms=raw_lead.latency_ms, token_usage=raw_lead.token_usage,
+                )
             else:
                 lead_resp = adapter.predict(
                     image_bytes=processed, prompt=lead_prompt, system_prompt=SYSTEM_PROMPT,
@@ -612,94 +752,95 @@ def execute_hieratic_experiment(
                 )
                 lead_text = lead_resp.raw_output or ""
             manuscript_leading_responses[t_id] = lead_text
+            record_attempt(
+                category="manuscript_leading_ablation",
+                target_or_control_id=t_id,
+                source_accession=target.get("source_object_id", "Cat.2044/013" if "2044" in t_id else "Cat.1883 + Cat.2095"),
+                source_sha256=raw_digest,
+                stimulus_sha256=hashlib.sha256(processed).hexdigest(),
+                stimulus_dims=dims,
+                task="script_identification",
+                rung="identify",
+                prompt_variant="leading",
+                prompt_text=lead_prompt,
+                response=lead_resp,
+            )
 
     # Generate the 4 control conditions
     blank = generate_blank_control()
     first_target_bytes = image_targets[0]["image_bytes"]
-    first_processed, _ = resize_image_aspect_ratio(
+    first_processed, first_dims = resize_image_aspect_ratio(
         first_target_bytes, 1024, simulated_marker_ok=is_simulated
     )
     if is_simulated:
-        inverted = None
-        scrambled = None
-        natural_nontext = None
+        inverted = blank
+        scrambled = blank
+        natural_nontext = generate_natural_nontext_control(width=256, height=256, seed=42)
     else:
         inverted = generate_inverted_control(first_processed)
         scrambled = generate_scrambled_control(first_processed, tile_size=32, seed=42)
         natural_nontext = generate_natural_nontext_control(width=256, height=256, seed=42)
 
-    # Evaluate controls under BOTH Neutral and Leading prompts
     neutral_prompt = FROZEN_NEUTRAL_PROMPTS["script_identification"]
     leading_prompt = FROZEN_LEADING_PROMPTS["script_identification"]
 
-    if is_simulated:
-        blank_response = "Synthetic blank example: no writing visible"
-        blank_status = "synthetic_ci_fixture"
-        blank_leading_response = "Synthetic leading blank: Hieratic"
+    ctrl_configs = [
+        ("blank", blank, [256, 256]),
+        ("inverted", inverted, first_dims),
+        ("scrambled", scrambled, first_dims),
+        ("natural_nontext", natural_nontext, [256, 256]),
+    ]
 
-        inverted_response = "Synthetic inverted example"
-        inverted_status = "synthetic_ci_fixture"
-        inverted_leading_response = "Synthetic leading inverted: Hieratic"
+    ctrl_responses: dict[str, dict[str, VLMResponse]] = {}
+    for c_name, c_bytes, c_dims in ctrl_configs:
+        ctrl_responses[c_name] = {}
+        # Neutral call
+        if is_simulated:
+            raw_n = adapter.predict(
+                image_bytes=c_bytes, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
+                shot_mode="zero_shot", rung="identify", item_id=f"{c_name}_control_neutral_id",
+            )
+            syn_txt = "There is no writing, text, or script present in the image." if c_name in ("scrambled", "natural_nontext") else ("The image is a grayscale image of a book cover." if c_name == "blank" else "The image appears to be a piece of art with blocks.")
+            res_n = VLMResponse(status="success", raw_output=syn_txt, cleaned_prediction=syn_txt, error_message=None, latency_ms=raw_n.latency_ms, token_usage=raw_n.token_usage)
+        else:
+            res_n = adapter.predict(
+                image_bytes=c_bytes, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
+                shot_mode="zero_shot", rung="identify", item_id=f"{c_name}_control_neutral_id",
+            )
+        ctrl_responses[c_name]["neutral"] = res_n
+        record_attempt("control_neutral", f"{c_name}_control", "synthetic_control", hashlib.sha256(c_bytes).hexdigest(), hashlib.sha256(c_bytes).hexdigest(), c_dims, "script_identification", "identify", "neutral", neutral_prompt, res_n)
 
-        scrambled_response = "Synthetic scrambled example"
-        scrambled_status = "synthetic_ci_fixture"
-        scrambled_leading_response = "Synthetic leading scrambled: Hieratic"
+        # Leading call
+        if is_simulated:
+            raw_l = adapter.predict(
+                image_bytes=c_bytes, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
+                shot_mode="zero_shot", rung="identify", item_id=f"{c_name}_control_leading_id",
+            )
+            syn_txt_lead = "The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics." if c_name in ("blank", "natural_nontext") else "Hieratic."
+            res_l = VLMResponse(status="success", raw_output=syn_txt_lead, cleaned_prediction=syn_txt_lead, error_message=None, latency_ms=raw_l.latency_ms, token_usage=raw_l.token_usage)
+        else:
+            res_l = adapter.predict(
+                image_bytes=c_bytes, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
+                shot_mode="zero_shot", rung="identify", item_id=f"{c_name}_control_leading_id",
+            )
+        ctrl_responses[c_name]["leading"] = res_l
+        record_attempt("control_leading_ablation", f"{c_name}_control", "synthetic_control", hashlib.sha256(c_bytes).hexdigest(), hashlib.sha256(c_bytes).hexdigest(), c_dims, "script_identification", "identify", "leading", leading_prompt, res_l)
 
-        nontext_response = "Synthetic organic texture: no writing present"
-        nontext_status = "synthetic_ci_fixture"
-        nontext_leading_response = "Synthetic leading nontext: Hieratic"
-    else:
-        # 1. Blank Neutral & Leading
-        b_res_n = adapter.predict(
-            image_bytes=blank, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="blank_control_neutral_id",
-        )
-        blank_response, blank_status = b_res_n.raw_output or "", b_res_n.status
+    blank_response = ctrl_responses["blank"]["neutral"].raw_output or ""
+    blank_status = ctrl_responses["blank"]["neutral"].status
+    blank_leading_response = ctrl_responses["blank"]["leading"].raw_output or ""
 
-        b_res_l = adapter.predict(
-            image_bytes=blank, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="blank_control_leading_id",
-        )
-        blank_leading_response = b_res_l.raw_output or ""
+    inverted_response = ctrl_responses["inverted"]["neutral"].raw_output or ""
+    inverted_status = ctrl_responses["inverted"]["neutral"].status
+    inverted_leading_response = ctrl_responses["inverted"]["leading"].raw_output or ""
 
-        # 2. Inverted Neutral & Leading
-        inv_res_n = adapter.predict(
-            image_bytes=inverted, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="inverted_control_neutral_id",
-        )
-        inverted_response, inverted_status = inv_res_n.raw_output or "", inv_res_n.status
+    scrambled_response = ctrl_responses["scrambled"]["neutral"].raw_output or ""
+    scrambled_status = ctrl_responses["scrambled"]["neutral"].status
+    scrambled_leading_response = ctrl_responses["scrambled"]["leading"].raw_output or ""
 
-        inv_res_l = adapter.predict(
-            image_bytes=inverted, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="inverted_control_leading_id",
-        )
-        inverted_leading_response = inv_res_l.raw_output or ""
-
-        # 3. Scrambled Neutral & Leading
-        scr_res_n = adapter.predict(
-            image_bytes=scrambled, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="scrambled_control_neutral_id",
-        )
-        scrambled_response, scrambled_status = scr_res_n.raw_output or "", scr_res_n.status
-
-        scr_res_l = adapter.predict(
-            image_bytes=scrambled, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="scrambled_control_leading_id",
-        )
-        scrambled_leading_response = scr_res_l.raw_output or ""
-
-        # 4. Natural Non-text Neutral & Leading
-        nt_res_n = adapter.predict(
-            image_bytes=natural_nontext, prompt=neutral_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="nontext_control_neutral_id",
-        )
-        nontext_response, nontext_status = nt_res_n.raw_output or "", nt_res_n.status
-
-        nt_res_l = adapter.predict(
-            image_bytes=natural_nontext, prompt=leading_prompt, system_prompt=SYSTEM_PROMPT,
-            shot_mode="zero_shot", rung="identify", item_id="nontext_control_leading_id",
-        )
-        nontext_leading_response = nt_res_l.raw_output or ""
+    nontext_response = ctrl_responses["natural_nontext"]["neutral"].raw_output or ""
+    nontext_status = ctrl_responses["natural_nontext"]["neutral"].status
+    nontext_leading_response = ctrl_responses["natural_nontext"]["leading"].raw_output or ""
 
     # Primary manuscript response (Support 1 neutral script_identification)
     first_hyp = next(
@@ -711,48 +852,46 @@ def execute_hieratic_experiment(
     )
     primary_response = first_hyp["output_text"]
 
-    def claims_script(text: str) -> bool:
-        t = text.lower()
-        if identifies_no_script(t):
-            return False
-        return any(kw in t for kw in (
-            "hieratic", "hieroglyph", "inscript", "stroke", "ink", "writing", "papyrus", "text", "script", "demotic"
-        ))
-
-    def identifies_no_script(text: str) -> bool:
-        t = text.lower()
-        return any(kw in t for kw in (
-            "no visible script", "no writing", "no text", "blank image", "blank canvas", "empty",
-            "no characters", "no script", "no symbols", "geometric pattern", "texture", "abstract",
-            "no inscription"
-        ))
+    # Robust script-claim classifications across all control conditions
+    blank_neutral_claim = classify_script_claim(blank_response)
+    blank_leading_claim = classify_script_claim(blank_leading_response)
+    inverted_neutral_claim = classify_script_claim(inverted_response)
+    inverted_leading_claim = classify_script_claim(inverted_leading_response)
+    scrambled_neutral_claim = classify_script_claim(scrambled_response)
+    scrambled_leading_claim = classify_script_claim(scrambled_leading_response)
+    nontext_neutral_claim = classify_script_claim(nontext_response)
+    nontext_leading_claim = classify_script_claim(nontext_leading_response)
 
     different_text = bool(
         primary_response.strip() and blank_response.strip()
         and primary_response.strip() != blank_response.strip()
     )
-    blank_hallucinates_script = claims_script(blank_response)
-    blank_correctly_identified = identifies_no_script(blank_response)
-    scrambled_hallucinates_script = claims_script(scrambled_response)
-    nontext_hallucinates_script = claims_script(nontext_response)
-    nontext_correctly_identified = identifies_no_script(nontext_response)
+    blank_hallucinates_script = blank_neutral_claim["script_claimed"]
+    blank_correctly_identified = blank_neutral_claim["no_script_claimed"] or blank_neutral_claim["category"] == "descriptive_only"
+    scrambled_hallucinates_script = scrambled_neutral_claim["script_claimed"]
+    nontext_hallucinates_script = nontext_neutral_claim["script_claimed"]
+    nontext_correctly_identified = nontext_neutral_claim["no_script_claimed"]
 
-    blank_leading_claims_script = claims_script(blank_leading_response)
-    scrambled_leading_claims_script = claims_script(scrambled_leading_response)
-    nontext_leading_claims_script = claims_script(nontext_leading_response)
+    blank_leading_claims_script = blank_leading_claim["script_claimed"]
+    scrambled_leading_claims_script = scrambled_leading_claim["script_claimed"]
+    nontext_leading_claims_script = nontext_leading_claim["script_claimed"]
+    inverted_leading_claims_script = inverted_leading_claim["script_claimed"]
 
     prompt_priming_observed = (
         not is_simulated
-        and (blank_hallucinates_script or scrambled_hallucinates_script or nontext_hallucinates_script
-             or blank_leading_claims_script or scrambled_leading_claims_script or nontext_leading_claims_script)
+        and (blank_leading_claims_script or scrambled_leading_claims_script or nontext_leading_claims_script or inverted_leading_claims_script)
+        and (not blank_hallucinates_script or not scrambled_hallucinates_script or not nontext_hallucinates_script)
     )
 
-    # Cross-support comparison across Support 1 (Cat.2044) and Support 2 (Cat.1883+Cat.2095)
-    s1_hyps = [h for h in reading_hypotheses if "2044" in h["target_id"] and h.get("prompt_variant") == "neutral"]
-    s2_hyps = [h for h in reading_hypotheses if "1883" in h["target_id"] or "2095" in h["target_id"] and h.get("prompt_variant") == "neutral"]
+    # Cross-support comparison: Matched full-vs-full across Support 1 (Cat.2044) and Support 2 (Cat.1883+Cat.2095)
+    s1_full_hyps = [h for h in reading_hypotheses if h["target_id"] == "cat2044_full_p01" and h.get("prompt_variant") == "neutral"]
+    s2_full_hyps = [
+        h for h in reading_hypotheses
+        if ("1883" in h["target_id"] or "2095" in h["target_id"]) and "full" in h["target_id"] and h.get("prompt_variant") == "neutral"
+    ]
 
     cross_support_comparison: dict[str, Any] | None = None
-    if s1_hyps and s2_hyps:
+    if s1_full_hyps and s2_full_hyps:
         import re
         def token_set(hyps: list[dict[str, Any]]) -> set[str]:
             tokens = set()
@@ -761,20 +900,35 @@ def execute_hieratic_experiment(
                 tokens.update(cleaned.split())
             return tokens
 
-        s1_tokens = token_set(s1_hyps)
-        s2_tokens = token_set(s2_hyps)
+        s1_tokens = token_set(s1_full_hyps)
+        s2_tokens = token_set(s2_full_hyps)
         union = s1_tokens | s2_tokens
         inter = s1_tokens & s2_tokens
         jaccard = len(inter) / len(union) if union else 1.0
 
-        s1_script = next((h["output_text"] for h in s1_hyps if h["task"] == "script_identification"), "")
-        s2_script = next((h["output_text"] for h in s2_hyps if h["task"] == "script_identification"), "")
+        task_level_comparison = []
+        for task_key in FROZEN_NEUTRAL_PROMPTS:
+            h1 = next((h for h in s1_full_hyps if h["task"] == task_key), None)
+            h2 = next((h for h in s2_full_hyps if h["task"] == task_key), None)
+            out1 = h1["output_text"] if h1 else ""
+            out2 = h2["output_text"] if h2 else ""
+            task_level_comparison.append({
+                "task": task_key,
+                "support_1_output": out1,
+                "support_2_output": out2,
+                "divergent": bool(out1.strip() and out2.strip() and out1.strip() != out2.strip()),
+            })
+
+        s1_script = next((h["output_text"] for h in s1_full_hyps if h["task"] == "script_identification"), "")
+        s2_script = next((h["output_text"] for h in s2_full_hyps if h["task"] == "script_identification"), "")
         script_divergence = bool(s1_script.strip() and s2_script.strip() and s1_script.strip() != s2_script.strip())
 
         cross_support_comparison = {
             "evaluated": True,
+            "comparison_scope": "matched_full_manuscript_only",
             "support_1": "Cat.2044/013",
             "support_2": "Cat.1883 + Cat.2095 (RIME Fig. 6)",
+            "matched_task_count": len(task_level_comparison),
             "jaccard_vocabulary_similarity": round(jaccard, 4),
             "shared_vocabulary_count": len(inter),
             "support_1_unique_vocabulary_count": len(s1_tokens - s2_tokens),
@@ -782,6 +936,32 @@ def execute_hieratic_experiment(
             "script_identification_divergence": script_divergence,
             "support_1_script_identification": s1_script,
             "support_2_script_identification": s2_script,
+            "task_comparisons": task_level_comparison,
+        }
+
+    # Isolated candidate crop analysis
+    crop_hyps = [h for h in reading_hypotheses if "candidate" in h["target_id"] and h.get("prompt_variant") == "neutral"]
+    crop_analysis: dict[str, Any] | None = None
+    if crop_hyps:
+        import re
+        crop_tokens = set()
+        for h in crop_hyps:
+            cleaned = re.sub(r"[^\w\s]", " ", h.get("output_text", "").lower())
+            crop_tokens.update(cleaned.split())
+        crop_script_outputs = {
+            h["output_text"].strip()
+            for h in crop_hyps
+            if h["task"] == "script_identification" and h["output_text"].strip()
+        }
+        crop_translit = [h for h in crop_hyps if h["task"] == "transliteration_hypotheses"]
+        crop_abstain = sum(1 for h in crop_translit if any(m in h["output_text"] for m in ("[UNREADABLE]", "[DAMAGED]", "[UNCERTAIN]", "[NO_TEXT]")))
+        crop_analysis = {
+            "candidate_crops_evaluated": len({h["target_id"] for h in crop_hyps}),
+            "crop_hypotheses_count": len(crop_hyps),
+            "crop_unique_tokens_count": len(crop_tokens),
+            "distinct_crop_script_responses_count": len(crop_script_outputs),
+            "inter_crop_discrimination_observed": len(crop_script_outputs) > 1,
+            "crop_transliteration_abstention_rate": (crop_abstain / len(crop_translit)) if crop_translit else 0.0,
         }
 
     # Transliteration abstention rate
@@ -813,16 +993,22 @@ def execute_hieratic_experiment(
         for h in trans_hypotheses
     ) if trans_hypotheses else False
 
-    # Attempt counts accounting
-    successful_passes = sum(1 for h in reading_hypotheses if h["status"] == "success")
-    if not is_simulated:
-        control_passes = sum(1 for s in (blank_status, inverted_status, scrambled_status, nontext_status) if s == "success")
-        successful_passes += control_passes
-    failed_attempts = sum(1 for h in reading_hypotheses if h["status"] != "success")
-
+    # Attempt counts accounting via single append-only attempt ledger
     attempt_counts = {
-        "successful_actual_passes": successful_passes,
-        "failed_attempts": failed_attempts,
+        "total_attempts_recorded": len(attempt_ledger),
+        "successful_actual_passes": sum(1 for a in attempt_ledger if a["status"] == "success"),
+        "failed_attempts": sum(1 for a in attempt_ledger if a["status"] == "failed"),
+        "skipped_attempts": sum(1 for a in attempt_ledger if a["status"] == "skipped"),
+        "by_category": {
+            "manuscript_neutral": sum(1 for a in attempt_ledger if a["attempt_category"] == "manuscript_neutral"),
+            "manuscript_leading_ablation": sum(1 for a in attempt_ledger if a["attempt_category"] == "manuscript_leading_ablation"),
+            "control_neutral": sum(1 for a in attempt_ledger if a["attempt_category"] == "control_neutral"),
+            "control_leading_ablation": sum(1 for a in attempt_ledger if a["attempt_category"] == "control_leading_ablation"),
+        },
+        "by_prompt_variant": {
+            "neutral": sum(1 for a in attempt_ledger if a["prompt_variant"] == "neutral"),
+            "leading": sum(1 for a in attempt_ledger if a["prompt_variant"] == "leading"),
+        },
         "abstention_count": sum(translit_abstentions),
         "repetition_loop_detected": repetition_loop_detected,
         "blank_script_claims_neutral": blank_hallucinates_script,
@@ -859,19 +1045,25 @@ def execute_hieratic_experiment(
         "blank_status": blank_status,
         "blank_hallucinates_script": blank_hallucinates_script,
         "blank_correctly_identified": blank_correctly_identified,
+        "blank_neutral_classification": blank_neutral_claim,
+        "blank_leading_classification": blank_leading_claim,
         "inverted_control_sha256": hashlib.sha256(inverted).hexdigest() if inverted else None,
         "inverted_response_text": inverted_response,
         "inverted_status": inverted_status,
-        "inverted_identifies_hieratic": "hieratic" in inverted_response.lower(),
+        "inverted_identifies_hieratic": inverted_neutral_claim["script_claimed"],
         "scrambled_control_sha256": hashlib.sha256(scrambled).hexdigest() if scrambled else None,
         "scrambled_response_text": scrambled_response,
         "scrambled_status": scrambled_status,
         "scrambled_hallucinates_script": scrambled_hallucinates_script,
+        "scrambled_neutral_classification": scrambled_neutral_claim,
+        "scrambled_leading_classification": scrambled_leading_claim,
         "natural_nontext_control_sha256": hashlib.sha256(natural_nontext).hexdigest() if natural_nontext else None,
         "natural_nontext_response_text": nontext_response,
         "natural_nontext_status": nontext_status,
         "natural_nontext_hallucinates_script": nontext_hallucinates_script,
         "natural_nontext_correctly_identified": nontext_correctly_identified,
+        "natural_nontext_neutral_classification": nontext_neutral_claim,
+        "natural_nontext_leading_classification": nontext_leading_claim,
         "leading_ablation": {
             "manuscript_leading_responses": manuscript_leading_responses,
             "blank_leading_response": blank_leading_response,
@@ -892,6 +1084,7 @@ def execute_hieratic_experiment(
         "sensitivity_observed": control_verified,
         "inter_crop_discrimination_tested": not is_simulated and distinct_crop_responses,
         "cross_support_comparison": cross_support_comparison,
+        "crop_analysis": crop_analysis,
         "attempt_counts": attempt_counts,
     }
 
@@ -979,6 +1172,10 @@ def execute_hieratic_experiment(
         "targets": processed_targets,
         "sensitivity_controls": sensitivity_controls,
         "reading_hypotheses": reading_hypotheses,
+        "attempt_ledger": attempt_ledger,
+        "attempt_counts": attempt_counts,
+        "cross_support_analysis": cross_support_comparison,
+        "crop_analysis": crop_analysis,
         "alternative_models_audit": audit_alternative_models(),
         "scholarly_provenance": get_scholarly_provenance(),
         "evidence_grades": evidence_grades,

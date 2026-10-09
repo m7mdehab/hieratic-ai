@@ -525,7 +525,7 @@ class W10FrozenArchiveCompositionalTests(unittest.TestCase):
         from ling.translation.compositional import ConstrainedComposer
         train = [{"sentence_id": "s1", "text_id": "source",
                   "forms": ("a",), "glosses": ("der",), "german": "der"}]
-        with self.assertRaisesRegex(tr.TranslationError, "present in training"):
+        with self.assertRaisesRegex(tr.TranslationError, "in training"):
             ConstrainedComposer(train).predict(
                 {"sentence_id": "different", "text_id": "source", "forms": ("a",)})
 

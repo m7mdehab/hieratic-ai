@@ -14,6 +14,10 @@ from pathlib import Path
 import sys
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
@@ -587,6 +591,16 @@ def main(argv: list[str] | None = None) -> int:
     p_smoke.add_argument("--output", type=Path, default=None, help="Path to write structured smoke report JSON")
     p_smoke.add_argument("--allow-simulated", action="store_true", help="Allow simulated test doubles for dry-run verification in test environments")
 
+    # real-hieratic
+    p_hieratic = subparsers.add_parser("real-hieratic", help="Execute authentic Hieratic reading experiment on manuscript image and crops")
+    p_hieratic.add_argument("--model", type=str, default="smolvlm-256m-instruct", help="Model candidate key to evaluate")
+    p_hieratic.add_argument("--suite", type=Path, default=DEFAULT_SUITE_PATH, help="Path to evaluation suite YAML")
+    p_hieratic.add_argument("--weights-dir", type=Path, default=None, help="Local directory containing model snapshot weights")
+    p_hieratic.add_argument("--image-path", type=Path, default=None, help="Path to authentic Cat.2044 JPEG image file")
+    p_hieratic.add_argument("--crops-dir", type=Path, default=None, help="Path to directory containing deterministic line crops and inspection-manifest.json")
+    p_hieratic.add_argument("--output", type=Path, default=None, help="Path to write structured hieratic experiment report JSON")
+    p_hieratic.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
+
     args = parser.parse_args(argv)
 
     try:
@@ -806,6 +820,104 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  Image B SHA-256: {report['forward_control_image']['image_sha256'][:16]}...")
             if "sensitivity_control" in report:
                 print(f"  Visual sensitivity observed: {report['sensitivity_control']['sensitivity_observed']}")
+            print(f"  Classification: {report['classification']} (0.0 capability points)")
+            return 0
+
+        elif args.command == "real-hieratic":
+            from eval.vlm.hieratic import execute_hieratic_experiment
+            suite = load_yaml(args.suite)
+            model_cfg = next((m for m in suite["models"] if m["key"] == args.model), None)
+            if not model_cfg:
+                raise VLMCLIError(f"Model key '{args.model}' not found in suite.")
+
+            targets = []
+            # 1. Load full image if provided
+            if args.image_path and args.image_path.is_file():
+                img_bytes = args.image_path.read_bytes()
+                targets.append({
+                    "target_id": "cat2044_full_p01",
+                    "target_type": "full_manuscript",
+                    "image_bytes": img_bytes,
+                    "source_bounds": [0, 0, 7063, 3947],
+                    "transform": None,
+                })
+
+            # 2. Refuse unconstrained crops: manifest + source identity + artifact hashes required.
+            if not args.allow_simulated and (not targets or targets[0]["target_type"] != "full_manuscript"):
+                raise VLMCLIError("Live Hieratic mode requires the pinned Cat.2044 original --image-path.")
+            if args.crops_dir:
+                from eval.vlm.hieratic import CAT2044_SOURCE_SHA256
+                if not args.crops_dir.is_dir():
+                    raise VLMCLIError("The requested private crop directory does not exist.")
+                manifest_file = args.crops_dir / "inspection-manifest.json"
+                if not manifest_file.is_file():
+                    raise VLMCLIError("Unverified private crop directory: inspection manifest absent")
+                inspection = json.loads(manifest_file.read_text(encoding="utf-8"))
+                if inspection.get("source_sha256") != CAT2044_SOURCE_SHA256 or inspection.get("gold_or_reading_created") is not False:
+                    raise VLMCLIError("Crop manifest provenance or annotation boundary mismatch")
+                crop_records = inspection.get("crop_records", [])
+                artifact_records = inspection.get("artifacts", [])
+                if not isinstance(crop_records, list) or not isinstance(artifact_records, list):
+                    raise VLMCLIError("Crop manifest is malformed")
+                artifacts = {x.get("path"): x for x in artifact_records if isinstance(x, dict)}
+                for idx, c_path in enumerate(sorted(args.crops_dir.glob("line-candidate-*.png"))[:3], 1):
+                    if c_path.is_symlink() or c_path.parent.resolve() != args.crops_dir.resolve():
+                        raise VLMCLIError("Crop path escapes private directory")
+                    record = next((x for x in crop_records if x.get("crop_artifact") == c_path.name), None)
+                    artifact = artifacts.get(c_path.name)
+                    if record is None or artifact is None:
+                        raise VLMCLIError("Crop is absent from pinned private manifest")
+                    raw_crop = c_path.read_bytes()
+                    sha = hashlib.sha256(raw_crop).hexdigest()
+                    if sha != artifact.get("sha256") or len(raw_crop) != artifact.get("byte_size"):
+                        raise VLMCLIError("Crop hash or byte size mismatch against manifest")
+                    targets.append({
+                        "target_id": f"cat2044_line_candidate_{idx:03d}",
+                        "target_type": "candidate_line_crop",
+                        "image_bytes": raw_crop, "expected_sha256": sha,
+                        "source_bounds": record.get("crop_source_bounds"),
+                        "transform": record.get("source_to_crop_transform"),
+                    })
+
+            if not targets:
+                if args.allow_simulated:
+                    targets.append({
+                        "target_id": "fixture_cat2044_full",
+                        "target_type": "full_manuscript",
+                        "image_bytes": b"synthetic_hieratic_full_manuscript_bytes",
+                        "source_bounds": [0, 0, 7063, 3947],
+                        "transform": None,
+                    })
+                    targets.append({
+                        "target_id": "fixture_cat2044_line_001",
+                        "target_type": "candidate_line_crop",
+                        "image_bytes": b"synthetic_hieratic_line_crop_bytes",
+                        "source_bounds": [100, 100, 300, 200],
+                        "transform": None,
+                    })
+                else:
+                    raise VLMCLIError("No authentic Hieratic image or crops provided. Specify --image-path or --crops-dir.")
+
+            if args.allow_simulated:
+                adapter = MockVLMAdapter(model_cfg, simulated_mode="normal")
+            else:
+                adapter = get_adapter(model_cfg, weights_dir=args.weights_dir)
+
+            report = execute_hieratic_experiment(adapter, targets, allow_simulated=args.allow_simulated)
+
+            # Validate against schema
+            schema = load_schema(SCHEMA_PATH)
+            errs = validate_with_schema(report, schema)
+            if errs:
+                raise VLMCLIError(f"Hieratic experiment report failed schema validation: {errs[0]}")
+
+            if args.output:
+                write_json_atomic(args.output, report)
+                print(f"Hieratic report written to {args.output}")
+
+            print(f"PASS: Authentic Hieratic experiment completed for model '{args.model}' (Targets: {len(targets)}).")
+            print(f"  Protocol SHA-256: {report['protocol']['protocol_sha256'][:16]}...")
+            print(f"  Visual sensitivity observed: {report['sensitivity_controls']['sensitivity_observed']}")
             print(f"  Classification: {report['classification']} (0.0 capability points)")
             return 0
 

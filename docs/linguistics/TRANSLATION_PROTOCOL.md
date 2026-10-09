@@ -92,3 +92,6 @@ The real textual dataset is separately licensed and must never be promoted to DA
     python -m unittest tests.linguistics.test_translation_layer -v
 
 This work provides a genuinely new **source-group-blocked publisher text reference population**, not a guarantee of independence by physical papyrus/scribe/editor, and a measurable structural mechanism instead of copying publisher German reference sentences. Its scientific acceptance and LING-003 2-point completion remain pending independent semantic review and end-to-end image-linked evidence.
+
+
+**Per-item attribution and release gate:** `ling/translation/data/w10_archive_rights_manifest.json` captures all **47** publisher original sentence IDs, original source text IDs, original AES `owner` editor attribution, original pinned Git blob, derived cohort Git blob, `CC-BY-SA-4.0`/`OPEN-SA`, and explicit nonadmission to production training or DATA-008. The original full source's independently computed SHA-256 and source-to-photographic-physical identity are not available in this artifact; they are transparently marked unverified. This test-only licensed editorial data is not represented as a fully item-audited public training corpus.

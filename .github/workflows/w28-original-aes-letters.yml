@@ -1,0 +1,67 @@
+name: W28 Original AES Letters First-use Transfer
+
+# Independently hosted original publisher text-source acquisition and scoring.
+# NEVER publish raw AES German editorial targets or original corpus as artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      exact_head:
+        description: "Exact reviewed Git commit SHA containing W28 source-locked runner"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  original-publisher-transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - name: Validate full SHA and check out exact authored revision
+        env:
+          EXACT_HEAD: ${{ inputs.exact_head }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$EXACT_HEAD" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Expected exact 40-hex SHA"
+            exit 1
+          fi
+      - name: Checkout exact W28 implementation SHA
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.exact_head }}
+          persist-credentials: false
+      - name: Verify actual HEAD and source freeze
+        env:
+          EXACT_HEAD: ${{ inputs.exact_head }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          test -f ling/translation/experiments/W28_PREREG_LETTERS_MEANING_TRANSFER.md
+          test -f ling/translation/w28_letters_first_use.py
+          git log -1 --format='%H %s'
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install project dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Real original publisher transfer isolated stages
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          W28_PRIVATE_DIR="$(mktemp -d)"
+          trap 'rm -rf "$W28_PRIVATE_DIR"' EXIT
+          echo "Publisher original Git blob is frozen before downloading target references."
+          python -m ling.translation.w28_letters_first_use fetch --workdir "$W28_PRIVATE_DIR"
+          echo "Predictor process starts without any reference file path or target labels."
+          python -m ling.translation.w28_letters_first_use predict --workdir "$W28_PRIVATE_DIR"
+          echo "References are read ONLY after fully materialized private predicted outputs."
+          python -m ling.translation.w28_letters_first_use score --workdir "$W28_PRIVATE_DIR"
+          echo "No manuscript pixels, no provider calls, no private raw corpus artifact published."
+      - name: Metadata-only scientific disclaimer
+        run: |
+          echo "Scientific grade: publisher Egyptian transcription -> German editorial diagnostic only."
+          echo "Not original Hieratic pixels, unseen physical witnesses, expert semantic gold, or an accepted 2-point LING-003 milestone."

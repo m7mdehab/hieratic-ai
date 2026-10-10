@@ -1,0 +1,108 @@
+# WAVE 28 — GPT-6 OVERSEER EXECUTION ASSIGNMENT
+## Independent LING-003 translation challenge, EVAL-003 frontier evidence gate and museum-line gold unblock
+
+**PREPARED ONLY; DO NOT RUN UNTIL OWNER SENDS THE W28 NUDGE AFTER FORWARDING AGENT PROMPTS.**
+
+**Owner:** GPT-6 overseer, issue #159, umbrella #156. **Baseline verified main:** 828f7eb09afbb995379b2a97e97d4392b7fe5471, refresh immediately on execution. **Three substantial but independent work packages:** A LING-003, B EVAL-003, C original manuscript expert-gold and rights dossier. They require **separate work branches/PRs** with mutually non-overlapping write scopes. Luna owns DATA-008; Gemini owns VLM-001; do not edit their files or preempt their source-result branch.
+
+**Start conditions:** user has forwarded complete Wave 28 Luna/Gemini assignments and has returned with explicit “Start Wave 28 now” nudge. After that start without asking for a second procedural approval. The wave task itself never authorizes paid provider calls, external outreach, unrestricted use of third-party photo/editorial data, newly unsealed benchmark tests or fake reviewer permission.
+
+### I. Scientific reality and why this is a substantial overseer lane
+
+The project is 34.5/100 verified weighted progress, 18 qualitative research coverage, 65.5 points outstanding. The four active weighted blockers are DATA-008 +3, VLM-001 +2, LING-003 +2 and EVAL-003 +1.5, potential 8.5 total, **not** credibly earned until independently accepted. LING-003 is the most promising directly under overseer control without rights-restricted pixels or paid APIs, but its prior German outputs remain poor and must not be described as fluent translation:
+
+- AES genuine CC BY-SA original editorial Egyptian→German sentence and word glosses, 445 early sentences (444 full translations), expanded 1,156 and 3,925 train, are not image-to-line Hieratic gold. Fourteen identical Egyptian source token sequences cross-source enabled very limited publication-sentence copying, not compositional competence.
+- W9 contextual/TF-IDF training-dev F1 rose 0.15368591→0.24261684 but reserved Tübingen subcorpus fell 0.15275625→0.14259102; 40/247 nonidentical-source target outputs copied whole German sentence strings. That entire W9 test is now exposed forever.
+- W10 preregistered archive 32 sources/47 previously new sentence translations, W11 historic biographies 32 groups/178 references, W12B Amarna 24 groups/163 sentences and 1,649 POS, W13/14 Egyptian-PC UD official development and heldout publication subsets were already examined. Their target labels MUST NOT be reused as previously untouched scoring holdouts.
+- W16 actual TLA 3,606 German complete targets scored **0.01803378 German-word micro-F1** with 7,069/24,437 source word-form attestations. This is genuine negative transfer, not a successful translation gate; these labels are now exposed. Actual physical manuscript witnesses and independent expert semantic quality remain unverified.
+- EVAL-003 learned infrastructure has authentic public HieraticBench pinned 266-item metadata/prompt/scorer contexts, but no separately authorized paid frontier API credentials, no provider original raw response archive and no independent provider model baseline. Its 1.5 points must remain withheld until actual provider inference and compatible paired official scoring.
+- Prior W27 data work produced 24 Tokyo original printed strips with provisional labels (2/8 visual 1NN), DDD 0/159 rights-cleared original photographs; Gemini W27 simulated CI and agent-local claimed 69 CPU calls are not accepted independent papyrus reading metrics.
+
+Your job is to **close the most valuable gates that actual lawful data/compute permit**, not create another architectural PR and claim incremental progress.
+
+### II. Setup, task branches and scoped ownership
+
+Read START_HERE.md, AGENTS.md, PROJECT_STATE.yaml, TASKS.yaml, OVERSEER_HANDOFF.md relevant most recent sections, tasks/LING-003.md, tasks/EVAL-003.md, docs/governance/TASK_WRITE_SCOPES.yaml, docs/governance/DATA_LICENSING_AND_PROVENANCE_POLICY.md, docs/linguistics/TRANSLATION_PROTOCOL.md, docs/evaluation/FRONTIER_BASELINES.md, EVAL-002 source freeze, research R026/R030/R034, issues #136/#145 and W28 master. Directly inspect actual files and provider source terms, not rely on chat claims.
+
+- **Branch A** task/LING-003-w28-compositional-meaning-evidence. Allowed exact paths: tasks/LING-003.md, ling/translation/**, tools/translation_layer.py, tests/linguistics/test_translation_layer.py, docs/linguistics/TRANSLATION_PROTOCOL.md. Do not modify Luna's data files, public benchmark gold, TASKS.yaml or PROJECT_STATE.yaml in this task.
+- **Branch B** task/EVAL-003-w28-frontier-artifact-admission. Allowed exact paths: tasks/EVAL-003.md, eval/baselines/**, docs/evaluation/FRONTIER_BASELINES.md, tests/evaluation/test_frontier_baselines.py, .github/workflows/frontier-baselines.yml. Do not run paid external APIs without new user authorization. Separate PR and CI.
+- **Branch C** overseer/w28-cat1880-line-gold-ready-source-dossier. Research-only under docs/research/** and perhaps an independent issue comment; keep this independent from Luna's ongoing DATA-008 writing. If main changes while agents work, fetch, rebase/reconcile safely and rerun exact-head checks, never rewrite an accepted PR's history.
+- **Canonical score/state changes**: allowed only later via a separate accepted-state PR after genuine independent reviewed scientific milestone; planning docs alone earn 0. No weight changes to create progress. Do not edit/source-hijack other agents' scoped code or add casual global dependencies.
+
+### III. Package A1 — make a genuinely first-seen translation evaluation possible
+
+Before opening ANY newly proposed target-language reference texts, identify one or more **new, previously uninspected** scholarly original corpora or edition branches with complete original Egyptian transliterated source sentences **and** licensed publisher target translations, source IDs, rights and stable source publisher revision. The candidate can be external to AES/TLA if legitimately licensed and appropriate, but English vs German is not interchangeable: declare language and scoring in advance. Prefer physical-manuscript/group/editorial genealogy evidence, authentic language/domain strata, and enough independent contexts to challenge formula copying. Avoid “previously unviewed” assertion if the repository has already accessed the exact target reference or an edition/copy/translation of it. Use a source-index inventory and exact source-revision Git blob or per-file SHA, with a negative overlap table for prior W9–W16 test cohorts. If no untouched, lawful parallel sentence source exists, **do not claim a new unseen external evaluation**; still implement ablation, independent tests and first-class blocker schema while sourcing more original public bibliographic leads.
+
+**Pre-registration is mandatory:** commit a protocol/method/source selection and fixed pass criteria in a *separate initial commit before retrieval of new target reference translations*. It must identify all candidate source IDs and exclusion sets, train/dev/test group semantics, score definitions, model/grammar variant seeds, threshold behavior, decoding and coverage/abstention treatment, fixed baselines, source revisions and exact planned denominator. The user does not want one more "retroactively frozen after result" experiment. Preserve original first-use Git commit time and SHA. Lock source-only Egyptian inputs first, produce predictions without any target/reference German text accessible to the candidate predictor. Keep references independently read-only/latent until irrevocable predictions are archived and SHA-anchored.
+
+### IV. Package A2 — substantive compositional or grammar-conditioned semantic translation
+
+Build a meaningful, from-scratch/frozen train-only **contextual grammar translation mechanism**, not a cosmetic word substitution or nearest German sentence retrieval. Suggested orthogonal alternatives (choose evidence-based reversible paths):
+1. Hierarchical Egyptian morphological/POS candidates from genuine source-form evidence with confidence and missingness; do not supply privileged *target* POS or edit answers.
+2. Predicate–argument / role and local dependency constraints from real publisher Egyptian dependency data where period/genealogy is comparable; prevent copying oracle gold-POS or using official test labels as features.
+3. Clause ordering, pronoun/personal-name handling, tense/aspect/negation/number agreements and unknown forms constrained by independent training text source support; never hallucinate a fluent predicate because source sparse.
+4. Beam/finite-state/structured candidate generation with transparent confidence, alternatives and abstention; validate source-related content words and grammatical function matching. Explicitly show when no unique translator reading can be produced.
+5. A frozen reference retrieval or gloss-sequence negative control, with agreement/coverage matched denominators, formula-leak probes, reversed-context and unknown-token adversarial examples.
+
+Do not train a huge unlicensed translation foundation model. No cost cloud. If a small open-weight language model is genuinely lawful and already available, it may be a **clearly separate experimental variant** only with actual weights, reproducible checkpoint, source-pretraining overlap unknown until independently audited; no fake provider call. Source text in ancient Egyptian editor transliteration is not itself actual image OCR. Fluent-looking strings are not adequate without expert meaning validity.
+
+### V. Package A3 — rigorous first-use results and independent semantic review
+
+Run original fixed train/dev/test and true new external source ID isolation; carefully partition families of copies/translations/editorial editions and physical witnesses where documented. Do not describe 24 AES IDs as 24 independent papyri without verified source objects. Prior W9 Tübingen, W10 archive, W11 biographies, W12B Amarna, W13/14 developer and W16 TLA references have all been exposed; treat them as retrospective regression examples only. Never retrain/refreeze on heldout results and call the next pass unseen.
+
+Diagnostics: source annotation rights and exact bytes; total sentences/references/words by group; grammatical completeness; German chrF, token/micro/macro word F1, named-entity/negation/agreement clause tests, reference-copy rate, source hallucination rate, never-near-train edit distance and calibration/abstention coverage. Avoid hiding low coverage behind “on-scored-only” improvements. Score identical bounded denominator for baselines and candidate, include null/failure, 95% document-clustered bootstrap CI if cohort adequate, results by historical period/editing genre and source authority. Add an actual **manual semantic-review packet** of independently sampled original inputs and model outputs without test reference/hints (expert review pending until authenticated qualified external reader), plus explicit false-positive / contradiction examples. Do not self-appoint as independent Egyptologist or invent certified translation quality. Results will be scientific negatives if necessary; score LING-003 2/2 only if genuinely adequate, robust, independently judged translation and contractual boundaries pass. Else LING-003 0/2, but provide a quantitative path to fixing it.
+
+At least 12 new adversarial regression tests: target reference leakage, unknown/false cognates, formula-copy near-neighbors, source-group contamination, edge word order, negation, pronoun, dates, names, right-to-left edition/tranliteration confusion, dialect/period mismatch, abstention denominator, reproducibility and source license.
+
+### VI. Package B1 — EVAL-003 authentic provider-readiness, not fake zero-cost API inference
+
+Independently inventory exact allowed public HieraticBench cohort, authorized official scorer version, source image rights, official prompt text SHA/model response interface, EVAL-001 diagnostics vs official metrics, frozen public-only item IDs and source-object grouping. Do not open the sealed 2 cases. Define a fully executable, provider-neutral finished baseline artifact admission CLI for independent reviewer inspection of **previously executed, genuine raw responses** from actual named providers, without being able to fake authenticity via a self-asserted JSON flag.
+
+Implement tamper/path/zip-bomb/oversized entries controls; exact original model/provider config and response request ID, provider event metadata/time, raw output byte/content digest, source/image prompt digest and publisher object ID, reason for refusal, missing attempts, retries and duplicates, source-rights compatibility, official score provenance, paired denominators across models and documented confidence intervals where valid. Distinguish cryptographic local file hash **integrity** from provider execution **authenticity** (requires provider attestation/log/independently observable evidence). Support offline fixtures with clear SIMULATED only and tests that refuse a self-labeled “real” stub. No public upload of actual benchmark test answers, raw third-party images or private provider keys.
+
+When no actual approved provider credential/budget exists, do not call commercial GPT/Gemini/Claude, do not assume Free plan website use equates to licensed API and do not claim the user's previous broad project approval authorized monetary spend. Write a concise provider decision matrix: named provider+model IDs, exact public pricing/resources as verifiable, frozen max item calls, retry/spend upper bound, where private key is to be connected by owner using a secrets vault, legal terms and official scorer requirements. If real output archives can be independently identified from a legitimate previous accepted provider experiment, you may verify them read-only; do not invent them. EVAL-003 remains 0/1.5 unless actual valid outputs, independent evaluation and rights/terms fully pass.
+
+### VII. Package B2 — no-spend faithful official source-freeze rehearsal
+
+Implement full expected paired official HieraticBench scoring on **synthetic test doubles only**, with deterministic negative/missing/refusal/invalid-output cases. Verify the pinned 266 public examples and frozen source grader logic **without accessing sealed items or scoring their labels**; do not treat public benchmark cases as train/dev. Test confidence interval and denominator logic across 2–3 fake-model sample archives, detecting mismatched item hashes or incomplete coverage. Bundle a one-shot future approved evaluation runbook with precise no-train data custody, credentials, model revision and per-model capped cost. Preserve a D0/D1/D2 evidence grade output reflecting lack of actual provider inference.
+
+Run all task-specific and full governance suites and a hosted exact-head EVAL baseline CI. If the provider API permission is missing, report **PROVIDER_EXECUTION_NOT_AUTHORIZED** explicitly, not a temporary programming failure.
+
+### VIII. Package C1 — unblock true papyrus line and expert requirements independently
+
+In separate research branch docs/research/**, independently verify primary scholarly original routes for Museo Egizio Cat.1880 p01; archived Pleyte/Rossi vol.2 printed plate PDF 400-page original; TPOP 12 editorial TEXT UNITS (not physical lines); exact accession/photo view and potential counterpart; and known source-file SHA. Create a detailed research-only **first-line identity adjudication matrix** for at most a few candidate lines, recording original photo polygon and historical edition plate numeral/PDF zero-based page number **only if each was truly inspected**, version and rights of each side, orientation/crop and **at least three independently observed common diagnostic strokes** to claim same-line mapping. Otherwise leave line correspondence NULL and mark exact missing research support. No made-up line numbers or “page 41 means plate XXIX” inference.
+
+For all prospective inputs, consult rights on modern editorial transliteration and the licensed status of potentially new reviewer-authored line gold; never treat a CC0 photograph as licensing the TPOP editorial words or the modern translator's text. Different Cat.1880 images = one source. TPOP/DDD overlap positive/unknown basis must preserve public benchmark ancestry quarantine. Do not touch sealed official test. Catalog documented institutional source pages and exact qualified researcher role needed.
+
+Write a complete **external expert gold handoff packet**, including:
+- source/photo/edition evidence with immutable public links and byte hashes;
+- specific first-line uncertainty matrix and screenshot-free polygons/digests where legally possible;
+- proposed two blind independent diplomatic line readings + third adjudicator decision flow, identity/credential verification, adverse disagreements and uncertainty;
+- rights-consent contract covering reviewer-created labels, copies, training/evaluation permissions, potential future public redistribution, edition copyright, permitted use and expiring permission;
+- cold-start outreach email drafted but **NOT SENT** until user expressly authorizes contacting the museum/researcher and approves expenses if any;
+- private record storage and redacted public receipt metadata; no identities or sensitive contacts in public PR;
+- finite blockers requiring museum/index/image access vs external qualified reviewer vs true benchmark ancestry disposition vs release trust root.
+Use issue #136 for status/comment, not to close it merely because a packet is prepared. The aim is to hand the owner an actionable ready-to-send scholarly inquiry rather than repeatedly saying “need an Egyptologist”.
+
+### IX. Operational orchestration with parallel agent work
+
+After the user nudge, independently execute all safe B and A and C subpackages without waiting for Luna/Gemini; their work occurs in parallel. Do not conflict with their task-owned paths. Commit prereg **before unseen targets**, then substantial code/results in a later commit. Use approved GitHub connector for own branches, PRs, hosted workflows and merges. Each task branch must have accepted allowed write scope and exact-head CI; research branch has separate reviewer-controlled merge. If a GitHub Actions PR bot event is held for approval, task-push governance now runs independently. State exact source/hosted CI vs local-only evidence.
+
+Publish three results or document their precise no-op/blocked state; do not return “I planned to do it”. Need independent review of every PR including changed files, tests, original URL/sha/license, authenticity and scientific claim scope. Merge only green and defensible, with latest main reconciliation. Keep an issue-level record on #159 and umbrella #156. Do not move canonical progress by task construction. For any **genuine fully earned new weighted milestone** prepare a separate independent canonical state-acceptance PR, validate TASKS.yaml/PROJECT_STATE.yaml consistency, new numeric current state and citations, and merge only after strict hosted governance. Nonmaterial engineering remains score zero; report coverage separately if entirely new genuine independently accepted research axis without double counting.
+
+### X. Final deliverable/report (do not stop early)
+
+The report must state:
+1. Every overseer branch/PR/merge exact SHA and hosted check links, local vs actual original source checks.
+2. LING-003 precommitted source/holdout, source rights/genre, train/dev/new test denominators, method vs all controls, actual semantic and lexical scores, uncertainty, contamination checks, release/quality limitations and explicit 0/2 vs accepted award with justification.
+3. EVAL-003 provider cost/credential/benchmark gate status, true-original-provider run count, distinct metadata and fake fixtures, raw archive audit results and 0/1.5 vs accepted award.
+4. Cat.1880 physical line correspondence genuine/blocked, exact source/photo/edition anchors, identified qualified external reviewer requirements and **unsent** contact packet, benchmark risk, impact on DATA-008.
+5. At least one honest change that attacks an actual root blocker, not just another dashboard, schema or lint.
+6. Independent review status of Luna DATA-008 and Gemini VLM-001 once they return; whether further engineering revisions are required.
+7. Complete project snapshot: prior/current/remaining verified 100-point progress, P1–P8 phase progress, genuine validated experiments/models count, qualitative research coverage, open blockers, next decisive action, and user approval items ONLY where real external authority/spend is needed.
+
+**Focus on actual translator evidence and independent original corpus/benchmark trust. No fabricated models, no self-certified gold, no old exposed references dressed up as unseen, no denied paid calls, no contacting people without a new authorization, no premature capability points.**
+
+## Nudge to initiate this overseer assignment
+
+**Start Wave 28 now. Execute your full GPT-6 overseer assignment from docs/waves/W28_OVERSEER_GPT6.md on the latest main while Luna and Gemini run their lanes. Complete all independent, lawful, no-cost work in one substantial batch, push separate scoped branches, verify exact-head hosted CI, review/merge eligible changes, and report verified capability-point movement and blockers. Do not wait for further routine approvals.**

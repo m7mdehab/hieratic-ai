@@ -45,3 +45,31 @@ To progress beyond this work, independently resolve printed-facsimile versus und
 ## Citation/credit for original materials
 
 'Hieratische Paläographie' by Georg Möller, original volume scans courtesy Asian Research Library, University of Tokyo (U-PARL). Derived/region-cropped and resized for W27 research; original images not republished. HPDB project by Masakatsu Nagai, Toshihito Waki, Yona Takahashi and Satoru Nakamura. Use both source and provider attribution in any publication.
+
+## Accepted original-pixel research result — exact hosted evidence
+
+The independently hosted research execution at **https://github.com/m7mdehab/hieratic-ai/actions/runs/38073081844** passed on original implementation head **`3a2324cf27e0034a7a280d48d80e42a5cd2fd113`**. Governance at **https://github.com/m7mdehab/hieratic-ai/actions/runs/38073081862** also passed on exactly that head. Implementation PR **#146** merged as **`61d4bba5746b3d1855a50b5258e3143ecf365d36`**. The workflow ran **13 adversarial tests PASS**, then accessed and decoded **24 actual Tokyo IIIF original digitizations**, retained 24 SHA256 input identities without distributing the images, calculated original image features and evaluated a frozen 1NN against a training-label-only majority control.
+
+- Fixed class set: `A1,A2,D1,D2,G1,M12,V1,Z1` (eight original publisher **Main** rows/volume).
+- **16 source strips** in printed volumes I–II gallery; **8 source strips** in printed volume III comparison set; no original print-page group overlap. No manuscript-level holdout assertion.
+- Original-pixel 1NN: **2/8 = 25.00%** diagnostic correctness against catalogue sign labels.
+- Nonvisual training label-prior baseline: **1/8 = 12.50%**.
+- Both denominators are tiny; the +1 sample differential has no accepted statistical claim, expert adjudication, or valid physical support generalization.
+- Artifact ID **11677406912**, original run artifact https://github.com/m7mdehab/hieratic-ai/actions/runs/38073081844/artifacts/11677406912, ZIP SHA256 **`d97142f41ef3ede69436e69692a074e5a8870b779b7bb04a7fba109a7ecd9e74`**, retention 14 days. Source image bytes and independently restricted museum materials remain uncommitted.
+- The original rights-bearing individual University of Tokyo portal records are **Band 1** https://da.dl.itc.u-tokyo.ac.jp/portal/en/assets/4a1fbed0-f2a2-4cf5-8a0a-fa310c62ca50, **Band 2** https://da.dl.itc.u-tokyo.ac.jp/portal/en/assets/56653a59-0d55-4d1a-a7e3-2242e02859a1, and **Band 3** https://da.dl.itc.u-tokyo.ac.jp/portal/assets/8aaa203c-1c5a-4fef-973b-4fb174d60d37. Each links the same original collection image-use policy; these publisher records—not the HPDB metadata-only CC BY claim—ground the original image reuse route.
+
+### Independent scoring conclusion
+
+This is a distinct third quantitative original-source research axis beyond W23 publisher annotation inspection, W24 nonvisual label priors and W25 mere original image brightness/gradient features. It is the **first observed actual image-conditioned label-matching classifier** on genuinely downloaded, original legally reusable historical Hieratic publication image strips in the project. A **+1.0 qualitative research coverage** increase is independently appropriate (**17 → 18**) to reflect this genuinely new empirical modality and explicit source-rights unlock. **No weighted capability points** are earned (**34.5/100**) because the tiny set is only Möller print-volume-disjoint, benchmark ancestry remains unknown, independent palaeographer-adjudicated gold is absent, and this does not meet DATA-008, SPEC or VLM acceptance. Archive metadata alone and toy 1NN accuracy must never be represented as manuscript reading. This source remains **research-only/quarantined** for official benchmark and corpus-admission purposes.
+
+Next actual advance must use independent **physical-manuscript** image+annotation identity, rights/adjudication, explicit benchmark source exclusion and a larger honest heldout denominator. Do not reuse the Tokyo reference-gallery images for any claimed official benchmark evaluation.
+
+### Independent reviewer artifact re-inspection (not inferred from CI pass)
+
+The original hosted artifact ZIP was downloaded again via the GitHub connector, SHA-aligned to **`d97142f41ef3ede69436e69692a074e5a8870b779b7bb04a7fba109a7ecd9e74`** and its embedded original JSON report independently parsed. Exact original JSON bytes SHA256: **`e6c4645ac49e48dc83cf622e62a07677dbbda52ea5cfcbf05ebddd1a299c7219`**.
+
+The private report actually records **24 distinct individual JPEG image SHA256s** across **18 distinct printed-source page proxies** (not 18 different physical manuscripts). All source instances have real decoded dimensions of approximately 1500–1756 pixels wide by 200 pixels high. Every class has exactly two gallery members and one test item; 16 gallery / 8 test, unique source-item IDs and no original print-page proxy overlap. No repeated image-byte hashes were found.
+
+Original test item successes: **A1 item `303009`** (nearest `203007`) and **V1 item `350001`** (nearest `246008`). Other six test labels were misclassified; failure has not been suppressed or removed. The nonvisual majority-class `A1` hit only 1/8. The exploratory difference (two vs one correct) does not establish a reliable gain, much less Hieratic handwriting recognition.
+
+This verification is of the historical printed sign-row visual research report. It cannot identify a real ancient manuscript source, a modern papyrus-photo matching expert reading, or a benchmark-independent heldout handwritten sign dataset.

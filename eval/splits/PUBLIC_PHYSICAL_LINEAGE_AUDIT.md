@@ -15,15 +15,15 @@ python -m eval.splits.public_benchmark_lineage screen --institution "Museo Egizi
 python -m unittest tests.evaluation.test_split_system
 ```
 
-The entire 266-item public metadata register is ingested only after the exact hash/family/field-inventory verification. Deterministic independently replicated public-only exact-inventory diagnostic:
+The entire 266-item public metadata register is ingested only after the exact hash/family/field-inventory verification. Deterministic exact-inventory diagnostic from the **actual Python scanner on GitHub Actions**, after correcting a separate JavaScript cross-check's two-scan-record undercount. All counts are pinned by hosted tests:
 
 | Public metadata metric | Count |
 |---|---:|
 | Total frozen PUBLIC records (150 aku, 16 cbl, 37 met, 61 wm, 2 ypm) | **266** |
-| Public records with an unambiguous currently supported institution+inventory signature | **135** |
-| Distinct supported exact inventory keys, **not proof of physically unique manuscripts** | **90** |
+| Public records with an unambiguous currently supported institution+inventory signature | **137** |
+| Distinct supported exact inventory keys, **not proof of physically unique manuscripts** | **92** |
 | Exact inventory keys repeated across 2+ records | **20** |
-| Public records with unsupported/ambiguous/no inventory key | **131** |
+| Public records with unsupported/ambiguous/no inventory key | **129** |
 | Exact keys spanning different benchmark provider-prefix families in this supported subset | **0** |
 | Official sealed records read or matched | **0** |
 

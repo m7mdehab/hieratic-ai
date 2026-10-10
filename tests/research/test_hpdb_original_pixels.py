@@ -19,7 +19,7 @@ class HPDBOriginalPixelTests(unittest.TestCase):
 
     def test_preregistered_cohort_identity(self):
         self.assertEqual(24, len(self.cohort))
-        self.assertEqual({"D50", "M12", "V1", "Z1"}, {i["label"] for i in self.cohort})
+        self.assertEqual({"A1", "A2", "D1", "D2", "G1", "M12", "V1", "Z1"}, {i["label"] for i in self.cohort})
         self.assertEqual(16, sum(i["role"] == "train" for i in self.cohort))
         self.assertEqual(8, sum(i["role"] == "test" for i in self.cohort))
 
@@ -94,13 +94,12 @@ class HPDBOriginalPixelTests(unittest.TestCase):
                 "item_id": str(i), "role": role, "label": label,
                 "features": (scalar,) * 128, "source_proxy": f"G-{i}",
             }
-        train = [row(i, "train", label, idx / 4) for idx, label in enumerate(m.LABELS)
-                 for i in range(idx * 4, idx * 4 + 4)]
-        test = [row(100 + i, "test", label, idx / 4) for idx, label in enumerate(m.LABELS)
-                for i in range(idx * 2, idx * 2 + 2)]
+        train = [row(idx * 2 + i, "train", label, idx / 8) for idx, label in enumerate(m.LABELS)
+                 for i in range(2)]
+        test = [row(100 + idx, "test", label, idx / 8) for idx, label in enumerate(m.LABELS)]
         scored = m.evaluate(train + test)
         self.assertEqual(8, scored["visual_1nn_correct"])
-        self.assertEqual(2, scored["nonvisual_prior_correct"])
+        self.assertEqual(1, scored["nonvisual_prior_correct"])
         self.assertEqual(8, len(scored["predictions"]))
 
     def test_positive_source_claims_not_hardcoded_to_fixtures(self):

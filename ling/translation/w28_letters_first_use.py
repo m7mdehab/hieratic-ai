@@ -219,7 +219,7 @@ def predict_frozen(inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         raise TranslationError("Frozen target group count not 32")
     if any(r["text_id"] in indexed for r in projected):
         raise TranslationError("Heldout text source collision with train")
-    old_reserved = bundle["prior_heldout_text_ids"] | bundle["test_text_ids"]
+    old_reserved = set(bundle["prior_heldout_text_ids"]) | set(bundle["test_text_ids"])
     if any(r["text_id"] in old_reserved for r in projected):
         raise TranslationError("Target matches a previously exposed source group")
     baseline = contextual.TranslationMemory(train)

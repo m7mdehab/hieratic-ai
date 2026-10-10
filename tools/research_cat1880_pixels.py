@@ -44,7 +44,7 @@ def metrics(gray:Image.Image)->dict:
     a=np.asarray(gray,dtype=np.uint8)
     threshold=otsu(a)
     if a.size<100:raise ValueError("invalid metric image")
-    candidate=a<threshold
+    candidate=(a<=threshold) if threshold>0 else (a<0)
     # Mask is *dark pixels*, not reliably classified Egyptian ink.
     h,w=a.shape
     byrow=np.mean(candidate,axis=1)

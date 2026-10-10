@@ -745,6 +745,11 @@ class OpenWeightVLMAdapter(BaseVLMAdapter):
                 "do_sample": False,
                 "temperature": 0.0,
             }
+            if "eos_token_id" in self.model_config:
+                gen_kwargs["eos_token_id"] = self.model_config["eos_token_id"]
+            elif hasattr(self, "get_eos_token_ids"):
+                gen_kwargs["eos_token_id"] = self.get_eos_token_ids()
+
             if "stop_sequences" in self.model_config:
                 gen_kwargs["stop_strings"] = self.model_config["stop_sequences"]
 
@@ -956,6 +961,10 @@ class SmolVLMAdapter(OpenWeightVLMAdapter):
     min_transformers_version = "4.46.0"
     min_torch_version = "2.4.0"
     runtime_verification = "cpu_lightweight_open_weight_verified"
+
+    def get_eos_token_ids(self) -> list[int]:
+        """Official Idefics3 / SmolVLM end-of-utterance and text EOS token IDs."""
+        return [2, 49279]
 
     def format_multimodal_inputs(
         self,

@@ -610,6 +610,8 @@ def main(argv: list[str] | None = None) -> int:
     p_sign.add_argument("--output", type=Path, default=None, help="Path to write structured sign replay report JSON")
     p_sign.add_argument("--allow-simulated", action="store_true", help="Allow simulated mock adapter execution in test/CI environments")
     p_sign.add_argument("--no-network", action="store_true", help="Enforce zero network calls; all media must be cached locally")
+    p_sign.add_argument("--protocol", type=str, choices=["w20", "w27"], default="w20", help="Protocol version to execute ('w20' for historical 46-attempt receipt, 'w27' for prospective 3-prompt 69-attempt protocol)")
+    p_sign.add_argument("--ledger-path", type=Path, default=None, help="Path for durable append-only write-ahead ledger JSONL (W27 only)")
 
     args = parser.parse_args(argv)
 

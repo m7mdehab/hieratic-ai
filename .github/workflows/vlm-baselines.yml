@@ -145,6 +145,17 @@ jobs:
             --output "$SIGN_REPLAY_REPORT_PATH"
           python -c 'import json,os; r=json.load(open(os.environ["SIGN_REPLAY_REPORT_PATH"],encoding="utf-8")); assert r["doc_type"]=="vlm_sign_replay_report" and r["scientific_capability_points"]==0.0 and r["hieratic_reading_claim"] is False and r["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluation"]["status"]=="STRICTLY_NO" and r["evidence_grades"]["grade_d_actual_sign_media_passes"]["status"]=="SIMULATED_TEST_DOUBLE" and r["attempt_counts"]["total_attempts_recorded"]==46 and r["attempt_counts"]["successful_actual_passes"]==46 and r["paired_scan_comparisons"]["matched_pairs_evaluated"]==5 and r["derivative_outline_analysis"]["outlines_evaluated"]==2 and r["support_level_analysis"]["unique_physical_witnesses_count"]==6, "Sign replay report failed governance assertions"'
 
+      - name: Verify prospective W27 sign replay experiment diagnostic with simulated double
+        env:
+          SIGN_REPLAY_W27_REPORT_PATH: ${{ runner.temp }}/vlm_sign_replay_w27_report.json
+        run: |
+          python -m tools.vlm_baselines sign-replay \
+            --model smolvlm-256m-instruct \
+            --protocol w27 \
+            --allow-simulated \
+            --output "$SIGN_REPLAY_W27_REPORT_PATH"
+          python -c 'import json,os; r=json.load(open(os.environ["SIGN_REPLAY_W27_REPORT_PATH"],encoding="utf-8")); assert r["doc_type"]=="vlm_sign_replay_report" and r["protocol"]["protocol_version"]=="3.0.0" and r["scientific_capability_points"]==0.0 and r["hieratic_reading_claim"] is False and r["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluation"]["status"]=="STRICTLY_NO" and r["evidence_grades"]["grade_d_actual_sign_media_passes"]["status"]=="SIMULATED_TEST_DOUBLE" and r["attempt_counts"]["total_attempts_recorded"]==69 and r["attempt_counts"]["successful_actual_passes"]==69 and r["attempt_counts"]["by_prompt_variant"]["blind"]==23 and r["attempt_counts"]["by_prompt_variant"]["script_aware"]==23 and r["attempt_counts"]["by_prompt_variant"]["leading"]==23 and r["paired_scan_comparisons"]["matched_pairs_evaluated"]==5 and r["derivative_outline_analysis"]["outlines_evaluated"]==2 and r["support_level_analysis"]["unique_physical_witnesses_count"]==6, "W27 sign replay report failed governance assertions"'
+
       - name: Run VLM baseline unit and negative tests
         run: python -m unittest tests/evaluation/test_vlm_baselines.py -v
 

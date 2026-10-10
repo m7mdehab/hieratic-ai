@@ -3,11 +3,15 @@ name: W28 Original AES Letters First-use Transfer
 # Independently hosted original publisher text-source acquisition and scoring.
 # NEVER publish raw AES German editorial targets or original corpus as artifact.
 on:
+  push:
+    branches: [main]
+    paths:
+      - "ling/translation/w28_letters_first_use.py"
   workflow_dispatch:
     inputs:
       exact_head:
-        description: "Exact reviewed Git commit SHA containing W28 source-locked runner"
-        required: true
+        description: "Optional exact 40-hex commit SHA for reviewer-requested replay"
+        required: false
         type: string
 
 permissions:
@@ -20,7 +24,7 @@ jobs:
     steps:
       - name: Validate full SHA and check out exact authored revision
         env:
-          EXACT_HEAD: ${{ inputs.exact_head }}
+          EXACT_HEAD: ${{ inputs.exact_head || github.sha }}
         run: |
           set -euo pipefail
           if ! [[ "$EXACT_HEAD" =~ ^[a-f0-9]{40}$ ]]; then
@@ -30,7 +34,7 @@ jobs:
       - name: Checkout exact W28 implementation SHA
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.exact_head }}
+          ref: ${{ inputs.exact_head || github.sha }}
           persist-credentials: false
       - name: Verify actual HEAD and source freeze
         env:

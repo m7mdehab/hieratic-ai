@@ -2381,6 +2381,13 @@ class VLMBaselinesTests(unittest.TestCase):
                     if a["target_or_control_id"] == "control_manuscript_photo_positive"]
         self.assertEqual(2,len(identity))
         self.assertEqual(2,len(positive))
+        # Preserve the W20 regression: its simulated controls must never be
+        # misrepresented as genuine original museum photo evidence.
+        self.assertTrue(all(a["physical_witness"] == "synthetic_control"
+                            for a in identity + positive))
+        self.assertTrue(all(a["source_raw_sha256"] == a["stimulus_sha256"]
+                            for a in identity + positive))
+
     def test_w27_domain_words_absent_in_blind_prompt(self) -> None:
         """Verify domain-blind prompt does not contain Egyptian, hieratic, or sign labels."""
         from eval.vlm.signs import (
@@ -2588,6 +2595,89 @@ class VLMBaselinesTests(unittest.TestCase):
             with self.assertRaises(LedgerAccountingError):
                 ledger2.audit_accounting(planned_count=1)
             ledger2.close()
+
+    def test_w27_crash_resume_fails_closed_without_duplicating_an_attempt(self) -> None:
+        """A durable in-flight dispatch must never be sent twice on resume."""
+        from eval.vlm.ledger import (
+            DurableAttemptLedger, LedgerDuplicateAttemptError,
+            LedgerIntegrityError, verify_ledger_file_integrity,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "interrupted_w27.jsonl"
+            props = dict(ledger_path=file, run_id="w27_replay_20261010_120000",
+                         protocol_fingerprint="frozen_w27_test_protocol")
+            with DurableAttemptLedger(**props) as first:
+                first.record_dispatch(
+                    attempt_id="w27_000",
+                    attempt_index=0,
+                    target_or_control_id="sign_6036",
+                    physical_witness="Petrie",
+                    source_raw_sha256="source_hash",
+                    stimulus_sha256="image_hash",
+                    stimulus_dimensions=[256, 256],
+                    task="signs",
+                    rung="signs",
+                    prompt_variant="blind",
+                    prompt_text="Describe visible marks.",
+                    prompt_sha256="prompt_hash",
+                    model_id="smolvlm-256m",
+                    model_revision="pinned",
+                    model_weight_sha256="weight_hash",
+                    decoding_parameters={"temperature": 0},
+                )
+            self.assertFalse(verify_ledger_file_integrity(file)["valid"])
+            with DurableAttemptLedger(**props) as recovered:
+                self.assertEqual(["w27_000"], recovered.resolve_interrupted_attempts())
+                summary = recovered.audit_accounting(planned_count=1)
+                self.assertEqual(summary["failed_attempts"], 1)
+                self.assertEqual(summary["successful_actual_passes"], 0)
+                self.assertTrue(recovered.is_attempt_completed("w27_000"))
+                with self.assertRaises(LedgerDuplicateAttemptError):
+                    recovered.record_dispatch(
+                        attempt_id="w27_000",
+                        attempt_index=0,
+                        target_or_control_id="sign_6036",
+                        physical_witness="Petrie",
+                        source_raw_sha256="source_hash",
+                        stimulus_sha256="image_hash",
+                        stimulus_dimensions=[256, 256],
+                        task="signs", rung="signs", prompt_variant="blind",
+                        prompt_text="Describe visible marks.", prompt_sha256="prompt_hash",
+                        model_id="smolvlm-256m", model_revision="pinned",
+                        model_weight_sha256="weight_hash", decoding_parameters={},
+                    )
+            receipt = verify_ledger_file_integrity(file)
+            self.assertTrue(receipt["valid"], receipt["errors"])
+            self.assertEqual(1, receipt["dispatches_count"])
+            self.assertEqual(1, receipt["completions_count"])
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(file, "different_run_id", props["protocol_fingerprint"])
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(file, props["run_id"], "different_protocol")
+
+    def test_w27_load_rejects_duplicate_or_modified_completed_events(self) -> None:
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerIntegrityError
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "attempts.jsonl"
+            with DurableAttemptLedger(path, "w27_replay_abc", "fp") as ledger:
+                ledger.record_dispatch(
+                    attempt_id="one", attempt_index=0,
+                    target_or_control_id="blank", physical_witness="synthetic_control",
+                    source_raw_sha256="src", stimulus_sha256="raster",
+                    stimulus_dimensions=[256, 256], task="identify", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe.",
+                    prompt_sha256="ph", model_id="mock", model_revision="rev",
+                    model_weight_sha256="none", decoding_parameters={})
+                ledger.record_completion(attempt_id="one", status="success",
+                                         output_text="some response")
+            original = path.read_text(encoding="utf-8")
+            first_line = original.splitlines()[0]
+            path.write_text(original + first_line + "\n", encoding="utf-8")
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(path, "w27_replay_abc", "fp")
+            path.write_text(original.replace("some response", "tampered answer"), encoding="utf-8")
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(path, "w27_replay_abc", "fp")
 
     def test_w27_durable_ledger_corruption_detection(self) -> None:
         """Verify that tampered output hash is caught by integrity audit."""

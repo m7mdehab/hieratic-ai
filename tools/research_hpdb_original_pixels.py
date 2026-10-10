@@ -116,7 +116,7 @@ def fetch_original(url: str, opener=None) -> bytes:
             data = reply.read(MAX_IMAGE_BYTES + 1)
     except (HTTPError, URLError, TimeoutError) as exc:
         raise SourceError(f"Authentic IIIF retrieval blocked: {type(exc).__name__} {str(exc)[:120]}") from exc
-    if not 128 <= len(data) <= MAX_IMAGE_BYTES or not data.startswith(b"\\xff\\xd8"):
+    if not 128 <= len(data) <= MAX_IMAGE_BYTES or not data.startswith(bytes((255, 216))):
         raise SourceError("Original image bytes missing, oversized or not JPEG")
     return data
 
@@ -211,7 +211,7 @@ def main(argv=None) -> int:
         p.error("output exists; refusing overwrite")
     report = run()
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + chr(10), encoding="utf-8")
     print(json.dumps({k: report["result"][k] for k in ("training_samples", "test_samples", "visual_1nn_correct", "nonvisual_prior_correct")}, sort_keys=True))
     return 0
 

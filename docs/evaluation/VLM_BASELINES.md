@@ -630,7 +630,7 @@ Executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA GPUs, float32, $0.0
   - Breakdown by prompt variant: 29 neutral, 6 leading ablation.
 
 #### Key Findings:
-1. **Decisive Prompt Priming Falsification:**
+1. **Prompt-Cue Ablation (Exploratory Evidence Only):**
    - **Under Leading Prompts:** When primed with "ancient Egyptian manuscript" and "Hieratic", SmolVLM-256M claimed "Hieratic" or "ancient Egyptian ink strokes" on **100% of controls**:
      - Blank canvas: claimed *"The visible ink strokes in this ancient Egyptian manuscript image are likely hieroglyphics..."* (`blank_leading_claims_script: True`).
      - Scrambled tiles: claimed `"Hieratic."` (`scrambled_leading_claims_script: True`).
@@ -770,7 +770,7 @@ Executed on host CPU (AMD Ryzen 5 5500U, 7.38 GB RAM, 0 CUDA devices, $0.00 spen
 ### 13.1 Scientific Motivation & Deficiency Corrections
 Wave 27 corrects all material scientific and engineering deficiencies identified in Wave 20 (Issue #145):
 1. **Replacement of Domain-Cued Prompt with Genuinely Domain-Blind Prompt:**
-   The Wave 20 "neutral" prompt explicitly cued the model with *"ancient Egyptian script sign"* and *"hieratic sign"*, creating strong lexical bias that caused the model to classify blank canvases as Egyptian writing. Wave 27 freezes a strictly **domain-blind visual prompt** containing zero domain keywords or sign labels.
+   The Wave 20 "neutral" prompt explicitly cued the model with *"ancient Egyptian script sign"* and *"hieratic sign"*, creating a serious prompt-cue confound in the blank-canvas outputs; causal attribution requires controlled repetition. Wave 27 freezes a strictly **domain-blind visual prompt** containing zero domain keywords or sign labels.
 2. **Durable, Append-Only Write-Ahead Ledger (`eval/vlm/ledger.py`):**
    Wave 20 tracked attempts only in volatile process memory before writing a monolithic output JSON at process termination. Wave 27 implements `DurableAttemptLedger` with mandatory write-ahead dispatch logging (`dispatched`), completion logging (`succeeded` / `failed`), and immediate `os.fsync` disk commits, guaranteeing fault tolerance, crash recovery, and prevention of silent attempt loss.
 3. **Rigorous Control Physical Attribution & Scrambled Sign Correction:**
@@ -807,10 +807,10 @@ Wave 27 evaluates all 15 authentic media items and 8 controls under three distin
 - **Write-Ahead Logging Discipline:** Every attempt is recorded with `status: "dispatched"` before the model forward pass is issued. Upon completion, raw output, output SHA-256, token counts, and latency are committed with `os.fsync`.
 
 ### 13.4 Scientific Findings & Visual Sensitivity Analysis
-1. **Elimination of False Positive Script Hallucinations under Domain-Blind Prompt:**
+1. **Prompt-Sensitive Blank-Control Response in Local W27 Run:**
    - Under the genuine domain-blind prompt, SmolVLM-256M outputs:
      `"The image contains a white background with no discernible objects or markings."`
-   - This decisively confirms that the model does NOT hallucinate Egyptian writing when domain cues are absent, proving that Wave 20's blank-canvas "script detections" were entirely artifacts of prompt cueing.
+   - The locally reported negative response is consistent with prompt sensitivity on this one frozen blank-control condition. It does not establish the source of every W20 hallucination, prove immunity under other images or prompts, or independently verify the local model invocation.
 2. **Failure of Visual Script Identification on Authentic Signs without Leading Prompts:**
    - When presented with authentic Hieratic sign vector facsimiles (e.g. Sign 6036) under the domain-blind prompt, the model outputs mathematical LaTeX symbols (`"\\mathbb{I}"`) rather than identifying ancient writing.
    - Without leading prompts, the model fails to discriminate authentic Hieratic characters from generic typographical or symbolic glyphs.

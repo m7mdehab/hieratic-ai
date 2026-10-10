@@ -20,8 +20,8 @@ from urllib.error import HTTPError, URLError
 
 ROOT = Path(__file__).resolve().parents[1]
 META = ROOT / "data" / "references" / "hpdb"
-LABELS = ("D50", "M12", "V1", "Z1")  # fixed before outcome observation
-ITEMS_PER_LABEL_PER_VOLUME = 2
+LABELS = ("A1", "A2", "D1", "D2", "G1", "M12", "V1", "Z1")  # frozen before pixels
+ITEMS_PER_LABEL_PER_VOLUME = 1
 VOLUMES_TRAIN = (1, 2)
 VOLUME_TEST = 3
 SOURCE_HOST = "iiif.dl.itc.u-tokyo.ac.jp"

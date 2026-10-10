@@ -76,6 +76,9 @@ class DurableAttemptLedger:
 
         # Load existing records if file exists (enables crash recovery & resume)
         if self.ledger_path.is_file():
+            audit = verify_ledger_file_integrity(self.ledger_path, allow_incomplete=True)
+            if not audit["valid"]:
+                raise LedgerIntegrityError("Existing attempt ledger failed verification: " + "; ".join(audit["errors"][:4]))
             self._load_existing_records()
 
         self._file_handle = None
@@ -98,6 +101,10 @@ class DurableAttemptLedger:
 
                 rec_type = record.get("record_type")
                 att_id = record.get("attempt_id")
+                if record.get("run_id") != self.run_id:
+                    raise LedgerIntegrityError(f"Run ID mismatch at ledger line {line_no}")
+                if rec_type in ("dispatch", "skip") and record.get("protocol_fingerprint") != self.protocol_fingerprint:
+                    raise LedgerIntegrityError(f"Protocol fingerprint mismatch at ledger line {line_no}")
                 if not att_id:
                     raise LedgerIntegrityError(f"Missing attempt_id at line {line_no}")
 
@@ -178,9 +185,9 @@ class DurableAttemptLedger:
         attempt_category: str = "media",
     ) -> dict[str, Any]:
         """Write-ahead log an attempt before dispatching to model."""
-        if attempt_id in self._completions:
+        if attempt_id in self._dispatches or attempt_id in self._skips:
             raise LedgerDuplicateAttemptError(
-                f"Attempt ID '{attempt_id}' already completed; duplicate dispatch refused"
+                f"Attempt ID '{attempt_id}' already dispatched or skipped; reuse is forbidden"
             )
 
         dispatch_record = {
@@ -208,11 +215,10 @@ class DurableAttemptLedger:
             "dispatched_at": iso_utc_now(),
         }
 
-        self._dispatches[attempt_id] = dispatch_record
-        if attempt_id not in self._attempt_order:
-            self._attempt_order.append(attempt_id)
-
+        # Disk must be durable before memory claims an attempt was dispatched.
         self._write_record(dispatch_record)
+        self._dispatches[attempt_id] = dispatch_record
+        self._attempt_order.append(attempt_id)
         return dispatch_record
 
     def record_completion(
@@ -253,11 +259,11 @@ class DurableAttemptLedger:
             "retry_lineage": retry_lineage or [],
         }
 
+        # Never mark complete in memory until the completion event is fsynced.
+        self._write_record(completion_record)
         self._completions[attempt_id] = completion_record
         finalized = self._merge_attempt(self._dispatches[attempt_id], completion_record)
         self._finalized_attempts[attempt_id] = finalized
-
-        self._write_record(completion_record)
         return finalized
 
     def record_skip(
@@ -285,13 +291,32 @@ class DurableAttemptLedger:
             "metadata": metadata or {},
         }
 
-        self._skips[attempt_id] = skip_record
-        if attempt_id not in self._attempt_order:
-            self._attempt_order.append(attempt_id)
-        self._finalized_attempts[attempt_id] = skip_record
-
         self._write_record(skip_record)
+        self._skips[attempt_id] = skip_record
+        self._attempt_order.append(attempt_id)
+        self._finalized_attempts[attempt_id] = skip_record
         return skip_record
+
+    def resolve_interrupted_attempts(self) -> list[str]:
+        """Conservatively finalize orphan dispatches as failures, never silently rerun them.
+
+        A process may have sent the call but lost its output before fsync, so
+        recovered attempts are explicitly UNKNOWN_OUTCOME failures. Resume
+        proceeds with other frozen IDs, without modifying previous events.
+        """
+        unresolved = [
+            aid for aid in self._attempt_order
+            if aid in self._dispatches and aid not in self._completions
+        ]
+        for attempt_id in unresolved:
+            self.record_completion(
+                attempt_id=attempt_id,
+                status="failed",
+                output_text="",
+                error_message="Interrupted after durable dispatch; model execution outcome unknown",
+                error_category="interrupted_unknown_outcome",
+            )
+        return unresolved
 
     def audit_accounting(self, planned_count: int) -> dict[str, int]:
         """Verify the mandatory accounting equations:
@@ -352,7 +377,7 @@ class DurableAttemptLedger:
         self.close()
 
 
-def verify_ledger_file_integrity(ledger_path: Path | str) -> dict[str, Any]:
+def verify_ledger_file_integrity(ledger_path: Path | str, *, allow_incomplete: bool = False) -> dict[str, Any]:
     """Audit ledger file for tampering, truncation, invalid JSON, or broken hashes."""
     p = Path(ledger_path).resolve()
     if not p.is_file():
@@ -362,6 +387,8 @@ def verify_ledger_file_integrity(ledger_path: Path | str) -> dict[str, Any]:
     dispatches: dict[str, dict[str, Any]] = {}
     completions: dict[str, dict[str, Any]] = {}
     skips: dict[str, dict[str, Any]] = {}
+    expected_run_id: str | None = None
+    expected_fingerprint: str | None = None
 
     with open(p, "r", encoding="utf-8") as f:
         for idx, line in enumerate(f, 1):
@@ -376,14 +403,28 @@ def verify_ledger_file_integrity(ledger_path: Path | str) -> dict[str, Any]:
 
             rec_type = rec.get("record_type")
             att_id = rec.get("attempt_id")
+            if not isinstance(rec.get("run_id"), str) or not rec.get("run_id"):
+                errors.append(f"Line {idx}: Missing run identity")
+            elif expected_run_id is None:
+                expected_run_id = rec["run_id"]
+            elif rec["run_id"] != expected_run_id:
+                errors.append(f"Line {idx}: Run identity changed within ledger")
+            if rec_type in ("dispatch", "skip"):
+                fp = rec.get("protocol_fingerprint")
+                if not isinstance(fp, str) or not fp:
+                    errors.append(f"Line {idx}: Missing protocol fingerprint")
+                elif expected_fingerprint is None:
+                    expected_fingerprint = fp
+                elif fp != expected_fingerprint:
+                    errors.append(f"Line {idx}: Mixed protocol fingerprints")
 
             if not att_id:
                 errors.append(f"Line {idx}: Missing attempt_id")
                 continue
 
             if rec_type == "dispatch":
-                if att_id in dispatches:
-                    errors.append(f"Line {idx}: Duplicate dispatch for attempt '{att_id}'")
+                if att_id in dispatches or att_id in skips:
+                    errors.append(f"Line {idx}: Duplicate/conflicting dispatch for attempt '{att_id}'")
                 dispatches[att_id] = rec
             elif rec_type == "completion":
                 if att_id not in dispatches:
@@ -408,9 +449,10 @@ def verify_ledger_file_integrity(ledger_path: Path | str) -> dict[str, Any]:
                 errors.append(f"Line {idx}: Unknown record_type '{rec_type}'")
 
     # Check for incomplete dispatches
-    for d_id in dispatches:
-        if d_id not in completions:
-            errors.append(f"Unfinished attempt: dispatch '{d_id}' has no matching completion record")
+    if not allow_incomplete:
+        for d_id in dispatches:
+            if d_id not in completions:
+                errors.append(f"Unfinished attempt: dispatch '{d_id}' has no matching completion record")
 
     return {
         "valid": len(errors) == 0,

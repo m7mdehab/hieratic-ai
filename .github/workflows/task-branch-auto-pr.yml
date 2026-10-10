@@ -1,0 +1,62 @@
+name: Task Branch Auto PR
+
+# A task agent only needs working native Git credentials to push. Once pushed,
+# GitHub's own token creates the review PR, without requiring 'gh auth login'
+# on a local Windows/Codex/Anti-Gravity host.
+on:
+  push:
+    branches:
+      - 'task/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: task-auto-pr-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  open-or-find:
+    name: Open review PR for published task branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check remote head and create PR only if absent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.ref_name }}
+          HEAD_SHA: ${{ github.sha }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$HEAD_REF" in
+            task/*) ;;
+            *) echo "::error::Unexpected branch namespace"; exit 1 ;;
+          esac
+
+          actual="$(gh api "repos/$GH_REPO/git/ref/heads/$HEAD_REF" --jq '.object.sha')"
+          if [ "$actual" != "$HEAD_SHA" ]; then
+            echo "Newer commit already on branch ($actual); let that push's run open the PR."
+            exit 0
+          fi
+
+          existing="$(gh api -X GET "repos/$GH_REPO/pulls" \
+            -f state=open -f head="$REPO_OWNER:$HEAD_REF" \
+            --jq '[.[].number] | first // empty')"
+          if [ -n "$existing" ]; then
+            echo "PR #$existing already exists for $HEAD_REF."
+            exit 0
+          fi
+
+          echo "No open PR for $HEAD_REF: creating initial review request."
+          gh api -X POST "repos/$GH_REPO/pulls" \
+            -f title="Review: $HEAD_REF" \
+            -f head="$HEAD_REF" \
+            -f base=main \
+            -f body="Automatically created from published task branch at exact SHA \`$HEAD_SHA\`. The execution agent must supply the scoped acceptance/evidence description and hosted CI receipts. Independent overseer review and merge required. No task completion, data rights, model performance, or capability points are implied." \
+            --jq '{number: .number, url: .html_url}'
+
+          echo "Task branch publication -> PR creation completed."

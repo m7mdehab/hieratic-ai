@@ -1,0 +1,61 @@
+{
+  "schema_version": "w28-data008-candidate-study/1.0.0",
+  "study_id": "W28-DATA-008-ORIGINAL-MANUSCRIPT-COHORT",
+  "state": "PREREGISTERED_BEFORE_NEW_IMAGE_OR_LABEL_RETRIEVAL",
+  "base_commit": "9de75ffe6c323e80fca9cc062645582e92d66362",
+  "branch": "task/DATA-008-w28-original-manuscript-cohort",
+  "spend_ceiling_usd": 0,
+  "outbound_contact_authorized": false,
+  "selection_version": "w28-candidates-v1",
+  "fixed_population": {
+    "ddd": {
+      "publisher": "Diagnostic Deir el-Medina Dataset",
+      "record_url": "https://zenodo.org/records/20553713",
+      "doi": "10.5281/zenodo.20553713",
+      "image_metadata_file": "papyri.json",
+      "image_metadata_sha256": "33265df94656e79a27c1c158756f0a2479173d00184c5212159ec1bb8414eb62",
+      "image_count": 159,
+      "physical_support_count": 50,
+      "annotation_count": 17885,
+      "class_count": 504,
+      "selection_rule": "Exhaustively include every key of the exact hash-pinned publisher papyri.json image map; do not select by label, visual appearance, performance, or rights outcome.",
+      "label_metadata_sha256": {
+        "samples.json": "763944b29e06643131fa9fdbd14a2b169afe5961df80394fecfd152203584e46",
+        "classes.json": "5ff0181de57e1018058ba53e8e436e6e67a19fca290568ed0f9ea341af7afe18"
+      },
+      "published_split_file": "https://zenodo.org/records/20553713/files/Readme%20-%20Splits.txt?download=1",
+      "published_split_to_reproduce": "C-B",
+      "project_diagnostic_split": "W24 35/7/8 physical supports; 15426/893/1566 metadata annotations, historical metadata-only comparison"
+    },
+    "turin_photo_candidates": [
+      {"candidate_id":"TURIN-CAT1880-P01","accession":"Cat.1880","support_group":"MUSEO-EGIZIO:CAT-1880","role":"original photographed papyrus face/view","source":"https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p01.jpg","annotation_route":"TPOP document 131; no exact image-line binding established"},
+      {"candidate_id":"TURIN-CAT1880-P02","accession":"Cat.1880","support_group":"MUSEO-EGIZIO:CAT-1880","role":"same physical papyrus alternate face/view","source":"https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p02.jpg","annotation_route":"TPOP document 131; no exact image-line binding established"},
+      {"candidate_id":"TURIN-CAT2044-013-P01","accession":"Cat.2044/013","support_group":"MUSEO-EGIZIO:CAT-2044/013","role":"original photographed papyrus; side/text-zone unresolved","source":"https://collezioni.museoegizio.it/en-GB/material/Cat_2044_013/","annotation_route":"TPOP document 173; preserve museum/TPOP Ramesses VI/V attribution conflict"},
+      {"candidate_id":"TURIN-S6759-ORACLE-TIFF","accession":"S.6759","support_group":"MUSEO-EGIZIO:S6759","role":"Hieratic oracular ostracon photograph","source":"https://commons.wikimedia.org/wiki/File:Ostracon_ieratico_con_un_testo_oracolare_SA63451.tif","identity_verification":"https://collezioni.museoegizio.it/en-GB/material/S_6759","identity_title":"Hieratic ostracon with an oracular text","annotation_route":"no rights-cleared exact line text or independent gold established"},
+      {"candidate_id":"TURIN-CAT2169-P01-TIFF","accession":"Cat.2169","support_group":"MUSEO-EGIZIO:CAT-2169","role":"hieratic inventory/monogram control; not a line-reading target","source":"https://collezioni.museoegizio.it/en-GB/material/Cat_2169/","annotation_route":"inventory/monogram image control only"}
+    ],
+    "official_portal_routes": [
+      {"candidate_id":"TPOP-2044-013","url":"https://collezionepapiri.museoegizio.it/en-GB/document/173/","selection_basis":"exact accession candidate; fixed before pixel or label retrieval"},
+      {"candidate_id":"TPOP-1896","url":"https://collezionepapiri.museoegizio.it/en-GB/document/259/","selection_basis":"R020 finite candidate roster"},
+      {"candidate_id":"TPOP-1971","url":"https://collezionepapiri.museoegizio.it/en-GB/document/216/","selection_basis":"R020 finite candidate roster"},
+      {"candidate_id":"TPOP-1966","url":"https://collezionepapiri.museoegizio.it/en-GB/document/250/","selection_basis":"R020 finite candidate roster; joined fragments remain one support complex"},
+      {"candidate_id":"TPOP-2021","url":"https://collezionepapiri.museoegizio.it/en-GB/document/511/","selection_basis":"R020 finite candidate roster"},
+      {"candidate_id":"TPOP-NECROPOLIS-5","url":"https://collezionepapiri.museoegizio.it/en-GB/document/5/","selection_basis":"R020 finite candidate roster; joined fragments remain one support complex"},
+      {"candidate_id":"TPOP-1880","url":"https://collezionepapiri.museoegizio.it/en-GB/document/131/","selection_basis":"known printed-edition/benchmark contamination hazard"}
+    ],
+    "comparison_only": ["AKU-PAL publisher sign media", "Tokyo IIIF Möller printed-book sign strips", "historical printed plates and facsimiles"],
+    "excluded_sources": ["all benchmark/evaluator-only sources", "unknown-rights assets", "all DDD original photos until per-image permission and exact byte/crop binding" ]
+  },
+  "frozen_admission_rules": {
+    "intended_uses": ["noncommercial research diagnostic", "local feature extraction", "training only after exact image rights and annotation rights are independently established", "evaluation only after source-lineage and benchmark independence review"],
+    "photo_and_annotation_rights_are_separate": true,
+    "physical_support_is_partition_unit": true,
+    "positive_exact_benchmark_match": "QUARANTINE",
+    "no_literal_benchmark_match": "UNKNOWN_QUARANTINE",
+    "source_book_or_edition_ancestry_unknown": "UNKNOWN_QUARANTINE",
+    "publisher_labels_are_independent_gold": false,
+    "no_external_correspondence": true,
+    "no_training_before_all_independent_gates": true,
+    "no_production_authorization_or_status_change": true
+  }
+}

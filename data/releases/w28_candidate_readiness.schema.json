@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m7mdehab.github.io/hieratic-ai/data/releases/w28_candidate_readiness.schema.json",
+  "title": "W28 DATA-008 metadata-only candidate readiness ledger",
+  "type": "object",
+  "required": ["schema_version", "study_id", "preregistration_sha256", "evidence_sha256", "classification", "retrieval_limits", "candidate_count", "candidate_rows", "aggregate"],
+  "properties": {
+    "schema_version": {"const": "w28-data008-candidate-readiness/1.0.0"},
+    "study_id": {"const": "W28-DATA-008-ORIGINAL-MANUSCRIPT-COHORT"},
+    "preregistration_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "as_of_utc_date": {"type": "string", "format": "date"},
+    "classification": {"const": "METADATA_ONLY_NO_ADMISSION_NO_TRAINING"},
+    "candidate_count": {"type": "integer", "minimum": 1},
+    "retrieval_limits": {
+      "type": "object",
+      "required": ["max_concurrent_requests", "image_bytes_retrieved", "annotation_payloads_retrieved", "sample_class_metadata_payloads_retrieved", "published_split_membership_payloads_retrieved", "sealed_benchmark_records_read"],
+      "properties": {
+        "max_concurrent_requests": {"const": 1},
+        "image_bytes_retrieved": {"const": 0},
+        "annotation_payloads_retrieved": {"const": 0},
+        "sample_class_metadata_payloads_retrieved": {"const": 2},
+        "published_split_membership_payloads_retrieved": {"const": 1},
+        "sealed_benchmark_records_read": {"const": 0}
+      },
+      "additionalProperties": true
+    },
+    "candidate_rows": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+    "aggregate": {
+      "type": "object",
+      "required": ["admissible_for_training", "admissible_for_evaluation", "rejected_or_quarantined", "production_release_enabled", "corpus_v1_release_created", "data008_capability_points_claimed"],
+      "properties": {
+        "admissible_for_training": {"const": 0},
+        "admissible_for_evaluation": {"const": 0},
+        "rejected_or_quarantined": {"type": "integer", "minimum": 1},
+        "production_release_enabled": {"const": false},
+        "corpus_v1_release_created": {"const": false},
+        "data008_capability_points_claimed": {"const": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "candidate": {
+      "type": "object",
+      "required": ["candidate_id", "physical_support_group", "source_sha256", "crop_or_polygon_binding", "benchmark_state", "gate_state", "rejection_reasons", "admissible_for_training", "admissible_for_evaluation"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "physical_support_group": {"type": ["string", "null"]},
+        "source_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "crop_or_polygon_binding": {"type": "string", "minLength": 1},
+        "benchmark_state": {"enum": ["UNKNOWN_QUARANTINED", "NOT_CLEARED", "POSITIVE_OVERLAP_QUARANTINED", "EVAL_ONLY"]},
+        "gate_state": {"type": "object", "required": ["image_rights", "annotation_rights", "pixel_binding", "expert_gold", "benchmark_lineage", "support_split", "custody"], "additionalProperties": {"enum": ["CLEARED", "NOT_CLEARED", "UNKNOWN", "FAIL"]}},
+        "rejection_reasons": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "admissible_for_training": {"const": false},
+        "admissible_for_evaluation": {"const": false}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -158,3 +158,66 @@ DATA-008 remains active at 0/3. No task/progress state, production authorization
 ## W27 parallel research distinction
 
 The independent overseer W27 Tokyo IIIF pilot ([R034](../../docs/research/R034_W27_TOKYO_IIIF_IMAGE_RIGHTS_AND_PIXEL_RESEARCH.md), merged PR #146) ran an actual authentic-pixel 1NN on historical printed Möller publication *sign strips*: 16 training references, 8 comparison strips, 2/8 correct vs 1/8 nonvisual prior. This is **not an admissible original papyrus photograph + labeled glyph crop cohort**, and the printed-volume partition is not a physical-manuscript holdout. Thus the research diagnostic does not contradict this DATA-008 no-admission determination, and cannot support DATA-008 points, specialist reading accuracy or training on benchmark-heldout material.
+
+---
+
+# W28 DATA-008 — preregistered candidate census and exact-source readiness
+
+**Branch:** `task/DATA-008-w28-original-manuscript-cohort`
+**Verified base:** `9de75ffe6c323e80fca9cc062645582e92d66362`
+**Status:** bounded metadata-only source study; **0 images admitted, 0 visual training/evaluation examples, DATA-008 remains 0/3**.
+
+Before W28 source retrieval, `data/releases/w28_candidate_study_preregistration.json` froze the candidate population, inclusion rule, use boundaries, physical-source groups, benchmark quarantine rule, and no-training gate. The finite DDD population is every key in the exact publisher `papyri.json` metadata snapshot (SHA-256 `33265df94656e79a27c1c158756f0a2479173d00184c5212159ec1bb8414eb62`): 159 image records, 50 document clusters, 17,885 samples and 504 class identities. The manifest separately preserves annotation metadata digests, the publisher's C-B closed-set split target and the historical W24 35/7/8 support split with 15,426 / 893 / 1,566 metadata-label counts.
+
+The bounded readiness command is:
+
+```powershell
+python -m data.releases.w28_candidate_readiness
+```
+
+It fetched the hash-pinned DDD image, sample and class metadata; the split-description text; and only the C-B ZIP central directory plus its 330 KB JSON membership member using strict HTTP byte ranges. It did not fetch the 416.6 MB C-B archive, image/crop members, raw LabelMe polygon archive, or any benchmark/evaluator material. The report records exact file hashes and sample/class membership joins without including raw annotation dumps or class label lists. The resulting `data/releases/w28_candidate_readiness.json` has 159 DDD image rows plus 8 receipted/new Turin photo revisions, 4 fixed publisher-route candidates, and 3 comparison-only categories (174 rows total). It records zero new image bytes, 14,755 C-B membership rows joined to the publisher sample/class metadata, zero polygon payloads loaded, zero training/evaluation admissions and no production release.
+
+The publisher C-B document/sample membership replays by exact sample IDs against `samples.json`, image/document IDs against both `samples.json` and `papyri.json`, and all physical `doc_cluster` supports remain partition-disjoint. It resolves to 37/38/46 publisher document IDs and **9/11/12 physical support groups**, with 5,009/4,623/5,123 sample labels in train/validation/test; 32 distinct physical supports occur in C-B. The C-B class list has a real source-version discrepancy: it lists two class IDs absent from the current sample/class metadata and omits two IDs that are present there. The discrepancy is summarized by counts and digests in the machine ledger, not by copying a publisher label dump. Thus the membership partition can be reproduced, but exact C-B class-list identity is **not** verified and the split cannot be accepted as a ready visual benchmark. The W24 project split remains a separate 35/7/8 physical support diagnostic with 15,426/893/1,566 metadata annotations across the full 50-support universe. These denominators are not interchangeable or visual-example counts.
+
+Physical-support crosswalk between the two published/source-metadata split regimes (row = C-B partition, column = W24 project diagnostic partition):
+
+| C-B supports | W24 train | W24 development | W24 test | C-B total |
+|---|---:|---:|---:|---:|
+| Train | 6 | 2 | 1 | 9 |
+| Validation | 9 | 0 | 2 | 11 |
+| Test | 9 | 0 | 3 | 12 |
+
+Only 32 of the 50 W24 support groups occur in C-B; 18 do not occur in the published split. The crosswalk confirms the assignments differ: for example, nine C-B test supports are in W24 train. A future experiment must choose one frozen split regime and may not combine a training partition from one with test material from the other.
+
+| Cohort | Frozen/receipted candidates | Rights and identity result | Visual cohort |
+|---|---:|---|---:|
+| DDD original photographs | 159 images / 50 source clusters | Annotation dataset claim is CC BY-NC-SA; individual museum photo rights remain unresolved. No W28 image bytes or annotation polygons retrieved; all benchmark ancestry remains unknown/quarantined. | 0 |
+| Museo Egizio W20 file revisions | 7 revisions / 3 physical supports | Existing exact byte receipts preserved; item-level Commons CC0 claims are not institutional/photo-and-text admission, and all three supports remain benchmark-quarantined. Cat.1880 faces and Cat.2169 views remain grouped. | 0 |
+| Cat.2044/013 and fixed TPOP routes | 1 original-object candidate plus the finite R020 portal roster | No exact source byte/crop binding; text and image rights are separate; edition/benchmark review is pending. Museum catalogue and TPOP description conflict on Ramesses VI/V attribution; do not auto-resolve. | 0 |
+| S.6759 | 1 photo candidate | Museum catalogue explicitly identifies “Hieratic ostracon with an oracular text” (inventory Suppl. 6759, CGT 57227). W20 has a verified photo-byte receipt, but no admitted exact line gold, text permission, benchmark clearance or production custody. | 0 |
+| Cat.2169 | 1 object with 4 receipted photo/view variants | Verified Hieratic inventory ostracon; visual control only, not a line-transliteration target. All variants are one physical support and remain quarantined. | 0 |
+| AKU-PAL / Tokyo Möller / historical plates | 240 AKU-PAL sign records / 32 source-text IDs; 24 Tokyo Möller printed-book crops; historical plates as a separate class | AKU-PAL has 63 positive exact public benchmark-source matches and 177 unknown/no-literal-match records, all quarantined. Printed Möller scans/facsimiles are not original manuscript photographs; W27's 1NN is a separate printed-sign diagnostic. | 0 |
+
+The W20 item receipt preserves exact source hashes and dimensions for Cat.2169 and S.6759, and hash/byte receipts for the two high-resolution Cat.1880 JPEGs (whose previous safe decode failed). Those are historical receipts, not W28 source-byte retrievals or evidence that the current holder may store/reuse them for this task. W28 acquired **zero** new original-image bytes; its new SHA-256 receipts cover only public metadata/split-definition text. No original pixel/crop hash or image-to-label geometry has therefore been created.
+
+The readiness tool and schema fail closed on row loss, duplicate candidate IDs, malformed source hashes, a W28 original hash asserted without W28 byte retrieval, any gate promotion, a label asserted without a pixel binding, split physical views, benchmark “clearance” states outside the quarantined vocabulary, and production/capability promotion. The evidence digest binds the complete machine-readable rejection ledger. `tests/data/test_corpus_release.py` exercises these cases alongside the release engine's existing path containment, symlink, bounded-size, synthetic-fixture and no-clobber controls.
+
+## W28 acceptance and scientific boundary
+
+- [x] Freeze the finite source roster and allowed uses before W28 image/annotation payload retrieval.
+- [x] Expand DDD image metadata to 159 source-bound candidate rows; use sample/class metadata only for the publisher split join, without loading the polygon archive or publishing label lists.
+- [x] Preserve per-item photo rights separately from dataset annotation rights.
+- [x] Inspect publisher split-definition text and replay C-B sample/document membership with strict byte ranges; keep C-C/C-D as non-holdout random-sample splits.
+- [x] Preserve W24 support groups/counts as a separate historical metadata baseline.
+- [x] Verify S.6759's museum identity as a genuine Hieratic oracular ostracon; retain one physical support and prior exact media receipt.
+- [x] Keep facsimile/plate sources and W27 Tokyo comparison strips out of an original-photo cohort.
+- [x] Add executable row-level fail-closed readiness and negative/adversarial tests.
+- [ ] Independent permission for a specific photo asset, exact training/evaluation use and private custody.
+- [ ] Annotation/editorial-text reuse permission and exact source-photo-to-label/crop alignment.
+- [ ] Independent expert review/adjudication and a qualified authority/trust root.
+- [ ] Resolve the two-label C-B class-list drift; independently clear benchmark/edition/source ancestry for any physical supports.
+- [ ] Non-empty adequately sized source-disjoint visual train/dev/test cohort with overlapping label coverage.
+- [ ] Real visual model fit, failures ledger, held-out metrics and cluster-aware uncertainty.
+- [ ] Production redistribution rights and independently authorized DATA-008 corpus v1 release.
+
+This is a reproducible rejection result, not a visual model result. The source and split investigation stopped at the real permission, label-binding and benchmark-lineage gates; no pixels were trained or evaluated. No corpus release was created and no capability score or project state was changed. The immediate external unblocker is a separately authenticated rights decision for exact museum image revisions and their intended research custody/use, plus expert-authorized scholarly labels and benchmark/source-ancestry review. This repository cannot create those authorities itself.

@@ -14,6 +14,8 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator, FormatChecker
 
+from eval.splits import public_benchmark_lineage as benchmark_lineage
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES_PATH = ROOT / "eval" / "splits" / "profiles.yaml"
@@ -196,6 +198,13 @@ def _atomic_components(metadata: dict[str, Any]) -> list[list[dict[str, Any]]]:
             keys.append(("page", item["page_id"]))
         if item["source_object_id"] is not None:
             keys.append(("source_object", item["source_id"], item["source_object_id"]))
+            # Do not let different acquisition-provider IDs split one accession.
+            # Strict museum+typed accession match only; unknown aliases are not cleared.
+            physical = benchmark_lineage.physical_key(
+                item.get("institution"), item["source_object_id"]
+            )
+            if physical:
+                keys.append(("institutional_physical_support", physical))
         for field in HASH_FIELDS:
             if item[field]:
                 keys.append((field, item[field].lower()))
@@ -301,6 +310,15 @@ def _stats(assignments: list[dict[str, Any]], warnings: list[str]) -> dict[str, 
 
 
 def _overlap_exclusion_reason(item: dict[str, Any], registry_sources: dict[str, dict[str, Any]], synthetic_fixture: bool) -> str | None:
+    # Known PUBLIC source ancestry is a positive overlap indicator irrespective
+    # of any applicant's unverified self-declared "clear" review marker. This
+    # is an additional gate; negative metadata matches NEVER grant clearance.
+    public = benchmark_lineage.match_item(item)
+    if public["public_item_ids"]:
+        return ("known_public_benchmark_physical_support:"
+                + public["physical_key"]
+                + ":"
+                + ",".join(public["public_item_ids"]))
     source = registry_sources[item["source_id"]]
     if source.get("benchmark_overlap_risk") != "high":
         return None
@@ -507,6 +525,21 @@ def validate_manifest(
             if len(partitions) > 1:
                 label = "exact hash" if field.endswith("sha256") else field
                 errors.append(f"{label} {value} overlaps partitions: {', '.join(sorted(partitions))}")
+    # Defend even externally supplied manifests against source-ID laundering
+    # of physical objects across train/dev/test, regardless of SHA differences.
+    physical_buckets: dict[str, set[str]] = defaultdict(set)
+    for row in active:
+        physical = benchmark_lineage.physical_key(
+            row.get("institution"), row.get("source_object_id")
+        )
+        if physical:
+            physical_buckets[physical].add(row["partition"])
+    for physical, parts in physical_buckets.items():
+        if len(parts) > 1:
+            errors.append(
+                f"public-source physical accession {physical} overlaps partitions: "
+                + ", ".join(sorted(parts))
+            )
     page_buckets: dict[str, set[str]] = defaultdict(set)
     for row in active:
         if row["page_id"] is not None:
@@ -623,7 +656,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest = load_yaml(args.manifest)
         schema = json.loads(args.schema.read_text(encoding="utf-8"))
         errors = validate_manifest(manifest, metadata, profile_set, schema, registry)
-    except (SplitInputError, OSError, json.JSONDecodeError) as exc:
+    except (SplitInputError, benchmark_lineage.LineageError, OSError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     if errors:

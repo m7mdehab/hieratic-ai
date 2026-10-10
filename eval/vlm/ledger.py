@@ -275,8 +275,8 @@ class DurableAttemptLedger:
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Record an explicit skipped attempt."""
-        if attempt_id in self._finalized_attempts:
-            raise LedgerDuplicateAttemptError(f"Attempt '{attempt_id}' already finalized")
+        if attempt_id in self._dispatches or attempt_id in self._skips:
+            raise LedgerDuplicateAttemptError(f"Attempt '{attempt_id}' was already dispatched or skipped")
 
         skip_record = {
             "record_type": "skip",
@@ -427,6 +427,8 @@ def verify_ledger_file_integrity(ledger_path: Path | str, *, allow_incomplete: b
                     errors.append(f"Line {idx}: Duplicate/conflicting dispatch for attempt '{att_id}'")
                 dispatches[att_id] = rec
             elif rec_type == "completion":
+                if rec.get("status") not in ("success", "failed"):
+                    errors.append(f"Line {idx}: Invalid completion status for '{att_id}'")
                 if att_id not in dispatches:
                     errors.append(f"Line {idx}: Completion without prior dispatch for '{att_id}'")
                 if att_id in completions:

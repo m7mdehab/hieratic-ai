@@ -2381,15 +2381,372 @@ class VLMBaselinesTests(unittest.TestCase):
                     if a["target_or_control_id"] == "control_manuscript_photo_positive"]
         self.assertEqual(2,len(identity))
         self.assertEqual(2,len(positive))
+        # Preserve the W20 regression: its simulated controls must never be
+        # misrepresented as genuine original museum photo evidence.
         self.assertTrue(all(a["physical_witness"] == "synthetic_control"
                             for a in identity + positive))
         self.assertTrue(all(a["source_raw_sha256"] == a["stimulus_sha256"]
                             for a in identity + positive))
 
+    def test_w27_domain_words_absent_in_blind_prompt(self) -> None:
+        """Verify domain-blind prompt does not contain Egyptian, hieratic, or sign labels."""
+        from eval.vlm.signs import (
+            FROZEN_DOMAIN_BLIND_PROMPT_W27,
+            W27_FORBIDDEN_DOMAIN_WORDS,
+            verify_domain_blind_prompt,
+        )
+        p_lower = FROZEN_DOMAIN_BLIND_PROMPT_W27.lower()
+        for forbidden in W27_FORBIDDEN_DOMAIN_WORDS:
+            self.assertNotIn(
+                forbidden,
+                p_lower.split(),
+                f"Forbidden domain cue '{forbidden}' found in W27 domain-blind prompt",
+            )
+        # verify_domain_blind_prompt passes cleanly on canonical prompt
+        verify_domain_blind_prompt(FROZEN_DOMAIN_BLIND_PROMPT_W27)
+
+        # verify_domain_blind_prompt raises ValueError on mutated prompt containing cue
+        with self.assertRaises(ValueError):
+            verify_domain_blind_prompt(FROZEN_DOMAIN_BLIND_PROMPT_W27 + " Look for hieratic signs.")
+
+    def test_w27_frozen_prompts_and_hash_anchors(self) -> None:
+        """Verify all three W27 frozen prompts and immutable protocol fingerprint."""
+        from eval.vlm.signs import (
+            FROZEN_DOMAIN_BLIND_PROMPT_W27,
+            FROZEN_DOMAIN_BLIND_PROMPT_W27_SHA256,
+            FROZEN_SCRIPT_AWARE_PROMPT_W27,
+            FROZEN_SCRIPT_AWARE_PROMPT_W27_SHA256,
+            FROZEN_LEADING_IDENT_PROMPT_W27,
+            FROZEN_LEADING_IDENT_PROMPT_W27_SHA256,
+            compute_w27_sign_protocol_hash,
+        )
+        self.assertEqual(
+            hashlib.sha256(FROZEN_DOMAIN_BLIND_PROMPT_W27.encode("utf-8")).hexdigest(),
+            FROZEN_DOMAIN_BLIND_PROMPT_W27_SHA256,
+        )
+        self.assertEqual(
+            hashlib.sha256(FROZEN_SCRIPT_AWARE_PROMPT_W27.encode("utf-8")).hexdigest(),
+            FROZEN_SCRIPT_AWARE_PROMPT_W27_SHA256,
+        )
+        self.assertEqual(
+            hashlib.sha256(FROZEN_LEADING_IDENT_PROMPT_W27.encode("utf-8")).hexdigest(),
+            FROZEN_LEADING_IDENT_PROMPT_W27_SHA256,
+        )
+        # All 3 prompt hashes must be distinct
+        hashes = {
+            FROZEN_DOMAIN_BLIND_PROMPT_W27_SHA256,
+            FROZEN_SCRIPT_AWARE_PROMPT_W27_SHA256,
+            FROZEN_LEADING_IDENT_PROMPT_W27_SHA256,
+        }
+        self.assertEqual(len(hashes), 3)
+
+        proto_hash = compute_w27_sign_protocol_hash()
+        self.assertEqual(len(proto_hash), 64)
+
+    def test_w27_scrambled_attribution_explicitly_sign_6036(self) -> None:
+        """Verify that scrambled control is explicitly attributed to sign 6036, not 2448."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_sign_replay_experiment(adapter, protocol="w27", allow_simulated=True)
+
+        scrambled_entries = [
+            a for a in report["attempt_ledger"]
+            if a["target_or_control_id"] == "control_scrambled_sign"
+        ]
+        self.assertEqual(len(scrambled_entries), 3)  # blind, script_aware, leading
+        for entry in scrambled_entries:
+            self.assertEqual(entry["physical_witness"], "Petrie Museum UC 32782")
+
+        sens = report["sensitivity_controls"]
+        self.assertIn("6036", sens["scrambled_attribution"])
+        self.assertIn("survive", sens["scrambled_attribution"])
+
+    def test_w27_controls_physical_categories(self) -> None:
+        """Verify controls matrix records correct physical category types."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_sign_replay_experiment(adapter, protocol="w27", allow_simulated=True)
+
+        c_map = {c["control_id"]: c for c in report["controls_matrix"]}
+        self.assertEqual(c_map["control_blank"]["category_type"], "hard_negative")
+        self.assertEqual(c_map["control_procedural_texture"]["category_type"], "hard_negative")
+        self.assertEqual(c_map["control_geometric_marks"]["category_type"], "hard_negative")
+        self.assertEqual(c_map["control_photo_negative"]["category_type"], "hard_negative")
+        self.assertEqual(c_map["control_scrambled_sign"]["category_type"], "transformation_control")
+        self.assertEqual(c_map["control_inverted_sign"]["category_type"], "transformation_control")
+        self.assertEqual(c_map["control_identity_mark"]["category_type"], "ambiguous_control")
+        self.assertEqual(c_map["control_manuscript_photo_positive"]["category_type"], "positive_control")
+
+    def test_w27_accounting_equation_69_attempts(self) -> None:
+        """Verify mandatory 69 attempts accounting: 15*3 + 8*3 = 69."""
+        from eval.vlm.signs import execute_sign_replay_experiment
+        adapter = MockVLMAdapter({"key": "mock", "model_type": "mock"})
+        report = execute_sign_replay_experiment(adapter, protocol="w27", allow_simulated=True)
+
+        counts = report["attempt_counts"]
+        self.assertEqual(counts["planned_forward_passes"], 69)
+        self.assertEqual(counts["total_attempts_recorded"], 69)
+        self.assertEqual(counts["successful_actual_passes"], 69)
+        self.assertEqual(counts["failed_attempts"], 0)
+        self.assertEqual(counts["skipped_attempts"], 0)
+        self.assertEqual(counts["by_prompt_variant"]["blind"], 23)
+        self.assertEqual(counts["by_prompt_variant"]["script_aware"], 23)
+        self.assertEqual(counts["by_prompt_variant"]["leading"], 23)
+        self.assertEqual(counts["by_category"]["controls"], 24)
+        self.assertEqual(len(report["attempt_ledger"]), 69)
+
+    def test_w27_durable_ledger_write_ahead_and_audit(self) -> None:
+        """Verify DurableAttemptLedger logs dispatches before completions and audits invariants."""
+        from eval.vlm.ledger import (
+            DurableAttemptLedger,
+            LedgerAccountingError,
+            LedgerDuplicateAttemptError,
+            verify_ledger_file_integrity,
+        )
+        with tempfile.TemporaryDirectory() as d:
+            l_path = Path(d) / "test_ledger.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="test_run", protocol_fingerprint="fp123")
+
+            ledger.record_dispatch(
+                attempt_id="att_001",
+                attempt_index=0,
+                target_or_control_id="sign_6036",
+                physical_witness="Petrie Museum",
+                source_raw_sha256="sha_raw",
+                stimulus_sha256="sha_stim",
+                stimulus_dimensions=[256, 256],
+                task="test_task",
+                rung="identify",
+                prompt_variant="blind",
+                prompt_text="blind prompt",
+                prompt_sha256="sha_prompt",
+                model_id="test_model",
+                model_revision="rev1",
+                model_weight_sha256="sha_weight",
+                decoding_parameters={},
+            )
+
+            # Check that file already has dispatch line before completion
+            self.assertTrue(l_path.is_file())
+            content = l_path.read_text(encoding="utf-8").strip().splitlines()
+            self.assertEqual(len(content), 1)
+            self.assertIn('"record_type": "dispatch"', content[0])
+
+            # Now complete attempt
+            ledger.record_completion(
+                attempt_id="att_001",
+                status="success",
+                output_text="Test output",
+                latency_ms=10.0,
+            )
+            content = l_path.read_text(encoding="utf-8").strip().splitlines()
+            self.assertEqual(len(content), 2)
+            self.assertIn('"record_type": "completion"', content[1])
+
+            # Accounting audit passes for planned=1
+            summary = ledger.audit_accounting(planned_count=1)
+            self.assertEqual(summary["successful_actual_passes"], 1)
+
+            # Accounting audit fails if planned does not match
+            with self.assertRaises(LedgerAccountingError):
+                ledger.audit_accounting(planned_count=2)
+
+            ledger.close()
+
+            # Integrity verification
+            audit = verify_ledger_file_integrity(l_path)
+            self.assertTrue(audit["valid"])
+            self.assertEqual(audit["dispatches_count"], 1)
+            self.assertEqual(audit["completions_count"], 1)
+
+    def test_w27_durable_ledger_interrupted_run_recovery(self) -> None:
+        """Verify interrupted run (dispatch without completion) is detected by audit."""
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerAccountingError, verify_ledger_file_integrity
+        with tempfile.TemporaryDirectory() as d:
+            l_path = Path(d) / "interrupted_ledger.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="test_run", protocol_fingerprint="fp123")
+            ledger.record_dispatch(
+                attempt_id="att_crash",
+                attempt_index=0,
+                target_or_control_id="sign_6036",
+                physical_witness="Petrie",
+                source_raw_sha256="sha_raw",
+                stimulus_sha256="sha_stim",
+                stimulus_dimensions=[256, 256],
+                task="test_task",
+                rung="identify",
+                prompt_variant="blind",
+                prompt_text="blind prompt",
+                prompt_sha256="sha_prompt",
+                model_id="test_model",
+                model_revision="rev1",
+                model_weight_sha256="sha_weight",
+                decoding_parameters={},
+            )
+            ledger.close()
+
+            # Audit fails closed on uncompleted dispatch
+            audit = verify_ledger_file_integrity(l_path)
+            self.assertFalse(audit["valid"])
+            self.assertTrue(any("Unfinished attempt" in e for e in audit["errors"]))
+
+            # Reloading ledger also detects interrupted attempt
+            ledger2 = DurableAttemptLedger(l_path, run_id="test_run", protocol_fingerprint="fp123")
+            with self.assertRaises(LedgerAccountingError):
+                ledger2.audit_accounting(planned_count=1)
+            ledger2.close()
+
+    def test_w27_crash_resume_fails_closed_without_duplicating_an_attempt(self) -> None:
+        """A durable in-flight dispatch must never be sent twice on resume."""
+        from eval.vlm.ledger import (
+            DurableAttemptLedger, LedgerDuplicateAttemptError,
+            LedgerIntegrityError, verify_ledger_file_integrity,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "interrupted_w27.jsonl"
+            props = dict(ledger_path=file, run_id="w27_replay_20261010_120000",
+                         protocol_fingerprint="frozen_w27_test_protocol")
+            with DurableAttemptLedger(**props) as first:
+                first.record_dispatch(
+                    attempt_id="w27_000",
+                    attempt_index=0,
+                    target_or_control_id="sign_6036",
+                    physical_witness="Petrie",
+                    source_raw_sha256="source_hash",
+                    stimulus_sha256="image_hash",
+                    stimulus_dimensions=[256, 256],
+                    task="signs",
+                    rung="signs",
+                    prompt_variant="blind",
+                    prompt_text="Describe visible marks.",
+                    prompt_sha256="prompt_hash",
+                    model_id="smolvlm-256m",
+                    model_revision="pinned",
+                    model_weight_sha256="weight_hash",
+                    decoding_parameters={"temperature": 0},
+                )
+            self.assertFalse(verify_ledger_file_integrity(file)["valid"])
+            with DurableAttemptLedger(**props) as recovered:
+                self.assertEqual(["w27_000"], recovered.resolve_interrupted_attempts())
+                summary = recovered.audit_accounting(planned_count=1)
+                self.assertEqual(summary["failed_attempts"], 1)
+                self.assertEqual(summary["successful_actual_passes"], 0)
+                self.assertTrue(recovered.is_attempt_completed("w27_000"))
+                with self.assertRaises(LedgerDuplicateAttemptError):
+                    recovered.record_dispatch(
+                        attempt_id="w27_000",
+                        attempt_index=0,
+                        target_or_control_id="sign_6036",
+                        physical_witness="Petrie",
+                        source_raw_sha256="source_hash",
+                        stimulus_sha256="image_hash",
+                        stimulus_dimensions=[256, 256],
+                        task="signs", rung="signs", prompt_variant="blind",
+                        prompt_text="Describe visible marks.", prompt_sha256="prompt_hash",
+                        model_id="smolvlm-256m", model_revision="pinned",
+                        model_weight_sha256="weight_hash", decoding_parameters={},
+                    )
+            receipt = verify_ledger_file_integrity(file)
+            self.assertTrue(receipt["valid"], receipt["errors"])
+            self.assertEqual(1, receipt["dispatches_count"])
+            self.assertEqual(1, receipt["completions_count"])
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(file, "different_run_id", props["protocol_fingerprint"])
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(file, props["run_id"], "different_protocol")
+
+    def test_w27_load_rejects_duplicate_or_modified_completed_events(self) -> None:
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerIntegrityError
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "attempts.jsonl"
+            with DurableAttemptLedger(path, "w27_replay_abc", "fp") as ledger:
+                ledger.record_dispatch(
+                    attempt_id="one", attempt_index=0,
+                    target_or_control_id="blank", physical_witness="synthetic_control",
+                    source_raw_sha256="src", stimulus_sha256="raster",
+                    stimulus_dimensions=[256, 256], task="identify", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe.",
+                    prompt_sha256="ph", model_id="mock", model_revision="rev",
+                    model_weight_sha256="none", decoding_parameters={})
+                ledger.record_completion(attempt_id="one", status="success",
+                                         output_text="some response")
+            original = path.read_text(encoding="utf-8")
+            first_line = original.splitlines()[0]
+            path.write_text(original + first_line + "\n", encoding="utf-8")
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(path, "w27_replay_abc", "fp")
+            path.write_text(original.replace("some response", "tampered answer"), encoding="utf-8")
+            with self.assertRaises(LedgerIntegrityError):
+                DurableAttemptLedger(path, "w27_replay_abc", "fp")
+
+    def test_w27_durable_ledger_corruption_detection(self) -> None:
+        """Verify that tampered output hash is caught by integrity audit."""
+        from eval.vlm.ledger import DurableAttemptLedger, verify_ledger_file_integrity
+        with tempfile.TemporaryDirectory() as d:
+            l_path = Path(d) / "corrupt_ledger.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="test_run", protocol_fingerprint="fp123")
+            ledger.record_dispatch(
+                attempt_id="att_tamper",
+                attempt_index=0,
+                target_or_control_id="sign_6036",
+                physical_witness="Petrie",
+                source_raw_sha256="sha_raw",
+                stimulus_sha256="sha_stim",
+                stimulus_dimensions=[256, 256],
+                task="test_task",
+                rung="identify",
+                prompt_variant="blind",
+                prompt_text="blind prompt",
+                prompt_sha256="sha_prompt",
+                model_id="test_model",
+                model_revision="rev1",
+                model_weight_sha256="sha_weight",
+                decoding_parameters={},
+            )
+            ledger.record_completion(
+                attempt_id="att_tamper",
+                status="success",
+                output_text="Legitimate output",
+                latency_ms=10.0,
+            )
+            ledger.close()
+
+            # Tamper with file: change output text but leave output hash
+            lines = l_path.read_text(encoding="utf-8").splitlines()
+            tampered_comp = json.loads(lines[1])
+            tampered_comp["output_text"] = "TAMPERED OUTPUT"
+            lines[1] = json.dumps(tampered_comp)
+            l_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+            audit = verify_ledger_file_integrity(l_path)
+            self.assertFalse(audit["valid"])
+            self.assertTrue(any("Output SHA-256 mismatch" in e for e in audit["errors"]))
+
+    def test_w27_cli_execution_with_protocol_flag(self) -> None:
+        """Verify CLI runner handles --protocol w27 and outputs schema-valid report."""
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+        tmp_path.unlink()
+        try:
+            ret = cli_main(["sign-replay", "--protocol", "w27", "--allow-simulated", "--output", str(tmp_path)])
+            self.assertEqual(ret, 0)
+            self.assertTrue(tmp_path.is_file())
+            rep = json.loads(tmp_path.read_text(encoding="utf-8"))
+            self.assertEqual(rep["doc_type"], "vlm_sign_replay_report")
+            self.assertEqual(rep["protocol"]["protocol_version"], "3.0.0")
+            self.assertEqual(rep["attempt_counts"]["planned_forward_passes"], 69)
+            self.assertEqual(rep["attempt_counts"]["total_attempts_recorded"], 69)
+            self.assertEqual(rep["scientific_capability_points"], 0.0)
+            self.assertFalse(rep["hieratic_reading_claim"])
+            self.assertEqual(rep["evidence_grades"]["grade_f_authentic_hieratic_gold_evaluation"]["status"], "STRICTLY_NO")
+        finally:
+            if tmp_path.is_file():
+                tmp_path.unlink()
 
 
 if __name__ == "__main__":
     unittest.main()
+
 
 
 

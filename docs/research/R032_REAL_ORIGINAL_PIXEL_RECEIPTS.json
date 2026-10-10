@@ -1,0 +1,76 @@
+{
+  "schema_version": "R032-source-sha-verified-real-publisher-sign-scan-pixels/1.0",
+  "as_of": "2026-10-10",
+  "result": "ORIGINAL_REAL_PUBLISHER_PIXELS_DIAGNOSTIC_VERIFIED_NO_OCR",
+  "source_manifest": "data/releases/w19_aku_pal_original_image_receipts.json",
+  "workflow": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38034116590",
+  "governance": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38034116540",
+  "source_pr": "https://github.com/m7mdehab/hieratic-ai/pull/141",
+  "source_merge_sha": "1258fe28f08fa1eaf258cba02766a1404a1489c7",
+  "original_source_images_read": 5,
+  "original_physical_witness_groups": 4,
+  "original_images_sha256_checked_against_publisher": 5,
+  "original_binary_media_in_git": 0,
+  "unit_tests_passed": 11,
+  "cat1880_photo_available_in_this_run": false,
+  "cat1880_block_reason": "Wikimedia HTTP 429; deliberately not bypassed",
+  "actual_semantic_ocr_model_forward_passes": 0,
+  "trained_models": 0,
+  "independent_expert_gold": 0,
+  "accuracy_metric": null,
+  "rights": "AKU-PAL each original item CC BY 4.0 publisher images; per-object prospective corpus admission unreviewed",
+  "benchmark": "UNKNOWN_QUARANTINED",
+  "training": false,
+  "sources": [
+    {
+      "id": 2448,
+      "witness": "Petrie Museum UC 32782",
+      "original_sha256": "683fc41c6948bf652dd458f197e98e0a709a3dd0075240de668effe6f4dbd8cb",
+      "dimensions": [
+        354,
+        350
+      ],
+      "otsu_dark_pixel_fraction": 0.28398132
+    },
+    {
+      "id": 6066,
+      "witness": "Berlin Papyrussammlung P 9785",
+      "original_sha256": "8df84eebb57a71ddaddb94d854d1cefed705073acacbbcb55620a53f2e9c22d0",
+      "dimensions": [
+        330,
+        423
+      ],
+      "otsu_dark_pixel_fraction": 0.30897522
+    },
+    {
+      "id": 56377,
+      "witness": "Brooklyn Museum 47.218.3",
+      "original_sha256": "9bbdcd8249a7f8421ec8fbf74f4a3871d32fdeb8ee331c2ddbe29364811899d2",
+      "dimensions": [
+        350,
+        347
+      ],
+      "otsu_dark_pixel_fraction": 0.24516296
+    },
+    {
+      "id": 5862,
+      "witness": "Louvre E 3226 A + E 3226 B",
+      "original_sha256": "ce16657fcf2eeda384d9640af69b373ff3fad72cbb4e8a2f9f3e0c5a9880fdba",
+      "dimensions": [
+        300,
+        256
+      ],
+      "otsu_dark_pixel_fraction": 0.38842773
+    },
+    {
+      "id": 5447,
+      "witness": "Louvre E 3226 A + E 3226 B",
+      "original_sha256": "0ef0dccd0a81cf900618eb9615990087522c5ac7a51c5311a612e0f1c637c6ca",
+      "dimensions": [
+        148,
+        406
+      ],
+      "otsu_dark_pixel_fraction": 0.26843262
+    }
+  ]
+}

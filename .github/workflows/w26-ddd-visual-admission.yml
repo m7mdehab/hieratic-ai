@@ -1,0 +1,35 @@
+name: W26 DDD Original Source Per-Image Research Gate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/research_ddd_visual_gate.py"
+      - "tests/research/test_ddd_visual_gate.py"
+      - "docs/research/R033_DDD_VISUAL_COHORT_ADMISSION.md"
+      - ".github/workflows/w26-ddd-visual-admission.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-publisher-visual-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.12"}
+      - name: Enforce adverse source-rights and document-leakage tests
+        run: python -m unittest tests.research.test_ddd_visual_gate -v
+      - name: Exact W23/W24 original publisher sources and conservative per-image admission inventory
+        run: >-
+          python -m tools.research_ddd_visual_gate
+          --output "$RUNNER_TEMP/w26-ddd-per-image-private.json"
+          --summary-output "$RUNNER_TEMP/w26-ddd-rights-aggregate.json"
+      - name: Retain aggregate proof only without original copyrighted rows or imagery
+        uses: actions/upload-artifact@v4
+        with:
+          name: w26-original-publisher-cohort-gate-aggregate
+          path: /home/runner/work/_temp/w26-ddd-rights-aggregate.json
+          if-no-files-found: error
+          retention-days: 14

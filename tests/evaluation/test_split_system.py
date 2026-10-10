@@ -277,5 +277,173 @@ class SplitSystemTests(unittest.TestCase):
                 self.assertIn(path.suffix.lower(), {".yaml", ".yml", ".json", ".md"}, str(path))
 
 
+
+class W28PublicPhysicalBenchmarkLineageTests(unittest.TestCase):
+    """Real public source metadata; all modified split records remain synthetic."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from eval.splits import public_benchmark_lineage as bm
+        cls.bm = bm
+        cls.public = bm.load_public()
+        cls.index = bm.public_index()
+
+    def _meta(self):
+        return yaml.safe_load((EXAMPLES / "synthetic_metadata.yaml").read_text(encoding="utf-8"))
+
+    def _registry(self):
+        return yaml.safe_load((ROOT / "data/sources/registry.yaml").read_text(encoding="utf-8"))
+
+    def _profiles(self):
+        return yaml.safe_load((ROOT / "eval/splits/profiles.yaml").read_text(encoding="utf-8"))
+
+    def test_266_exact_pinned_public_records_and_no_sealed_items(self):
+        self.assertEqual(len(self.public),266)
+        self.assertNotIn("hb-0001",{x["id"] for x in self.public})
+        self.assertNotIn("hb-0002",{x["id"] for x in self.public})
+        self.assertEqual(self.bm.audit_public()["unseen_sealed_records_inspected"],0)
+        self.assertEqual(self.bm.audit_public()["public_records"],266)
+        self.assertFalse(self.bm.audit_public()["metadata_nonmatch_is_clearance"])
+
+    def test_tampered_original_public_metadata_blob_fails_closed(self):
+        raw=self.bm.PUBLIC_METADATA.read_bytes()
+        self.assertEqual(self.bm.git_blob_sha(raw),self.bm.FROZEN_REGISTER_GIT_BLOB)
+        with self.assertRaisesRegex(self.bm.LineageError,"identity drift"):
+            self.bm.parse_public_bytes(raw.replace(b"aku-0001",b"aku-9999",1))
+
+    def test_source_register_with_gold_field_fails_even_if_count_266(self):
+        raw=self.bm.PUBLIC_METADATA.read_bytes()
+        rows=[json.loads(z) for z in raw.decode("utf-8").splitlines()]
+        rows[0]["gardiner_gold"]="FORBIDDEN"
+        corrupt=("\n".join(json.dumps(z) for z in rows)+"\n").encode()
+        with self.assertRaisesRegex(self.bm.LineageError,"Unexpected source fields"):
+            self.bm.parse_public_bytes(corrupt,require_frozen=False)
+
+    def test_missing_public_source_rows_refused_not_assumed_cleared(self):
+        raw=self.bm.PUBLIC_METADATA.read_bytes()
+        with self.assertRaisesRegex(self.bm.LineageError,"266 rows"):
+            self.bm.parse_public_bytes(b"\n".join(raw.splitlines()[:-1])+b"\n",require_frozen=False)
+
+    def test_same_met_museum_physical_support_across_signs(self):
+        r=self.bm.match_item({"institution":"Metropolitan Museum of Art",
+                              "source_object_id":"22.3.517"})
+        self.assertEqual(r["status"],"PUBLIC_PHYSICAL_SOURCE_MATCH_QUARANTINE")
+        self.assertTrue({"aku-0013","aku-0041","aku-0118","aku-0125"}.issubset(set(r["public_item_ids"])))
+        self.assertFalse(r["rights_clearance_granted"])
+
+    def test_brooklyn_and_berlin_repeated_supports(self):
+        brook=self.bm.match_item({"institution":"Brooklyn Museum","source_object_id":"47.218.84"})
+        berlin=self.bm.match_item({"institution":"Berlin","source_object_id":"P 3057"})
+        self.assertEqual(brook["public_count"],5)
+        self.assertEqual(berlin["public_count"],5)
+
+    def test_turin_roman_inventory_schemes_remain_distinct(self):
+        self.assertNotEqual(self.bm.physical_key("Museo Egizio","CGT 54050"),
+                            self.bm.physical_key("Museo Egizio","Cat.54050"))
+        self.assertNotEqual(self.bm.physical_key("Museo Egizio","S.17507/2"),
+                            self.bm.physical_key("Museo Egizio","Cat.17507"))
+        hits=self.bm.match_item({"institution":"Turin, Museo Egizio","source_object_id":"CGT 54050"})
+        self.assertEqual(hits["public_count"],3)
+
+    def test_chester_beatty_papyrus_page_same_physical_group(self):
+        r=self.bm.match_item({"institution":"Chester Beatty","source_object_id":"Pap XXII"})
+        self.assertEqual(set(r["public_item_ids"]),{"cbl-0004","cbl-0009"})
+
+    def test_cross_museum_duplicate_numeric_ids_not_assumed_same(self):
+        self.assertNotEqual(self.bm.physical_key("Brooklyn Museum","22.3.517"),
+                            self.bm.physical_key("Metropolitan Museum","22.3.517"))
+
+    def test_unverified_cat1880_meta_nonmatch_is_not_clear(self):
+        r=self.bm.match_item({"institution":"Museo Egizio","source_object_id":"Cat.1880"})
+        self.assertEqual(r["status"],"UNKNOWN_NOT_CLEARED")
+        self.assertEqual(r["public_item_ids"],[])
+        self.assertFalse(r["independent_no_overlap_proven"])
+
+    def test_no_institution_does_not_guess_identity_from_bare_number(self):
+        r=self.bm.match_item({"institution":None,"source_object_id":"22.3.517"})
+        self.assertEqual(r["status"],"UNKNOWN_NOT_CLEARED")
+        self.assertIsNone(r["physical_key"])
+
+    def test_noninventory_printed_page_number_not_physical_key(self):
+        self.assertIsNone(self.bm.physical_key("Museo Egizio","Pleyte Rossi printed plate 35"))
+        self.assertIsNone(self.bm.physical_key("Berlin","volume II page 3057"))
+
+    def test_cross_provider_same_witness_is_atomic_before_split(self):
+        meta=self._meta()
+        a=next(x for x in meta["items"] if x["item_id"]=="item-a2")
+        b=next(x for x in meta["items"] if x["item_id"]=="item-c2")
+        self.assertNotEqual(a["source_id"],b["source_id"])
+        a["institution"]="Metropolitan Museum of Art"
+        b["institution"]="New York City, Metropolitan Museum of Art"
+        a["source_object_id"]="22.3.517"
+        b["source_object_id"]="22.3.517"
+        components=split_system._atomic_components(meta)
+        self.assertTrue(any({a["item_id"],b["item_id"]}.issubset(
+            {x["item_id"] for x in component}) for component in components))
+
+    def test_public_benchmark_source_excluded_even_when_unflagged(self):
+        meta=self._meta()
+        a=next(x for x in meta["items"] if x["item_id"]=="item-a2")
+        a["institution"]="Metropolitan Museum of Art"
+        a["source_object_id"]="22.3.517"
+        a["benchmark_quarantine"]=False
+        registry=self._registry();profile=self._profiles()
+        manifest=split_system.generate_manifest(
+            meta,profile,"PROFILE-DOC-HOLDOUT",seed=12,registry=registry
+        )
+        row=next(x for x in manifest["assignments"] if x["item_id"]==a["item_id"])
+        self.assertEqual(row["partition"],"excluded")
+        self.assertIn("known_public_benchmark_physical_support:MET:NUM:22.3.517",
+                      row["exclusion_reason"])
+        self.assertEqual([],split_system.validate_manifest(
+            manifest,meta,profile,json.loads((ROOT/"schemas/split_manifest.schema.json").read_text()),registry))
+
+    def test_fake_benchmark_clearance_cannot_override_exact_public_match(self):
+        meta=self._meta()
+        meta["synthetic_fixture"]=False
+        a=next(x for x in meta["items"] if x["item_id"]=="item-a2")
+        a["institution"]="Brooklyn Museum"
+        a["source_object_id"]="47.218.84"
+        a["benchmark_overlap_review"]={
+            "status":"clear","reviewer_id":"claims-reviewer",
+            "evidence_ref":"https://www.brooklynmuseum.org/collection/",
+            "overlap_check_version":"manual-2026",
+            "roster_version":self._profiles()["benchmark_overlap_policy"]["roster"]["version"],
+            "reviewed_at":"2026-10-10T12:00:00Z"
+        }
+        # A self-filled review object does not override PUBLIC known source match.
+        row=split_system._overlap_exclusion_reason(
+            a,{x["source_id"]:x for x in self._registry()["sources"]},False
+        )
+        self.assertIn("known_public_benchmark_physical_support",row)
+
+    def test_forged_assignment_to_train_detected_on_public_match(self):
+        meta=self._meta();a=next(x for x in meta["items"] if x["item_id"]=="item-a2")
+        a["institution"]="Brooklyn Museum";a["source_object_id"]="47.218.84"
+        registry=self._registry();profile=self._profiles()
+        result=split_system.generate_manifest(meta,profile,"PROFILE-DOC-HOLDOUT",seed=12,registry=registry)
+        row=next(x for x in result["assignments"] if x["item_id"]==a["item_id"])
+        row["partition"]="train";row["exclusion_reason"]=None
+        errs=split_system.validate_manifest(
+            result,meta,profile,json.loads((ROOT/"schemas/split_manifest.schema.json").read_text()),registry
+        )
+        self.assertTrue(any("high-risk benchmark-overlap" in x for x in errs),errs)
+
+    def test_cross_collection_nonmatch_never_gives_rights_or_sealed_clearance(self):
+        result=self.bm.match_item({"institution":"Metropolitan Museum of Art",
+                                    "source_object_id":"09.184.1"})
+        self.assertEqual(result["status"],"UNKNOWN_NOT_CLEARED")
+        self.assertFalse(result["independent_no_overlap_proven"])
+        self.assertFalse(result["sealed_test_items_inspected"])
+
+    def test_real_public_census_group_counts_no_unfrozen_source(self):
+        audit=self.bm.audit_public()
+        self.assertEqual(audit["family_counts"],
+                         {"aku":150,"cbl":16,"met":37,"wm":61,"ypm":2})
+        self.assertEqual(audit["public_records"],
+                         audit["recognized_public_item_count"]+audit["unrecognized_public_rows"])
+        self.assertEqual(audit["original_image_hash_comparison_performed"],False)
+
+
 if __name__ == "__main__":
     unittest.main()

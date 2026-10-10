@@ -36,7 +36,7 @@ Execution agents implement bounded tasks from explicit briefs. They do not redef
 
 The intended cycle is:
 
-`research/reason -> wave plan + agent prompts + overseer assignment (send these FIRST) -> user forwards agent prompts (agents start immediately) -> user returns to overseer chat -> overseer executes parallel work -> evidence -> independent review -> status report -> accept/revise -> state update -> next wave`
+`research/reason -> wave plan + agent prompts + overseer assignment -> user dispatches agents once -> agents implement, test, commit and automatically push task branches -> GitHub automatically opens review PRs when permitted -> agents report exact remote SHA, PR and hosted CI -> overseer independently reviews/merges -> state update -> next wave`
 
 ## 3. Current state
 
@@ -96,6 +96,7 @@ Avoid loading the entire repository into context unless necessary.
 - Every dispatch wave should include meaningful overseer work when a dependency-safe, high-value task exists; the overseer must not sit idle merely because execution agents are running.
 - Before dispatch, the overseer presents each lane's assignment and writes copy-ready prompts. Once Mohammed sends a prompt to an agent, the agent starts immediately; no second approval or planning-only reply. The overseer waits for Mohammed to return after forwarding the agent prompts, then starts its own nonconflicting work immediately without requesting a separate formal approval. Spending, restricted data, protected evaluation and other explicit external gates remain separate.
 - One task/branch should have a bounded write scope.
+- Each agent must push its task branch autonomously and ensure a remotely reviewable PR exists; no manual user relay or post-handoff push request. GitHub workflow `.github/workflows/task-branch-auto-pr.yml` auto-opens nonduplicate task PRs after branch pushes, subject to repository Actions permissions; native Git push must work without relying on `gh` CLI authentication. See `AGENTS.md` for fail-closed fallback.
 - The implementation may change; the capability goal and scientific integrity do not.
 
 ## 7. Progress semantics

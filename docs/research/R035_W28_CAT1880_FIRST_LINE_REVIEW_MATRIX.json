@@ -1,0 +1,114 @@
+{
+  "schema_version": "w28-cat1880-first-line-adjudication/1.0.0",
+  "classification": "RESEARCH_ONLY_UNSENT_NO_HUMAN_GOLD",
+  "prepared_at": "2026-10-10",
+  "original_source_receipt": "docs/research/R026_ORIGINAL_SOURCE_BYTE_RECEIPTS.json",
+  "original_source_receipt_last_verified_at": "2026-10-10",
+  "museum_catalogue": "https://collezioni.museoegizio.it/en-GB/material/Cat_1880",
+  "tpop_document": "https://collezionepapiri.museoegizio.it/en-GB/document/131",
+  "tpop_media_use_policy": "https://collezionepapiri.museoegizio.it/en-GB/section/Papyrus-Database/Policy-on-access-and-publication-of-papyri/",
+  "photo": {
+    "physical_object_id": "MuseoEgizio:Cat1880",
+    "commons_original_file_page": "https://commons.wikimedia.org/wiki/File:The_so-called_%27Strike_Papyrus%27_written_by_Amunnakht_-_Museo_Egizio_Turin_C_1880_p01.jpg",
+    "rights": "CC0_original_file",
+    "hash": "2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5",
+    "bytes": 30364719,
+    "dimension_pixels": [
+      17704,
+      7983
+    ],
+    "source": "R026_PRIOR_ORIGINAL_HOSTED_SOURCE_ONLY",
+    "current_new_byte_acquisition": false
+  },
+  "historical_plate_volume": {
+    "title": "Pleyte/Rossi Papyrus de Turin Volume 2",
+    "file_page": "https://commons.wikimedia.org/wiki/File:Papyrus_de_Turin._(IA_papyrusdeturin02muse).pdf",
+    "license": "PDM",
+    "sha256": "deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0",
+    "bytes": 16926761,
+    "pdf_pages": 400,
+    "document_level_published_plates_roman_range": [
+      "XXXV",
+      "XLVIII"
+    ],
+    "resolved_exact_plate_roman": null,
+    "resolved_pdf_zero_based_page": null,
+    "selected_plate_coordinates": null
+  },
+  "original_support_count": 1,
+  "candidate_text_selector_units": [
+    {
+      "selector": "TPOP Text 1",
+      "physical_line_number": null,
+      "photograph_side": null,
+      "photograph_polygon": null,
+      "printed_plate_roman": null,
+      "pdf_page_zero_based": null,
+      "diagnostic_shared_strokes": [],
+      "line_match_verified": false,
+      "editorial_rights_verified": false
+    },
+    {
+      "selector": "TPOP Text 2",
+      "physical_line_number": null,
+      "photograph_side": null,
+      "photograph_polygon": null,
+      "printed_plate_roman": null,
+      "pdf_page_zero_based": null,
+      "diagnostic_shared_strokes": [],
+      "line_match_verified": false,
+      "editorial_rights_verified": false
+    },
+    {
+      "selector": "TPOP Text 3",
+      "physical_line_number": null,
+      "photograph_side": null,
+      "photograph_polygon": null,
+      "printed_plate_roman": null,
+      "pdf_page_zero_based": null,
+      "diagnostic_shared_strokes": [],
+      "line_match_verified": false,
+      "editorial_rights_verified": false
+    }
+  ],
+  "gated_decision": {
+    "object_identity": "SOURCE_CONFIRMED",
+    "exact_new_photo_bytes_in_w28": "NOT_ACQUIRED",
+    "photographic_file_license": "CC0_INDEPENDENT_FILE_PAGE_PRIOR_R026",
+    "historic_edition_document_relation": "MUSEUM_CATALOGUE_CONFIRMED_SAME_OBJECT",
+    "exact_edition_plate_to_photo_line": "NOT_VERIFIED",
+    "image_to_text_source_coordinate": "NOT_VERIFIED",
+    "editorial_word_transliteration_authorization": "NOT_VERIFIED",
+    "blind_reader_1": "NOT_RECRUITED",
+    "blind_reader_2": "NOT_RECRUITED",
+    "independent_adjudicator": "NOT_RECRUITED",
+    "physical_source_benchmark_exclusion": "UNRESOLVED",
+    "external_trust_root": "NOT_ONBOARDED",
+    "corpus_v1_admitted": false,
+    "blind_hieratic_gold_lines": 0,
+    "qualified_independent_readings": 0,
+    "weighted_points": 0
+  },
+  "required_independent_review": [
+    "publisher_archive_file_version_and_rights",
+    "recto_verso_photo_side_authority",
+    "printed_roman_plate_and_pdf_page_on_actual_original",
+    "three_shared_stroke_anchor_coordinates_plus_transform",
+    "original_photo_line_polygon",
+    "two_blind_qualified_reviewer_diplomatic_readings",
+    "separate_third_scholarly_adjudication",
+    "separately_licensed_new_derived_review_gold",
+    "benchmark_source_ancestry_custodian_clearance",
+    "external_organization_protected_trust_anchor"
+  ],
+  "misuse_prohibitions": [
+    "TPOP Text 1 is not physical line 1",
+    "no inferred PDF pagination",
+    "no p01 generic Commons title alias equated with R026 exact file",
+    "CC0 photo does not license modern editorial text",
+    "one accession multiple images one physical witness",
+    "do not contact museum without user authorization",
+    "no third-party original bytes in repo"
+  ],
+  "outreach_sent": false
+}

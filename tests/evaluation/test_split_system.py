@@ -438,12 +438,14 @@ class W28PublicPhysicalBenchmarkLineageTests(unittest.TestCase):
 
     def test_actual_pinned_public_inventory_diagnostic_is_complete(self):
         audit=self.bm.audit_public()
-        self.assertEqual(audit["recognized_public_item_count"],135)
-        self.assertEqual(audit["recognized_physical_inventory_groups"],90)
-        self.assertEqual(audit["repeated_public_groups"],20)
-        self.assertEqual(audit["unrecognized_public_rows"],131)
-        self.assertEqual(audit["cross_family_public_groups"],[])
-        self.assertEqual(audit["group_sizes"],{1:70,2:9,3:1,4:6,5:4})
+        actual=(audit["recognized_public_item_count"],
+                audit["recognized_physical_inventory_groups"],
+                audit["repeated_public_groups"],
+                audit["unrecognized_public_rows"],
+                audit["group_sizes"],
+                audit["cross_family_public_groups"])
+        expected=(135,90,20,131,{1:70,2:9,3:1,4:6,5:4},[])
+        self.assertEqual(actual,expected)
 
     def test_externally_tampered_manifest_cannot_split_same_publicly_unlisted_museum_object(self):
         meta=self._meta()

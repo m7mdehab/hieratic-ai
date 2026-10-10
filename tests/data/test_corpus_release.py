@@ -20,6 +20,7 @@ from tools.source_registry import load_yaml
 from data.releases import w20_aku_pal_source_audit as akupal_w20
 from data.releases import w20_museum_photo_intake as museum_w20
 from data.releases import w20_build_receipt_manifest as w20_manifest
+from data.releases import w28_candidate_readiness as w28_readiness
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -912,6 +913,100 @@ class CorpusReleaseTests(unittest.TestCase):
         pinned_public = akupal_w20.repository_evidence_bytes(public_path)
         self.assertEqual(akupal_w20.digest(pinned_public), receipt["public_r017_sha256"])
         self.assertEqual(266, receipt["public_r017_row_count"])
+
+    def test_w28_preregistered_source_manifest_and_full_candidate_denominators(self):
+        prereg = json.loads((ROOT / "data/releases/w28_candidate_study_preregistration.json").read_text(encoding="utf-8"))
+        report = json.loads((ROOT / "data/releases/w28_candidate_readiness.json").read_text(encoding="utf-8"))
+        self.assertEqual("PREREGISTERED_BEFORE_NEW_IMAGE_OR_LABEL_RETRIEVAL", prereg["state"])
+        self.assertEqual(159, report["ddd"]["images"])
+        self.assertEqual(50, report["ddd"]["physical_supports"])
+        self.assertEqual(17885, report["ddd"]["publisher_annotations"])
+        self.assertEqual(504, report["ddd"]["publisher_classes"])
+        self.assertEqual(0, report["ddd"]["raw_polygon_annotations_loaded"])
+        self.assertEqual(0, report["retrieval_limits"]["image_bytes_retrieved"])
+        self.assertEqual(0, report["retrieval_limits"]["annotation_payloads_retrieved"])
+        self.assertEqual(1, report["retrieval_limits"]["published_split_membership_payloads_retrieved"])
+        self.assertEqual(2, report["retrieval_limits"]["sample_class_metadata_payloads_retrieved"])
+        cb = report["publisher_c_b_reproduction"]
+        self.assertEqual("REPLAYED_DOCUMENT_SAMPLE_SUPPORT_MEMBERSHIP_PASS_LABEL_SET_DRIFT", cb["reproduction_state"])
+        self.assertEqual([5009, 4623, 5123], [cb["partitions"][key]["sample_count"] for key in ("train", "val", "test")])
+        self.assertEqual([9, 11, 12], [cb["partitions"][key]["physical_support_count"] for key in ("train", "val", "test")])
+        self.assertTrue(cb["document_ids_partition_disjoint"])
+        self.assertTrue(cb["sample_ids_partition_disjoint"])
+        self.assertTrue(cb["physical_supports_partition_disjoint"])
+        self.assertFalse(cb["class_list_matches_sample_metadata"])
+        self.assertEqual(2, cb["class_membership_diagnostic"]["split_only_label_count"])
+        self.assertEqual(2, cb["class_membership_diagnostic"]["sample_only_label_count"])
+        self.assertEqual(32, cb["w24_crosswalk"]["c_b_supports_covered"])
+        self.assertEqual(18, cb["w24_crosswalk"]["c_b_physical_supports_not_in_published_split"])
+        self.assertEqual(report["candidate_count"], len(report["candidate_rows"]))
+        self.assertEqual([], w28_readiness.validate_report(report))
+        ids = {row["candidate_id"] for row in report["candidate_rows"]}
+        self.assertIn("TURIN-CAT2044-013-P01", ids)
+        self.assertIn("TURIN-S6759-ORACLE-TIFF", ids)
+        self.assertIn("TURIN-CAT2169-P01-TIFF", ids)
+        self.assertIn("TOKYO-IIIF-MOLLER-PRINTED-STRIPS", ids)
+        aku = next(row for row in report["candidate_rows"] if row["candidate_id"] == "AKU-PAL-COMPARISON-ONLY")
+        self.assertEqual(240, aku["source_records"])
+        self.assertEqual(63, aku["positive_public_benchmark_overlaps"])
+        self.assertEqual(177, aku["records_rights_or_identity_blocked"])
+        self.assertIsNone(aku["physical_support_group"])
+
+    def test_w28_readiness_rejects_rights_label_promotion_fake_hash_and_source_variant_split(self):
+        report = json.loads((ROOT / "data/releases/w28_candidate_readiness.json").read_text(encoding="utf-8"))
+        ddd_row = next(row for row in report["candidate_rows"] if row["candidate_id"].startswith("DDD-IMAGE-"))
+        tampered = copy.deepcopy(report)
+        row = next(row for row in tampered["candidate_rows"] if row["candidate_id"] == ddd_row["candidate_id"])
+        row["gate_state"]["image_rights"] = "CLEARED"  # dataset CC BY-NC-SA is not photo permission
+        row["admissible_for_training"] = True
+        self.assertTrue(w28_readiness.validate_report(tampered))
+
+        tampered = copy.deepcopy(report)
+        row = next(row for row in tampered["candidate_rows"] if row["candidate_id"] == ddd_row["candidate_id"])
+        row["original_sha256"] = "a" * 64  # no W28 original bytes were retrieved
+        self.assertTrue(any("hash asserted without W28 byte retrieval" in error for error in w28_readiness.validate_report(tampered)))
+
+        tampered = copy.deepcopy(report)
+        related = [row for row in tampered["candidate_rows"] if row.get("accession") == "Cat.1880"]
+        self.assertGreaterEqual(len(related), 2)
+        related[-1]["physical_support_group"] = "MUSEO-EGIZIO:CAT-1880-ROTATED-NEW-SUPPORT"
+        self.assertTrue(any("physical-object variants split" in error for error in w28_readiness.validate_report(tampered)))
+
+        tampered = copy.deepcopy(report)
+        ddd = [row for row in tampered["candidate_rows"] if row["candidate_id"].startswith("DDD-IMAGE-")]
+        same_support = next(group for group in {row["physical_support_group"] for row in ddd}
+                            if sum(row["physical_support_group"] == group for row in ddd) > 1)
+        siblings = [row for row in ddd if row["physical_support_group"] == same_support]
+        siblings[1]["published_split_membership"] = "test" if siblings[0]["published_split_membership"] != "test" else "train"
+        self.assertTrue(any("same physical support crosses publisher partitions" in error for error in w28_readiness.validate_report(tampered)))
+
+    def test_w28_readiness_rejects_label_without_crop_binding_and_production_promotion(self):
+        report = json.loads((ROOT / "data/releases/w28_candidate_readiness.json").read_text(encoding="utf-8"))
+        tampered = copy.deepcopy(report)
+        row = next(row for row in tampered["candidate_rows"] if row["candidate_id"].startswith("DDD-IMAGE-"))
+        row["publisher_polygon_annotation_loaded"] = True
+        self.assertTrue(any("polygon payload without pixel binding" in error for error in w28_readiness.validate_report(tampered)))
+
+        tampered = copy.deepcopy(report)
+        tampered["aggregate"]["corpus_v1_release_created"] = True
+        tampered["aggregate"]["production_release_enabled"] = True
+        tampered["aggregate"]["data008_capability_points_claimed"] = 3
+        self.assertTrue(w28_readiness.validate_report(tampered))
+
+    def test_w28_readiness_rejects_benchmark_ancestry_unknown_as_clearance_and_print_as_photo(self):
+        report = json.loads((ROOT / "data/releases/w28_candidate_readiness.json").read_text(encoding="utf-8"))
+        row = next(row for row in report["candidate_rows"] if row["candidate_id"] == "TOKYO-IIIF-MOLLER-PRINTED-STRIPS")
+        self.assertIn("not original manuscript photograph", row["photo_type"])
+        self.assertEqual("UNKNOWN_QUARANTINED", row["benchmark_state"])
+        tampered = copy.deepcopy(report)
+        row = next(row for row in tampered["candidate_rows"] if row["candidate_id"].startswith("DDD-IMAGE-"))
+        row["benchmark_state"] = "CLEARED"
+        self.assertTrue(w28_readiness.validate_report(tampered))
+
+    def test_w28_readiness_digest_detects_source_ledger_drift(self):
+        report = json.loads((ROOT / "data/releases/w28_candidate_readiness.json").read_text(encoding="utf-8"))
+        report["candidate_rows"][0]["rejection_reasons"].append("silently changed")
+        self.assertIn("readiness evidence digest mismatch", w28_readiness.validate_report(report))
 
 
 if __name__ == "__main__":

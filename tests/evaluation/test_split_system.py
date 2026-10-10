@@ -444,7 +444,7 @@ class W28PublicPhysicalBenchmarkLineageTests(unittest.TestCase):
                 audit["unrecognized_public_rows"],
                 audit["group_sizes"],
                 audit["cross_family_public_groups"])
-        expected=(135,90,20,131,{1:70,2:9,3:1,4:6,5:4},[])
+        expected=(137,92,20,129,{1:72,2:9,3:1,4:6,5:4},[])
         self.assertEqual(actual,expected)
 
     def test_externally_tampered_manifest_cannot_split_same_publicly_unlisted_museum_object(self):

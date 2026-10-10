@@ -1,6 +1,6 @@
 # R033 / W26 — Original DDD per-image visual research admission preflight
 
-**Status:** Implementation plus 16 local adversarial tests completed; original publisher replay and hosted CI need independent verification. **This is not a Hieratic reader or model.**
+**Status:** Accepted as a verified original-publisher rights/lineage **research preflight**, not recognition science. [Original publisher-source and 16-test CI run](https://github.com/m7mdehab/hieratic-ai/actions/runs/38049276587) **SUCCESS**, [independent governance CI](https://github.com/m7mdehab/hieratic-ai/actions/runs/38049276610) **SUCCESS**; [implementation PR #143](https://github.com/m7mdehab/hieratic-ai/pull/143) merged `6f277e48d0bc9aed066bc8396f334da1d5648b64`. **This is not a Hieratic reader or model.**
 
 ## Scientific gap
 
@@ -23,7 +23,7 @@ Run:
 
 ## Acceptance and conservative reporting
 
-16 local synthetic/adversarial regression tests passed. Hosted workflow must pass exact-head tests **and** fetch all three original publisher sources before original-source execution can be claimed. On HTTP refusal or source drift, fail and report rather than substituting fixtures. The metadata-source preflight establishes blockers and their witness-group scope; it does not resolve them. **No visual model, heldout sign accuracy, admitted DDD images, new blind expert gold, or capability points.** Do not inflate current 34.5/100 weighted goal, 17/100 internal research breadth, DATA-008 0/3 or VLM-001 0/2 for this gate alone.
+16 synthetic/adversarial regression tests passed both locally and on the exact hosted PR head. Exact hosted source replay verified all **159 original publisher images, 17,885 original annotation rows, 504 classes and 50 manuscript groups** against original Zenodo MD5 and SHA256. **38 of 159 images had placeholder copyright claims**, and all 159 had TPOP document metadata; there were **48 distinct copyright strings**. The immutable-order private ledger SHA256 is `7bcb4dc2ccdb6acb4322b3bc81ec7c8b4845e05f6056b64d37510b59e2ea4664`. Only the **aggregate-only** 14-day artifact (ID `11668687638`) was uploaded. Future source refusal or drift must fail rather than substitute fixtures. The metadata-source preflight establishes blockers and their witness-group scope; it does not resolve them. **No visual model, heldout sign accuracy, admitted DDD images, new blind expert gold, or capability points.** Do not inflate current 34.5/100 weighted goal, 17/100 internal research breadth, DATA-008 0/3 or VLM-001 0/2 for this gate alone.
 
 ## Next scientifically consequential execution
 

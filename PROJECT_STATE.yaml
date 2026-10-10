@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W25_FIVE_REAL_AKUPAL_PUBLISHER_SCAN_PIXELS_FOUR_SUPPORTS_NO_OCR"
+  current_wave: "W26_DDD_ORIGINAL_PER_IMAGE_RIGHTS_AND_GROUP_PREFLIGHT_NO_VISUAL_MODEL"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0
@@ -38,6 +38,7 @@ state:
     - "EVAL-003"
   review_tasks: []
   blockers:
+    - "W26 original-publisher DDD visual research preflight accepted as a rights/lineage audit, NOT a reading model. Exact three Zenodo publisher MD5+SHA256 original sources verified in hosted GitHub source workflow 38049276587; governance 38049276610 PASS; 16 adversarial tests PASS; PR #143 merged as 6f277e48d0bc9aed066bc8396f334da1d5648b64. Per-source inventory: 159 images, 50 physical witness clusters, 17885 genuine sample labels, 504 classes, 48 original copyright claim strings, 38 placeholder copyright claims, all 159 have TPOP document metadata. Fixed W24 diagnostic split 35/7/8 zero source overlap; Cat1880 003+004 remain one group. All 159 source images are rights/benchmark/byte-provenance QUARANTINED; no actual image pixels, model training, independent blind gold, accuracy metric or eligible DATA008 corpus. No new weighted/scientific coverage points: capability 34.5, research-space coverage 17."
     - "W25 FIRST genuine original-publisher SIGN SCAN PIXEL quantitative research achieved, without museum reply. Original publisher AKU-PAL five historical printed scan WebPs source-SHA256 validated against separately accepted W19 per-item CC BY4 receipts over FOUR physical papyrus witnesses (IDs 2448,6066,56377,5862,5447). Original grayscale/dark-pixel and image-gradient metrics computed on five actual originals, 11 tests passed, hosted W25 source runtime 38034116590 and governance 38034116540 SUCCESS, PR #141 merged 1258fe28f08fa1eaf258cba02766a1404a1489c7. Original Museo Egizio Cat1880 CC0 photo live request HTTP429, blocked without bypass; separate publisher images independently available. No original images committed, no training, no labeled visual classifier, no OCR accuracy, no manuscript-line expert gold or benchmark clearance. Research breadth only +1 (16->17), new original-pixel empirical axis; weighted capability 34.5 unchanged."
     - "W23-W24 autonomous no-new-expert annotated DDD publisher corpus research execution VERIFIED. W23 independently fetched 5 Zenodo original publisher metadata/label files under their exact MD5 and new SHA256, 159 images, 50 original document clusters, 17,885 scholarly sign/group samples, 504 publisher class definitions and 48 per-image copyright descriptions, explicitly licensed CC BY-NC-SA research-only. Cat1880 original/rotated 003+004 same physical cluster; publisher C-B/O-B are document-aware, C-C/C-D sample-random not. W24 independently ran real ORIGINAL METADATA 17,885 source samples; immutable 35/7/8 witness-group diagnostic split with 15,426/893/1,566 labels, NO group overlap, 490 train classes/219 test classes, 10 unseen test labels, negative majority-label only control 81/1566 = 5.172414% (NOT visual accuracy). Naive source-ignorant random sample split contaminates 49/50 physical source groups. W23 source and governance workflows 38005712368/38005712364 passed, PR #138 merged 4f4f5708866948c8af9f7026babc651df5ffcb9f. W24 source and governance 38006314679/38006314589 passed, PR #139 merged 339c50ac7ed28a1ce3b4da69716f61a0c26dd87c. Publisher image rights are per-item, split is project diagnostic NOT official DDD C-B, no original images downloaded/visual model/independent blind gold/benchmark overlap approval or production DATA-008 corpus. Goal 34.5/100 unchanged. Research-space exploration +2.0 to 16/100 via documented first original expert-annotation dataset axis and authentic grouped empirical negative-control axis; NOT a model result or earned weighted capability."
     - "W21 R026 Cat1880 research-only ORIGINAL BINARY ACCESS achieved and independently host verified: exactly museum CC0 original p01 30,364,719 bytes 17704x7983 SHA256 2f637e7d59785cce7308e478f6a59fb5c54e0ba9c694621e4072c8b2f2594ee5, and Pleyte/Rossi PDM historical facsimile vol2 400-page 16,926,761-byte PDF SHA256 deec087699eafa5ceee87a2d7e2887590e09b4d2308e40ac6c57b0757c5e43b0. Original Wikimedia file SHA1/size/rights all match. Hosted source audit 38000390567 and governance 38000390402 exact head success; software/evidence #133 merged 1738a6d7d9678664019565ef1f6dea186e420d72. Historic printed plates XXXV–XLVIII are still NOT cross-registered to a specific original-image line; PDF original byte page index differs from print plate numbers and page faces alternate with blank pages. Source binaries transient/deleted, no authorized production vault, no expert gold, benchmark overlap unresolved, DATA-008 remains 0/3 and capability 34.5/100. Additional later requests hit HTTP429; no bypass."
@@ -89,24 +90,4 @@ critical_gates:
     status: "not_started"
 
 next_overseer_action: >-
-  W25 independently accepted first five SHA-pinned genuine original
-  scholarly Hieratic scanned sign IMAGE pixel diagnostics on four
-  source-object groups, not an OCR model. Hosted original-pixel run
-  38034116590 and governance 38034116540 success; PR #141 merged
-  1258fe28f08fa1eaf258cba02766a1404a1489c7. Source results/identities and exact Otsu density evidence
-  docs/research/R032_REAL_ORIGINAL_PIXEL_RECEIPTS.json. User explicitly
-  asks maximum parallel autonomous research, no waiting for Egyptian
-  museum response or external expert bottlenecks when alternate legal
-  original published sources available. Research-space qualitative
-  breadth 16 -> 17 for new authentic SOURCE-PIXEL axis; capability
-  weighted 34.5/100 unchanged, no new accepted OCR/line gold.
-  Original Cat1880 photograph current Commons HTTP429: respect source
-  throttling, do not evade; publisher CC BY signs available as alternate.
-  Next: maximize exact per-image licensed DDD/CC0 scientific source
-  enrollment and execute a genuine original PIXEL visual learned or
-  nearest-neighbor heldout sign baseline with physically group-
-  independent evaluation only if permission/source/benchmark checks
-  pass. Keep DDD NC source separate from commercial corpus_v1;
-  do not treat publisher labels as two blind independent adjudicators.
-  DATA008 0/3, VLM001 0/2, LING003 0/2 and no accepted
-  end-to-end Hieratic handwriting decipherment accuracy.
+  W26 per-image DDD original publisher research preflight scientifically accepted as source/rights research-only; CI 38049276587 and governance 38049276610 PASS, PR #143 merged 6f277e48d0bc9aed066bc8396f334da1d5648b64. Publisher original 159 images / 50 physical source supports / 17885 signs / 504 classes; 38 placeholder item copyright claims among 48 original categories. Source-group research diagnostic 35/7/8 zero witness overlap. Every real image remains blocked for model ingestion without exact source/photo/crop identity and independent item-specific rights and benchmark overlap review. Weighted goal remains 34.5/100, qualitative research coverage 17/100, no authenticated genuine cross-source visual classifier, no accepted OCR/line gold, DATA-008 0/3, VLM-001 0/2. Next: independently map the subset of source originals to individual museum/TPOP original-image rights and byte/hash lineage; run public benchmark ancestry/near-duplicate analysis without sealed answers; freeze real publisher C-B or appropriately labeled project diagnostic split. Only then execute a genuine original-pixel CPU sign classifier with negative controls and full physical-support-disjoint denominator. Museum expert response to issue #136 is independent; do not wait on it or bypass source throttling; no paid services without permission.

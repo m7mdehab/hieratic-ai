@@ -860,5 +860,153 @@ class W7FirstRealRunDecisionTests(unittest.TestCase):
 
 
 
+
+class W28PrivateProviderProvenanceTests(unittest.TestCase):
+    """Synthetic fixture consistency cannot prove paid provider inference."""
+    def setUp(self):
+        from hashlib import sha256
+        self.hash=sha256
+        self.tmp=tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.d=Path(self.tmp.name)
+        self.h="a"*64
+        self.attempt={"item_id":"public-id","rung":"identify","sample_index":0,
+                      "prompt_sha256":self.h,"image_sha256":self.h,
+                      "model_id":"test-model","request_config_sha256":self.h,
+                      "requested_at":"2026-10-10T12:00:00Z","max_usd":0.2}
+        self.response={"item_id":"public-id","rung":"identify","sample_index":0,
+                       "model_id":"test-model","prompt_sha256":self.h,
+                       "image_sha256":self.h,"request_config_sha256":self.h,
+                       "status":"ok","response_id":"resp0","responded_at":"2026-10-10T12:00:01Z",
+                       "response_text":"test answer",
+                       "response_sha256":self.hash(b"test answer").hexdigest()}
+        self.ev={"provider_event_id":"billing0","response_id":"resp0",
+                 "model_id":"test-model","created_at":"2026-10-10T12:00:02Z",
+                 "request_config_sha256":self.h,"provider_cost_usd":0.01,
+                 "event_status":"ok"}
+        self.receipt={"schema_version":"1.0.0","run_id":"synthetic",
+                      "provider":"openai","model_id":"test-model",
+                      "frozen_source_sha256":self.h,"attempts_sha256":"",
+                      "responses_sha256":"","account_export_sha256":"",
+                      "authorization_state":"APPROVED_EXTERNALLY",
+                      "spend_approved_usd":0.25,
+                      "claimed_export_origin":"synthetic only"}
+        self.a=[self.attempt];self.o=[self.response];self.e=[self.ev]
+
+    def audit(self):
+        from eval.baselines import w28_provider_custody as w
+        files={}
+        for label,rows in (("attempts",self.a),("responses",self.o),
+                           ("account_export",self.e)):
+            p=self.d/(label+".jsonl")
+            p.write_text("".join(json.dumps(x,sort_keys=True)+"\n" for x in rows),encoding="utf-8")
+            files[label]=p
+            self.receipt[label+"_sha256"]=self.hash(p.read_bytes()).hexdigest()
+        p=self.d/"receipt.json"
+        p.write_text(json.dumps(self.receipt),encoding="utf-8")
+        return w.audit_private_provider_events(files["attempts"],files["responses"],
+                                               files["account_export"],p)
+
+    def test_structurally_consistent_but_independent_authentication_absent(self):
+        v=self.audit()
+        self.assertEqual(v["planned_attempts"],1)
+        self.assertEqual(v["claimed_cost_usd"],0.01)
+        self.assertFalse(v["model_forward_pass_proven"])
+        self.assertFalse(v["export_independently_authenticated_by_provider"])
+        self.assertEqual(v["eval003_milestone_points"],0)
+
+    def test_unauthorized_spending_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.receipt["authorization_state"]="UNAPPROVED"
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_over_budget_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.receipt["spend_approved_usd"]=0.001
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_changed_model_or_prompt_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.response["prompt_sha256"]="b"*64
+        with self.assertRaises(w.CustodyError):self.audit()
+        self.response["prompt_sha256"]=self.h
+        self.ev["model_id"]="other"
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_tampered_response_bytes_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.response["response_text"]="tampered"
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_timestamp_rollback_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.response["responded_at"]="2026-10-10T11:59:00Z"
+        with self.assertRaises(w.CustodyError):self.audit()
+        self.response["responded_at"]="2026-10-10T12:00:01Z"
+        self.ev["created_at"]="2026-10-10T12:09:00Z"
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_duplicates_and_denominator_gaps_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.a.append(dict(self.attempt))
+        with self.assertRaises(w.CustodyError):self.audit()
+        self.a.pop()
+        self.o=[]
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_duplicate_provider_response_id_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.a.append(dict(self.attempt,item_id="other"))
+        self.o.append(dict(self.response,item_id="other"))
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_missing_provider_account_event_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.e=[]
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_negative_bill_or_wrong_external_config_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.ev["provider_cost_usd"]=-1
+        with self.assertRaises(w.CustodyError):self.audit()
+        self.ev["provider_cost_usd"]=0.01
+        self.ev["request_config_sha256"]="0"*64
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_bool_sample_and_unknown_rung_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.attempt["sample_index"]=False
+        with self.assertRaises(w.CustodyError):self.audit()
+        self.attempt["sample_index"]=0
+        self.attempt["rung"]="fake-rung"
+        with self.assertRaises(w.CustodyError):self.audit()
+
+    def test_private_original_custody_cannot_be_repodir(self):
+        from eval.baselines import w28_provider_custody as w
+        with self.assertRaises(w.CustodyError):w._priv(w.ROOT/"eval/baselines/suite.yaml")
+
+    def test_paired_denominator_mismatch_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        a=[{"item_id":"a","rung":"identify","sample_index":0,"status":"ok"}]
+        b=[{"item_id":"b","rung":"identify","sample_index":0,"status":"ok"}]
+        with self.assertRaises(w.CustodyError):w.paired_coverage(a,b)
+
+    def test_paired_coverage_does_not_invent_accuracy(self):
+        from eval.baselines import w28_provider_custody as w
+        a=[{"item_id":"a","rung":"identify","sample_index":0,"status":"ok"},
+           {"item_id":"b","rung":"signs","sample_index":0,"status":"failed"}]
+        b=[{"item_id":"b","rung":"signs","sample_index":0,"status":"ok"},
+           {"item_id":"a","rung":"identify","sample_index":0,"status":"ok"}]
+        x=w.paired_coverage(a,b)
+        self.assertEqual(x["paired_attempts"],2)
+        self.assertEqual(x["both_successes"],1)
+        self.assertIsNone(x["model_ranking_or_accuracy"])
+
+    def test_extra_self_authorization_metadata_is_rejected(self):
+        from eval.baselines import w28_provider_custody as w
+        self.response["verified_is_real"]=True
+        with self.assertRaises(w.CustodyError):self.audit()
+
+
 if __name__=="__main__":
     unittest.main()

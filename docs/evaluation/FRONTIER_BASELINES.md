@@ -348,3 +348,25 @@ python -m unittest tests.evaluation.test_frontier_baselines -v
 The W7 auditor cross-checks the R-022 linked object group, published model identities/rates and the prior official 266-public-only source snapshot, rejects false paid permissions/score promotion, and can only output `execution_authorized: false`. It **cannot** validate actual third-party letters, legal agreements, institutional identities, real API credentials or actual provider outputs. **No provider calls occurred** and no first scientific Hieratic prediction was scored in W7 overseer work. The entire decision remains `NOT_EXECUTED_NONCERTIFIABLE`.
 
 **Minimum owner inputs needed for a genuine P0 run:** choice of API provider account, availability and right to use its API key, a specific USD budget ceiling, an authenticated permitted image input, a genuinely protected raw-capture store and permission to transmit one user-owned generated image under the relevant API data-use policy. External correspondence/expert fees and Met original image acquisition remain separate authorizations.
+
+
+## W28: independent private provider-export reconciliation and real-inference admission boundary
+
+**Implementation:** `eval/baselines/w28_provider_custody.py`; no provider SDK, no billed calls, no sealed cases. The independent first-party `run_freeze.audit_original_capture` already checks a frozen request/capture's private byte identity, not provider execution. W28 adds a **different check** that joins (1) originally frozen per-item requests, (2) private raw responses and failure rows, (3) independently *claimed* provider account event export and billing records, and (4) a separate private run manifest by exact request/response ID, timestamps, SHA-256 of raw prompt, original image and model config, provider ID, response text, request max-spend and final aggregate cost. No public corpus images or raw response text are committed.
+
+To audit a valid existing prior *private* run (only with independently approved access):
+```bash
+python -m eval.baselines.w28_provider_custody audit-private \
+  --attempts /external-private/attempts.jsonl \
+  --responses /external-private/responses.jsonl \
+  --account-export /external-private/provider-export.jsonl \
+  --attestation /external-private/custody-manifest.json
+```
+
+The four files must exist outside this public checkout and must not be symlinked or exceed byte limits. The runner rejects unknown fields, omitted or duplicated item/rung/sample attempt IDs, broken per-input prompt/image/config hashes, malformed UTC timestamps, backwards request/response timing, contradictory model IDs, forged per-response content hashes, absent/duplicate provider response IDs or claimed account events, stale account-event timestamps, over-budget/surprise spend and non-zero attempts under UNAPPROVED authorization. Failed, refused, timeout and abstained attempts count fully.
+
+**Crucial epistemic limit:** matching two editable local files (even if they carry plausible account event identifiers and SHA-256) is **not independent proof** that OpenAI, Google or Anthropic executed anything. Only an authenticated externally controlled account/provider report, a valid independent evidence custodian, original provider output and authorized official scoring can establish high-trust evidence. The output intentionally says `export_independently_authenticated_by_provider=false`, `model_forward_pass_proven=false`, `official_scorer_replayed=false` and `eval003_milestone_points=0` even when the synthetic fixtures reconcile. Local metadata `authorization_state=APPROVED_EXTERNALLY` is a *claim* and must not give budget permission by itself; real credentials and budget authorization are separately required.
+
+The secondary `paired-coverage` compares only identical keys and produces success/failure population counts; it never creates accuracy, BLEU, sign top-1, ranking or semantic evidence without the independently pinned official scorer and known real item gold.
+
+**Current W28 outcome:** no new commercial provider inference authorized/executed, no independently authenticated provider event export supplied, and no original third-party raw response archive supplied to this task. EVAL-003 remains **0/1.5** and canonical weighted progress **34.5/100** pending genuine approval, independent original-provider calls and admissible official source scoring. No published price quote/model token cost should be treated current without fresh independent provider verification; do not assume $0 website subscriptions entitle licensed API inference.

@@ -1,0 +1,38 @@
+name: W27 Original Tokyo IIIF Printed-Palaeography Pixels
+
+on:
+  pull_request:
+    paths:
+      - 'tools/research_hpdb_original_pixels.py'
+      - 'tests/research/test_hpdb_original_pixels.py'
+      - 'docs/research/R034_W27_TOKYO_IIIF_IMAGE_RIGHTS_AND_PIXEL_RESEARCH.md'
+      - '.github/workflows/w27-utokyo-iiif-original-pixels.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  genuine-original-pixels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned original-pixel decoder
+        run: python -m pip install Pillow==11.3.0
+      - name: Run frozen W27 source and adversarial tests
+        run: python -m unittest tests.research.test_hpdb_original_pixels -v
+      - name: Fetch genuine eligible original Tokyo IIIF crops and run visual 1NN
+        run: |
+          python -m tools.research_hpdb_original_pixels --output "${RUNNER_TEMP}/r034-real-original-pixels.json"
+          python -c 'import json,os; r=json.load(open(os.environ["RUNNER_TEMP"]+"/r034-real-original-pixels.json")); assert r["publisher_original_pixels_used"] and not r["original_papyrus_photographs_used"] and not r["benchmark_independence_proven"] and r["capability_points"]==0 and r["result"]["training_samples"]==16 and r["result"]["test_samples"]==8'
+      - name: Publish only original-image SHA metadata and research metrics
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w27-original-iiif-source-pixel-hash-and-diagnostic
+          path: ${{ runner.temp }}/r034-real-original-pixels.json
+          retention-days: 14

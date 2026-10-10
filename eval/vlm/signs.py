@@ -1560,11 +1560,27 @@ def execute_sign_replay_experiment_w27(
         ledger_dir.mkdir(parents=True, exist_ok=True)
         ledger_path = ledger_dir / f"{run_id}_ledger.jsonl"
 
+    # Explicit --ledger-path resumes the same frozen run, not a new run
+    # wearing the old attempt IDs. Reuse its durable run identity.
+    if ledger_path.is_file() and ledger_path.stat().st_size > 0:
+        with ledger_path.open("r", encoding="utf-8") as prior_file:
+            first_event = json.loads(prior_file.readline())
+        if first_event.get("record_type") not in ("dispatch", "skip"):
+            raise LedgerIntegrityError("Existing ledger lacks initial durable dispatch/skip")
+        prior_run_id = first_event.get("run_id")
+        if not isinstance(prior_run_id, str) or not prior_run_id.startswith("w27_replay_"):
+            raise LedgerIntegrityError("Existing ledger has invalid W27 run identity")
+        run_id = prior_run_id
+
     ledger = DurableAttemptLedger(
         ledger_path=ledger_path,
         run_id=run_id,
         protocol_fingerprint=protocol_fp,
     )
+    # A process can die between fsynced dispatch and completion. The
+    # outcome is unknowable; never silently dispatch the same ID again.
+    # Append an explicit UNKNOWN_OUTCOME failed completion before resuming.
+    recovered_incomplete_attempt_ids = ledger.resolve_interrupted_attempts()
 
     attempt_counter = 0
 

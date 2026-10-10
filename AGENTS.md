@@ -40,6 +40,19 @@ Do not modify files outside the task's write scope without explicit authorizatio
 
 Parallel agents must not share mutable output directories or edit the same canonical file concurrently unless the overseer explicitly coordinates the merge.
 
+## Automatic remote publication and PR handoff (mandatory)
+
+**A local commit is not task completion.** When an execution agent finishes its within-scope work, it must autonomously publish the task branch to the canonical remote and hand over a remotely reviewable PR. This is part of the original task dispatch, not a separate user approval or follow-up request.
+
+1. Verify the repo remote, current branch, latest commit and clean or explicitly accounted-for working tree. Keep unrelated user changes, credentials, private inference ledgers, copyrighted pixels/weights and unapproved artifacts out of Git.
+2. Run the task's local checks. Commit the scoped changes on `task/<TASK-ID>-<short-slug>` with a substantive message.
+3. Publish with native `git push -u origin HEAD` using configured credential helpers or the agent's approved GitHub connector. **Do not assume that lack of `gh` CLI authentication prevents a normal Git push.** Do not ask the user to issue the push command or copy code between agents.
+4. **PR creation is automatic on every task branch push** using `.github/workflows/task-branch-auto-pr.yml`, if repository Actions permissions allow it. Prefer the agent's authenticated GitHub connector or `gh pr create` to publish a complete acceptance/evidence description. Check for an existing PR before creating another; never create duplicate PRs. If automated opening fails, the agent must try an approved GitHub integration and report the exact auth/policy error to the overseer.
+5. The final agent handoff must include actual remote branch URL, exact `origin/<branch>` SHA, PR URL/number (or a clear `PR_CREATION_BLOCKED` status), hosted check links/status where available, scoped changed files, test evidence, and source/rights/claim boundaries. **Never describe a local-only branch or past-wave CI as remotely verifiable W27 evidence.**
+6. CI failure is not completion: fix within scope, push to the same branch, watch exact-head checks and repeat until they pass or a concrete externally blocked gate is identified. The independent overseer—not the execution agent—reviews, merges, and awards any scientific credit.
+
+If `git push` fails due to credentials/host restrictions: use a previously approved connector/credential manager without revealing tokens. If no approved route works, export a precise patch/source archive without secrets and explicitly declare `REMOTE_PUBLICATION_BLOCKED`. Do not pretend the work was published, and do not wait for the user to ask whether it has been pushed.
+
 ## Scientific integrity
 
 Never:

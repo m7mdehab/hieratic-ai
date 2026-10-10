@@ -18,7 +18,7 @@ class GovernanceCITests(unittest.TestCase):
         workflow = yaml.load(workflow_path.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
 
         self.assertEqual(["main"], workflow["on"]["pull_request"]["branches"])
-        self.assertEqual(["main"], workflow["on"]["push"]["branches"])
+        self.assertEqual(["main", "task/**"], workflow["on"]["push"]["branches"])
         self.assertEqual({"contents": "read"}, workflow["permissions"])
 
         steps = workflow["jobs"]["governance"]["steps"]
@@ -30,6 +30,11 @@ class GovernanceCITests(unittest.TestCase):
         self.assertIn("python -m tools.projectctl validate", commands)
         self.assertIn("python -m unittest discover -s tests/governance -v", commands)
         self.assertTrue(all("continue-on-error" not in step for step in steps))
+        guard = next(s for s in steps if "Enforce actual changed-file write scope" in s.get("name", ""))
+        self.assertIn("github.event_name == 'push'", guard["if"])
+        self.assertIn("startsWith(github.ref_name, 'task/')", guard["if"])
+        self.assertIn("git\", \"merge-base\", \"origin/main\", \"HEAD", guard["run"])
+        self.assertIn("check_scope(match.group(1), changed", guard["run"])
 
     def test_pull_request_template_requests_the_evidence_package(self) -> None:
         template = (ROOT / ".github" / "pull_request_template.md").read_text(encoding="utf-8")

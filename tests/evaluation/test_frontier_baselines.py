@@ -899,7 +899,7 @@ class W28PrivateProviderProvenanceTests(unittest.TestCase):
         for label,rows in (("attempts",self.a),("responses",self.o),
                            ("account_export",self.e)):
             p=self.d/(label+".jsonl")
-            p.write_text("".join(json.dumps(x,sort_keys=True)+"\\n" for x in rows),encoding="utf-8")
+            p.write_text("".join(json.dumps(x,sort_keys=True)+"\n" for x in rows),encoding="utf-8")
             files[label]=p
             self.receipt[label+"_sha256"]=self.hash(p.read_bytes()).hexdigest()
         p=self.d/"receipt.json"

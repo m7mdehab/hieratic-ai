@@ -436,6 +436,36 @@ class W28PublicPhysicalBenchmarkLineageTests(unittest.TestCase):
         self.assertFalse(result["independent_no_overlap_proven"])
         self.assertFalse(result["sealed_test_items_inspected"])
 
+    def test_actual_pinned_public_inventory_diagnostic_is_complete(self):
+        audit=self.bm.audit_public()
+        self.assertEqual(audit["recognized_public_item_count"],135)
+        self.assertEqual(audit["recognized_physical_inventory_groups"],90)
+        self.assertEqual(audit["repeated_public_groups"],20)
+        self.assertEqual(audit["unrecognized_public_rows"],131)
+        self.assertEqual(audit["cross_family_public_groups"],[])
+        self.assertEqual(audit["group_sizes"],{1:70,2:9,3:1,4:6,5:4})
+
+    def test_externally_tampered_manifest_cannot_split_same_publicly_unlisted_museum_object(self):
+        meta=self._meta()
+        a=next(x for x in meta["items"] if x["item_id"]=="item-a2")
+        b=next(x for x in meta["items"] if x["item_id"]=="item-a3")
+        a["institution"]=b["institution"]="Metropolitan Museum of Art"
+        a["source_object_id"]=b["source_object_id"]="22.3.599"
+        profile=self._profiles(); registry=self._registry()
+        manifest=split_system.generate_manifest(
+            meta,profile,"PROFILE-DOC-HOLDOUT",seed=12,registry=registry
+        )
+        assigned={row["item_id"]:row for row in manifest["assignments"]}
+        self.assertEqual(assigned[a["item_id"]]["partition"],
+                         assigned[b["item_id"]]["partition"])
+        assigned[a["item_id"]]["partition"]="train"
+        assigned[b["item_id"]]["partition"]="test"
+        errors=split_system.validate_manifest(
+            manifest,meta,profile,
+            json.loads((ROOT/"schemas/split_manifest.schema.json").read_text()),registry
+        )
+        self.assertTrue(any("physical accession MET:NUM:22.3.599 overlaps partitions" in e for e in errors),errors)
+
     def test_real_public_census_group_counts_no_unfrozen_source(self):
         audit=self.bm.audit_public()
         self.assertEqual(audit["family_counts"],

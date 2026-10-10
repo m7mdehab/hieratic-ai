@@ -44,6 +44,66 @@ class LedgerDuplicateAttemptError(LedgerError):
     pass
 
 
+class LedgerLockError(LedgerError):
+    """Raised when ledger cannot be locked due to concurrent writer access."""
+    pass
+
+
+try:
+    import msvcrt
+except ImportError:
+    msvcrt = None
+
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+
+
+def _acquire_exclusive_lock(lock_path: Path) -> Any:
+    """Acquire non-blocking exclusive lock on dedicated lock file, raising LedgerLockError if held."""
+    handle = open(lock_path, "a+")
+    fileno = handle.fileno()
+    try:
+        if msvcrt is not None:
+            handle.seek(0)
+            msvcrt.locking(fileno, msvcrt.LK_NBLCK, 1)
+        elif fcntl is not None:
+            fcntl.flock(fileno, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (OSError, IOError) as exc:
+        handle.close()
+        raise LedgerLockError(f"Concurrent ledger access rejected: file is locked by another writer ({exc})") from exc
+    return handle
+
+
+def _release_exclusive_lock(handle: Any, lock_path: Path | None = None) -> None:
+    """Release exclusive file lock and clean up handle."""
+    if handle is not None and not handle.closed:
+        try:
+            fileno = handle.fileno()
+            if msvcrt is not None:
+                handle.seek(0)
+                msvcrt.locking(fileno, msvcrt.LK_UNLCK, 1)
+            elif fcntl is not None:
+                fcntl.flock(fileno, fcntl.LOCK_UN)
+        except Exception:
+            pass
+        try:
+            handle.close()
+        except Exception:
+            pass
+    # A stable lockfile must remain after unlocking. Unlinking permits another
+    # process to hold an old inode lock while a third writer locks a new inode.
+
+
+def validate_ledger_path(path: Path | str) -> Path:
+    """Validate ledger path and ensure it is not a directory or escaping path."""
+    p = Path(path).resolve()
+    if p.is_dir():
+        raise LedgerError(f"Ledger path must be a file, got directory: {p}")
+    return p
+
+
 def iso_utc_now() -> str:
     """Return ISO 8601 UTC timestamp ending in 'Z'."""
     return datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
@@ -60,7 +120,7 @@ class DurableAttemptLedger:
         *,
         read_only: bool = False,
     ) -> None:
-        self.ledger_path = Path(ledger_path).resolve()
+        self.ledger_path = validate_ledger_path(ledger_path)
         self.run_id = run_id
         self.protocol_fingerprint = protocol_fingerprint
         self.read_only = read_only
@@ -71,19 +131,26 @@ class DurableAttemptLedger:
         self._finalized_attempts: dict[str, dict[str, Any]] = {}
         self._attempt_order: list[str] = []
 
-        # Ensure directory exists
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # Load existing records if file exists (enables crash recovery & resume)
-        if self.ledger_path.is_file():
-            audit = verify_ledger_file_integrity(self.ledger_path, allow_incomplete=True)
-            if not audit["valid"]:
-                raise LedgerIntegrityError("Existing attempt ledger failed verification: " + "; ".join(audit["errors"][:4]))
-            self._load_existing_records()
-
         self._file_handle = None
+        self._lock_handle = None
+        self._lock_path = self.ledger_path.with_name(self.ledger_path.name + ".lock")
+        # Lock before reading/auditing existing content. Snapshotting before
+        # acquiring the lock races with a second writer's append.
         if not self.read_only:
-            self._file_handle = open(self.ledger_path, "a", encoding="utf-8")
+            self._lock_handle = _acquire_exclusive_lock(self._lock_path)
+        try:
+            if self.ledger_path.is_file():
+                audit = verify_ledger_file_integrity(self.ledger_path, allow_incomplete=True)
+                if not audit["valid"]:
+                    raise LedgerIntegrityError("Existing attempt ledger failed verification: " + "; ".join(audit["errors"][:4]))
+                self._load_existing_records()
+            if not self.read_only:
+                self._file_handle = open(self.ledger_path, "a", encoding="utf-8")
+        except Exception:
+            _release_exclusive_lock(self._lock_handle, self._lock_path)
+            self._lock_handle = None
+            raise
 
     def _load_existing_records(self) -> None:
         """Parse existing records and populate state."""
@@ -117,6 +184,11 @@ class DurableAttemptLedger:
                         raise LedgerIntegrityError(
                             f"Orphan completion without prior dispatch at line {line_no}: {att_id}"
                         )
+                    status = record.get("status")
+                    if status not in ("success", "failed"):
+                        raise LedgerIntegrityError(f"Invalid completion status at line {line_no}: {status}")
+                    if status == "success" and record.get("error_category", "none") != "none":
+                        raise LedgerIntegrityError(f"Success completion with error category at line {line_no}")
                     self._completions[att_id] = record
                     disp = self._dispatches[att_id]
                     self._finalized_attempts[att_id] = self._merge_attempt(disp, record)
@@ -239,6 +311,14 @@ class DurableAttemptLedger:
             raise LedgerError(f"Cannot complete attempt '{attempt_id}': no dispatch recorded")
         if attempt_id in self._completions:
             raise LedgerDuplicateAttemptError(f"Attempt '{attempt_id}' already has completion recorded")
+        if status not in ("success", "failed"):
+            raise LedgerError(f"Invalid completion status: '{status}'; must be 'success' or 'failed'")
+        if status == "success" and error_category != "none":
+            raise LedgerError(f"Cannot record success status with error category '{error_category}'")
+        if status == "success" and error_message is not None:
+            raise LedgerError(f"Cannot record success status with error message: '{error_message}'")
+        if status == "failed" and (not error_category or error_category == "none"):
+            raise LedgerError("Failed status requires an explicit error category")
 
         out_sha = hashlib.sha256(output_text.encode("utf-8")).hexdigest()
 
@@ -363,12 +443,15 @@ class DurableAttemptLedger:
         return [self._finalized_attempts[aid] for aid in self._attempt_order if aid in self._finalized_attempts]
 
     def close(self) -> None:
-        """Flush and close ledger file."""
+        """Flush, unlock, and close ledger file."""
         if self._file_handle is not None and not self._file_handle.closed:
             self._file_handle.flush()
             os.fsync(self._file_handle.fileno())
             self._file_handle.close()
             self._file_handle = None
+        if getattr(self, "_lock_handle", None) is not None:
+            _release_exclusive_lock(self._lock_handle, getattr(self, "_lock_path", None))
+            self._lock_handle = None
 
     def __enter__(self) -> DurableAttemptLedger:
         return self
@@ -389,6 +472,8 @@ def verify_ledger_file_integrity(ledger_path: Path | str, *, allow_incomplete: b
     skips: dict[str, dict[str, Any]] = {}
     expected_run_id: str | None = None
     expected_fingerprint: str | None = None
+    expected_model_weight: str | None = None
+    target_source_hashes: dict[str, str] = {}
 
     with open(p, "r", encoding="utf-8") as f:
         for idx, line in enumerate(f, 1):
@@ -426,9 +511,37 @@ def verify_ledger_file_integrity(ledger_path: Path | str, *, allow_incomplete: b
                 if att_id in dispatches or att_id in skips:
                     errors.append(f"Line {idx}: Duplicate/conflicting dispatch for attempt '{att_id}'")
                 dispatches[att_id] = rec
+
+                # Model weight signature consistency across dispatches
+                mw = rec.get("model_weight_sha256")
+                if not isinstance(mw, str) or not mw:
+                    errors.append(f"Line {idx}: Missing model_weight_sha256 in dispatch '{att_id}'")
+                elif expected_model_weight is None:
+                    expected_model_weight = mw
+                elif mw != expected_model_weight:
+                    errors.append(f"Line {idx}: Mixed model weight signatures ({mw} != {expected_model_weight})")
+
+                # Source consistency per target
+                tgt = rec.get("target_or_control_id")
+                raw_sha = rec.get("source_raw_sha256")
+                if tgt and raw_sha:
+                    if tgt in target_source_hashes and target_source_hashes[tgt] != raw_sha:
+                        errors.append(f"Line {idx}: Inconsistent source raw hash for target '{tgt}'")
+                    target_source_hashes[tgt] = raw_sha
+
             elif rec_type == "completion":
-                if rec.get("status") not in ("success", "failed"):
-                    errors.append(f"Line {idx}: Invalid completion status for '{att_id}'")
+                status = rec.get("status")
+                if status not in ("success", "failed"):
+                    errors.append(f"Line {idx}: Invalid completion status for '{att_id}': {status}")
+                if status == "success":
+                    if rec.get("error_category", "none") != "none":
+                        errors.append(f"Line {idx}: Error category '{rec.get('error_category')}' recorded with success status for '{att_id}'")
+                    if rec.get("error_message") is not None:
+                        errors.append(f"Line {idx}: Error message recorded with success status for '{att_id}'")
+                elif status == "failed":
+                    if not rec.get("error_category") or rec.get("error_category") == "none":
+                        errors.append(f"Line {idx}: Failed completion without error category for '{att_id}'")
+
                 if att_id not in dispatches:
                     errors.append(f"Line {idx}: Completion without prior dispatch for '{att_id}'")
                 if att_id in completions:

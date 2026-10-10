@@ -1,0 +1,2299 @@
+{
+  "attempts": [
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_000_sign_6036_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 0,
+      "completed_at": "2026-10-10T18:50:04.309518Z",
+      "error_category": "none",
+      "latency_ms": 70996.39,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "58c54c82cbeed3fa0b4b8f70e377498a982a14dd5a000c76fbd397b7727375d1",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_001_sign_6036_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 1,
+      "completed_at": "2026-10-10T18:51:13.221108Z",
+      "error_category": "none",
+      "latency_ms": 68832.52,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e5965cb3987f2f401a81cd83027d45fb78213e5423fa673fed2ff7dd4a4930fe",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_002_sign_6036_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 2,
+      "completed_at": "2026-10-10T18:52:22.762282Z",
+      "error_category": "none",
+      "latency_ms": 69478.49,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "f425fc5c8073cd00f6c907ce71e24e32591fc6cd03c863ae79bc9a30b617e752",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_003_sign_6036_svg_outline_derivative_1_blind",
+      "attempt_index": 3,
+      "completed_at": "2026-10-10T18:53:30.885364Z",
+      "error_category": "none",
+      "latency_ms": 68053.72,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "58c54c82cbeed3fa0b4b8f70e377498a982a14dd5a000c76fbd397b7727375d1",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_svg_outline_derivative_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_004_sign_6036_svg_outline_derivative_1_script_aware",
+      "attempt_index": 4,
+      "completed_at": "2026-10-10T18:54:45.732728Z",
+      "error_category": "none",
+      "latency_ms": 74770.43,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e5965cb3987f2f401a81cd83027d45fb78213e5423fa673fed2ff7dd4a4930fe",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_svg_outline_derivative_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_005_sign_6036_svg_outline_derivative_1_leading",
+      "attempt_index": 5,
+      "completed_at": "2026-10-10T18:55:57.476323Z",
+      "error_category": "none",
+      "latency_ms": 71664.37,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "f425fc5c8073cd00f6c907ce71e24e32591fc6cd03c863ae79bc9a30b617e752",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "441a8bab4249345897adb1c1b939e671d0665d44b84f07bd6fac16dbae75562d",
+      "target_or_control_id": "sign_6036_svg_outline_derivative_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_006_sign_2448_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 6,
+      "completed_at": "2026-10-10T18:57:06.062886Z",
+      "error_category": "none",
+      "latency_ms": 68508.24,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2b4af44cb17349bb9452292a447fe70d48c9ce08e68dd2f74e9628cf8ac625b8",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a938d01d6864d502cdd9fe92a53220c678bc21ae8ef9918904b770724ed01540",
+      "target_or_control_id": "sign_2448_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_007_sign_2448_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 7,
+      "completed_at": "2026-10-10T18:58:16.698392Z",
+      "error_category": "none",
+      "latency_ms": 70556.2,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "1068019f768f061d67858beff8a9d9bfa22437be383e224f7d18aaf3103dd08e",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a938d01d6864d502cdd9fe92a53220c678bc21ae8ef9918904b770724ed01540",
+      "target_or_control_id": "sign_2448_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_008_sign_2448_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 8,
+      "completed_at": "2026-10-10T18:59:23.264590Z",
+      "error_category": "none",
+      "latency_ms": 66497.48,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "8e35c2cd3bf6641bdb0e2050b76932cbb2e6034a0ddacc1d9bea82a6ba57f7cf",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a938d01d6864d502cdd9fe92a53220c678bc21ae8ef9918904b770724ed01540",
+      "target_or_control_id": "sign_2448_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_009_sign_2448_publication_scan_reproduction_1_blind",
+      "attempt_index": 9,
+      "completed_at": "2026-10-10T19:00:24.632749Z",
+      "error_category": "none",
+      "latency_ms": 61284.25,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "4dda2e935a5eb161c5b5fb57ce462552715eac47168dcc9f658a0766227e7938",
+      "target_or_control_id": "sign_2448_publication_scan_reproduction_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_010_sign_2448_publication_scan_reproduction_1_script_aware",
+      "attempt_index": 10,
+      "completed_at": "2026-10-10T19:01:28.584714Z",
+      "error_category": "none",
+      "latency_ms": 63872.27,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e99f6558bd7b960516a075d5c814c0de1948f9647397457ff910ca4788bd2ece",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "4dda2e935a5eb161c5b5fb57ce462552715eac47168dcc9f658a0766227e7938",
+      "target_or_control_id": "sign_2448_publication_scan_reproduction_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_011_sign_2448_publication_scan_reproduction_1_leading",
+      "attempt_index": 11,
+      "completed_at": "2026-10-10T19:02:29.640519Z",
+      "error_category": "none",
+      "latency_ms": 60979.53,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "4dda2e935a5eb161c5b5fb57ce462552715eac47168dcc9f658a0766227e7938",
+      "target_or_control_id": "sign_2448_publication_scan_reproduction_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_012_sign_23466_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 12,
+      "completed_at": "2026-10-10T19:03:32.177425Z",
+      "error_category": "none",
+      "latency_ms": 62459.06,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_013_sign_23466_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 13,
+      "completed_at": "2026-10-10T19:04:34.710652Z",
+      "error_category": "none",
+      "latency_ms": 62452.92,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "72c22f69c987d483eb726727b73ebabf4271ff8e5b32400505690a604ed513f0",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_014_sign_23466_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 14,
+      "completed_at": "2026-10-10T19:05:36.933842Z",
+      "error_category": "none",
+      "latency_ms": 62150.93,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_015_sign_23466_svg_outline_derivative_1_blind",
+      "attempt_index": 15,
+      "completed_at": "2026-10-10T19:06:39.211342Z",
+      "error_category": "none",
+      "latency_ms": 62207.39,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_svg_outline_derivative_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_016_sign_23466_svg_outline_derivative_1_script_aware",
+      "attempt_index": 16,
+      "completed_at": "2026-10-10T19:07:47.093764Z",
+      "error_category": "none",
+      "latency_ms": 67805.67,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "72c22f69c987d483eb726727b73ebabf4271ff8e5b32400505690a604ed513f0",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_svg_outline_derivative_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "media_svg_outline_derivative",
+      "attempt_id": "w27_017_sign_23466_svg_outline_derivative_1_leading",
+      "attempt_index": 17,
+      "completed_at": "2026-10-10T19:08:53.634914Z",
+      "error_category": "none",
+      "latency_ms": 66470.69,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "physical_witness": "IFAO Cairo 66",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "116aa9a6f8cc87a1ab37f961d50df597b9d53256bb439ce31c8d23f1b99a4531",
+      "target_or_control_id": "sign_23466_svg_outline_derivative_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_018_sign_6066_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 18,
+      "completed_at": "2026-10-10T19:10:05.816422Z",
+      "error_category": "none",
+      "latency_ms": 72105.12,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2b3eea35714400598cf53e16c44ef5b35161e81dc7cb879b5806176f3a05b5c1",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "670a59177e0c91a9541592e472dbc384a772357be06a5d4717132ad3c3639ed9",
+      "target_or_control_id": "sign_6066_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_019_sign_6066_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 19,
+      "completed_at": "2026-10-10T19:11:14.526755Z",
+      "error_category": "none",
+      "latency_ms": 68633.68,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "f82bda1f01088daa1c62ba849370d5b11463100c1f12521d3d0b3d415089416c",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "670a59177e0c91a9541592e472dbc384a772357be06a5d4717132ad3c3639ed9",
+      "target_or_control_id": "sign_6066_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_020_sign_6066_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 20,
+      "completed_at": "2026-10-10T19:12:23.389093Z",
+      "error_category": "none",
+      "latency_ms": 68574.79,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2b3eea35714400598cf53e16c44ef5b35161e81dc7cb879b5806176f3a05b5c1",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "670a59177e0c91a9541592e472dbc384a772357be06a5d4717132ad3c3639ed9",
+      "target_or_control_id": "sign_6066_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_021_sign_6066_publication_scan_reproduction_1_blind",
+      "attempt_index": 21,
+      "completed_at": "2026-10-10T19:13:29.372106Z",
+      "error_category": "none",
+      "latency_ms": 65857.66,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "70c52efae89783458d2779a1b548fd9e02b73c276dbb2c332f4bbd9b5ab3fb10",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "776810d8a693acc7d06cfa734f682a183e00fa4112f9c79dc035892f4d55e55a",
+      "target_or_control_id": "sign_6066_publication_scan_reproduction_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_022_sign_6066_publication_scan_reproduction_1_script_aware",
+      "attempt_index": 22,
+      "completed_at": "2026-10-10T19:14:32.642018Z",
+      "error_category": "none",
+      "latency_ms": 63185.96,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "70c52efae89783458d2779a1b548fd9e02b73c276dbb2c332f4bbd9b5ab3fb10",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "776810d8a693acc7d06cfa734f682a183e00fa4112f9c79dc035892f4d55e55a",
+      "target_or_control_id": "sign_6066_publication_scan_reproduction_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_023_sign_6066_publication_scan_reproduction_1_leading",
+      "attempt_index": 23,
+      "completed_at": "2026-10-10T19:15:35.301483Z",
+      "error_category": "none",
+      "latency_ms": 62561.12,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "70c52efae89783458d2779a1b548fd9e02b73c276dbb2c332f4bbd9b5ab3fb10",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "776810d8a693acc7d06cfa734f682a183e00fa4112f9c79dc035892f4d55e55a",
+      "target_or_control_id": "sign_6066_publication_scan_reproduction_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_024_sign_32833_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 24,
+      "completed_at": "2026-10-10T19:16:39.594474Z",
+      "error_category": "none",
+      "latency_ms": 64215.06,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111",
+      "physical_witness": "British Museum EA 50728",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "39521a8b61bf98e2a936bc4cc23e46c0fb1060e04b5dbabfd00950a11e7eda83",
+      "target_or_control_id": "sign_32833_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_025_sign_32833_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 25,
+      "completed_at": "2026-10-10T19:17:46.151334Z",
+      "error_category": "none",
+      "latency_ms": 66476.04,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111",
+      "physical_witness": "British Museum EA 50728",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "39521a8b61bf98e2a936bc4cc23e46c0fb1060e04b5dbabfd00950a11e7eda83",
+      "target_or_control_id": "sign_32833_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_026_sign_32833_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 26,
+      "completed_at": "2026-10-10T19:18:51.492832Z",
+      "error_category": "none",
+      "latency_ms": 65278.66,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111",
+      "physical_witness": "British Museum EA 50728",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "39521a8b61bf98e2a936bc4cc23e46c0fb1060e04b5dbabfd00950a11e7eda83",
+      "target_or_control_id": "sign_32833_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_027_sign_56377_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 27,
+      "completed_at": "2026-10-10T19:19:56.138996Z",
+      "error_category": "none",
+      "latency_ms": 64572.7,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ba2eddda65245a658f26b2148335b922d7da8bf5b2417ef69010b9420ed3883d",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "359923866e4ed05c9d6dc1fc05f11f27470d755a54a0b659ca8ba5c96fbc992c",
+      "target_or_control_id": "sign_56377_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1175,
+        "total_tokens": 1177
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_028_sign_56377_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 28,
+      "completed_at": "2026-10-10T19:20:59.285560Z",
+      "error_category": "none",
+      "latency_ms": 63068.86,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2e892b02ff098e4ca64788d3158a27f41f9a5fef96452d3a0872f2bf748d1383",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "359923866e4ed05c9d6dc1fc05f11f27470d755a54a0b659ca8ba5c96fbc992c",
+      "target_or_control_id": "sign_56377_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_029_sign_56377_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 29,
+      "completed_at": "2026-10-10T19:21:58.402394Z",
+      "error_category": "none",
+      "latency_ms": 58946.84,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ba2eddda65245a658f26b2148335b922d7da8bf5b2417ef69010b9420ed3883d",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "359923866e4ed05c9d6dc1fc05f11f27470d755a54a0b659ca8ba5c96fbc992c",
+      "target_or_control_id": "sign_56377_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1164,
+        "total_tokens": 1166
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_030_sign_56377_publication_scan_reproduction_1_blind",
+      "attempt_index": 30,
+      "completed_at": "2026-10-10T19:22:56.830183Z",
+      "error_category": "none",
+      "latency_ms": 58407.94,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "5c19f45d77c0071a612bf4d683cc6d12503dd2893a77c2f19c793365da29afda",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "77ba8026c1aa4254e71b60c68c81cbc46f8649fb821b7678d6a850368ff316fc",
+      "target_or_control_id": "sign_56377_publication_scan_reproduction_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_031_sign_56377_publication_scan_reproduction_1_script_aware",
+      "attempt_index": 31,
+      "completed_at": "2026-10-10T19:23:57.013996Z",
+      "error_category": "none",
+      "latency_ms": 60166.62,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "edd284d599343e79d480c3f741dc4053de4bddf22342ed695a778cff168e6605",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "77ba8026c1aa4254e71b60c68c81cbc46f8649fb821b7678d6a850368ff316fc",
+      "target_or_control_id": "sign_56377_publication_scan_reproduction_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_032_sign_56377_publication_scan_reproduction_1_leading",
+      "attempt_index": 32,
+      "completed_at": "2026-10-10T19:24:53.643633Z",
+      "error_category": "none",
+      "latency_ms": 56619.38,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "c96dda50ce27c432ed172041a30b30281982396f37ad4a1667925b94141e8df7",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "77ba8026c1aa4254e71b60c68c81cbc46f8649fb821b7678d6a850368ff316fc",
+      "target_or_control_id": "sign_56377_publication_scan_reproduction_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_033_sign_5862_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 33,
+      "completed_at": "2026-10-10T19:25:50.788150Z",
+      "error_category": "none",
+      "latency_ms": 57127.45,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "cf73561e9d21fe09741ff6a9bdd60facae4bceb5bbbc8fbc1456ec320a7554bd",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "70f0c1d57cf8bd51727b59de1f7500d8b9fb5b6096bb8187ef4f3a856f90fd7d",
+      "target_or_control_id": "sign_5862_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_034_sign_5862_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 34,
+      "completed_at": "2026-10-10T19:26:46.754614Z",
+      "error_category": "none",
+      "latency_ms": 55947.6,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "038966de9f6b9a901b20b4c6ca8b2a46009feebe031babc842d43690c0bc222b",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "70f0c1d57cf8bd51727b59de1f7500d8b9fb5b6096bb8187ef4f3a856f90fd7d",
+      "target_or_control_id": "sign_5862_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_035_sign_5862_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 35,
+      "completed_at": "2026-10-10T19:27:42.642428Z",
+      "error_category": "none",
+      "latency_ms": 55878.61,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "70f0c1d57cf8bd51727b59de1f7500d8b9fb5b6096bb8187ef4f3a856f90fd7d",
+      "target_or_control_id": "sign_5862_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_036_sign_5862_publication_scan_reproduction_1_blind",
+      "attempt_index": 36,
+      "completed_at": "2026-10-10T19:28:39.846076Z",
+      "error_category": "none",
+      "latency_ms": 57193.34,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "3ab72e6a7468173c93dd2b2ef4b1376816baf7e69e9c184575f302667d7f0564",
+      "target_or_control_id": "sign_5862_publication_scan_reproduction_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_037_sign_5862_publication_scan_reproduction_1_script_aware",
+      "attempt_index": 37,
+      "completed_at": "2026-10-10T19:29:36.042425Z",
+      "error_category": "none",
+      "latency_ms": 56184.9,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "3ab72e6a7468173c93dd2b2ef4b1376816baf7e69e9c184575f302667d7f0564",
+      "target_or_control_id": "sign_5862_publication_scan_reproduction_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_038_sign_5862_publication_scan_reproduction_1_leading",
+      "attempt_index": 38,
+      "completed_at": "2026-10-10T19:30:32.896479Z",
+      "error_category": "none",
+      "latency_ms": 56833.01,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "3ab72e6a7468173c93dd2b2ef4b1376816baf7e69e9c184575f302667d7f0564",
+      "target_or_control_id": "sign_5862_publication_scan_reproduction_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_039_sign_5447_publisher_sign_svg_facsimile_0_blind",
+      "attempt_index": 39,
+      "completed_at": "2026-10-10T19:31:28.510232Z",
+      "error_category": "none",
+      "latency_ms": 55594.85,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "9f8b46842789edffdfb958cbdd57274cbb1e74b093797778a0a867b88aa5e8a0",
+      "target_or_control_id": "sign_5447_publisher_sign_svg_facsimile_0",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_040_sign_5447_publisher_sign_svg_facsimile_0_script_aware",
+      "attempt_index": 40,
+      "completed_at": "2026-10-10T19:32:25.901160Z",
+      "error_category": "none",
+      "latency_ms": 57373.56,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "01a9ae6ac4d26337923cb17187c46e7aa936a95aefde60ca5bb193c3d6d8731e",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "9f8b46842789edffdfb958cbdd57274cbb1e74b093797778a0a867b88aa5e8a0",
+      "target_or_control_id": "sign_5447_publisher_sign_svg_facsimile_0",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 1208,
+        "total_tokens": 1211
+      }
+    },
+    {
+      "attempt_category": "media_publisher_sign_svg_facsimile",
+      "attempt_id": "w27_041_sign_5447_publisher_sign_svg_facsimile_0_leading",
+      "attempt_index": 41,
+      "completed_at": "2026-10-10T19:33:21.383405Z",
+      "error_category": "none",
+      "latency_ms": 55462.81,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "9f8b46842789edffdfb958cbdd57274cbb1e74b093797778a0a867b88aa5e8a0",
+      "target_or_control_id": "sign_5447_publisher_sign_svg_facsimile_0",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_042_sign_5447_publication_scan_reproduction_1_blind",
+      "attempt_index": 42,
+      "completed_at": "2026-10-10T19:34:18.334253Z",
+      "error_category": "none",
+      "latency_ms": 56931.03,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e187c00cf33e1d8f0dcf34cc6dc471c0b8d2e34f00fcce8f1d5820dfcc9e7f52",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "c5980771067d5ce65aa9078fcf3ebb0b1c5675522cdd8d47898a4b0be5f3684c",
+      "target_or_control_id": "sign_5447_publication_scan_reproduction_1",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1175,
+        "total_tokens": 1177
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_043_sign_5447_publication_scan_reproduction_1_script_aware",
+      "attempt_index": 43,
+      "completed_at": "2026-10-10T19:35:14.832580Z",
+      "error_category": "none",
+      "latency_ms": 56478.93,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "5c31e3d4e84113df5df1862c5ff2a1c1ae7554f0893799d4a76a7863be2584f4",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "c5980771067d5ce65aa9078fcf3ebb0b1c5675522cdd8d47898a4b0be5f3684c",
+      "target_or_control_id": "sign_5447_publication_scan_reproduction_1",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "media_publication_scan_reproduction",
+      "attempt_id": "w27_044_sign_5447_publication_scan_reproduction_1_leading",
+      "attempt_index": 44,
+      "completed_at": "2026-10-10T19:36:11.249835Z",
+      "error_category": "none",
+      "latency_ms": 56407.64,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e187c00cf33e1d8f0dcf34cc6dc471c0b8d2e34f00fcce8f1d5820dfcc9e7f52",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "c5980771067d5ce65aa9078fcf3ebb0b1c5675522cdd8d47898a4b0be5f3684c",
+      "target_or_control_id": "sign_5447_publication_scan_reproduction_1",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1164,
+        "total_tokens": 1166
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_045_control_blank_blind",
+      "attempt_index": 45,
+      "completed_at": "2026-10-10T19:37:08.234706Z",
+      "error_category": "none",
+      "latency_ms": 56966.45,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "67d157e17b71c44c0b74c551524117f8f76e0910ec11ffcae891ac6b1da1dcd8",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "2909cc71eca821d4e8329fa5b41a014e4cde8932e0e7098b00bccd0a162c2e4e",
+      "target_or_control_id": "control_blank",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 9,
+        "prompt_tokens": 1175,
+        "total_tokens": 1184
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_046_control_blank_script_aware",
+      "attempt_index": 46,
+      "completed_at": "2026-10-10T19:38:07.866325Z",
+      "error_category": "none",
+      "latency_ms": 59611.76,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ad3330a850cdf49ba2301abd290cdea3e6f444119e3366277686cce2cd2d1c8c",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "2909cc71eca821d4e8329fa5b41a014e4cde8932e0e7098b00bccd0a162c2e4e",
+      "target_or_control_id": "control_blank",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1208,
+        "total_tokens": 1216
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_047_control_blank_leading",
+      "attempt_index": 47,
+      "completed_at": "2026-10-10T19:39:43.989937Z",
+      "error_category": "none",
+      "latency_ms": 96105.89,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "fc4ea3ab7c98d0c611a0e2cf840f782d3260470585e229267186d1b9c2fd86ad",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "2909cc71eca821d4e8329fa5b41a014e4cde8932e0e7098b00bccd0a162c2e4e",
+      "target_or_control_id": "control_blank",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 67,
+        "prompt_tokens": 1164,
+        "total_tokens": 1231
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_048_control_procedural_texture_blind",
+      "attempt_index": 48,
+      "completed_at": "2026-10-10T19:40:40.308913Z",
+      "error_category": "none",
+      "latency_ms": 56298.18,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5fd88e37bde30bf96e5293927f36a4ca2330aaa6912feb21136761d19f3e9965",
+      "target_or_control_id": "control_procedural_texture",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_049_control_procedural_texture_script_aware",
+      "attempt_index": 49,
+      "completed_at": "2026-10-10T19:41:41.008151Z",
+      "error_category": "none",
+      "latency_ms": 60682.96,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ad3330a850cdf49ba2301abd290cdea3e6f444119e3366277686cce2cd2d1c8c",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5fd88e37bde30bf96e5293927f36a4ca2330aaa6912feb21136761d19f3e9965",
+      "target_or_control_id": "control_procedural_texture",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1208,
+        "total_tokens": 1216
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_050_control_procedural_texture_leading",
+      "attempt_index": 50,
+      "completed_at": "2026-10-10T19:42:39.249559Z",
+      "error_category": "none",
+      "latency_ms": 58230.09,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "559aead08264d5795d3909718cdd05abd49572e84fe55590eef31a88a08fdffd",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5fd88e37bde30bf96e5293927f36a4ca2330aaa6912feb21136761d19f3e9965",
+      "target_or_control_id": "control_procedural_texture",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_051_control_geometric_marks_blind",
+      "attempt_index": 51,
+      "completed_at": "2026-10-10T19:43:36.410790Z",
+      "error_category": "none",
+      "latency_ms": 57144.91,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a085ade8a52144647bcb514e9f0077cc71a0d49e36357fbe22ef8b9c73a666ab",
+      "target_or_control_id": "control_geometric_marks",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_052_control_geometric_marks_script_aware",
+      "attempt_index": 52,
+      "completed_at": "2026-10-10T19:44:35.651963Z",
+      "error_category": "none",
+      "latency_ms": 59227.57,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2d8c6567a25005666779f98f887a6e1d329bcdaee45030a4c1e98fb7d4328025",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a085ade8a52144647bcb514e9f0077cc71a0d49e36357fbe22ef8b9c73a666ab",
+      "target_or_control_id": "control_geometric_marks",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_053_control_geometric_marks_leading",
+      "attempt_index": 53,
+      "completed_at": "2026-10-10T19:45:33.592181Z",
+      "error_category": "none",
+      "latency_ms": 57918.96,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a085ade8a52144647bcb514e9f0077cc71a0d49e36357fbe22ef8b9c73a666ab",
+      "target_or_control_id": "control_geometric_marks",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_054_control_photo_negative_blind",
+      "attempt_index": 54,
+      "completed_at": "2026-10-10T19:46:53.179149Z",
+      "error_category": "none",
+      "latency_ms": 79563.05,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "63dd231d35db944d440f185ddd26e512f8f6421a78d9755ecbc787eb8ebb1179",
+      "target_or_control_id": "control_photo_negative",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_055_control_photo_negative_script_aware",
+      "attempt_index": 55,
+      "completed_at": "2026-10-10T19:48:00.685143Z",
+      "error_category": "none",
+      "latency_ms": 67377.49,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ad3330a850cdf49ba2301abd290cdea3e6f444119e3366277686cce2cd2d1c8c",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "63dd231d35db944d440f185ddd26e512f8f6421a78d9755ecbc787eb8ebb1179",
+      "target_or_control_id": "control_photo_negative",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1208,
+        "total_tokens": 1216
+      }
+    },
+    {
+      "attempt_category": "control_hard_negative",
+      "attempt_id": "w27_056_control_photo_negative_leading",
+      "attempt_index": 56,
+      "completed_at": "2026-10-10T21:07:43.062452Z",
+      "error_category": "interrupted_unknown_outcome",
+      "latency_ms": 0,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "failed",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "63dd231d35db944d440f185ddd26e512f8f6421a78d9755ecbc787eb8ebb1179",
+      "target_or_control_id": "control_photo_negative",
+      "task": "sign_identification_leading",
+      "token_usage": {}
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_057_control_scrambled_sign_blind",
+      "attempt_index": 57,
+      "completed_at": "2026-10-10T21:11:26.733255Z",
+      "error_category": "none",
+      "latency_ms": 146804.15,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "990f8c689fa0efd0d0b80bea50a123c68a8ddf235975511c532a98ea50c51399",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a6f9f1c0da51ec726975c76b327880968412f863fc2a090271974abc17100659",
+      "target_or_control_id": "control_scrambled_sign",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_058_control_scrambled_sign_script_aware",
+      "attempt_index": 58,
+      "completed_at": "2026-10-10T21:12:28.469284Z",
+      "error_category": "none",
+      "latency_ms": 61671.42,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "ad3330a850cdf49ba2301abd290cdea3e6f444119e3366277686cce2cd2d1c8c",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a6f9f1c0da51ec726975c76b327880968412f863fc2a090271974abc17100659",
+      "target_or_control_id": "control_scrambled_sign",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1208,
+        "total_tokens": 1216
+      }
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_059_control_scrambled_sign_leading",
+      "attempt_index": 59,
+      "completed_at": "2026-10-10T21:13:56.248801Z",
+      "error_category": "none",
+      "latency_ms": 87712.47,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "990f8c689fa0efd0d0b80bea50a123c68a8ddf235975511c532a98ea50c51399",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a6f9f1c0da51ec726975c76b327880968412f863fc2a090271974abc17100659",
+      "target_or_control_id": "control_scrambled_sign",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_060_control_inverted_sign_blind",
+      "attempt_index": 60,
+      "completed_at": "2026-10-10T21:14:50.185928Z",
+      "error_category": "none",
+      "latency_ms": 53855.37,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "bd3fb9e9d3f633bc955e722484e182e56674d6b86ba86ec8c4bd0989c00cc4ff",
+      "target_or_control_id": "control_inverted_sign",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_061_control_inverted_sign_script_aware",
+      "attempt_index": 61,
+      "completed_at": "2026-10-10T21:15:43.525647Z",
+      "error_category": "none",
+      "latency_ms": 53268.86,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "4cf7d856a9af226f3ae8084bad4a3bc7513aa3728c2f0033fa84f28601d3576a",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "bd3fb9e9d3f633bc955e722484e182e56674d6b86ba86ec8c4bd0989c00cc4ff",
+      "target_or_control_id": "control_inverted_sign",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "control_transformation_control",
+      "attempt_id": "w27_062_control_inverted_sign_leading",
+      "attempt_index": 62,
+      "completed_at": "2026-10-10T21:17:14.633080Z",
+      "error_category": "none",
+      "latency_ms": 91039.8,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "0683ce4ddc9afc0ddcd5b62c75e64f07f45508caf17721fe9bd7e490021ff848",
+      "physical_witness": "Petrie Museum UC 32782",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "bd3fb9e9d3f633bc955e722484e182e56674d6b86ba86ec8c4bd0989c00cc4ff",
+      "target_or_control_id": "control_inverted_sign",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 59,
+        "prompt_tokens": 1164,
+        "total_tokens": 1223
+      }
+    },
+    {
+      "attempt_category": "control_ambiguous_control",
+      "attempt_id": "w27_063_control_identity_mark_blind",
+      "attempt_index": 63,
+      "completed_at": "2026-10-10T21:18:15.400895Z",
+      "error_category": "none",
+      "latency_ms": 60704.92,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2979eee99c5c94df731c203746b4747c470124ca35644b8e430b6e8d227939b5",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5df55946010310b3ea760d262bd9a5524c9cff230d354fcd1765eea3d58f7726",
+      "target_or_control_id": "control_identity_mark",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_ambiguous_control",
+      "attempt_id": "w27_064_control_identity_mark_script_aware",
+      "attempt_index": 64,
+      "completed_at": "2026-10-10T21:19:19.120092Z",
+      "error_category": "none",
+      "latency_ms": 63636.29,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2979eee99c5c94df731c203746b4747c470124ca35644b8e430b6e8d227939b5",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5df55946010310b3ea760d262bd9a5524c9cff230d354fcd1765eea3d58f7726",
+      "target_or_control_id": "control_identity_mark",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1208,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "attempt_category": "control_ambiguous_control",
+      "attempt_id": "w27_065_control_identity_mark_leading",
+      "attempt_index": 65,
+      "completed_at": "2026-10-10T21:21:35.227283Z",
+      "error_category": "interrupted_unknown_outcome",
+      "latency_ms": 0,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "physical_witness": "synthetic_control",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "failed",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "5df55946010310b3ea760d262bd9a5524c9cff230d354fcd1765eea3d58f7726",
+      "target_or_control_id": "control_identity_mark",
+      "task": "sign_identification_leading",
+      "token_usage": {}
+    },
+    {
+      "attempt_category": "control_positive_control",
+      "attempt_id": "w27_066_control_manuscript_photo_positive_blind",
+      "attempt_index": 66,
+      "completed_at": "2026-10-10T21:22:59.484224Z",
+      "error_category": "none",
+      "latency_ms": 60456.94,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "1ea442a134b2a184bd5d40104401f2a37fbc09ccf3f4bc9da161c6099be3691d",
+      "physical_witness": "Cat.2044/013",
+      "prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+      "prompt_variant": "blind",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a93a219ee71186c66bfabfbf02d14a527d4b55b9ac782de0f577b0a22b09dcd3",
+      "target_or_control_id": "control_manuscript_photo_positive",
+      "task": "domain_blind_visual_description",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1175,
+        "total_tokens": 1176
+      }
+    },
+    {
+      "attempt_category": "control_positive_control",
+      "attempt_id": "w27_067_control_manuscript_photo_positive_script_aware",
+      "attempt_index": 67,
+      "completed_at": "2026-10-10T21:24:04.763860Z",
+      "error_category": "none",
+      "latency_ms": 65267.03,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "4cf7d856a9af226f3ae8084bad4a3bc7513aa3728c2f0033fa84f28601d3576a",
+      "physical_witness": "Cat.2044/013",
+      "prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+      "prompt_variant": "script_aware",
+      "rung": "identify",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a93a219ee71186c66bfabfbf02d14a527d4b55b9ac782de0f577b0a22b09dcd3",
+      "target_or_control_id": "control_manuscript_photo_positive",
+      "task": "script_aware_visual_classification",
+      "token_usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 1208,
+        "total_tokens": 1210
+      }
+    },
+    {
+      "attempt_category": "control_positive_control",
+      "attempt_id": "w27_068_control_manuscript_photo_positive_leading",
+      "attempt_index": 68,
+      "completed_at": "2026-10-10T21:25:08.189386Z",
+      "error_category": "none",
+      "latency_ms": 63409.22,
+      "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+      "model_revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+      "model_weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e",
+      "output_sha256": "2315bd64e75a346541681575e5b227059bc726907f5a5b893505b648a3062e77",
+      "physical_witness": "Cat.2044/013",
+      "prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+      "prompt_variant": "leading",
+      "rung": "signs",
+      "status": "success",
+      "stimulus_dimensions": [
+        256,
+        256
+      ],
+      "stimulus_sha256": "a93a219ee71186c66bfabfbf02d14a527d4b55b9ac782de0f577b0a22b09dcd3",
+      "target_or_control_id": "control_manuscript_photo_positive",
+      "task": "sign_identification_leading",
+      "token_usage": {
+        "completion_tokens": 1,
+        "prompt_tokens": 1164,
+        "total_tokens": 1165
+      }
+    }
+  ],
+  "cohort_metadata": [
+    {
+      "expected_byte_size": 1463,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Petrie Museum UC 32782",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_6036.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 6036,
+      "source_raw_sha256": "014a00c70458aa48134d71aa6fa752faf2b58f729d3301ea0bad98ab7d371595",
+      "target_id": "sign_6036_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 1455,
+      "media_classification": "svg_outline_derivative",
+      "physical_witness": "Petrie Museum UC 32782",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/api/svg/ht_6036.svg/outline",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 6036,
+      "source_raw_sha256": "f779b7a728de2160142aa354e028e501d4a26f55ebcb93ca4e7c11925a70914a",
+      "target_id": "sign_6036_svg_outline_derivative_1"
+    },
+    {
+      "expected_byte_size": 6051,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Petrie Museum UC 32782",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_2448.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 2448,
+      "source_raw_sha256": "0dcf5be053c323c6d4c4e82441eb93ae14c30ae5838285134d8345aefda4ead5",
+      "target_id": "sign_2448_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 11930,
+      "media_classification": "publication_scan_reproduction",
+      "physical_witness": "Petrie Museum UC 32782",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_2448_2.webp",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 2448,
+      "source_raw_sha256": "683fc41c6948bf652dd458f197e98e0a709a3dd0075240de668effe6f4dbd8cb",
+      "target_id": "sign_2448_publication_scan_reproduction_1"
+    },
+    {
+      "expected_byte_size": 1574,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "IFAO Cairo 66",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_23466.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 23466,
+      "source_raw_sha256": "0b66ccfdd8350c305f23ea70f712a461808b5a1ae9ca05dcdaca06e2f17ade79",
+      "target_id": "sign_23466_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 1566,
+      "media_classification": "svg_outline_derivative",
+      "physical_witness": "IFAO Cairo 66",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/api/svg/ht_23466.svg/outline",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 23466,
+      "source_raw_sha256": "ca6f84f3528b9a93c64904c23876dc3bddfd529b49a8d14e945eceebeae833b5",
+      "target_id": "sign_23466_svg_outline_derivative_1"
+    },
+    {
+      "expected_byte_size": 10086,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_6066.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 6066,
+      "source_raw_sha256": "a9dec3a8b79ee7b550a864f86be0c868aa95090789c4fee120ccc8bd9b0638cc",
+      "target_id": "sign_6066_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 13390,
+      "media_classification": "publication_scan_reproduction",
+      "physical_witness": "Berlin Papyrussammlung P 9785",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_6066_2.webp",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 6066,
+      "source_raw_sha256": "8df84eebb57a71ddaddb94d854d1cefed705073acacbbcb55620a53f2e9c22d0",
+      "target_id": "sign_6066_publication_scan_reproduction_1"
+    },
+    {
+      "expected_byte_size": 1570,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "British Museum EA 50728",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_32833.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 32833,
+      "source_raw_sha256": "ceaf3f52de6f8c38c3a2cbd16f69f50b0eadec6fda69c92e1b53d0153109f792",
+      "target_id": "sign_32833_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 5517,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_56377.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 56377,
+      "source_raw_sha256": "9cf8778b1c73a8ed0c9965c56586027ebfc5fb114a584eb0640b9ddca0398ee3",
+      "target_id": "sign_56377_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 18740,
+      "media_classification": "publication_scan_reproduction",
+      "physical_witness": "Brooklyn Museum 47.218.3",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_56377_2.webp",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 56377,
+      "source_raw_sha256": "9bbdcd8249a7f8421ec8fbf74f4a3871d32fdeb8ee331c2ddbe29364811899d2",
+      "target_id": "sign_56377_publication_scan_reproduction_1"
+    },
+    {
+      "expected_byte_size": 5062,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_5862.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 5862,
+      "source_raw_sha256": "f217a55e36d8981fab4884b7dcfc978e3d6c055a66505675fcc16904ca2c2bf7",
+      "target_id": "sign_5862_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 11112,
+      "media_classification": "publication_scan_reproduction",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_5862_2.webp",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 5862,
+      "source_raw_sha256": "ce16657fcf2eeda384d9640af69b373ff3fad72cbb4e8a2f9f3e0c5a9880fdba",
+      "target_id": "sign_5862_publication_scan_reproduction_1"
+    },
+    {
+      "expected_byte_size": 4118,
+      "media_classification": "publisher_sign_svg_facsimile",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/svg/ht_5447.svg",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 5447,
+      "source_raw_sha256": "030fff250e8699076e8b0da3456ae8a62b9a22025292ec0dd0df4dd4e74dfea6",
+      "target_id": "sign_5447_publisher_sign_svg_facsimile_0"
+    },
+    {
+      "expected_byte_size": 9198,
+      "media_classification": "publication_scan_reproduction",
+      "physical_witness": "Louvre E 3226 A + E 3226 B",
+      "publisher_media_url": "https://aku-pal.uni-mainz.de/img/data/ht/scan/ht_5447_2.webp",
+      "rights": "CC BY 4.0",
+      "role": "diagnostic_media",
+      "sign_id": 5447,
+      "source_raw_sha256": "0ef0dccd0a81cf900618eb9615990087522c5ac7a51c5311a612e0f1c637c6ca",
+      "target_id": "sign_5447_publication_scan_reproduction_1"
+    },
+    {
+      "description": "Uniform neutral-gray 256x256 canvas",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "hard_negative",
+      "role": "True negative canvas control without marks, ink, or texture",
+      "target_id": "control_blank"
+    },
+    {
+      "description": "Procedural synthetic papyrus fiber texture",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "hard_negative",
+      "role": "Negative material control without writing (synthetic fiber grain)",
+      "target_id": "control_procedural_texture"
+    },
+    {
+      "description": "Simple geometric non-text marks (circles, cross)",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "hard_negative",
+      "role": "Negative non-linguistic graphic control (geometric markings)",
+      "target_id": "control_geometric_marks"
+    },
+    {
+      "description": "Photographic textured paper background without writing",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "hard_negative",
+      "role": "Negative photographic background control without writing",
+      "target_id": "control_photo_negative"
+    },
+    {
+      "description": "Spatially scrambled 32x32 tiles of sign 6036 SVG; local strokes survive",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "transformation_control",
+      "role": "Transformation control permuting 32x32 tiles of sign 6036 SVG; stroke fragments survive",
+      "target_id": "control_scrambled_sign"
+    },
+    {
+      "description": "Photometrically inverted sign 6036 SVG",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "transformation_control",
+      "role": "Transformation control inverting contrast polarity of sign 6036 SVG; writing fully present",
+      "target_id": "control_inverted_sign"
+    },
+    {
+      "description": "Synthetic drawn identity-like control; NOT Cat.2169 original photograph",
+      "is_held_out_gold": false,
+      "is_synthetic": true,
+      "media_classification": "ambiguous_control",
+      "role": "Ambiguous non-hieratic artisan mark; synthetic drawing, NOT genuine Cat.2169 museum photo",
+      "target_id": "control_identity_mark"
+    },
+    {
+      "description": "Cat.2044/013 SHA-verified original if live; synthetic if simulated",
+      "is_held_out_gold": false,
+      "is_synthetic": false,
+      "media_classification": "positive_control",
+      "role": "Positive manuscript-material control from authentic Turin Cat.2044/013 crop",
+      "target_id": "control_manuscript_photo_positive"
+    }
+  ],
+  "created_at": "2026-10-10T21:25:51.741141Z",
+  "doc_type": "vlm_evidence_manifest",
+  "evidence_grades": {
+    "grade_a_multimodal_interface": {
+      "evidence": "Local image-conditioned model inference claim, no independent model/media replay",
+      "status": "LOCAL_ATTESTATION_NOT_INDEPENDENTLY_REPLAYED"
+    },
+    "grade_b_fixture_tests": {
+      "evidence": "Separate hosted synthetic ledger fixture test not original 69 inference",
+      "status": "NOT_VERIFIED_BY_MANIFEST"
+    },
+    "grade_c_real_weights_loaded": {
+      "evidence": "513028808-byte safetensors digest not checked against independent original bytes",
+      "status": "AGENT_LOCAL_WEIGHT_HASH_REPORTED"
+    },
+    "grade_d_actual_sign_media_passes": {
+      "evidence": "67 agent-local success records, 2 interrupted_unknown_outcome explicit failures; no independently replayed original forward pass",
+      "status": "AGENT_LOCAL_COMPLETION_RECORDS_UNVERIFIED"
+    },
+    "grade_e_visual_sensitivity_observed": {
+      "evidence": "Ancient Hieratic blind visual understanding unproven",
+      "status": "NOT_VERIFIED"
+    },
+    "grade_f_authentic_hieratic_gold_evaluation": {
+      "evidence": "Independent manuscript-line gold absent; 0/2 capability points",
+      "status": "STRICTLY_NO"
+    },
+    "sign_level_diagnostic_cleared": {
+      "evidence": "Publisher catalogue not qualified independent gold",
+      "status": "PROVISIONAL_METADATA_ONLY"
+    }
+  },
+  "evidence_provenance": "SELF_REPORTED_PRIVATE_LEDGER_NOT_ORIGINAL_REPLAY",
+  "execution_tier": "agent_local_attested",
+  "hieratic_reading_claim": false,
+  "host_notes": "Local CPU execution on SmolVLM-256M-Instruct",
+  "ledger_audit": {
+    "attempted_count": 69,
+    "audit_valid": true,
+    "failed_count": 2,
+    "ledger_byte_size": 150764,
+    "ledger_path_rel": "w27_sign_replay_cpu_ledger.jsonl",
+    "ledger_sha256": "1de2624303a26f5c41b5492bd4f5717426a630515d688e7010c44964d01916e7",
+    "original_ledger_available_in_public_repository": false,
+    "original_ledger_replayed_by_public_verifier": false,
+    "planned_count": 69,
+    "run_id": "w27_replay_20261010_184821",
+    "skipped_count": 0,
+    "succeeded_count": 67
+  },
+  "manifest_sha256": "79fb0fd785120ad0c5f0b6d6c6e90f6b2ebf3d53d87015a43bb7eaa87b9708db",
+  "manifest_version": "1.1.0",
+  "model_spec": {
+    "license": "Apache-2.0",
+    "model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+    "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+    "weight_bytes": 513028808,
+    "weight_sha256": "74dea5904032e5ae99a2e0eef5179e6ac0f1dedc3ab0c7c2a5d4d387c843203e"
+  },
+  "protocol": {
+    "domain_blind_prompt_sha256": "ecbf13e3f020b4fdd7b3c35156f95606bd9a6c567a220de75f204763e432e0af",
+    "domain_blind_prompt_text": "Describe the visible marks or objects in this image without assuming what they represent. Indicate whether any writing or character-like marks are present. If uncertain, say so. Do not invent an identification.",
+    "leading_ident_prompt_sha256": "7b852185d387fecaaa36ab2cca1c55335203fd619490174e12b988cbfefb4b88",
+    "leading_ident_prompt_text": "Examine this ancient Egyptian hieratic sign carefully. Identify the hieratogram/sign shown, giving possible Gardiner list classification codes or transcription.",
+    "protocol_fingerprint": "366de4a5ae4022f305b1dd2346f8db8afbfbd18ef60dd0443197aa4056bb157b",
+    "protocol_version": "3.0.0",
+    "script_aware_prompt_sha256": "0c388458fa67409b91bc9d365746a5ee66887a1c8beb5b2a08503d424c0483e8",
+    "script_aware_prompt_text": "Examine this image carefully. Describe what visual marks or characters are visible. State whether this image shows an ancient Egyptian script sign, modern typography/drawing, or a non-textual graphic. If a hieratic sign is shown, give candidate classification or state [UNCERTAIN] if indistinct. If no writing is present, state that clearly."
+  },
+  "scientific_capability_points": 0,
+  "task_id": "VLM-001"
+}

@@ -613,6 +613,18 @@ def main(argv: list[str] | None = None) -> int:
     p_sign.add_argument("--protocol", type=str, choices=["w20", "w27"], default="w20", help="Protocol version to execute ('w20' for historical 46-attempt receipt, 'w27' for prospective 3-prompt 69-attempt protocol)")
     p_sign.add_argument("--ledger-path", type=Path, default=None, help="Path for durable append-only write-ahead ledger JSONL (W27 only)")
 
+    # generate-evidence-manifest
+    p_gen_ev = subparsers.add_parser("generate-evidence-manifest", help="Generate redacted cryptographically bound VLM evidence manifest")
+    p_gen_ev.add_argument("--ledger", type=Path, required=True, help="Path to durable attempt ledger JSONL")
+    p_gen_ev.add_argument("--report", type=Path, default=None, help="Path to evaluation report JSON (optional)")
+    p_gen_ev.add_argument("--execution-tier", type=str, choices=["agent_local_attested", "hosted_ci_verified"], default="agent_local_attested")
+    p_gen_ev.add_argument("--output", type=Path, required=True, help="Path to output evidence manifest JSON")
+    p_gen_ev.add_argument("--host-notes", type=str, default=None, help="Optional environment/host notes")
+
+    # verify-evidence-manifest
+    p_ver_ev = subparsers.add_parser("verify-evidence-manifest", help="Independently verify a VLM evidence manifest")
+    p_ver_ev.add_argument("--manifest", type=Path, required=True, help="Path to evidence manifest JSON to verify")
+
     args = parser.parse_args(argv)
 
     try:
@@ -964,6 +976,32 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "sign-replay":
             from eval.vlm.signs import run_sign_replay_cli
             return run_sign_replay_cli(args)
+
+        elif args.command == "generate-evidence-manifest":
+            from eval.vlm.evidence import generate_vlm_evidence_manifest
+            ev_manifest = generate_vlm_evidence_manifest(
+                ledger_path=args.ledger,
+                report_path=args.report,
+                execution_tier=args.execution_tier,
+                output_path=args.output,
+                host_notes=args.host_notes,
+            )
+            print(f"PASS: Evidence manifest generated at {args.output}")
+            print(f"  Execution tier: {ev_manifest['execution_tier']}")
+            print(f"  Attempts: {len(ev_manifest['attempts'])}")
+            print(f"  Accounting: {ev_manifest['ledger_audit']}")
+            return 0
+
+        elif args.command == "verify-evidence-manifest":
+            from eval.vlm.evidence import verify_vlm_evidence_manifest
+            audit = verify_vlm_evidence_manifest(args.manifest)
+            if not audit["valid"]:
+                print(f"Evidence manifest verification FAILED for '{args.manifest.name}':", file=sys.stderr)
+                for e in audit["errors"]:
+                    print(f"  - {e}", file=sys.stderr)
+                return 1
+            print(f"PASS: Evidence manifest '{args.manifest.name}' verified.")
+            return 0
 
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)

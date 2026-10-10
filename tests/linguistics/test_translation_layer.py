@@ -950,6 +950,131 @@ class W13PreCopticEgyptianDependencyTests(unittest.TestCase):
         }, ensure_ascii=False, sort_keys=True))
 
 
+
+class W28NewPublisherSourceAndGrammarTests(unittest.TestCase):
+    """All fixture tests are synthetic; hosted original-run is a separate grade."""
+    def test_original_source_pointer_is_exact_and_distinct(self):
+        from ling.translation import w28_letters_first_use as w
+        self.assertEqual(w.SOURCE_SIZE, 19946763)
+        self.assertEqual(w.SOURCE_BLOB, "2c8db01616a37c75a3566e3b64d94a75fdf194c2")
+        self.assertEqual(w.GROUP_COUNT, 32)
+        self.assertIn(w.UPSTREAM_REV, w.SOURCE_URL)
+        self.assertIn("_aes_bbawbriefe.json", w.SOURCE_URL)
+
+    def test_selection_deterministic_independent_of_reference_values(self):
+        from ling.translation import w28_letters_first_use as w
+        rows = {f"s_{i}":{"text":f"doc_{i}", "token":[],
+                 "sentence_translation":"secret A"} for i in range(60)}
+        old=w.frozen_groups(rows)
+        for rec in rows.values():
+            rec["sentence_translation"]="secret B"
+        self.assertEqual(old,w.frozen_groups(rows))
+        self.assertEqual(32,len(set(old)))
+
+    def test_group_selection_ignores_order(self):
+        from ling.translation import w28_letters_first_use as w
+        rows={f"a{i}":{"text":f"d{i}"} for i in range(37)}
+        self.assertEqual(w.frozen_groups(rows),w.frozen_groups(dict(reversed(list(rows.items())))))
+
+    def test_fewer_than_frozen_groups_is_hard_failure(self):
+        from ling.translation import w28_letters_first_use as w
+        with self.assertRaises(tr.TranslationError):
+            w.frozen_groups({"only":{"text":"one"}})
+
+    def test_wrong_publisher_original_byte_hash_rejected(self):
+        from ling.translation import w28_letters_first_use as w
+        with self.assertRaises(tr.TranslationError):
+            w.check_original(b'{"fake":true}')
+
+    def test_gold_fields_cannot_enter_predictor(self):
+        from ling.translation import w28_letters_first_use as w
+        row={"sentence_id":"s","text_id":"t","forms":["nfr"],"sentence_translation":"secret"}
+        with self.assertRaises(tr.TranslationError):
+            w.project_input(row)
+        row.pop("sentence_translation")
+        self.assertEqual(w.project_input(row)["glosses"],(None,))
+
+    def test_privileged_target_pos_and_cotext_rejected(self):
+        from ling.translation import w28_letters_first_use as w
+        for name in ("gold_pos","target_cotext","lemma","german"):
+            row={"sentence_id":"s","text_id":"t","forms":["nfr"],name:"SECRET"}
+            with self.subTest(name=name),self.assertRaises(tr.TranslationError):
+                w.project_input(row)
+
+    def test_missing_or_invalid_source_units_rejected(self):
+        from ling.translation import w28_letters_first_use as w
+        for forms in ([],[None],[""],["x"*513]):
+            with self.subTest(forms=str(forms)[:20]),self.assertRaises(tr.TranslationError):
+                w.project_input({"sentence_id":"s","text_id":"t","forms":forms})
+
+    def test_source_sensitive_hash_does_not_include_german(self):
+        from ling.translation import w28_letters_first_use as w
+        row={"sentence_id":"a","text_id":"t","forms":["w1"]}
+        first=w.canonical(w.project_input(row)["forms"])
+        self.assertNotIn(b"German",first)
+        self.assertEqual(first,w.canonical(["w1"]))
+
+    def test_scoring_fails_if_duplicate_prediction_ids(self):
+        from ling.translation import w28_letters_first_use as w
+        rows=[{"sentence_id":"s0","text_id":"t","forms":["w"]},
+              {"sentence_id":"s1","text_id":"t","forms":["w"]}]
+        predictions=[{"sentence_id":"s0"},{"sentence_id":"s0"}]
+        references=[{"sentence_id":"s0","text_id":"t","german":"w"},
+                    {"sentence_id":"s1","text_id":"t","german":"w"}]
+        with self.assertRaises(tr.TranslationError):
+            w.score_frozen(rows,predictions,references)
+
+    def test_scoring_rejects_unmatched_golden_denominator(self):
+        from ling.translation import w28_letters_first_use as w
+        with self.assertRaises(tr.TranslationError):
+            w.score_frozen([{"sentence_id":"s","text_id":"t","forms":["w"]}],[],[])
+
+    def test_score_rejects_injected_reference_flag(self):
+        from ling.translation import w28_letters_first_use as w
+        from hashlib import sha256
+        inp={"sentence_id":"s","text_id":"t","forms":["w"]}
+        pred={"sentence_id":"s","text_id":"t","source_form_sha256":sha256(w.canonical(["w"])).hexdigest(),
+              "direct_reference_field_used":True,"unknown_tokens":0,"reordered_triplets":0,
+              "gloss":"x","w10":"x","w28":"x"}
+        ref={"sentence_id":"s","text_id":"t","german":"x"}
+        with self.assertRaises(tr.TranslationError):
+            w.score_frozen([inp],[pred],[ref])
+
+    def test_grammar_support_requires_independent_training_documents(self):
+        from ling.translation import w28_letters_first_use as w
+        train=[{"sentence_id":f"s{i}","text_id":"same_document",
+                "forms":("a","b","c"),"glosses":("eins","zwei","drei"),
+                "german":"drei eins zwei"} for i in range(4)]
+        m=w.TrainSupportedPhraseComposer(train)
+        # Four repeated sentences from ONE source text are ONE vote.
+        self.assertEqual(len(m.triplets[("a","b","c")][(2,0,1)]),1)
+
+    def test_grammar_triple_reordering_needs_three_distinct_texts(self):
+        from ling.translation import w28_letters_first_use as w
+        train=[{"sentence_id":f"s{i}","text_id":f"doc{i}",
+                "forms":("a","b","c"),"glosses":("eins","zwei","drei"),
+                "german":"drei eins zwei"} for i in range(3)]
+        m=w.TrainSupportedPhraseComposer(train)
+        row={"sentence_id":"fresh","text_id":"heldout",
+             "forms":("a","b","c"),"glosses":(None,None,None),
+             "corpus":"synthetic_new"}
+        v=m.predict(row)
+        self.assertEqual(v["mode"],"W28_SOURCE_VOTED_TRIPLETS")
+        self.assertEqual(v["emitted_slot_order"],[2,0,1])
+        self.assertEqual(v["three_token_reorders"][0]["train_text_votes"],3)
+
+    def test_unknown_tokens_cannot_be_fluently_invented(self):
+        from ling.translation import w28_letters_first_use as w
+        train=[{"sentence_id":"s","text_id":"doc",
+                "forms":("a",),"glosses":("eins",),"german":"eins"}]
+        m=w.TrainSupportedPhraseComposer(train)
+        row={"sentence_id":"x","text_id":"heldout",
+             "forms":("unseen",),"glosses":(None,),"corpus":"fixture"}
+        v=m.predict(row)
+        self.assertGreaterEqual(v["unknown_abstentions"],1)
+        self.assertIn("[?]",v["prediction"])
+
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -2743,6 +2743,268 @@ class VLMBaselinesTests(unittest.TestCase):
             if tmp_path.is_file():
                 tmp_path.unlink()
 
+    def test_w28_ledger_concurrent_writer_locking(self) -> None:
+        """Verify that opening two concurrent writer instances raises LedgerLockError."""
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerLockError
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            l_path = Path(tmp_dir) / "locked_ledger.jsonl"
+            ledger1 = DurableAttemptLedger(l_path, run_id="run1", protocol_fingerprint="proto1")
+            try:
+                with self.assertRaises(LedgerLockError):
+                    DurableAttemptLedger(l_path, run_id="run2", protocol_fingerprint="proto1")
+            finally:
+                ledger1.close()
+            # Once closed, another writer can acquire the lock cleanly
+            ledger2 = DurableAttemptLedger(l_path, run_id="run2", protocol_fingerprint="proto1")
+            ledger2.close()
+
+    def test_w28_ledger_path_validation(self) -> None:
+        """Verify validate_ledger_path rejects directories."""
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerError
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with self.assertRaises(LedgerError):
+                DurableAttemptLedger(Path(tmp_dir), run_id="run1", protocol_fingerprint="proto1")
+
+    def test_w28_ledger_weight_mixing_detection(self) -> None:
+        """Verify ledger integrity check detects mixing different model weights across dispatches."""
+        from eval.vlm.ledger import DurableAttemptLedger, verify_ledger_file_integrity
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            l_path = Path(tmp_dir) / "weight_mixing.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="run_mix", protocol_fingerprint="proto_mix")
+            try:
+                ledger.record_dispatch(
+                    attempt_id="att_1", attempt_index=0, target_or_control_id="t1",
+                    physical_witness="pw1", source_raw_sha256="s1", stimulus_sha256="st1",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p1",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_weight_A",
+                    decoding_parameters={},
+                )
+                ledger.record_completion(attempt_id="att_1", status="success", output_text="out1", latency_ms=5.0)
+                ledger.record_dispatch(
+                    attempt_id="att_2", attempt_index=1, target_or_control_id="t2",
+                    physical_witness="pw1", source_raw_sha256="s2", stimulus_sha256="st2",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p2",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_weight_B",
+                    decoding_parameters={},
+                )
+                ledger.record_completion(attempt_id="att_2", status="success", output_text="out2", latency_ms=5.0)
+            finally:
+                ledger.close()
+
+            audit = verify_ledger_file_integrity(l_path)
+            self.assertFalse(audit["valid"])
+            self.assertTrue(any("Mixed model weight signatures" in e for e in audit["errors"]))
+
+    def test_w28_ledger_completion_status_invariant(self) -> None:
+        """Verify recording an error category with status='success' is rejected."""
+        from eval.vlm.ledger import DurableAttemptLedger, LedgerError
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            l_path = Path(tmp_dir) / "invalid_status.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="run_inv", protocol_fingerprint="proto_inv")
+            try:
+                ledger.record_dispatch(
+                    attempt_id="att_inv", attempt_index=0, target_or_control_id="t1",
+                    physical_witness="pw1", source_raw_sha256="s1", stimulus_sha256="st1",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p1",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_weight_A",
+                    decoding_parameters={},
+                )
+                with self.assertRaises(LedgerError):
+                    ledger.record_completion(
+                        attempt_id="att_inv",
+                        status="success",
+                        output_text="text",
+                        error_category="interrupted_unknown_outcome",
+                        latency_ms=1.0,
+                    )
+            finally:
+                ledger.close()
+
+    def test_w28_evidence_manifest_generation_and_verification(self) -> None:
+        """Verify evidence manifest generation, privacy preservation, and cryptographic verification."""
+        from eval.vlm.ledger import DurableAttemptLedger
+        from eval.vlm.evidence import generate_vlm_evidence_manifest, verify_vlm_evidence_manifest
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            l_path = Path(tmp_dir) / "audit_ledger.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="run_audit", protocol_fingerprint="proto_audit")
+            try:
+                ledger.record_dispatch(
+                    attempt_id="att_audit_1", attempt_index=0, target_or_control_id="t1",
+                    physical_witness="pw1", source_raw_sha256="s1", stimulus_sha256="st1",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p1",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_weight_A",
+                    decoding_parameters={},
+                )
+                ledger.record_completion(attempt_id="att_audit_1", status="success", output_text="Private text 1", latency_ms=10.0)
+                ledger.record_dispatch(
+                    attempt_id="att_audit_2", attempt_index=1, target_or_control_id="t2",
+                    physical_witness="pw1", source_raw_sha256="s2", stimulus_sha256="st2",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p2",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_weight_A",
+                    decoding_parameters={},
+                )
+                ledger.record_completion(
+                    attempt_id="att_audit_2",
+                    status="failed",
+                    output_text="",
+                    error_category="inference_timeout",
+                    error_message="Private crash stack trace",
+                    latency_ms=15.0,
+                )
+            finally:
+                ledger.close()
+
+            manifest_path = Path(tmp_dir) / "audit_manifest.json"
+            manifest = generate_vlm_evidence_manifest(
+                ledger_path=l_path,
+                execution_tier="agent_local_attested",
+                output_path=manifest_path,
+                host_notes="Local test run",
+            )
+            self.assertEqual(manifest["doc_type"], "vlm_evidence_manifest")
+            self.assertEqual(manifest["execution_tier"], "agent_local_attested")
+            self.assertEqual(manifest["ledger_audit"]["attempted_count"], 2)
+            self.assertEqual(manifest["ledger_audit"]["succeeded_count"], 1)
+            self.assertEqual(manifest["ledger_audit"]["failed_count"], 1)
+
+            # Check privacy redaction: private output text must NOT appear anywhere in the manifest
+            manifest_str = json.dumps(manifest)
+            self.assertNotIn("Private text 1", manifest_str)
+            self.assertNotIn("Private crash stack trace", manifest_str)
+
+            # Independent verification passes
+            audit = verify_vlm_evidence_manifest(manifest_path)
+            self.assertTrue(audit["valid"], f"Verification failed with: {audit['errors']}")
+
+            # Tampering test: tamper an attempt hash
+            tampered_path = Path(tmp_dir) / "tampered_manifest.json"
+            tampered_manifest = copy.deepcopy(manifest)
+            tampered_manifest["attempts"][0]["output_sha256"] = "invalid_short_hash"
+            tampered_path.write_text(json.dumps(tampered_manifest), encoding="utf-8")
+            audit_t = verify_vlm_evidence_manifest(tampered_path)
+            self.assertFalse(audit_t["valid"])
+            self.assertTrue(any("missing or invalid output_sha256" in e for e in audit_t["errors"]))
+
+    def test_w28_public_manifest_is_redacted_and_self_hashed(self) -> None:
+        from eval.vlm.evidence import verify_vlm_evidence_manifest
+        source = Path(__file__).resolve().parents[2] / "eval/vlm/evidence_manifest.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        self.assertEqual(data["evidence_provenance"],
+                         "SELF_REPORTED_PRIVATE_LEDGER_NOT_ORIGINAL_REPLAY")
+        self.assertEqual((data["ledger_audit"]["succeeded_count"],
+                          data["ledger_audit"]["failed_count"]), (67, 2))
+        self.assertFalse(data["ledger_audit"]["original_ledger_replayed_by_public_verifier"])
+        for row in data["attempts"]:
+            self.assertNotIn("classification", row)
+            self.assertNotIn("output_text", row)
+            self.assertNotIn("error_message", row)
+        self.assertNotEqual(data["evidence_grades"]["grade_d_actual_sign_media_passes"]["status"],
+                            "PASSED")
+        self.assertTrue(verify_vlm_evidence_manifest(source)["valid"])
+
+    def test_w28_public_manifest_rejects_hidden_outputs_and_same_length_tampering(self) -> None:
+        from eval.vlm.evidence import verify_vlm_evidence_manifest
+        source = Path(__file__).resolve().parents[2] / "eval/vlm/evidence_manifest.json"
+        original = json.loads(source.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "invalid.json"
+            example = copy.deepcopy(original)
+            example["attempts"][0]["classification"]={"raw_text": "private original generated output"}
+            p.write_text(json.dumps(example), encoding="utf-8")
+            errors = verify_vlm_evidence_manifest(p)["errors"]
+            self.assertTrue(any("forbidden or unredacted" in s for s in errors), errors)
+            example = copy.deepcopy(original)
+            example["attempts"][0]["output_sha256"]="a"*64
+            p.write_text(json.dumps(example), encoding="utf-8")
+            errors = verify_vlm_evidence_manifest(p)["errors"]
+            self.assertTrue(any("self-digest mismatch" in s for s in errors), errors)
+
+    def test_w28_evidence_manifest_cli(self) -> None:
+        """Verify CLI generate-evidence-manifest and verify-evidence-manifest subcommands."""
+        from eval.vlm.ledger import DurableAttemptLedger
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            l_path = Path(tmp_dir) / "cli_ledger.jsonl"
+            ledger = DurableAttemptLedger(l_path, run_id="cli_run", protocol_fingerprint="cli_proto")
+            try:
+                ledger.record_dispatch(
+                    attempt_id="cli_att_1", attempt_index=0, target_or_control_id="t1",
+                    physical_witness="pw1", source_raw_sha256="s1", stimulus_sha256="st1",
+                    stimulus_dimensions=[100, 100], task="signs", rung="identify",
+                    prompt_variant="blind", prompt_text="Describe...", prompt_sha256="p1",
+                    model_id="m1", model_revision="r1", model_weight_sha256="sha_w",
+                    decoding_parameters={},
+                )
+                ledger.record_completion(attempt_id="cli_att_1", status="success", output_text="out", latency_ms=5.0)
+            finally:
+                ledger.close()
+
+            manifest_path = Path(tmp_dir) / "evidence_manifest.json"
+            ret_gen = cli_main([
+                "generate-evidence-manifest",
+                "--ledger", str(l_path),
+                "--output", str(manifest_path),
+                "--execution-tier", "hosted_ci_verified",
+            ])
+            self.assertEqual(ret_gen, 0)
+            self.assertTrue(manifest_path.is_file())
+
+            ret_ver = cli_main([
+                "verify-evidence-manifest",
+                "--manifest", str(manifest_path),
+            ])
+            self.assertEqual(ret_ver, 0)
+
+    def test_w28_multimodal_tensor_conditioning(self) -> None:
+        """Verify multimodal conditioning formats images and ensures image input alters processor output."""
+        try:
+            from PIL import Image
+            import torch
+        except ImportError:
+            self.skipTest("optional torch/Pillow unavailable on lightweight governance runner")
+        from eval.vlm.adapter import SmolVLMAdapter, ImageConditioningError
+
+        cfg = {
+            "key": "smolvlm-256m-instruct",
+            "model_type": "open_weight",
+            "provider_model_id": "HuggingFaceTB/SmolVLM-256M-Instruct",
+            "revision": "7e3e67edbbed1bf9888184d9df282b700a323964",
+        }
+        adapter = SmolVLMAdapter(cfg)
+
+        # Test 1: ImageConditioningError if processor lacks apply_chat_template
+        adapter._processor = object()
+        img1 = Image.new("RGB", (64, 64), color=(255, 255, 255))
+        with self.assertRaises(ImageConditioningError):
+            adapter.format_multimodal_inputs("System prompt", "Blind prompt", img1)
+
+        # Test 2: Mock processor returning tensors verifies that different images produce different pixel values
+        class MockProcessor:
+            def apply_chat_template(self, messages, **kwargs):
+                return "<image> Describe this image."
+
+            def __call__(self, images, text, return_tensors):
+                img = images[0]
+                arr = list(img.get_flattened_data()) if hasattr(img, "get_flattened_data") else list(img.getdata())
+                return {
+                    "pixel_values": torch.tensor([arr[0]], dtype=torch.float32),
+                    "input_ids": torch.tensor([[1, 2, 3]]),
+                }
+
+        adapter._processor = MockProcessor()
+        img_white = Image.new("RGB", (64, 64), color=(255, 255, 255))
+        img_black = Image.new("RGB", (64, 64), color=(0, 0, 0))
+        res_white = adapter.format_multimodal_inputs("", "Prompt", img_white)
+        res_black = adapter.format_multimodal_inputs("", "Prompt", img_black)
+
+        self.assertIn("pixel_values", res_white)
+        self.assertIn("pixel_values", res_black)
+        self.assertFalse(torch.equal(res_white["pixel_values"], res_black["pixel_values"]))
+
 
 if __name__ == "__main__":
     unittest.main()

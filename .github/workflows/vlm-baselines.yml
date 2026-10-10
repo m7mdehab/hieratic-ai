@@ -161,3 +161,25 @@ jobs:
 
       - name: Run full evaluation test discovery
         run: python -m unittest discover -s tests/evaluation -v
+
+  hosted-ledger-fixture-audit:
+    name: Hosted W28 ledger fixture integrity (NOT original CPU image inference)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact PR revision
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install lightweight project dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Validate redacted self-consistent agent-local report
+        run: python -m tools.vlm_baselines verify-evidence-manifest --manifest eval/vlm/evidence_manifest.json
+      - name: Assert fixture integrity and manifest tamper rejection
+        run: |
+          python -m unittest \
+            tests.evaluation.test_vlm_baselines.VLMBaselinesTests.test_w28_evidence_manifest_generation_and_verification \
+            tests.evaluation.test_vlm_baselines.VLMBaselinesTests.test_w28_public_manifest_is_redacted_and_self_hashed \
+            tests.evaluation.test_vlm_baselines.VLMBaselinesTests.test_w28_public_manifest_rejects_hidden_outputs_and_same_length_tampering

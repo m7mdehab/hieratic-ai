@@ -1839,9 +1839,9 @@ def execute_sign_replay_experiment_w27(
             "physical_witness": wit,
             "sign_ids": [int(x) for x in wit_signs if x.isdigit()],
             "media_count": len(wit_blind),
-            "blind_script_claims": sum(1 for a in wit_blind if a["classification"]["script_claimed"]),
-            "script_aware_claims": sum(1 for a in wit_script if a["classification"]["script_claimed"]),
-            "leading_claims": sum(1 for a in wit_lead if a["classification"]["script_claimed"]),
+            "blind_script_claims": sum(1 for a in wit_blind if (a.get("classification") or {}).get("script_claimed")),
+            "script_aware_claims": sum(1 for a in wit_script if (a.get("classification") or {}).get("script_claimed")),
+            "leading_claims": sum(1 for a in wit_lead if (a.get("classification") or {}).get("script_claimed")),
             "script_discrimination_observed": False,
         })
 
@@ -1850,25 +1850,26 @@ def execute_sign_replay_experiment_w27(
     ctrl_script = [a for a in attempt_ledger if a["prompt_variant"] == "script_aware" and "control" in a["attempt_category"]]
     ctrl_lead = [a for a in attempt_ledger if a["prompt_variant"] == "leading" and "control" in a["attempt_category"]]
 
-    blank_blind = next(a for a in ctrl_blind if a["target_or_control_id"] == "control_blank")
-    blank_lead = next(a for a in ctrl_lead if a["target_or_control_id"] == "control_blank")
+    blank_blind = next((a for a in ctrl_blind if a["target_or_control_id"] == "control_blank"), None)
+    blank_lead = next((a for a in ctrl_lead if a["target_or_control_id"] == "control_blank"), None)
 
     prompt_priming_observed = bool(
-        blank_lead["classification"]["script_claimed"]
-        and not blank_blind["classification"]["script_claimed"]
+        blank_lead and blank_blind
+        and (blank_lead.get("classification") or {}).get("script_claimed")
+        and not (blank_blind.get("classification") or {}).get("script_claimed")
     )
 
     controls_summary = {
         "total_controls_evaluated": len(controls_specs),
         "prompt_priming_observed": prompt_priming_observed,
         "blind_negative_controls_all_reject_script": not any(
-            a["classification"]["script_claimed"] for a in ctrl_blind if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
+            (a.get("classification") or {}).get("script_claimed") for a in ctrl_blind if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
         ),
         "script_aware_negative_controls_all_reject_script": not any(
-            a["classification"]["script_claimed"] for a in ctrl_script if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
+            (a.get("classification") or {}).get("script_claimed") for a in ctrl_script if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
         ),
         "leading_negative_controls_hallucinate_script": any(
-            a["classification"]["script_claimed"] for a in ctrl_lead if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
+            (a.get("classification") or {}).get("script_claimed") for a in ctrl_lead if a["target_or_control_id"] in ("control_blank", "control_procedural_texture", "control_geometric_marks", "control_photo_negative")
         ),
         "scrambled_attribution": "Petrie Museum UC 32782 sign D58 (ht_6036); local ink strokes survive in 32x32 tiles",
         "identity_mark_attribution": "Procedural synthetic artisan drawing; NOT Cat.2169 original photograph",
@@ -1893,7 +1894,7 @@ def execute_sign_replay_experiment_w27(
             "evidence": f"SHA-256 of pinned safetensors verified ({RECORDED_WEIGHT_SHA256[:16]}...)",
         },
         "grade_d_actual_sign_media_passes": {
-            "status": sim_status if is_simulated else ("PASSED" if live_media_pass else "NOT_VERIFIED"),
+            "status": sim_status if is_simulated else ("PASSED" if live_media_pass else ("PARTIAL" if attempt_counts_audited["successful_actual_passes"] > 0 else "NOT_VERIFIED")),
             "evidence": "15 verified CC BY 4.0 publisher media files hashed and executed on CPU",
         },
         "grade_e_visual_sensitivity_observed": {

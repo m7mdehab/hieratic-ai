@@ -1,0 +1,72 @@
+{
+  "record_type": "W29_AUTHENTIC_HOSTED_ORIGINAL_PUBLIC_SOURCE_CPU_EXPERIMENT",
+  "github_action_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38147184334",
+  "actual_execution_head_sha": "b4bb6fda147ce9d68b35e9e00d55eb0067058854",
+  "source_data_no_private_originals_committed": true,
+  "observed_original_run_results": {
+    "original_source_receipt": {
+      "frozen_groups": 32,
+      "prediction_reads_reference_file": false,
+      "private_publisher_german_reference_sha256": "78134001db284ce3a6c89df26c484abc8d64f535c965dafffadc3a09dcb337fc",
+      "source_github_blob_sha1": "beba6443bc4796b92a8f398aa8123a431575cbfa",
+      "source_inputs_sha256": "25ac4a294d51d83489a7eae41c0c0acd56d1533d630a6631e1c9888240238951",
+      "source_original_bytes": 18120088,
+      "source_sentences": 947,
+      "source_sha256": "acef9ecaa13f9aa6589b4c59241c0c9aec3f16918cbf177b71914553e17a583f"
+    },
+    "genuine_IBM1_training_receipt": {
+      "donor_sentences": 3925,
+      "donor_text_groups": 1526,
+      "em_iterations": 4,
+      "ibm1_actual_training_sentences": 3921,
+      "ibm1_trained_translation_source_forms": 5163,
+      "prediction_archive_SHA256": "159ca230a8699fcba2adf3e18c5c26c06bca79c1df2abe0222cc6e4762cd32fa",
+      "prediction_count": 947,
+      "predictor_uses_publisher_new_german_gold": false,
+      "total_ibm1_unknown_source_tokens": 5173,
+      "training_data_excludes_new_german_references": true
+    },
+    "heldout_aggregate_scores": {
+      "expert_semantic_translation_accuracy": null,
+      "frozen_source_groups": 32,
+      "ibm1_minus_w10_text_group_bootstrap_95pct": [
+        0.05998908,
+        0.07622383
+      ],
+      "ibm1_unknown_source_units": 5173,
+      "locked_prediction_archive_SHA256": "159ca230a8699fcba2adf3e18c5c26c06bca79c1df2abe0222cc6e4762cd32fa",
+      "metrics": {
+        "baseline_gloss": {
+          "correct_word_multiset_overlap": 1203,
+          "german_word_micro_f1": 0.07132482,
+          "predicted_words": 16461,
+          "reference_words": 17272
+        },
+        "baseline_w10": {
+          "correct_word_multiset_overlap": 1210,
+          "german_word_micro_f1": 0.0712876,
+          "predicted_words": 16675,
+          "reference_words": 17272
+        },
+        "ibm1": {
+          "correct_word_multiset_overlap": 1651,
+          "german_word_micro_f1": 0.14124995,
+          "predicted_words": 6105,
+          "reference_words": 17272
+        }
+      },
+      "model_training_or_reading_capability_points": 0,
+      "new_heldout_editorial_german_labels_seen_only_after_predicted_archive": true,
+      "original_egyptian_tokens": 11278,
+      "original_photographs_used": false,
+      "original_source_inputs_SHA256": "25ac4a294d51d83489a7eae41c0c0acd56d1533d630a6631e1c9888240238951",
+      "private_reference_archive_SHA256": "78134001db284ce3a6c89df26c484abc8d64f535c965dafffadc3a09dcb337fc",
+      "source_physical_manuscript_independence_confirmed": false,
+      "total_sentences": 947,
+      "trained_IBM1_on_original_publisher_donor": true,
+      "version": "W29-AES-RAMESSIDEN-FIRST-USE-IBM1-C2-v1",
+      "with_original_german_reference": 947,
+      "without_original_german_reference": 0
+    }
+  }
+}

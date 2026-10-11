@@ -1,0 +1,50 @@
+name: W30 B expanded original printed sign classifier and real-photo OOD
+on:
+  push:
+    branches: ['overseer/w30-hpdb-ood-signs']
+    paths:
+      - 'tools/w30_hpdb_photo_ood.py'
+      - 'tests/research/test_w30_hpdb_photo_ood.py'
+      - '.github/workflows/w30-hpdb-photo-ood.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-IIIF-real-museum-image-OOD:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install real original image CPU tools
+        run: python -m pip install Pillow==11.3.0 numpy==2.2.6
+      - name: Verify before-source preregistration and adversarial tests
+        run: |
+          test -s docs/waves/W30_B_HPDB_PRINT_TO_PHOTO_OOD_PREREG.md
+          python -m unittest tests.research.test_w30_hpdb_photo_ood -v
+      - name: Get original licensed Tokyo IIIF JPEGs, supervised fit, and public-domain Met photo OOD
+        run: |
+          set -euo pipefail
+          python -m tools.w30_hpdb_photo_ood --output "$RUNNER_TEMP/w30_hpdb_true_image_ood.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'w30_hpdb_true_image_ood.json').read_text())
+          assert r['original_authentic_printed_iiif_images_used']
+          assert r['original_met_papyrus_jpeg_pixels_used']
+          assert r['train_signs']>=16 and r['test_volume3_signs']>=8
+          assert r['original_photo_sign_labels_or_expert_gold'] is False
+          assert r['weighted_capability_points']==0
+          print('PASS: authentic printed image sign fit and unlabeled original-photo OOD, no fake sign-gold.')
+          PY
+      - name: Publish publisher/public-domain SHA and numerical aggregates only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w30-real-iiif-sign-model-vs-met-photo-ood
+          path: ${{ runner.temp }}/w30_hpdb_true_image_ood.json
+          retention-days: 14

@@ -1,0 +1,50 @@
+name: W30 A five authentic public-domain Met original photographed papyri
+on:
+  push:
+    branches: ['overseer/w30-met-photo-multisource']
+    paths:
+      - 'tools/w30_met_multisource_vision.py'
+      - 'tests/research/test_w30_met_multisource_vision.py'
+      - '.github/workflows/w30-met-multisource.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  authentic-cross-manuscript-training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: CPU original photo processing dependencies
+        run: python -m pip install Pillow==11.3.0 numpy==2.2.6
+      - name: Frozen five-object study and adversarial tests
+        run: |
+          test -s docs/waves/W30_A_MET_ORIGINAL_PHOTO_PREREG.md
+          python -m unittest tests.research.test_w30_met_multisource_vision -v
+      - name: Get only five original public-domain Met photos, fit and evaluate
+        run: |
+          set -euo pipefail
+          python -m tools.w30_met_multisource_vision --output "$RUNNER_TEMP/w30_met_original_metrics.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'w30_met_original_metrics.json').read_text())
+          assert r['original_museum_photographs_used']
+          assert r['three_train_original_object_ids']==[546511,554654,545445]
+          assert r['two_heldout_original_object_ids']==[544847,549250]
+          assert r['weighted_reading_capability_points']==0
+          assert all(x['declared_public_domain'] for x in r['source_receipts'].values())
+          print('PASS: true 5 original source cross-object CPU learning, no sign-reading gold claimed')
+          PY
+      - name: Archive only original-source SHA and numeric performance
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w30-five-met-public-domain-papyrus-cpu-denoising
+          path: ${{ runner.temp }}/w30_met_original_metrics.json
+          retention-days: 14

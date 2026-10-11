@@ -1,0 +1,586 @@
+{
+  "record_type": "W29_AUTHENTIC_HOSTED_ORIGINAL_PUBLIC_SOURCE_CPU_EXPERIMENT",
+  "github_action_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38146718158",
+  "actual_execution_head_sha": "b511d34ba7dd1b2327bf4059ed57cae39465fc63",
+  "source_data_no_private_originals_committed": true,
+  "observed_original_run_results": {
+    "blank_control_predicted_label": "V1",
+    "expert_hieratic_sign_reading_gold_available": false,
+    "frozen_max_per_label_per_volume": 3,
+    "license_notice": "HPDB CC BY 4.0 published sign metadata; Tokyo publisher source terms checked in W27",
+    "official_benchmark_or_capability_points": 0,
+    "original_iiif_jpeg_pixels_actually_read": true,
+    "original_papyrus_photographs_included": false,
+    "paper_book_witness_not_independent_manuscript": true,
+    "published_manifest_original_sample_receipts": {
+      "103002": {
+        "image_sha256": "e2403459de24616e9238ed9da0fec7b9f44b91f2376dd57419d65c7cdd0cc606",
+        "label": "A1",
+        "original_jpeg_bytes": 49559,
+        "printed_page_proxy": "MOLLER-V1-P003",
+        "volume": 1
+      },
+      "103003": {
+        "image_sha256": "a7852add8ab8589a7dbe1e9f235ea847b3020914d9704d84a0ada7cc4a7a0345",
+        "label": "A1",
+        "original_jpeg_bytes": 46847,
+        "printed_page_proxy": "MOLLER-V1-P003",
+        "volume": 1
+      },
+      "103005": {
+        "image_sha256": "f1f0f05f33a8d6380c593d534fdbb84fa95844a1cc719e0153035d193178cb31",
+        "label": "A2",
+        "original_jpeg_bytes": 48189,
+        "printed_page_proxy": "MOLLER-V1-P003",
+        "volume": 1
+      },
+      "103006": {
+        "image_sha256": "d3b35853826690bc9b11b8addd8ba8aaa110ab6fd9552964de721b86a6686ea3",
+        "label": "A2",
+        "original_jpeg_bytes": 31254,
+        "printed_page_proxy": "MOLLER-V1-P003",
+        "volume": 1
+      },
+      "107002": {
+        "image_sha256": "3e9f5313e6a6c48a8aabd066ba7f27ec58f4b3eaa183187e4f5f62d56aec82f0",
+        "label": "D1",
+        "original_jpeg_bytes": 44884,
+        "printed_page_proxy": "MOLLER-V1-P007",
+        "volume": 1
+      },
+      "107003": {
+        "image_sha256": "0310e7f1da69d047fec78a5fa0dd12a70d0de450053bae4d374f5acfccd73c84",
+        "label": "D2",
+        "original_jpeg_bytes": 46153,
+        "printed_page_proxy": "MOLLER-V1-P007",
+        "volume": 1
+      },
+      "118003": {
+        "image_sha256": "6be3f28074ec4200ef141871f13f9ed7486a6263f0f4c0362bf0d15fa2d6507c",
+        "label": "G1",
+        "original_jpeg_bytes": 40843,
+        "printed_page_proxy": "MOLLER-V1-P018",
+        "volume": 1
+      },
+      "118004": {
+        "image_sha256": "e4eda519b32e5e33f8aadee19d1144b1247a0d0cfa2cdd9753d766f30ce720cc",
+        "label": "G1",
+        "original_jpeg_bytes": 51301,
+        "printed_page_proxy": "MOLLER-V1-P018",
+        "volume": 1
+      },
+      "118005": {
+        "image_sha256": "496a935a9a864358b9fb9099855344f0039162910fd7d4e4a2a506d0390f0a3c",
+        "label": "G1",
+        "original_jpeg_bytes": 41509,
+        "printed_page_proxy": "MOLLER-V1-P018",
+        "volume": 1
+      },
+      "126008": {
+        "image_sha256": "a492ee9b54ced8a29f0d2b0e2d7323bd1f5a9390f1cd8f13cf553e83f6effd9f",
+        "label": "M12",
+        "original_jpeg_bytes": 48295,
+        "printed_page_proxy": "MOLLER-V1-P026",
+        "volume": 1
+      },
+      "149006": {
+        "image_sha256": "517ca805238e03e0f77b912e0000bbe698a7ded29c09d237f69b7217c2d4083d",
+        "label": "V1",
+        "original_jpeg_bytes": 37217,
+        "printed_page_proxy": "MOLLER-V1-P049",
+        "volume": 1
+      },
+      "153007": {
+        "image_sha256": "c28141b1546fa8fada9029aaf9e11d241eb6fece26e31bc07a2d54a48408822f",
+        "label": "Z1",
+        "original_jpeg_bytes": 45312,
+        "printed_page_proxy": "MOLLER-V1-P053",
+        "volume": 1
+      },
+      "203007": {
+        "image_sha256": "110115005ca2f9cd879c166f173f47d6768a63f0e2606d0adc464d36eed79fbb",
+        "label": "A1",
+        "original_jpeg_bytes": 50406,
+        "printed_page_proxy": "MOLLER-V2-P003",
+        "volume": 2
+      },
+      "203008": {
+        "image_sha256": "9bba6c3ea53512e03e09331f728a7b981712523d437bf52b3995af2bd090ec69",
+        "label": "A2",
+        "original_jpeg_bytes": 46992,
+        "printed_page_proxy": "MOLLER-V2-P003",
+        "volume": 2
+      },
+      "203009": {
+        "image_sha256": "cfe45f7618c634002587ba5234d860a15c4ac3bc27c709b7b3daf0a470e539e8",
+        "label": "A2",
+        "original_jpeg_bytes": 37041,
+        "printed_page_proxy": "MOLLER-V2-P003",
+        "volume": 2
+      },
+      "206007": {
+        "image_sha256": "5c35dfe8280d380275962cda10021873fe09b0c2103a6c98d1a9e6a085211982",
+        "label": "D1",
+        "original_jpeg_bytes": 49933,
+        "printed_page_proxy": "MOLLER-V2-P006",
+        "volume": 2
+      },
+      "206008": {
+        "image_sha256": "a5d953bbe70e644e4ef24b76abfc5514bbbb2d7e35cf825ff2c3151d963cd187",
+        "label": "D2",
+        "original_jpeg_bytes": 44413,
+        "printed_page_proxy": "MOLLER-V2-P006",
+        "volume": 2
+      },
+      "217002": {
+        "image_sha256": "2b54bcc60027920756325951d111c2f2547ced6d0e971a75433d6a2d1560e79b",
+        "label": "G1",
+        "original_jpeg_bytes": 49644,
+        "printed_page_proxy": "MOLLER-V2-P017",
+        "volume": 2
+      },
+      "217003": {
+        "image_sha256": "d29752d709f300c2e0eb052d3512d33884a1abd1e2da27fa5b02c2d9a09d3232",
+        "label": "G1",
+        "original_jpeg_bytes": 48129,
+        "printed_page_proxy": "MOLLER-V2-P017",
+        "volume": 2
+      },
+      "225005": {
+        "image_sha256": "e18fe3ae7ec2e0b3ebe650f0a3aa9c88a3c315c7745f9a6dce6e931e20a6f457",
+        "label": "M12",
+        "original_jpeg_bytes": 39464,
+        "printed_page_proxy": "MOLLER-V2-P025",
+        "volume": 2
+      },
+      "246008": {
+        "image_sha256": "c745b8f7e16283c20d63cca39b5a474eecff3fe1c6ba6f2cba45cdaae9afa93b",
+        "label": "V1",
+        "original_jpeg_bytes": 30538,
+        "printed_page_proxy": "MOLLER-V2-P046",
+        "volume": 2
+      },
+      "250004": {
+        "image_sha256": "a67c12272da1c4826ba4fb988e777c31f832efc8b6bdbe46f8baf76b246035b0",
+        "label": "Z1",
+        "original_jpeg_bytes": 38044,
+        "printed_page_proxy": "MOLLER-V2-P050",
+        "volume": 2
+      },
+      "303009": {
+        "image_sha256": "eb4eb9b872c60bac56ebc67bae03c0b633390d3809fdd4c00ab764282f2df99d",
+        "label": "A1",
+        "original_jpeg_bytes": 50557,
+        "printed_page_proxy": "MOLLER-V3-P003",
+        "volume": 3
+      },
+      "303010": {
+        "image_sha256": "1d23068c5600a3aef94fac76f966ef4965f2f672f016c7e1bf1b1e69c600aedc",
+        "label": "A2",
+        "original_jpeg_bytes": 50192,
+        "printed_page_proxy": "MOLLER-V3-P003",
+        "volume": 3
+      },
+      "304001": {
+        "image_sha256": "ace196a4c4a243f04c18b720ef54b1ec0668ab4f999ab99f205414c20f2debab",
+        "label": "A2",
+        "original_jpeg_bytes": 36862,
+        "printed_page_proxy": "MOLLER-V3-P004",
+        "volume": 3
+      },
+      "306006": {
+        "image_sha256": "8f8d22b3486ed02a94dcb0821bc8c4987df4c8c4f97bbeb3b0f03839f60d6ce6",
+        "label": "D1",
+        "original_jpeg_bytes": 41781,
+        "printed_page_proxy": "MOLLER-V3-P006",
+        "volume": 3
+      },
+      "306007": {
+        "image_sha256": "458acaf013577423b86e0033fd438451401af716bc1bacbfffb3eee289f929aa",
+        "label": "D2",
+        "original_jpeg_bytes": 45817,
+        "printed_page_proxy": "MOLLER-V3-P006",
+        "volume": 3
+      },
+      "317007": {
+        "image_sha256": "4dfac9013188c4234319a634021ceecbfb567459d392c772c293260fe9820db4",
+        "label": "G1",
+        "original_jpeg_bytes": 51280,
+        "printed_page_proxy": "MOLLER-V3-P017",
+        "volume": 3
+      },
+      "317008": {
+        "image_sha256": "a03c272957a1af23d9cb5cf4c9d4c4edaae460b43e8aa3e21c0c962c323f3161",
+        "label": "G1",
+        "original_jpeg_bytes": 32963,
+        "printed_page_proxy": "MOLLER-V3-P017",
+        "volume": 3
+      },
+      "326001": {
+        "image_sha256": "ccc3a33999a1bb3fe8bb6a7599ccce181d0c730b59812d70257fdb13ed0b988e",
+        "label": "M12",
+        "original_jpeg_bytes": 37760,
+        "printed_page_proxy": "MOLLER-V3-P026",
+        "volume": 3
+      },
+      "350001": {
+        "image_sha256": "b34feb8263d2a621296330632b3e1cd0542d8c0ac55a09c0c4459f7e767a9153",
+        "label": "V1",
+        "original_jpeg_bytes": 31731,
+        "printed_page_proxy": "MOLLER-V3-P050",
+        "volume": 3
+      },
+      "354003": {
+        "image_sha256": "8766a97c353f3fbb6e8888705ad121df777dd49a8497dde1e59364d6870dc8f3",
+        "label": "Z1",
+        "original_jpeg_bytes": 35934,
+        "printed_page_proxy": "MOLLER-V3-P054",
+        "volume": 3
+      }
+    },
+    "publisher_catalog_revision": "a8cfcf52632487cf1d61a5793d84c9b2f7192d5a",
+    "schema": "w29-hpdb-authentic-iiif-cpu-classifiers-v1",
+    "source": "original public Tokyo IIIF printed Moller sign crops",
+    "source_collection": "https://da.dl.itc.u-tokyo.ac.jp/portal/en/assets/4a1fbed0-f2a2-4cf5-8a0a-fa310c62ca50",
+    "test_items": 10,
+    "test_known_w27_exposed_sign_item_overlap": 8,
+    "test_original_pixels": {
+      "nearest_centroid_hog": {
+        "balanced_label_accuracy": 0.1875,
+        "correct": 2,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.2,
+        "total": 10
+      },
+      "one_nearest_neighbor": {
+        "balanced_label_accuracy": 0.125,
+        "correct": 1,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.1,
+        "total": 10
+      },
+      "trained_ridge_hog": {
+        "balanced_label_accuracy": 0.1875,
+        "correct": 2,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.2,
+        "total": 10
+      }
+    },
+    "test_ridge_corruption_robustness": {
+      "contrast_70pct": {
+        "balanced_label_accuracy": 0.1875,
+        "correct": 2,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.2,
+        "total": 10
+      },
+      "gaussian_blur": {
+        "balanced_label_accuracy": 0.0625,
+        "correct": 1,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.1,
+        "total": 10
+      },
+      "invert": {
+        "balanced_label_accuracy": 0.25,
+        "correct": 3,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 1,
+            "correct": 2,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.3,
+        "total": 10
+      }
+    },
+    "test_volume_ids": [
+      3
+    ],
+    "train_items": 22,
+    "train_only_volume2_selection": {
+      "alpha_candidates": [
+        0.01,
+        0.1,
+        1,
+        10
+      ],
+      "chosen": 0.01,
+      "dev_accuracies": [
+        {
+          "alpha": 0.01,
+          "correct": 3,
+          "total": 10
+        },
+        {
+          "alpha": 0.1,
+          "correct": 3,
+          "total": 10
+        },
+        {
+          "alpha": 1,
+          "correct": 2,
+          "total": 10
+        },
+        {
+          "alpha": 10,
+          "correct": 2,
+          "total": 10
+        }
+      ]
+    },
+    "train_volume_ids": [
+      1,
+      2
+    ],
+    "usage_policy": "https://www.lib.u-tokyo.ac.jp/ja/library/contents/archives-top/reuse"
+  }
+}

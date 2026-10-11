@@ -1,0 +1,54 @@
+name: W30 C original Amarna first-use Egyptian–German phrase learner
+on:
+  push:
+    branches:
+      - 'overseer/w30-aes-phrase-context'
+    paths:
+      - 'ling/translation/w30_amarna_phrase.py'
+      - 'tests/linguistics/test_w30_amarna_phrase.py'
+      - '.github/workflows/w30-aes-amarna-phrase.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-publisher-original-training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing project dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Validate original prior-to-opening first-use protocol and adversarial tests
+        run: |
+          test -s ling/translation/experiments/W30_PREREG_FIRST_USE_AMARNA_PHRASE.md
+          python -m unittest tests.linguistics.test_w30_amarna_phrase -v
+      - name: Original publisher download, real donor CPU IBM1 and phrase training, frozen prediction before German score
+        run: |
+          set -euo pipefail
+          umask 077
+          PRIVATE="$(mktemp -d)"
+          trap 'rm -rf "$PRIVATE"' EXIT
+          python -m ling.translation.w30_amarna_phrase fetch --private "$PRIVATE"
+          python -m ling.translation.w30_amarna_phrase train --private "$PRIVATE"
+          python -m ling.translation.w30_amarna_phrase score --private "$PRIVATE" > "$RUNNER_TEMP/w30_amarna_original_aggregate.json"
+          cat "$RUNNER_TEMP/w30_amarna_original_aggregate.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"w30_amarna_original_aggregate.json"
+          r=json.loads(p.read_text())
+          assert r["original_heldout_text_groups"]==32
+          assert r["total_original_sentences"]>0 and r["new_gold_accessed_after_predictions_frozen"]
+          assert r["weighted_points_earned"]==0
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: w30-original-amarna-real-phrase-scores
+          path: ${{ runner.temp }}/w30_amarna_original_aggregate.json
+          retention-days: 14

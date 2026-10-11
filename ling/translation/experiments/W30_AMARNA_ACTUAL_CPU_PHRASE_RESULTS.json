@@ -1,0 +1,143 @@
+{
+  "record_type": "W30_PUBLIC_SOURCE_ACTUALLY_EXECUTED_MODEL_EXPERIMENT",
+  "original_github_actions_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38179921744",
+  "original_source_byte_permissions_verified_by_hosted_code": true,
+  "source_private_bytes_not_committed": true,
+  "observed_original_execution": {
+    "source_receipt": {
+      "frozen_text_groups": 32,
+      "new_source_only_sha256": "5b1cac1d755d1a1cea4506578af4101b0df065307fdfb6ca8b803861d5db7403",
+      "reference_opened_by_predictor": false,
+      "sealed_publisher_reference_sha256": "f1c37347d73e8cfde001a9f87641945993f0594d146e5c7579b4d31d1e8ee44f",
+      "source_bytes": 14683204,
+      "source_git_blob": "5e512681dc0d1ac7177a62531582b3473a0a11f2",
+      "source_sentences": 217,
+      "source_sha256": "c32d2ee56eddbb9816ed35a3e72484997d9a367bad8484e8048156f1e0ade7b7",
+      "version": "W30-ORIGINAL-UNEXPOSED-AMARNA-PHRASE-IBM1/1"
+    },
+    "model_training_receipt": {
+      "actual_phrase_substitutions": 17,
+      "donor_dev_internal_sentences": 752,
+      "donor_sentences": 3925,
+      "donor_train_internal_sentences": 3173,
+      "new_publisher_german_references_seen_during_fit_or_prediction": false,
+      "new_target_predictions": 217,
+      "original_conditional_forms": 5163,
+      "prediction_archive_sha256": "7417e43ed64da8cb5e7b8b6490523908ca8539e4083389452f986704cf12282a",
+      "real_ibm1_fitting_rows": 3921,
+      "total_unknown_source_tokens": 979,
+      "train_internal_dev_grid": [
+        {
+          "dev_bigram_f1": 0.05944272445820433,
+          "dev_rows": 752,
+          "margin": 0.5,
+          "support": 2
+        },
+        {
+          "dev_bigram_f1": 0.05201238390092879,
+          "dev_rows": 752,
+          "margin": 1,
+          "support": 2
+        },
+        {
+          "dev_bigram_f1": 0.05417956656346749,
+          "dev_rows": 752,
+          "margin": 0.5,
+          "support": 3
+        },
+        {
+          "dev_bigram_f1": 0.049226006191950465,
+          "dev_rows": 752,
+          "margin": 1,
+          "support": 3
+        },
+        {
+          "dev_bigram_f1": 0.047987616099071206,
+          "dev_rows": 752,
+          "margin": 0.5,
+          "support": 5
+        },
+        {
+          "dev_bigram_f1": 0.045510835913312696,
+          "dev_rows": 752,
+          "margin": 1,
+          "support": 5
+        }
+      ],
+      "trained_phrase_context_types": 5595,
+      "tuned_phrase_threshold": {
+        "dev_bigram_f1": 0.05944272445820433,
+        "dev_rows": 752,
+        "margin": 0.5,
+        "support": 2
+      }
+    },
+    "new_first_use_heldout_score": {
+      "actual_phrase_substitutions": 17,
+      "locked_prediction_archive_sha256": "7417e43ed64da8cb5e7b8b6490523908ca8539e4083389452f986704cf12282a",
+      "missing_german_reference": 0,
+      "model_results": {
+        "ibm1": {
+          "bigrams": {
+            "f1": 0.00850719,
+            "overlap": 21,
+            "predicted_units": 924,
+            "reference_units": 4013
+          },
+          "words": {
+            "f1": 0.14874185,
+            "overlap": 399,
+            "predicted_units": 1135,
+            "reference_units": 4230
+          }
+        },
+        "old_w10": {
+          "bigrams": {
+            "f1": 0.01773972,
+            "overlap": 58,
+            "predicted_units": 2526,
+            "reference_units": 4013
+          },
+          "words": {
+            "f1": 0.10061808,
+            "overlap": 350,
+            "predicted_units": 2727,
+            "reference_units": 4230
+          }
+        },
+        "phrase_ibm1": {
+          "bigrams": {
+            "f1": 0.01174803,
+            "overlap": 29,
+            "predicted_units": 924,
+            "reference_units": 4013
+          },
+          "words": {
+            "f1": 0.14986021,
+            "overlap": 402,
+            "predicted_units": 1135,
+            "reference_units": 4230
+          }
+        }
+      },
+      "new_gold_accessed_after_predictions_frozen": true,
+      "original_heldout_text_groups": 32,
+      "original_hieratic_photos_used": false,
+      "original_source_tokens": 2114,
+      "phrase_minus_ibm_word_micro_f1_group_bootstrap_interval": [
+        -0.00123533,
+        0.00451722
+      ],
+      "physical_manuscript_disjointness_verified": false,
+      "qualified_egyptologist_semantic_accuracy": null,
+      "real_cpu_model_fit": true,
+      "schema": "W30-ORIGINAL-UNEXPOSED-AMARNA-PHRASE-IBM1/1",
+      "scored_nonempty_german_reference": 217,
+      "sealed_editorial_ref_sha256": "f1c37347d73e8cfde001a9f87641945993f0594d146e5c7579b4d31d1e8ee44f",
+      "source_only_sha256": "5b1cac1d755d1a1cea4506578af4101b0df065307fdfb6ca8b803861d5db7403",
+      "total_original_sentences": 217,
+      "unknown_source_tokens": 979,
+      "weighted_points_earned": 0
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "record_type": "W29_AUTHENTIC_HOSTED_ORIGINAL_PUBLIC_SOURCE_CPU_EXPERIMENT",
+  "github_action_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38147417006",
+  "actual_execution_head_sha": "412df35276492e57f48778efd78d8d80dadcb290",
+  "source_data_no_private_originals_committed": true,
+  "observed_original_run_results": {
+    "actual_hieratic_sign_transcription_gold": false,
+    "heldout": {
+      "comparisons": {
+        "8": {
+          "fitted_3x3_ridge": {
+            "dark_fraction_abs_error": 0.00025234,
+            "mae": 0.01395966,
+            "mse": 0.000324557,
+            "psnr_db": 34.88708
+          },
+          "fixed_3x3_mean": {
+            "dark_fraction_abs_error": 0.00029612,
+            "mae": 0.01137221,
+            "mse": 0.000300838,
+            "psnr_db": 35.21667
+          },
+          "noisy_identity": {
+            "dark_fraction_abs_error": 0.00241012,
+            "mae": 0.0250414,
+            "mse": 0.000985471,
+            "psnr_db": 30.06356
+          },
+          "ridge_beats_untrained_identity_mae": true
+        },
+        "16": {
+          "fitted_3x3_ridge": {
+            "dark_fraction_abs_error": 0.00250024,
+            "mae": 0.02453351,
+            "mse": 0.000955529,
+            "psnr_db": 30.19756
+          },
+          "fixed_3x3_mean": {
+            "dark_fraction_abs_error": 0.00018539,
+            "mae": 0.01893991,
+            "mse": 0.000628092,
+            "psnr_db": 32.01977
+          },
+          "noisy_identity": {
+            "dark_fraction_abs_error": 0.04238571,
+            "mae": 0.05005266,
+            "mse": 0.003935679,
+            "psnr_db": 24.0498
+          },
+          "ridge_beats_untrained_identity_mae": true
+        },
+        "24": {
+          "fitted_3x3_ridge": {
+            "dark_fraction_abs_error": 0.01275871,
+            "mae": 0.03537596,
+            "mse": 0.001958862,
+            "psnr_db": 27.07996
+          },
+          "fixed_3x3_mean": {
+            "dark_fraction_abs_error": 0.00114069,
+            "mae": 0.02648655,
+            "mse": 0.001145996,
+            "psnr_db": 29.40817
+          },
+          "noisy_identity": {
+            "dark_fraction_abs_error": 0.10936961,
+            "mae": 0.07445326,
+            "mse": 0.008623608,
+            "psnr_db": 20.64311
+          },
+          "ridge_beats_untrained_identity_mae": true
+        }
+      },
+      "heldout_different_physical_museum_object": true,
+      "pixels_per_sigma": 388362,
+      "spatially_disjoint_with_4px_gap": true,
+      "x_range": [
+        1028,
+        1534
+      ]
+    },
+    "heldout_different_physical_papyrus": true,
+    "hieratic_reading_accuracy": null,
+    "learned_from_real_original_pixels": true,
+    "model_execution": "genuine original independent Met photos; not Hieratic text recognition",
+    "negative_controls": {
+      "blank_constant_unique_luminance": 1,
+      "inversion_mean_difference": 0.687923,
+      "source_clean_test_has_nonzero_variance": true
+    },
+    "one_physical_support": null,
+    "original_photo_CC0_sha256": null,
+    "original_photo_heldout_witness_independent": true,
+    "physical_support_test": "Met:27.3.561a,b",
+    "physical_support_train": "Met:15.3.1136",
+    "raw_image_or_patches_committed": false,
+    "raw_original_dimensions": null,
+    "self_supervised_synthetic_corruption_target": "original CC0 photo luminance",
+    "source": "Met Museum two genuine CC0 original Hieratic papyrus photographs",
+    "source_license_file_page": null,
+    "source_met_open_access_policy": "https://www.metmuseum.org/about-the-met/policies-and-documents/open-access",
+    "source_originals": [
+      {
+        "accession": "15.3.1136",
+        "object_api": "https://collectionapi.metmuseum.org/public/collection/v1/objects/546511",
+        "object_id": 546511,
+        "original_photo_bytes": 2301624,
+        "original_photo_dimensions": [
+          4000,
+          2754
+        ],
+        "original_photo_sha256": "ef7a4e12c0e1d21d7c6bc46348c02eb27cc2612061dc69a459755251355a7bb8",
+        "original_photo_url": "https://images.metmuseum.org/CRDImages/eg/original/15.3.1136_recto_0079.jpg",
+        "rights_met_is_public_domain": true,
+        "title": "Nine fragments of hieratic text"
+      },
+      {
+        "accession": "27.3.561a, b",
+        "object_api": "https://collectionapi.metmuseum.org/public/collection/v1/objects/554654",
+        "object_id": 554654,
+        "original_photo_bytes": 1871378,
+        "original_photo_dimensions": [
+          4000,
+          2667
+        ],
+        "original_photo_sha256": "8c9a44ec5ed1ba6464e128a6cd3f0017bb3544311e918303fea1fbbeee83643b",
+        "original_photo_url": "https://images.metmuseum.org/CRDImages/eg/original/LC-27_3_561a_ b_EGDP037005.jpg",
+        "rights_met_is_public_domain": true,
+        "title": "Letter with hieratic inscription"
+      }
+    ],
+    "source_overlap_with_sealed_test_cleared": false,
+    "train": {
+      "internal_dev_MAE": 0.0262114,
+      "learned_weights_sha256": "d4978337cf7db934f0d30f6462158fc13cb4a3b3351e00e00fccbe1df1f41e32",
+      "noise_sigmas": [
+        8,
+        16,
+        24
+      ],
+      "sampled_pixels": 108000,
+      "selected_train_only_ridge_alpha": 1,
+      "x_range": [
+        1,
+        1022
+      ]
+    },
+    "train_test_physical_source_disjoint": true,
+    "version": "W29-CC0-SPATIAL-RIDGE-DENOISER/1",
+    "weighted_capability_points": 0,
+    "working_resize_wh": [
+      1536,
+      768
+    ]
+  }
+}

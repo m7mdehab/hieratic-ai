@@ -164,7 +164,13 @@ def met_original(object_id:int,expected_title:str)->tuple[bytes,dict]:
         or not info.path.startswith(MET_IMAGE_PATH)
         or not info.path.lower().endswith((".jpg",".jpeg"))):
         raise ValueError("Met original image URL host/path/format not trusted")
-    with urllib.request.urlopen(urllib.request.Request(image_url,headers={
+    # Met's own JSON image URL may contain a literal ASCII space in the
+    # path (e.g., accession "561a, b"). Percent-encode *only* that path;
+    # no host change, mirror, retry evasion or guessed alternate image.
+    safe_original_url=info._replace(
+        path=urllib.parse.quote(info.path,safe="/%-._~")
+    ).geturl()
+    with urllib.request.urlopen(urllib.request.Request(safe_original_url,headers={
         "User-Agent":"HieraticAI-W29-original-met-open-access-study/1.0",
         "Accept":"image/jpeg"}),timeout=65) as response:
         if response.status!=200:

@@ -14,13 +14,13 @@ from ling.translation import contextual
 from ling.translation.compositional import ConstrainedComposer
 from tools.translation_layer import TranslationError,_words,word_f1
 
-ORIGINAL_FILE="_aes_bbawtempelbib.json"
+ORIGINAL_FILE="_aes_bbawramessiden.json"
 ORIGINAL_REV="35276d2527cca1a055e31ed5f6683e777717170f"
-ORIGINAL_SHA1="f8135fee93c0ed27b5d6a110605f1a842fb6d8b6"
-ORIGINAL_SIZE=9679845
+ORIGINAL_SHA1="beba6443bc4796b92a8f398aa8123a431575cbfa"
+ORIGINAL_SIZE=18120088
 URL=f"https://raw.githubusercontent.com/simondschweitzer/aes/{ORIGINAL_REV}/files/aes/{ORIGINAL_FILE}"
-PROTOCOL="W29-AES-TEMPLE-FIRST-USE-IBM1-v1"
-HASH_SALT="hieratic-ai-w29-temple-first-use:"
+PROTOCOL="W29-AES-RAMESSIDEN-FIRST-USE-IBM1-C2-v1"
+HASH_SALT="hieratic-ai-w29-ramessiden-first-use:"
 GROUPS=32
 EM_EPOCHS=4
 MIN_SOURCE_SUPPORT=2

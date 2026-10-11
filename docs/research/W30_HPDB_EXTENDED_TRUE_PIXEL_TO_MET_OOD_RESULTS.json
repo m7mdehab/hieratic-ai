@@ -1,0 +1,536 @@
+{
+  "record_type": "W30_REAL_PUBLIC_SOURCE_PUBLISHER_PIXEL_TO_REAL_PAPYRUS_OOD_EXPERIMENT",
+  "github_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38180135110",
+  "image_pixels_or_labels_committed": false,
+  "observed_genuine_hosted_output": {
+    "blank_control_raw_model_max_score": 0.803817,
+    "catalog_labels": [
+      "A1",
+      "A2",
+      "D1",
+      "D2",
+      "G1",
+      "M12",
+      "V1",
+      "Z1"
+    ],
+    "chosen_train_only_alpha": 0.01,
+    "different_printed_volume_test": true,
+    "new_printed_test_ids_not_w29": {
+      "accuracy": null,
+      "correct": 0,
+      "rows": 0
+    },
+    "official_hieratic_reading_score": null,
+    "original_authentic_printed_iiif_images_used": true,
+    "original_met_papyrus_jpeg_pixels_used": true,
+    "original_papyrus_unlabelled_OOD": {
+      "546511": {
+        "max_raw_ridge_confidence_quantiles": [
+          0.384861,
+          0.547109,
+          0.641824,
+          0.703855,
+          0.850812
+        ],
+        "original_met_sha256": "0e02fa67746188a690b5a91e48774d5d6435e9fb845848db5ab30fcac842d101",
+        "original_photo_bytes": 2252531,
+        "source_domain_only_no_true_sign_gold": true,
+        "unlabelled_original_photo_tiles": 32,
+        "unlabelled_tiles_accepted_by_print_model": 32,
+        "unlabelled_tiles_rejected_under_print_train_threshold": 0
+      },
+      "554654": {
+        "max_raw_ridge_confidence_quantiles": [
+          0.37169,
+          0.524945,
+          0.645955,
+          0.839587,
+          1.102263
+        ],
+        "original_met_sha256": "ab0f27036305fa55c6040e88d570d6c2d3d7bcbed586c9ce74f4a30030770b16",
+        "original_photo_bytes": 1846346,
+        "source_domain_only_no_true_sign_gold": true,
+        "unlabelled_original_photo_tiles": 32,
+        "unlabelled_tiles_accepted_by_print_model": 32,
+        "unlabelled_tiles_rejected_under_print_train_threshold": 0
+      }
+    },
+    "original_photo_sign_labels_or_expert_gold": false,
+    "original_publisher_sign_records": 2065,
+    "printed_metadata_CC_BY4": true,
+    "printed_test_palaeographic_independence": false,
+    "printed_test_results": {
+      "hog_centroid": {
+        "balanced_label_accuracy": 0.1875,
+        "correct": 2,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.2,
+        "total": 10
+      },
+      "pixel_nearest_neighbour": {
+        "balanced_label_accuracy": 0.125,
+        "correct": 1,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.1,
+        "total": 10
+      },
+      "trained_hog_ridge": {
+        "balanced_label_accuracy": 0.1875,
+        "correct": 2,
+        "distinct_printed_page_proxies": 7,
+        "per_label": {
+          "A1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "A2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 2
+          },
+          "D1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "D2": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "G1": {
+            "accuracy": 0.5,
+            "correct": 1,
+            "total": 2
+          },
+          "M12": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "V1": {
+            "accuracy": 0,
+            "correct": 0,
+            "total": 1
+          },
+          "Z1": {
+            "accuracy": 1,
+            "correct": 1,
+            "total": 1
+          }
+        },
+        "top1_accuracy": 0.2,
+        "total": 10
+      }
+    },
+    "printed_test_signs_below_threshold": 0,
+    "printed_train_cross_volume_5pct_score_threshold": 0.25020084,
+    "protocol": "W30-REAL-TOKYO-PRINTED-SIGN-TO-MET-ORIGINAL-UNLABELLED-OOD/1",
+    "published_iiif_print_source_records": [
+      {
+        "actual_publisher_original_jpeg_bytes": 49559,
+        "book_volume": 1,
+        "gardiner_catalog_label": "A1",
+        "item_id": "103002",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "e2403459de24616e9238ed9da0fec7b9f44b91f2376dd57419d65c7cdd0cc606",
+        "source_proxy": "MOLLER-V1-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 46847,
+        "book_volume": 1,
+        "gardiner_catalog_label": "A1",
+        "item_id": "103003",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "a7852add8ab8589a7dbe1e9f235ea847b3020914d9704d84a0ada7cc4a7a0345",
+        "source_proxy": "MOLLER-V1-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 50406,
+        "book_volume": 2,
+        "gardiner_catalog_label": "A1",
+        "item_id": "203007",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "110115005ca2f9cd879c166f173f47d6768a63f0e2606d0adc464d36eed79fbb",
+        "source_proxy": "MOLLER-V2-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 50557,
+        "book_volume": 3,
+        "gardiner_catalog_label": "A1",
+        "item_id": "303009",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "eb4eb9b872c60bac56ebc67bae03c0b633390d3809fdd4c00ab764282f2df99d",
+        "source_proxy": "MOLLER-V3-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 48189,
+        "book_volume": 1,
+        "gardiner_catalog_label": "A2",
+        "item_id": "103005",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "f1f0f05f33a8d6380c593d534fdbb84fa95844a1cc719e0153035d193178cb31",
+        "source_proxy": "MOLLER-V1-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 31254,
+        "book_volume": 1,
+        "gardiner_catalog_label": "A2",
+        "item_id": "103006",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "d3b35853826690bc9b11b8addd8ba8aaa110ab6fd9552964de721b86a6686ea3",
+        "source_proxy": "MOLLER-V1-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 46992,
+        "book_volume": 2,
+        "gardiner_catalog_label": "A2",
+        "item_id": "203008",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "9bba6c3ea53512e03e09331f728a7b981712523d437bf52b3995af2bd090ec69",
+        "source_proxy": "MOLLER-V2-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 37041,
+        "book_volume": 2,
+        "gardiner_catalog_label": "A2",
+        "item_id": "203009",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "cfe45f7618c634002587ba5234d860a15c4ac3bc27c709b7b3daf0a470e539e8",
+        "source_proxy": "MOLLER-V2-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 50192,
+        "book_volume": 3,
+        "gardiner_catalog_label": "A2",
+        "item_id": "303010",
+        "printed_page": 3,
+        "publisher_iiif_sha256": "1d23068c5600a3aef94fac76f966ef4965f2f672f016c7e1bf1b1e69c600aedc",
+        "source_proxy": "MOLLER-V3-P003"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 36862,
+        "book_volume": 3,
+        "gardiner_catalog_label": "A2",
+        "item_id": "304001",
+        "printed_page": 4,
+        "publisher_iiif_sha256": "ace196a4c4a243f04c18b720ef54b1ec0668ab4f999ab99f205414c20f2debab",
+        "source_proxy": "MOLLER-V3-P004"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 44884,
+        "book_volume": 1,
+        "gardiner_catalog_label": "D1",
+        "item_id": "107002",
+        "printed_page": 7,
+        "publisher_iiif_sha256": "3e9f5313e6a6c48a8aabd066ba7f27ec58f4b3eaa183187e4f5f62d56aec82f0",
+        "source_proxy": "MOLLER-V1-P007"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 49933,
+        "book_volume": 2,
+        "gardiner_catalog_label": "D1",
+        "item_id": "206007",
+        "printed_page": 6,
+        "publisher_iiif_sha256": "5c35dfe8280d380275962cda10021873fe09b0c2103a6c98d1a9e6a085211982",
+        "source_proxy": "MOLLER-V2-P006"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 41781,
+        "book_volume": 3,
+        "gardiner_catalog_label": "D1",
+        "item_id": "306006",
+        "printed_page": 6,
+        "publisher_iiif_sha256": "8f8d22b3486ed02a94dcb0821bc8c4987df4c8c4f97bbeb3b0f03839f60d6ce6",
+        "source_proxy": "MOLLER-V3-P006"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 46153,
+        "book_volume": 1,
+        "gardiner_catalog_label": "D2",
+        "item_id": "107003",
+        "printed_page": 7,
+        "publisher_iiif_sha256": "0310e7f1da69d047fec78a5fa0dd12a70d0de450053bae4d374f5acfccd73c84",
+        "source_proxy": "MOLLER-V1-P007"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 44413,
+        "book_volume": 2,
+        "gardiner_catalog_label": "D2",
+        "item_id": "206008",
+        "printed_page": 6,
+        "publisher_iiif_sha256": "a5d953bbe70e644e4ef24b76abfc5514bbbb2d7e35cf825ff2c3151d963cd187",
+        "source_proxy": "MOLLER-V2-P006"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 45817,
+        "book_volume": 3,
+        "gardiner_catalog_label": "D2",
+        "item_id": "306007",
+        "printed_page": 6,
+        "publisher_iiif_sha256": "458acaf013577423b86e0033fd438451401af716bc1bacbfffb3eee289f929aa",
+        "source_proxy": "MOLLER-V3-P006"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 40843,
+        "book_volume": 1,
+        "gardiner_catalog_label": "G1",
+        "item_id": "118003",
+        "printed_page": 18,
+        "publisher_iiif_sha256": "6be3f28074ec4200ef141871f13f9ed7486a6263f0f4c0362bf0d15fa2d6507c",
+        "source_proxy": "MOLLER-V1-P018"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 51301,
+        "book_volume": 1,
+        "gardiner_catalog_label": "G1",
+        "item_id": "118004",
+        "printed_page": 18,
+        "publisher_iiif_sha256": "e4eda519b32e5e33f8aadee19d1144b1247a0d0cfa2cdd9753d766f30ce720cc",
+        "source_proxy": "MOLLER-V1-P018"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 41509,
+        "book_volume": 1,
+        "gardiner_catalog_label": "G1",
+        "item_id": "118005",
+        "printed_page": 18,
+        "publisher_iiif_sha256": "496a935a9a864358b9fb9099855344f0039162910fd7d4e4a2a506d0390f0a3c",
+        "source_proxy": "MOLLER-V1-P018"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 49644,
+        "book_volume": 2,
+        "gardiner_catalog_label": "G1",
+        "item_id": "217002",
+        "printed_page": 17,
+        "publisher_iiif_sha256": "2b54bcc60027920756325951d111c2f2547ced6d0e971a75433d6a2d1560e79b",
+        "source_proxy": "MOLLER-V2-P017"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 48129,
+        "book_volume": 2,
+        "gardiner_catalog_label": "G1",
+        "item_id": "217003",
+        "printed_page": 17,
+        "publisher_iiif_sha256": "d29752d709f300c2e0eb052d3512d33884a1abd1e2da27fa5b02c2d9a09d3232",
+        "source_proxy": "MOLLER-V2-P017"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 51280,
+        "book_volume": 3,
+        "gardiner_catalog_label": "G1",
+        "item_id": "317007",
+        "printed_page": 17,
+        "publisher_iiif_sha256": "4dfac9013188c4234319a634021ceecbfb567459d392c772c293260fe9820db4",
+        "source_proxy": "MOLLER-V3-P017"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 32963,
+        "book_volume": 3,
+        "gardiner_catalog_label": "G1",
+        "item_id": "317008",
+        "printed_page": 17,
+        "publisher_iiif_sha256": "a03c272957a1af23d9cb5cf4c9d4c4edaae460b43e8aa3e21c0c962c323f3161",
+        "source_proxy": "MOLLER-V3-P017"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 48295,
+        "book_volume": 1,
+        "gardiner_catalog_label": "M12",
+        "item_id": "126008",
+        "printed_page": 26,
+        "publisher_iiif_sha256": "a492ee9b54ced8a29f0d2b0e2d7323bd1f5a9390f1cd8f13cf553e83f6effd9f",
+        "source_proxy": "MOLLER-V1-P026"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 39464,
+        "book_volume": 2,
+        "gardiner_catalog_label": "M12",
+        "item_id": "225005",
+        "printed_page": 25,
+        "publisher_iiif_sha256": "e18fe3ae7ec2e0b3ebe650f0a3aa9c88a3c315c7745f9a6dce6e931e20a6f457",
+        "source_proxy": "MOLLER-V2-P025"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 37760,
+        "book_volume": 3,
+        "gardiner_catalog_label": "M12",
+        "item_id": "326001",
+        "printed_page": 26,
+        "publisher_iiif_sha256": "ccc3a33999a1bb3fe8bb6a7599ccce181d0c730b59812d70257fdb13ed0b988e",
+        "source_proxy": "MOLLER-V3-P026"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 37217,
+        "book_volume": 1,
+        "gardiner_catalog_label": "V1",
+        "item_id": "149006",
+        "printed_page": 49,
+        "publisher_iiif_sha256": "517ca805238e03e0f77b912e0000bbe698a7ded29c09d237f69b7217c2d4083d",
+        "source_proxy": "MOLLER-V1-P049"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 30538,
+        "book_volume": 2,
+        "gardiner_catalog_label": "V1",
+        "item_id": "246008",
+        "printed_page": 46,
+        "publisher_iiif_sha256": "c745b8f7e16283c20d63cca39b5a474eecff3fe1c6ba6f2cba45cdaae9afa93b",
+        "source_proxy": "MOLLER-V2-P046"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 31731,
+        "book_volume": 3,
+        "gardiner_catalog_label": "V1",
+        "item_id": "350001",
+        "printed_page": 50,
+        "publisher_iiif_sha256": "b34feb8263d2a621296330632b3e1cd0542d8c0ac55a09c0c4459f7e767a9153",
+        "source_proxy": "MOLLER-V3-P050"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 45312,
+        "book_volume": 1,
+        "gardiner_catalog_label": "Z1",
+        "item_id": "153007",
+        "printed_page": 53,
+        "publisher_iiif_sha256": "c28141b1546fa8fada9029aaf9e11d241eb6fece26e31bc07a2d54a48408822f",
+        "source_proxy": "MOLLER-V1-P053"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 38044,
+        "book_volume": 2,
+        "gardiner_catalog_label": "Z1",
+        "item_id": "250004",
+        "printed_page": 50,
+        "publisher_iiif_sha256": "a67c12272da1c4826ba4fb988e777c31f832efc8b6bdbe46f8baf76b246035b0",
+        "source_proxy": "MOLLER-V2-P050"
+      },
+      {
+        "actual_publisher_original_jpeg_bytes": 35934,
+        "book_volume": 3,
+        "gardiner_catalog_label": "Z1",
+        "item_id": "354003",
+        "printed_page": 54,
+        "publisher_iiif_sha256": "8766a97c353f3fbb6e8888705ad121df777dd49a8497dde1e59364d6870dc8f3",
+        "source_proxy": "MOLLER-V3-P054"
+      }
+    ],
+    "source_catalog_revision": "a8cfcf52632487cf1d61a5793d84c9b2f7192d5a",
+    "source_train_only_tuning": [
+      {
+        "alpha": 0.01,
+        "volume2_correct": 3,
+        "volume2_total": 10
+      },
+      {
+        "alpha": 0.1,
+        "volume2_correct": 3,
+        "volume2_total": 10
+      },
+      {
+        "alpha": 1,
+        "volume2_correct": 2,
+        "volume2_total": 10
+      },
+      {
+        "alpha": 10,
+        "volume2_correct": 2,
+        "volume2_total": 10
+      }
+    ],
+    "test_new_relative_to_w29": 0,
+    "test_original_w27_known_exposed_ids": 10,
+    "test_volume3_signs": 10,
+    "test_w29_first3_exposed_ids": 10,
+    "train_signs": 22,
+    "train_volume1_and2": true,
+    "weighted_capability_points": 0
+  }
+}

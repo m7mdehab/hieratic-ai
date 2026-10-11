@@ -1,0 +1,51 @@
+name: W30 B2 genuinely expanded 11-class original Tokyo sign learning and Met-photo OOD
+on:
+  push:
+    branches: ['overseer/w30-hpdb-ood-signs']
+    paths:
+      - 'tools/w30_hpdb_eleven_class.py'
+      - 'tests/research/test_w30_hpdb_eleven_class.py'
+      - '.github/workflows/w30-hpdb-eleven-class.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-original-tokyo-74-sign-training-and-met-photo-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU original-pixel libraries
+        run: python -m pip install Pillow==11.3.0 numpy==2.2.6
+      - name: Verify first B1 negative and B2 pre-pixel source freeze
+        run: |
+          test -s docs/waves/W30_B2_HPDB_ELEVEN_CLASS_PREREG.md
+          test -s docs/research/W30_HPDB_EXTENDED_TRUE_PIXEL_TO_MET_OOD_RESULTS.json
+          python -m unittest tests.research.test_w30_hpdb_eleven_class -v
+      - name: Acquire 74 authentic publisher original pixels, fit 11-class model, probe real Met originals
+        run: |
+          set -euo pipefail
+          python -m tools.w30_hpdb_eleven_class --output "$RUNNER_TEMP/w30_b2_11class_original.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          a=json.loads((Path(os.environ["RUNNER_TEMP"])/"w30_b2_11class_original.json").read_text())
+          assert a["train_real_original_iiif_crops"]==49
+          assert a["test_real_original_iiif_crops"]==25
+          assert a["real_original_printed_iiif_photo_pixels_used"]
+          assert a["original_public_domain_met_photo_pixels_used"]
+          assert a["weighted_capability_points"]==0
+          print("PASS: real 74 publisher IIIF sign pixels (49 train/25 test) and original museum photo domain stress")
+          PY
+      - name: Persist numerical metrics and original asset checksums only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w30-74-original-publisher-signs-versus-met-original-photo-ood
+          path: ${{ runner.temp }}/w30_b2_11class_original.json
+          retention-days: 14

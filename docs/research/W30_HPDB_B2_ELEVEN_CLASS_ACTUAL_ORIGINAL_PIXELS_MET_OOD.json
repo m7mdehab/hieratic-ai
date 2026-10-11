@@ -1,0 +1,923 @@
+{
+  "record_type": "W30_B2_ACTUAL_GITHUB_HOSTED_ORIGINAL_LICENSED_TOKYO_PIXEL_TRAIN_AND_PUBLIC_DOMAIN_MET_OOD",
+  "source_execution": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38180440640",
+  "original_JPEG_bytes_not_in_repository": true,
+  "actual_run_results": {
+    "actual_publisher_original_sign_JPEG_SHA_records": [
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "101007",
+        "printed_book_page": 1,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_031.tif/956,4408,3840,448/,200/0/default.jpg",
+        "source_jpeg_bytes": 40444,
+        "source_sha256": "cb1626d43a974982f333d53717bb7a4a2517eb570bceb7efed9f7880a46ae071",
+        "volume": 1
+      },
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "101008",
+        "printed_book_page": 1,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_031.tif/938,4861,3868,478/,200/0/default.jpg",
+        "source_jpeg_bytes": 49602,
+        "source_sha256": "4802d4395fee1a0eca29e93f97161762834f2edf238765f3b3934a93c8f5ac9b",
+        "volume": 1
+      },
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "202004",
+        "printed_book_page": 2,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_024.tif/975,2595,3905,492/,200/0/default.jpg",
+        "source_jpeg_bytes": 39299,
+        "source_sha256": "cd5f15c04a8f7cc7e630fc49ffb67743bd2d433afde0fcc1c1a02e0382f960fa",
+        "volume": 2
+      },
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "202005",
+        "printed_book_page": 2,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_024.tif/972,3044,3914,500/,200/0/default.jpg",
+        "source_jpeg_bytes": 41683,
+        "source_sha256": "056920d592aef46e3efa9b3c3cd99b4b4f57f80245a74999a9c1104fd71a6296",
+        "volume": 2
+      },
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "302004",
+        "printed_book_page": 2,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_024.tif/891,2602,3921,495/,200/0/default.jpg",
+        "source_jpeg_bytes": 37146,
+        "source_sha256": "09a2c724321cec6060d505b5cdba76f2910374126da12dd2ca1f723fe6b39e61",
+        "volume": 3
+      },
+      {
+        "catalog_label": "A19",
+        "catalog_sign_id": "302005",
+        "printed_book_page": 2,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_024.tif/890,3052,3923,501/,200/0/default.jpg",
+        "source_jpeg_bytes": 40382,
+        "source_sha256": "8a11cd441e5bea8eed67df39a2e43c1e112e47bb19e98c4cb84edc0b10f1a407",
+        "volume": 3
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "103005",
+        "printed_book_page": 3,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_033.tif/998,3094,3870,479/,200/0/default.jpg",
+        "source_jpeg_bytes": 48189,
+        "source_sha256": "f1f0f05f33a8d6380c593d534fdbb84fa95844a1cc719e0153035d193178cb31",
+        "volume": 1
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "103006",
+        "printed_book_page": 3,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_033.tif/985,3547,4001,496/,200/0/default.jpg",
+        "source_jpeg_bytes": 31254,
+        "source_sha256": "d3b35853826690bc9b11b8addd8ba8aaa110ab6fd9552964de721b86a6686ea3",
+        "volume": 1
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "203008",
+        "printed_book_page": 3,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_025.tif/1030,4384,3887,498/,200/0/default.jpg",
+        "source_jpeg_bytes": 46992,
+        "source_sha256": "9bba6c3ea53512e03e09331f728a7b981712523d437bf52b3995af2bd090ec69",
+        "volume": 2
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "203009",
+        "printed_book_page": 3,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_025.tif/1022,4845,3895,479/,200/0/default.jpg",
+        "source_jpeg_bytes": 37041,
+        "source_sha256": "cfe45f7618c634002587ba5234d860a15c4ac3bc27c709b7b3daf0a470e539e8",
+        "volume": 2
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "303010",
+        "printed_book_page": 3,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_025.tif/884,5312,3949,490/,200/0/default.jpg",
+        "source_jpeg_bytes": 50192,
+        "source_sha256": "1d23068c5600a3aef94fac76f966ef4965f2f672f016c7e1bf1b1e69c600aedc",
+        "volume": 3
+      },
+      {
+        "catalog_label": "A2",
+        "catalog_sign_id": "304001",
+        "printed_book_page": 4,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_026.tif/931,1234,3918,467/,200/0/default.jpg",
+        "source_jpeg_bytes": 36862,
+        "source_sha256": "ace196a4c4a243f04c18b720ef54b1ec0668ab4f999ab99f205414c20f2debab",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "118003",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_048.tif/969,2181,3883,482/,200/0/default.jpg",
+        "source_jpeg_bytes": 40843,
+        "source_sha256": "6be3f28074ec4200ef141871f13f9ed7486a6263f0f4c0362bf0d15fa2d6507c",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "118004",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_048.tif/962,2640,3883,481/,200/0/default.jpg",
+        "source_jpeg_bytes": 51301,
+        "source_sha256": "e4eda519b32e5e33f8aadee19d1144b1247a0d0cfa2cdd9753d766f30ce720cc",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "118005",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_048.tif/964,3090,3872,485/,200/0/default.jpg",
+        "source_jpeg_bytes": 41509,
+        "source_sha256": "496a935a9a864358b9fb9099855344f0039162910fd7d4e4a2a506d0390f0a3c",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "217002",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_039.tif/903,1683,3898,510/,200/0/default.jpg",
+        "source_jpeg_bytes": 49644,
+        "source_sha256": "2b54bcc60027920756325951d111c2f2547ced6d0e971a75433d6a2d1560e79b",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "217003",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_039.tif/899,2154,3900,476/,200/0/default.jpg",
+        "source_jpeg_bytes": 48129,
+        "source_sha256": "d29752d709f300c2e0eb052d3512d33884a1abd1e2da27fa5b02c2d9a09d3232",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "317007",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_039.tif/900,3950,3864,440/,200/0/default.jpg",
+        "source_jpeg_bytes": 51280,
+        "source_sha256": "4dfac9013188c4234319a634021ceecbfb567459d392c772c293260fe9820db4",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G1",
+        "catalog_sign_id": "317008",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_039.tif/863,4392,3930,495/,200/0/default.jpg",
+        "source_jpeg_bytes": 32963,
+        "source_sha256": "a03c272957a1af23d9cb5cf4c9d4c4edaae460b43e8aa3e21c0c962c323f3161",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "118009",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_048.tif/956,4922,3871,513/,200/0/default.jpg",
+        "source_jpeg_bytes": 47366,
+        "source_sha256": "d33efee7aaca8c8922528686dcd90fba26c248d7736aa31b2f5f3a11bec59991",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "118010",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_048.tif/952,5324,3882,524/,200/0/default.jpg",
+        "source_jpeg_bytes": 45241,
+        "source_sha256": "eb412be1537d2ba65eb579e46fdb3b2c0cac42579bdc3b076217ac5e698fc479",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "217007",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_039.tif/888,3952,3887,478/,200/0/default.jpg",
+        "source_jpeg_bytes": 39136,
+        "source_sha256": "73bdc6989c4c74a16d047612ac6119756cbce8b557bf0d344ffb2907d7289f45",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "217008",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_039.tif/876,4395,3913,501/,200/0/default.jpg",
+        "source_jpeg_bytes": 51467,
+        "source_sha256": "d4cba33d240670e4e423424f560da484ac977a498ea1022886701dadc64d328c",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "318002",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_040.tif/944,1701,3856,416/,200/0/default.jpg",
+        "source_jpeg_bytes": 29767,
+        "source_sha256": "26e4b54645bce35629f3c2e26eb2cf05aa76bb7f003ebfea971026fe9ba5a0c0",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G17",
+        "catalog_sign_id": "318003",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_040.tif/907,2135,3913,504/,200/0/default.jpg",
+        "source_jpeg_bytes": 47490,
+        "source_sha256": "0dc2cf7063167bfcdc446adbe883149c6985daa7be16cb43d399616d8a1a3696",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "119001",
+        "printed_book_page": 19,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_049.tif/978,1252,3868,476/,200/0/default.jpg",
+        "source_jpeg_bytes": 48955,
+        "source_sha256": "3f98bbbfcddf9f97ca6b56fe12fd42f0b630c3bdaf6c3a3ce13e090f3890f3a4",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "121004",
+        "printed_book_page": 21,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_051.tif/909,2588,3883,494/,200/0/default.jpg",
+        "source_jpeg_bytes": 43848,
+        "source_sha256": "74815f9618e25286ed77aaf5c09a9ccf2ad1eddeb6ad4cac42fc12dd9841870b",
+        "volume": 1
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "217009",
+        "printed_book_page": 17,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_039.tif/874,4861,3910,477/,200/0/default.jpg",
+        "source_jpeg_bytes": 48225,
+        "source_sha256": "843caaeddcc5dda7530e414794f7cb2dbd8c6d17aba9d31a2f90280f370db0e9",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "219008",
+        "printed_book_page": 19,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_041.tif/924,4353,3907,505/,200/0/default.jpg",
+        "source_jpeg_bytes": 40480,
+        "source_sha256": "55a93e95d45b30e2d39897046040d33757c34107d5ca42944b376bec571f69cc",
+        "volume": 2
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "318004",
+        "printed_book_page": 18,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_040.tif/916,2594,3904,490/,200/0/default.jpg",
+        "source_jpeg_bytes": 41186,
+        "source_sha256": "dd323057f0163589b577a03923b596e84cd22797d0982fdb3cc9baf5f7b53ca8",
+        "volume": 3
+      },
+      {
+        "catalog_label": "G37",
+        "catalog_sign_id": "320003",
+        "printed_book_page": 20,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_042.tif/897,2116,3920,495/,200/0/default.jpg",
+        "source_jpeg_bytes": 36553,
+        "source_sha256": "3a697435008659967497e6f8e7489901dc65e5b6a55dee8d3810b17220f988f8",
+        "volume": 3
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "138006",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_068.tif/965,3503,3863,490/,200/0/default.jpg",
+        "source_jpeg_bytes": 50070,
+        "source_sha256": "606271ee4f3b09d3caa9237e3e51e90802d16ea1f5339698207ba9fc56134e25",
+        "volume": 1
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "138007",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_068.tif/961,3953,3869,491/,200/0/default.jpg",
+        "source_jpeg_bytes": 43495,
+        "source_sha256": "ddd6efba75fdc784869063a78104f098c24348e007a5ab54e3d4c01af67f3524",
+        "volume": 1
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "236002",
+        "printed_book_page": 36,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_058.tif/1016,1680,3840,452/,200/0/default.jpg",
+        "source_jpeg_bytes": 46629,
+        "source_sha256": "8a5a5f1e39f9d88b79a6896c86d7ebb262296d2b994248407333f15bea98b314",
+        "volume": 2
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "236003",
+        "printed_book_page": 36,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_058.tif/976,2123,3898,490/,200/0/default.jpg",
+        "source_jpeg_bytes": 43912,
+        "source_sha256": "561db0673e1280deb8aa69e2be7005871da7912beca65609c8ca25db619634de",
+        "volume": 2
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "338009",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_060.tif/897,4829,3923,489/,200/0/default.jpg",
+        "source_jpeg_bytes": 39716,
+        "source_sha256": "f9caa635da3b5594c08fed105c9135024336e2ab5d1b495524454be50a42fd3d",
+        "volume": 3
+      },
+      {
+        "catalog_label": "O50",
+        "catalog_sign_id": "338010",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_060.tif/891,5285,3935,482/,200/0/default.jpg",
+        "source_jpeg_bytes": 34665,
+        "source_sha256": "c9b431bba2dd371a9ac4fac01325dc6008dffcc3321d91505725b9690831d5c0",
+        "volume": 3
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "142006",
+        "printed_book_page": 42,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_072.tif/963,3511,3897,492/,200/0/default.jpg",
+        "source_jpeg_bytes": 38392,
+        "source_sha256": "4ab6975e93a6657366d83992ff1a6bb895acc34ae2998ba12c5007ea3df18e97",
+        "volume": 1
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "142007",
+        "printed_book_page": 42,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_072.tif/962,3968,3894,487/,200/0/default.jpg",
+        "source_jpeg_bytes": 30491,
+        "source_sha256": "f69bffb384405053cf6ae50c3654baa78aff48b5526358ef254bb65f4cf245ab",
+        "volume": 1
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "142008",
+        "printed_book_page": 42,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_072.tif/961,4430,3847,477/,200/0/default.jpg",
+        "source_jpeg_bytes": 28241,
+        "source_sha256": "7407726a4c378663b1951a1db64b9a38bb56acc71111222e92e3c22d5bfa1ae6",
+        "volume": 1
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "240002",
+        "printed_book_page": 40,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_062.tif/936,1726,3892,440/,200/0/default.jpg",
+        "source_jpeg_bytes": 34502,
+        "source_sha256": "bef86a4042b6683e8b6f9a2a6887cdf777cc3bea0d1775b29bafd83406aadf4c",
+        "volume": 2
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "240003",
+        "printed_book_page": 40,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_062.tif/949,2147,3908,485/,200/0/default.jpg",
+        "source_jpeg_bytes": 34359,
+        "source_sha256": "901c6e9a506cfc97eac0dbb22bd0ccef6758901caa9204d1d2d916c0ced5d657",
+        "volume": 2
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "240004",
+        "printed_book_page": 40,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_062.tif/949,2587,3902,489/,200/0/default.jpg",
+        "source_jpeg_bytes": 33720,
+        "source_sha256": "47c530d2a78c1fb544dcdc0247ee30d2173c7d13608d00e0f9ae3c9fcdc59b3d",
+        "volume": 2
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "343002",
+        "printed_book_page": 43,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_065.tif/991,1715,2948,388/,200/0/default.jpg",
+        "source_jpeg_bytes": 30778,
+        "source_sha256": "5cbad1ea5bed2dddce371d64339593079dfd57501c983948dd4b3e299980bd58",
+        "volume": 3
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "343003",
+        "printed_book_page": 43,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_065.tif/964,2116,3909,499/,200/0/default.jpg",
+        "source_jpeg_bytes": 31011,
+        "source_sha256": "4bc37f3f5d1283fe61842a7ec43edd97b1f25fba33fc3d6f1848a9fb1e8491d2",
+        "volume": 3
+      },
+      {
+        "catalog_label": "S42",
+        "catalog_sign_id": "343004",
+        "printed_book_page": 43,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_065.tif/965,2572,3903,489/,200/0/default.jpg",
+        "source_jpeg_bytes": 27993,
+        "source_sha256": "3bf9616d4f745fb326f315267cdc842c9c338ec0108aef113775039ca33e6c87",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "150009",
+        "printed_book_page": 50,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_080.tif/922,4893,3889,496/,200/0/default.jpg",
+        "source_jpeg_bytes": 38168,
+        "source_sha256": "91acfc3294cc341febb706b8f6e4f9392bfb9164122ac5829a9fd542f15cb835",
+        "volume": 1
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "150010",
+        "printed_book_page": 50,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_080.tif/912,5343,3908,488/,200/0/default.jpg",
+        "source_jpeg_bytes": 41512,
+        "source_sha256": "485882e0556973ffe3cf082f4f48f83a0770e91b8163943792dc585a643545be",
+        "volume": 1
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "248002",
+        "printed_book_page": 48,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_070.tif/933,1708,3895,499/,200/0/default.jpg",
+        "source_jpeg_bytes": 43557,
+        "source_sha256": "f12561261e3f2f13687e5609da01277014712273d5d059be5d315e0f584a4f46",
+        "volume": 2
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "248003",
+        "printed_book_page": 48,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_070.tif/937,2176,3888,479/,200/0/default.jpg",
+        "source_jpeg_bytes": 32921,
+        "source_sha256": "f4a16ae77e6ae4d7c5641f7f6ebd88589c310d8a1c2e8c165ec4e1c7b1974ff0",
+        "volume": 2
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "351006",
+        "printed_book_page": 51,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_073.tif/934,3473,3898,479/,200/0/default.jpg",
+        "source_jpeg_bytes": 29678,
+        "source_sha256": "e664aec755adf69ad203ae36ad81bd2bca07804ddccdd271111794fc10776e0f",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "351007",
+        "printed_book_page": 51,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_073.tif/932,3918,3892,488/,200/0/default.jpg",
+        "source_jpeg_bytes": 39309,
+        "source_sha256": "bdb4569abb6d57901b4a908594bd3df3b9c6c66676090fac03507b122975b8c1",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V10",
+        "catalog_sign_id": "351008",
+        "printed_book_page": 51,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_073.tif/932,4402,3876,440/,200/0/default.jpg",
+        "source_jpeg_bytes": 29742,
+        "source_sha256": "4f6384f551432012bd5297ab06ad386c30d21b8f7443f6a53d9e7fb694e047e5",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "138001",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_068.tif/980,1246,3858,485/,200/0/default.jpg",
+        "source_jpeg_bytes": 49120,
+        "source_sha256": "c858f2703f184b3d70d5e50dff61257ddd83cb46ccfc053211ff9a05e1a767f1",
+        "volume": 1
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "138002",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_068.tif/973,1689,3864,495/,200/0/default.jpg",
+        "source_jpeg_bytes": 39335,
+        "source_sha256": "13cf94ee9bd88b077051258602bbcfdf8f7fef40625aa9aa42465f74c043c025",
+        "volume": 1
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "138003",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_068.tif/966,2143,3852,488/,200/0/default.jpg",
+        "source_jpeg_bytes": 32636,
+        "source_sha256": "adbc3ce16d492869603fd83b31769ae76bc0ed41898f6bbe8fda7a4fb9ebd31b",
+        "volume": 1
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "235008",
+        "printed_book_page": 35,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_057.tif/976,4388,3852,452/,200/0/default.jpg",
+        "source_jpeg_bytes": 48461,
+        "source_sha256": "dddcfe4c726515b7007daedbfd10f52d39215dfe2a339fe1db10d4f11d1dbf99",
+        "volume": 2
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "235009",
+        "printed_book_page": 35,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_057.tif/955,4837,3898,481/,200/0/default.jpg",
+        "source_jpeg_bytes": 43622,
+        "source_sha256": "22061106ff78dfcaadcf04ed12a398bb02ce8b34a30112cbaa408ae023b2e5a4",
+        "volume": 2
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "235010",
+        "printed_book_page": 35,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_057.tif/980,5300,3848,436/,200/0/default.jpg",
+        "source_jpeg_bytes": 30102,
+        "source_sha256": "5bd5ef37ee710cef0df65f6133a6c4ea4101f2e03d95dcca75ec1482434aae95",
+        "volume": 2
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "338004",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_060.tif/919,2550,3911,503/,200/0/default.jpg",
+        "source_jpeg_bytes": 41520,
+        "source_sha256": "6d1a5a18e4f3f9814ab4ced6521506e811a8b9094f71ed551fbe3c76c431bbbc",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "338005",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_060.tif/917,3005,3912,499/,200/0/default.jpg",
+        "source_jpeg_bytes": 36320,
+        "source_sha256": "82aa6675f05dbbc19da58c1057cefb290fdb8bd0b4174b5898bd0c8e220f04fc",
+        "volume": 3
+      },
+      {
+        "catalog_label": "V29",
+        "catalog_sign_id": "338006",
+        "printed_book_page": 38,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_060.tif/915,3465,3917,484/,200/0/default.jpg",
+        "source_jpeg_bytes": 32917,
+        "source_sha256": "d692c3c184ea13bf76087354857cd2f2485d581c7906feb91bbbe0014e161e84",
+        "volume": 3
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "147005",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_077.tif/964,3044,3892,492/,200/0/default.jpg",
+        "source_jpeg_bytes": 43300,
+        "source_sha256": "46a0c11ce179799db947f3a2ac0d3227203fccca09b0c1285e516d5e5aed94d9",
+        "volume": 1
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "147006",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_077.tif/994,3509,3862,488/,200/0/default.jpg",
+        "source_jpeg_bytes": 30634,
+        "source_sha256": "f59913de86df46438ad0d9bbdfd1e9f13ef7af566c0d32a0e027aa51d3d083aa",
+        "volume": 1
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "244009",
+        "printed_book_page": 44,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_066.tif/976,5288,3848,444/,200/0/default.jpg",
+        "source_jpeg_bytes": 32484,
+        "source_sha256": "6876f0514100d125b1bbf5617f00da591d3dd4a2dd23692774a9c67130f1d5c6",
+        "volume": 2
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "245001",
+        "printed_book_page": 45,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_067.tif/945,1188,3894,485/,200/0/default.jpg",
+        "source_jpeg_bytes": 42580,
+        "source_sha256": "9374cf06f2044e9d931b749fb5052968ea98cf798873f3c74b0f367689ea0500",
+        "volume": 2
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "347008",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_069.tif/934,4854,3922,495/,200/0/default.jpg",
+        "source_jpeg_bytes": 31778,
+        "source_sha256": "7f4043abcf4e795334ff47136ab2e812ae7929162b2136eb4597640c47cbd9c8",
+        "volume": 3
+      },
+      {
+        "catalog_label": "W22",
+        "catalog_sign_id": "347009",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_069.tif/924,5310,3937,486/,200/0/default.jpg",
+        "source_jpeg_bytes": 36911,
+        "source_sha256": "8cb40c0b00b8444a8778b0bf6fbc2c1e56955f281f56cf2703d817d678e931e3",
+        "volume": 3
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "147003",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_077.tif/996,2152,3840,460/,200/0/default.jpg",
+        "source_jpeg_bytes": 53162,
+        "source_sha256": "be513ade67375bb20edc253a26cac08daa93b0ce533e5fdb9d88d6a04bb67416",
+        "volume": 1
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "155001",
+        "printed_book_page": 55,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/1/1_085.tif/936,1248,3885,486/,200/0/default.jpg",
+        "source_jpeg_bytes": 37058,
+        "source_sha256": "2019955a7f5222d6186f624af7a77f9569f2d6d9022f0813b483dbc803a7da46",
+        "volume": 1
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "244007",
+        "printed_book_page": 44,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_066.tif/954,4371,3890,504/,200/0/default.jpg",
+        "source_jpeg_bytes": 42033,
+        "source_sha256": "e0c832bd9acc827109f5648f2b7cf78313ecf2d6828813f2db1490723de9ed31",
+        "volume": 2
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "251008",
+        "printed_book_page": 51,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/2/2_073.tif/921,4373,3922,508/,200/0/default.jpg",
+        "source_jpeg_bytes": 30808,
+        "source_sha256": "7f3c01c91a82a7c6f3b28b4c63ddf59bccdea7a2324e52936c713a2e85e949db",
+        "volume": 2
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "347006",
+        "printed_book_page": 47,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_069.tif/946,3952,3916,494/,200/0/default.jpg",
+        "source_jpeg_bytes": 41133,
+        "source_sha256": "34b3fc7b9f1e335f20bcc5a43ccb49a5929f368dfb48751bdf148e9077ddbb9c",
+        "volume": 3
+      },
+      {
+        "catalog_label": "W24",
+        "catalog_sign_id": "355007",
+        "printed_book_page": 55,
+        "publisher_iiif_url": "https://iiif.dl.itc.u-tokyo.ac.jp/iiif/asia/hp/3/3_077.tif/927,3998,3122,391/,200/0/default.jpg",
+        "source_jpeg_bytes": 25209,
+        "source_sha256": "9867310c577205e4f8fffe035eb7746dbbba3637ba32ec190b63c387b789f5ee",
+        "volume": 3
+      }
+    ],
+    "eleven_frozen_gardiner_sign_classes": [
+      "A19",
+      "A2",
+      "G1",
+      "G17",
+      "G37",
+      "O50",
+      "S42",
+      "V10",
+      "V29",
+      "W22",
+      "W24"
+    ],
+    "heldout_print_test_scores": {
+      "hog_centroid": {
+        "by_label": {
+          "A19": {
+            "correct": 0,
+            "count": 2
+          },
+          "A2": {
+            "correct": 0,
+            "count": 2
+          },
+          "G1": {
+            "correct": 1,
+            "count": 2
+          },
+          "G17": {
+            "correct": 0,
+            "count": 2
+          },
+          "G37": {
+            "correct": 0,
+            "count": 2
+          },
+          "O50": {
+            "correct": 0,
+            "count": 2
+          },
+          "S42": {
+            "correct": 1,
+            "count": 3
+          },
+          "V10": {
+            "correct": 1,
+            "count": 3
+          },
+          "V29": {
+            "correct": 0,
+            "count": 3
+          },
+          "W22": {
+            "correct": 0,
+            "count": 2
+          },
+          "W24": {
+            "correct": 1,
+            "count": 2
+          }
+        },
+        "correct": 4,
+        "distinct_printed_book_page_proxies": 11,
+        "macro_accuracy": 0.1515152,
+        "top1_accuracy": 0.16,
+        "total": 25
+      },
+      "pixel_nearest_neighbour": {
+        "by_label": {
+          "A19": {
+            "correct": 0,
+            "count": 2
+          },
+          "A2": {
+            "correct": 0,
+            "count": 2
+          },
+          "G1": {
+            "correct": 0,
+            "count": 2
+          },
+          "G17": {
+            "correct": 1,
+            "count": 2
+          },
+          "G37": {
+            "correct": 0,
+            "count": 2
+          },
+          "O50": {
+            "correct": 0,
+            "count": 2
+          },
+          "S42": {
+            "correct": 0,
+            "count": 3
+          },
+          "V10": {
+            "correct": 1,
+            "count": 3
+          },
+          "V29": {
+            "correct": 0,
+            "count": 3
+          },
+          "W22": {
+            "correct": 0,
+            "count": 2
+          },
+          "W24": {
+            "correct": 2,
+            "count": 2
+          }
+        },
+        "correct": 4,
+        "distinct_printed_book_page_proxies": 11,
+        "macro_accuracy": 0.1666667,
+        "top1_accuracy": 0.16,
+        "total": 25
+      },
+      "trained_hog_ridge": {
+        "by_label": {
+          "A19": {
+            "correct": 0,
+            "count": 2
+          },
+          "A2": {
+            "correct": 0,
+            "count": 2
+          },
+          "G1": {
+            "correct": 1,
+            "count": 2
+          },
+          "G17": {
+            "correct": 1,
+            "count": 2
+          },
+          "G37": {
+            "correct": 0,
+            "count": 2
+          },
+          "O50": {
+            "correct": 0,
+            "count": 2
+          },
+          "S42": {
+            "correct": 0,
+            "count": 3
+          },
+          "V10": {
+            "correct": 1,
+            "count": 3
+          },
+          "V29": {
+            "correct": 0,
+            "count": 3
+          },
+          "W22": {
+            "correct": 0,
+            "count": 2
+          },
+          "W24": {
+            "correct": 0,
+            "count": 2
+          }
+        },
+        "correct": 3,
+        "distinct_printed_book_page_proxies": 11,
+        "macro_accuracy": 0.1212121,
+        "top1_accuracy": 0.12,
+        "total": 25
+      }
+    },
+    "heldout_test_known_prior_exposed_ids_count": 4,
+    "heldout_test_new_relative_to_W27_W29_B1": {
+      "correct": 2,
+      "items": 21,
+      "top1_accuracy": 0.0952381
+    },
+    "image_domain_only_not_annotated_photo_sign_gold": true,
+    "met_photo_unlabelled_OOD_results": {
+      "546511": {
+        "original_CC0_image_sha256": "0e02fa67746188a690b5a91e48774d5d6435e9fb845848db5ab30fcac842d101",
+        "original_photo_bytes": 2252531,
+        "raw_max_ridge_score_quantiles": [
+          0.2861641,
+          0.4641931,
+          0.6151323,
+          0.7267282,
+          1.2531035
+        ],
+        "true_sign_accuracy_not_measured": true,
+        "unlabelled_original_papyrus_tiles": 32,
+        "unlabelled_original_photo_tiles_accepted_by_print_classifier": 32,
+        "unlabelled_tiles_below_train_only_print_score_threshold": 0
+      },
+      "554654": {
+        "original_CC0_image_sha256": "ab0f27036305fa55c6040e88d570d6c2d3d7bcbed586c9ce74f4a30030770b16",
+        "original_photo_bytes": 1846346,
+        "raw_max_ridge_score_quantiles": [
+          0.355761,
+          0.5323404,
+          0.6117326,
+          0.775571,
+          1.0505679
+        ],
+        "true_sign_accuracy_not_measured": true,
+        "unlabelled_original_papyrus_tiles": 32,
+        "unlabelled_original_photo_tiles_accepted_by_print_classifier": 32,
+        "unlabelled_tiles_below_train_only_print_score_threshold": 0
+      }
+    },
+    "official_reading_accuracy": null,
+    "original_public_domain_met_photo_pixels_used": true,
+    "printed_test_sign_images_below_threshold": 3,
+    "printed_train_only_cross_volume_threshold": 0.28567133,
+    "protocol": "W30-PUBLISHER-11-CLASS-REAL-PIXEL-TRAIN-AND-AUTHENTIC-MET-UNLABELLED-OOD/2",
+    "publisher_IIIF_is_historical_printed_edition_not_papyrus": true,
+    "publisher_original_metadata_signs": 2065,
+    "real_original_printed_iiif_photo_pixels_used": true,
+    "split_by_historical_printed_book_volume": true,
+    "test_real_original_iiif_crops": 25,
+    "train_real_original_iiif_crops": 49,
+    "train_validation_grid": [
+      {
+        "alpha": 0.01,
+        "validation_correct": 4,
+        "validation_count": 24
+      },
+      {
+        "alpha": 0.1,
+        "validation_correct": 3,
+        "validation_count": 24
+      },
+      {
+        "alpha": 1,
+        "validation_correct": 3,
+        "validation_count": 24
+      },
+      {
+        "alpha": 10,
+        "validation_correct": 4,
+        "validation_count": 24
+      }
+    ],
+    "trained_ridge_alpha_from_volume2_only": 0.01,
+    "weighted_capability_points": 0
+  }
+}

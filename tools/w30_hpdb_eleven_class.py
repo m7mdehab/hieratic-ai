@@ -18,7 +18,7 @@ EXPECTED={"A19":(2,2,2),"A2":(2,2,2),"G1":(3,2,2),"G17":(2,2,2),
           "G37":(2,2,2),"O50":(2,2,2),"S42":(3,3,3),"V10":(2,2,3),
           "V29":(3,3,3),"W22":(2,2,2),"W24":(2,2,2)}
 ALPHAS=(0.01,0.1,1.,10.)
-VERSION="W30-PUBLISHER-11-CLASS-REAL-PIXEL-TRAIN-AND-AUTHENTIC-MET-OOD/2"
+VERSION="W30-PUBLISHER-11-CLASS-REAL-PIXEL-TRAIN-AND-AUTHENTIC-MET-UNLABELLED-OOD/2"
 
 def frozen(rows:list[dict])->list[dict]:
     eligible=[r for r in rows if r.get("kind")=="Main" and r.get("iiif_ref")

@@ -230,7 +230,7 @@ describe("no duplicated canonical constants / no second state source", () => {
     // documentation (e.g. historical phase weight). Checking *every*
     // numeric literal makes the test fail whenever research coverage happens
     // to equal an incidental number. Detect actual progress field assignments.
-    const forbiddenAssignment = /\\b(?:goalProgress|researchCoverage|goal_progress|research_coverage)\\b\\s*[:=]\\s*-?\\d+(?:\\.\\d+)?(?:\\b|$)/g;
+    const forbiddenAssignment = /\b(?:goalProgress|researchCoverage|goal_progress|research_coverage)\b\s*[:=]\s*-?\d+(?:\.\d+)?(?:\b|$)/g;
     const hits: string[] = [];
     for (const f of files) {
       const source = readFileSync(f, "utf8");

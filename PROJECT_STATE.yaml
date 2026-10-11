@@ -24,7 +24,7 @@ progress:
 
 state:
   current_phase: "P2_EVALUATION"
-  current_wave: "W30_PUBLIC_ORIGINAL_PHOTO_Nonlinear_OOD_PHRASE_EXPERIMENTS_ACCEPTED"
+  current_wave: "W30_PUBLIC_ORIGINAL_PHOTO_SIGN_OOD_AND_PHRASE_RESEARCH_ACCEPTED"
   control_plane_gate: "complete_ctrl_001_002_003_004_fnd_006"
   validated_experiments: 0
   trained_models: 0

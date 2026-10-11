@@ -26,18 +26,21 @@ jobs:
       - name: Freeze selection and run adversarial/regression tests
         run: |
           test -s docs/waves/W29_CC0_PHOTO_PRECOMMIT_PROTOCOL.md
+          test -s docs/waves/W29_CC0_MET_TWO_PHYSICAL_SOURCES_PREREG.md
           python -m unittest tests.research.test_w29_cc0_original_vision -v
       - name: Train actual CPU model on verified original CC0 source, evaluate isolated image pixels
         run: |
           set -euo pipefail
-          python -m tools.w29_cc0_original_vision --output "$RUNNER_TEMP/w29_cc0_summary.json"
+          python -m tools.w29_cc0_original_vision --met-two-originals --output "$RUNNER_TEMP/w29_cc0_summary.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           p=Path(os.environ['RUNNER_TEMP'])/'w29_cc0_summary.json'
           a=json.loads(p.read_text())
           assert a['learned_from_real_original_pixels'] is True
-          assert a['one_physical_support']=='MuseoEgizio:Cat.1880'
+          assert a['train_test_physical_source_disjoint'] is True
+          assert a['heldout_different_physical_papyrus'] is True
+          assert len(a['source_originals'])==2 and all(x['rights_met_is_public_domain'] for x in a['source_originals'])
           assert a['heldout']['pixels_per_sigma']==766*507
           assert a['weighted_capability_points']==0
           assert a['hieratic_reading_accuracy'] is None
@@ -47,6 +50,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: w29-cc0-original-photo-trained-metrics
+          name: w29-met-two-source-original-photo-cpu-training-metrics
           path: ${{ runner.temp }}/w29_cc0_summary.json
           retention-days: 14

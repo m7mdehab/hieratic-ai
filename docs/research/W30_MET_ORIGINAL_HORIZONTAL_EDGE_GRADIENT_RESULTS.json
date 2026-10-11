@@ -1,0 +1,415 @@
+{
+  "source_github_action": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38180762715",
+  "original_full_public_domain_photographs_replayed": true,
+  "previous_untouched_metric_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38180029335",
+  "all_predeclared_original_photo_PSNR_MAE_unchanged": true,
+  "differences": [],
+  "results": {
+    "benchmark_source_independence_established": false,
+    "heldout": {
+      "544847": {
+        "noise_trials": {
+          "8": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.01672469,
+              "mae": 0.01782408,
+              "mse": 0.001077899,
+              "psnr_db": 29.67422
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.01730397,
+              "mae": 0.01810139,
+              "mse": 0.001041833,
+              "psnr_db": 29.82202
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.03548083,
+              "mae": 0.02505484,
+              "mse": 0.000987972,
+              "psnr_db": 30.05255
+            },
+            "nonlinear_beats_best_untrained_mae": true,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.01597912,
+              "mae": 0.01623078,
+              "mse": 0.000592844,
+              "psnr_db": 32.27059
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.01412334,
+              "mae": 0.0150699,
+              "mse": 0.000526838,
+              "psnr_db": 32.78323
+            }
+          },
+          "16": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02239001,
+              "mae": 0.0247965,
+              "mse": 0.001409893,
+              "psnr_db": 28.50814
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02461523,
+              "mae": 0.02747066,
+              "mse": 0.001585745,
+              "psnr_db": 27.99767
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.07109426,
+              "mae": 0.05017825,
+              "mse": 0.003951178,
+              "psnr_db": 24.03273
+            },
+            "nonlinear_beats_best_untrained_mae": true,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02458227,
+              "mae": 0.02586547,
+              "mse": 0.001162595,
+              "psnr_db": 29.34572
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02124695,
+              "mae": 0.0235823,
+              "mse": 0.000994415,
+              "psnr_db": 30.02432
+            }
+          },
+          "24": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02827532,
+              "mae": 0.03221714,
+              "mse": 0.001963531,
+              "psnr_db": 27.06962
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.03185419,
+              "mae": 0.03691178,
+              "mse": 0.002431531,
+              "psnr_db": 26.1412
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.10597028,
+              "mae": 0.07518252,
+              "mse": 0.00885729,
+              "psnr_db": 20.52699
+            },
+            "nonlinear_beats_best_untrained_mae": false,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.0335143,
+              "mae": 0.0360809,
+              "mse": 0.002111053,
+              "psnr_db": 26.75501
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 142349,
+              "horizontal_edge_gradient_mae": 0.02893659,
+              "mae": 0.03278544,
+              "mse": 0.001781156,
+              "psnr_db": 27.49298
+            }
+          }
+        },
+        "physical_accession": "27.3.560",
+        "source_original_sha256": "3b3a6f85246c11155e0ce4d37288db1afcaf31f328edf2d4059c255446f03745",
+        "valid_photo_test_pixels": 142632
+      },
+      "549250": {
+        "noise_trials": {
+          "8": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.02607693,
+              "mae": 0.02318503,
+              "mse": 0.001684039,
+              "psnr_db": 27.73648
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.02591774,
+              "mae": 0.02243142,
+              "mse": 0.001637298,
+              "psnr_db": 27.85872
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.03536544,
+              "mae": 0.02497013,
+              "mse": 0.000979087,
+              "psnr_db": 30.09179
+            },
+            "nonlinear_beats_best_untrained_mae": true,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.02189624,
+              "mae": 0.0196313,
+              "mse": 0.000885046,
+              "psnr_db": 30.53034
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.01907916,
+              "mae": 0.01747305,
+              "mse": 0.000703834,
+              "psnr_db": 31.5253
+            }
+          },
+          "16": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.0307131,
+              "mae": 0.02922196,
+              "mse": 0.002006919,
+              "psnr_db": 26.9747
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.0326646,
+              "mae": 0.03126752,
+              "mse": 0.002192329,
+              "psnr_db": 26.59094
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.0702949,
+              "mae": 0.04987578,
+              "mse": 0.003867796,
+              "psnr_db": 24.12536
+            },
+            "nonlinear_beats_best_untrained_mae": true,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.0293131,
+              "mae": 0.02822012,
+              "mse": 0.001433781,
+              "psnr_db": 28.43517
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.02509198,
+              "mae": 0.02502427,
+              "mse": 0.001165197,
+              "psnr_db": 29.33601
+            }
+          },
+          "24": {
+            "fixed_3x3_mean": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.03516773,
+              "mae": 0.0350516,
+              "mse": 0.00248941,
+              "psnr_db": 26.03904
+            },
+            "fixed_3x3_median": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.03966346,
+              "mae": 0.04009884,
+              "mse": 0.00303908,
+              "psnr_db": 25.17258
+            },
+            "noisy_identity": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.10224212,
+              "mae": 0.07295213,
+              "mse": 0.008141967,
+              "psnr_db": 20.89271
+            },
+            "nonlinear_beats_best_untrained_mae": true,
+            "trained_linear_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.03651325,
+              "mae": 0.03662175,
+              "mse": 0.002233403,
+              "psnr_db": 26.51033
+            },
+            "trained_quadratic_ridge": {
+              "actual_horizontal_pixel_pairs": 220248,
+              "horizontal_edge_gradient_mae": 0.03140595,
+              "mae": 0.03260872,
+              "mse": 0.001860587,
+              "psnr_db": 27.3035
+            }
+          }
+        },
+        "physical_accession": "O.C.3569",
+        "source_original_sha256": "563bb1331bccb311463126b7f040da59febea52129fa93b7027d08078a8cb93b",
+        "valid_photo_test_pixels": 220752
+      }
+    },
+    "heldout_source_images": 2,
+    "learned_models": {
+      "linear": {
+        "alpha": 10,
+        "train_dev_mae": 0.02746447,
+        "weights_sha256": "6193648e3e3f4c58e4937dd5211eac3975565ce5adf9d1ac8e6af3baaf7f4b16"
+      },
+      "quadratic": {
+        "alpha": 0.01,
+        "train_dev_mae": 0.02565167,
+        "weights_sha256": "8cf8910f12e3a419c82f5d037da79afab25cc888e9ae2a5fc4b3a6287086d218"
+      }
+    },
+    "original_museum_photographs_used": true,
+    "original_photo_permissions": "Met API Public Domain individually checked",
+    "protocol": "W30-MET-ORIGINAL-5-OBJECT-MASKED-NONLINEAR-RIDGE/1",
+    "quadratic_beats_fixed_mean_median_all_six_conditions": false,
+    "raw_photo_or_patch_pixels_committed": false,
+    "same_archive_or_scribe_independence_verified": false,
+    "source_receipts": {
+      "544847": {
+        "accession": "27.3.560",
+        "declared_public_domain": true,
+        "met_object_id": 544847,
+        "official_source": "https://collectionapi.metmuseum.org/public/collection/v1/objects/544847",
+        "original_image_url": "https://images.metmuseum.org/CRDImages/eg/original/DP234741.jpg",
+        "original_original_dimensions": [
+          3913,
+          2209
+        ],
+        "original_photo_bytes": 1241222,
+        "original_sha256": "3b3a6f85246c11155e0ce4d37288db1afcaf31f328edf2d4059c255446f03745",
+        "title": "Letter written in hieratic script on papyrus",
+        "valid_nonpadding_interior": 142632,
+        "working_canvas": [
+          512,
+          512
+        ],
+        "working_photo_roi": [
+          2,
+          112,
+          508,
+          287
+        ]
+      },
+      "545445": {
+        "accession": "22.3.516",
+        "declared_public_domain": true,
+        "met_object_id": 545445,
+        "official_source": "https://collectionapi.metmuseum.org/public/collection/v1/objects/545445",
+        "original_image_url": "https://images.metmuseum.org/CRDImages/eg/original/DP351757.jpg",
+        "original_original_dimensions": [
+          3668,
+          3839
+        ],
+        "original_photo_bytes": 5334405,
+        "original_sha256": "e6924e890664bc158b4164e7645710f8812aaab32f9935f4ed9e443d4ce7dfaa",
+        "title": "Heqanakht Letter I",
+        "valid_nonpadding_interior": 242424,
+        "working_canvas": [
+          512,
+          512
+        ],
+        "working_photo_roi": [
+          13,
+          2,
+          485,
+          508
+        ]
+      },
+      "546511": {
+        "accession": "15.3.1136",
+        "declared_public_domain": true,
+        "met_object_id": 546511,
+        "official_source": "https://collectionapi.metmuseum.org/public/collection/v1/objects/546511",
+        "original_image_url": "https://images.metmuseum.org/CRDImages/eg/original/15.3.1136_recto_0079.jpg",
+        "original_original_dimensions": [
+          4000,
+          2754
+        ],
+        "original_photo_bytes": 2252531,
+        "original_sha256": "0e02fa67746188a690b5a91e48774d5d6435e9fb845848db5ab30fcac842d101",
+        "title": "Nine fragments of hieratic text",
+        "valid_nonpadding_interior": 174384,
+        "working_canvas": [
+          512,
+          512
+        ],
+        "working_photo_roi": [
+          2,
+          81,
+          508,
+          350
+        ]
+      },
+      "549250": {
+        "accession": "O.C.3569",
+        "declared_public_domain": true,
+        "met_object_id": 549250,
+        "official_source": "https://collectionapi.metmuseum.org/public/collection/v1/objects/549250",
+        "original_image_url": "https://images.metmuseum.org/CRDImages/eg/original/O.C.3569_EGDP015269.jpg",
+        "original_original_dimensions": [
+          1741,
+          2000
+        ],
+        "original_photo_bytes": 2284019,
+        "original_sha256": "563bb1331bccb311463126b7f040da59febea52129fa93b7027d08078a8cb93b",
+        "title": "Hieratic Papyrus fragment",
+        "valid_nonpadding_interior": 220752,
+        "working_canvas": [
+          512,
+          512
+        ],
+        "working_photo_roi": [
+          35,
+          2,
+          442,
+          508
+        ]
+      },
+      "554654": {
+        "accession": "27.3.561a, b",
+        "declared_public_domain": true,
+        "met_object_id": 554654,
+        "official_source": "https://collectionapi.metmuseum.org/public/collection/v1/objects/554654",
+        "original_image_url": "https://images.metmuseum.org/CRDImages/eg/original/LC-27_3_561a_ b_EGDP037005.jpg",
+        "original_original_dimensions": [
+          4000,
+          2667
+        ],
+        "original_photo_bytes": 1871378,
+        "original_sha256": "8c9a44ec5ed1ba6464e128a6cd3f0017bb3544311e918303fea1fbbeee83643b",
+        "title": "Letter with hieratic inscription",
+        "valid_nonpadding_interior": 168840,
+        "working_canvas": [
+          512,
+          512
+        ],
+        "working_photo_roi": [
+          2,
+          86,
+          508,
+          339
+        ]
+      }
+    },
+    "three_train_original_object_ids": [
+      546511,
+      554654,
+      545445
+    ],
+    "train_hyperparameter_selected_without_test_image": true,
+    "train_source_images": 3,
+    "train_source_pixel_samples": 108000,
+    "transliteration_reading_accuracy": null,
+    "two_heldout_original_object_ids": [
+      544847,
+      549250
+    ],
+    "unverified_ink_stroke_segmentation_accuracy": null,
+    "weighted_reading_capability_points": 0
+  }
+}

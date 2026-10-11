@@ -5,9 +5,9 @@ from ling.translation import w29_temple_ibm1 as w
 
 class W29PublisherTempleIBM1Tests(unittest.TestCase):
     def test_exact_original_publisher_tree_freeze(self):
-        self.assertEqual(w.ORIGINAL_FILE,"_aes_bbawtempelbib.json")
-        self.assertEqual(w.ORIGINAL_SIZE,9679845)
-        self.assertEqual(w.ORIGINAL_SHA1,"f8135fee93c0ed27b5d6a110605f1a842fb6d8b6")
+        self.assertEqual(w.ORIGINAL_FILE,"_aes_bbawramessiden.json")
+        self.assertEqual(w.ORIGINAL_SIZE,18120088)
+        self.assertEqual(w.ORIGINAL_SHA1,"beba6443bc4796b92a8f398aa8123a431575cbfa")
         self.assertIn(w.ORIGINAL_REV,w.URL)
 
     def test_new_32_group_selection_does_not_depend_on_any_german_label(self):

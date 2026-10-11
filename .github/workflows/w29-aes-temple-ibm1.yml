@@ -1,0 +1,60 @@
+name: W29 C — real first-use licensed AES Egyptian-to-German alignment training
+on:
+  push:
+    branches:
+      - 'overseer/w29-aes-translation-em'
+    paths:
+      - 'ling/translation/w29_temple_ibm1.py'
+      - 'tests/linguistics/test_w29_temple_ibm1.py'
+      - '.github/workflows/w29-aes-temple-ibm1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-publisher-first-use-cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install lightweight existing linguistic dependencies
+        run: python -m pip install -r requirements-projectctl.txt
+      - name: Verify source frozen preregistered before target inspection
+        run: |
+          test -s ling/translation/experiments/W29_PREREG_TEMPELBIB_EM.md
+          python -m unittest tests.linguistics.test_w29_temple_ibm1 -v
+      - name: Real AES original publisher download, train IBM1, predict without German answers, score afterwards
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          W29_PRIVATE="$(mktemp -d)"
+          trap 'rm -rf "$W29_PRIVATE"' EXIT
+          echo "Read NEW publisher original source only after precommitted frozen protocol."
+          python -m ling.translation.w29_temple_ibm1 fetch --private "$W29_PRIVATE"
+          echo "Train real source-only IBM1 CPU, write immutable predictions; predictor receives no reference path."
+          python -m ling.translation.w29_temple_ibm1 train-predict --private "$W29_PRIVATE"
+          echo "Only NOW reveal German reference file to scorer and emit aggregate report."
+          python -m ling.translation.w29_temple_ibm1 score --private "$W29_PRIVATE" > "$RUNNER_TEMP/w29_temple_ibm1_aggregates.json"
+          cat "$RUNNER_TEMP/w29_temple_ibm1_aggregates.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'w29_temple_ibm1_aggregates.json').read_text())
+          assert r["frozen_source_groups"]==32 and r["total_sentences"]>0
+          assert r["trained_IBM1_on_original_publisher_donor"] is True
+          assert r["model_training_or_reading_capability_points"]==0
+          assert r["original_photographs_used"] is False
+          print("PASS: original publisher, donor-only real IBM1, 32 frozen groups, no leaked gold.")
+          PY
+      - name: Upload safe aggregate metrics and source/prediction hashes only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w29-temple-new-original-source-ibm1-scores
+          path: ${{ runner.temp }}/w29_temple_ibm1_aggregates.json
+          retention-days: 14

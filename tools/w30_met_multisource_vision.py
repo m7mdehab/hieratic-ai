@@ -89,11 +89,20 @@ def ridge(X:np.ndarray,target:np.ndarray,alpha:float)->np.ndarray:
     gram=X.T@X
     return np.linalg.solve(gram+alpha*reg+np.eye(X.shape[1])*1e-8,X.T@target)
 
-def pixel_stats(p:np.ndarray,t:np.ndarray)->dict:
+def pixel_stats(p:np.ndarray,t:np.ndarray,consecutive_horizontal:np.ndarray|None=None)->dict:
     mse=float(np.mean((p-t)**2))
-    return {"mae":round(float(np.mean(abs(p-t))),8),
+    result={"mae":round(float(np.mean(abs(p-t))),8),
             "psnr_db":round(float(-10*np.log10(max(mse,1e-12))),5),
             "mse":round(mse,9)}
+    if consecutive_horizontal is not None:
+        # Consecutive 1D ROI entries only count when they share a source-photo
+        # row and adjacent x coordinates, never across a row/padding boundary.
+        if consecutive_horizontal.shape!=(len(p)-1,) or not np.any(consecutive_horizontal):
+            raise ValueError("Invalid true-neighbor source geometry")
+        result["horizontal_edge_gradient_mae"]=round(float(np.mean(abs(
+            (p[1:]-p[:-1]-t[1:]+t[:-1])[consecutive_horizontal]))),8)
+        result["actual_horizontal_pixel_pairs"]=int(np.sum(consecutive_horizontal))
+    return result
 
 def learn(images:dict[int,tuple[np.ndarray,np.ndarray,dict]])->dict:
     if set(images)!=(set(TRAIN)|set(TEST)):raise ValueError("Exactly five frozen original rights-verified objects required")
@@ -131,6 +140,7 @@ def learn(images:dict[int,tuple[np.ndarray,np.ndarray,dict]])->dict:
         clean=clean8.astype(np.float32)/255.
         ys,xs=np.where(mask)
         truth=clean[ys,xs].astype(np.float64)
+        source_horizontal_neighbors=(ys[1:]==ys[:-1]) & (xs[1:]==xs[:-1]+1)
         values={}
         for sigma in SIGMAS:
             corrupted=baseline.noise(clean,sigma,3001+object_id+sigma)
@@ -143,7 +153,7 @@ def learn(images:dict[int,tuple[np.ndarray,np.ndarray,dict]])->dict:
             nonlinear=np.clip(Xnon@trained[True],0,1)
             trial={"noisy_identity":raw,"fixed_3x3_mean":mean,"fixed_3x3_median":median,
                    "trained_linear_ridge":linear,"trained_quadratic_ridge":nonlinear}
-            values[str(sigma)]={name:pixel_stats(val,truth) for name,val in trial.items()}
+            values[str(sigma)]={name:pixel_stats(val,truth,source_horizontal_neighbors) for name,val in trial.items()}
             values[str(sigma)]["nonlinear_beats_best_untrained_mae"]=bool(
                 values[str(sigma)]["trained_quadratic_ridge"]["mae"] <
                 min(values[str(sigma)]["fixed_3x3_median"]["mae"],

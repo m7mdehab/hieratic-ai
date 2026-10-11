@@ -170,7 +170,7 @@ def met_original(object_id:int,expected_title:str)->tuple[bytes,dict]:
         if response.status!=200:
             raise ValueError("Met original photo response not successful")
         raw=response.read(36_000_001)
-    if not 1000<len(raw)<=36_000_000 or raw[:2]!=b"\\xff\\xd8":
+    if not 1000<len(raw)<=36_000_000 or raw[:2]!=bytes((255,216)):
         raise ValueError("Original Met public photo JPEG bytes missing/too large")
     return raw,{"object_id":object_id,"accession":metadata.get("accessionNumber"),
                 "title":expected_title,"rights_met_is_public_domain":True,
@@ -194,6 +194,8 @@ def run_met()->dict:
                 OUTPUT_WH,Image.Resampling.LANCZOS)
             gray.append(np.asarray(pixels,dtype=np.uint8))
         assets.append(record)
+    if assets[0]["original_photo_sha256"]==assets[1]["original_photo_sha256"]:
+        raise ValueError("Distinct original physical objects unexpectedly returned identical bytes")
     result=learn(gray[0],gray[1])
     result.update({"source":"Met Museum two genuine CC0 original Hieratic papyrus photographs",
         "source_met_open_access_policy":"https://www.metmuseum.org/about-the-met/policies-and-documents/open-access",

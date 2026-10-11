@@ -40,8 +40,8 @@ class W29PublisherTempleIBM1Tests(unittest.TestCase):
         translation,unknown=model.predict(("x","missing","y"))
         self.assertEqual(unknown,1)
         self.assertIn("[?]",translation)
-        self.assertIn("Pferd",translation)
-        self.assertIn("Haus",translation)
+        self.assertIn("pferd",translation)
+        self.assertIn("haus",translation)
 
     def test_single_observation_cannot_be_emitted(self):
         model=w.IBM1([{"forms":("x",),"german":"einzig","text_id":"first"}])

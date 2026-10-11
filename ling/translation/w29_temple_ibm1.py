@@ -238,8 +238,8 @@ def main()->int:
     if args.stage=="fetch":
         req=urllib.request.Request(URL,headers={"User-Agent":"HieraticAI-W29-publisher-original-temple/1.0"})
         with urllib.request.urlopen(req,timeout=50) as f:
-            raw=f.read(11_000_001)
-        if len(raw)>11_000_000:raise TranslationError("Publisher source exceeds 11MB cap")
+            raw=f.read(20_000_001)
+        if len(raw)>20_000_000:raise TranslationError("Publisher source exceeds 20MB cap")
         result=fetch_and_split(raw,input_file,gold_file)
     elif args.stage=="train-predict":
         if prediction_file.exists():raise TranslationError("Prediction archive cannot be overwritten after fitting")

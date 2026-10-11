@@ -1,7 +1,7 @@
 name: W30 A five authentic public-domain Met original photographed papyri
 on:
   push:
-    branches: ['overseer/w30-met-photo-multisource']
+    branches: ['overseer/w30-met-photo-multisource', 'overseer/w30-met-edge-gradient-audit']
     paths:
       - 'tools/w30_met_multisource_vision.py'
       - 'tests/research/test_w30_met_multisource_vision.py'

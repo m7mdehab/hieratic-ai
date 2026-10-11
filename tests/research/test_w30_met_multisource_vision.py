@@ -35,6 +35,17 @@ class W30OriginalMuseumVisionTests(unittest.TestCase):
         self.assertEqual(wgt.shape,(22,))
         self.assertTrue(np.all(np.isfinite(wgt)))
 
+    def test_real_horizontal_neighbor_edge_gradient_metric(self):
+        truth=np.array([0.,.5,1.,0.,.5])
+        neighbors=np.array([True,True,False,True])
+        perfect=w.pixel_stats(truth,truth,neighbors)
+        self.assertEqual(perfect["horizontal_edge_gradient_mae"],0)
+        self.assertEqual(perfect["actual_horizontal_pixel_pairs"],3)
+        flat=w.pixel_stats(np.full_like(truth,.5),truth,neighbors)
+        self.assertGreater(flat["horizontal_edge_gradient_mae"],0)
+        with self.assertRaises(ValueError):
+            w.pixel_stats(truth,truth,np.array([True,False]))
+
     def test_better_image_metric_direction(self):
         x=np.array([0,.25,.5,1.],dtype=float)
         self.assertEqual(w.pixel_stats(x,x)["mae"],0)

@@ -1,0 +1,46 @@
+name: W30 C original AES prospective Egyptian phrase-model CPU comparison
+on:
+  push:
+    branches: ['overseer/w30-aes-phrase-model']
+    paths: ['ling/translation/w30_phrase_alignment.py','tests/linguistics/test_w30_phrase_alignment.py','.github/workflows/w30-aes-phrase.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-original-publisher-phrase-learning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-projectctl.txt
+      - run: |
+          test -s ling/translation/experiments/W30_C_PREREG_NEW_PUBLISHER_PHRASE.md
+          python -m unittest tests.linguistics.test_w30_phrase_alignment -v
+      - name: Fetch immutable original AES source, fit real bilingual models, lock predictions then score
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          DIR="$(mktemp -d)"
+          trap 'rm -rf "$DIR"' EXIT
+          python -m ling.translation.w30_phrase_alignment fetch --private "$DIR"
+          python -m ling.translation.w30_phrase_alignment train-predict --private "$DIR"
+          python -m ling.translation.w30_phrase_alignment score --private "$DIR" > "$RUNNER_TEMP/w30-phrase.json"
+          cat "$RUNNER_TEMP/w30-phrase.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'w30-phrase.json').read_text())
+          assert r['frozen_source_groups']==32
+          assert 'bigram_phrase' in r['metrics'] and 'ibm1' in r['metrics']
+          print('PASS prospective original publisher lexical phrase model and original heldout results')
+          PY
+      - if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w30-aes-firstuse-bigram-results
+          path: ${{ runner.temp }}/w30-phrase.json
+          retention-days: 14

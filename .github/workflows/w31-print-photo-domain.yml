@@ -27,7 +27,7 @@ jobs:
           from pathlib import Path
           r=json.loads((Path(os.environ['RUNNER_TEMP'])/'w31-source-domain.json').read_text())
           assert r['trained_on_real_source_images']
-          assert r['new_met_original_photo']['object_id']==555779
+          assert r['new_met_original_photo']['object_id']==551786
           assert r['heldout']['new_original_photo_tiles']==32
           assert r['true_manuscript_sign_accuracy'] is None
           print('PASS W31 actual new original photo cross-physical-source domain detector')

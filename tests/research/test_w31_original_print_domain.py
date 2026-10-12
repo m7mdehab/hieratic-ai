@@ -3,7 +3,7 @@ import numpy as np
 from tools import w31_original_print_domain as w
 class W31DomainTests(unittest.TestCase):
  def test_exact_new_original_source_frozen(self):
-  self.assertEqual((w.MET_NEW,w.MET_ACCESSION),(555779,"34.1.215a"))
+  self.assertEqual((w.MET_NEW,w.MET_ACCESSION),(551786,"35.9.20a–w"))
   self.assertNotIn(w.MET_NEW,[x[0] for x in w.met.MET_OBJECTS])
  def test_original_publisher_population_is_frozen(self):
   rows=w.hpdb.read_catalog()

@@ -12,9 +12,9 @@ from tools import w29_hpdb_sign_learning as hist
 from tools import research_hpdb_original_pixels as hpdb
 from tools import w29_cc0_original_vision as met
 
-MET_NEW=555779
-MET_TITLE="Papyrus fragments inscribed in hieratic"
-MET_ACCESSION="34.1.215a"
+MET_NEW=551786
+MET_TITLE="Book of the Dead of the Priest of Horus, Imhotep (Imuthes)"
+MET_ACCESSION="35.9.20a–w"
 SOURCE_API="https://collectionapi.metmuseum.org/public/collection/v1/objects/"
 ALPHAS=(.01,.1,1.,10.)
 VERSION="W31-ORIGINAL-PHOTO-VS-PRINT-SOURCE-DOMAIN-LINEAR-RIDGE-v1"

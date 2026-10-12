@@ -1,0 +1,526 @@
+{
+  "actual_github_source_experiment_run": "https://github.com/m7mdehab/hieratic-ai/actions/runs/38317822070",
+  "actual_execution_head_sha": "bb31c2b767fe7517d8d7a63f01e318ffd75481ef",
+  "scientific_interpretation": "Original Tokyo printed source vs original Met photo image DOMAIN discrimination; not Hieratic glyph recognition",
+  "first_frozen_new_source_555779_status": "FAILED identity/rights before reading pixels; no score",
+  "prospectively_frozen_C2_original_551786": "SUCCEEDED original source rights and genuine CPU model",
+  "original_image_source_bytes_committed": false,
+  "prior_W30_ood_experiment": "0 of 64 known Met photo tiles rejected by printed-only confidence threshold; not same new holdout",
+  "original_source_results": {
+    "chosen_alpha": 0.01,
+    "frozen_training_examples": {
+      "photo_tiles": 64,
+      "publisher_train": 49
+    },
+    "genuine_original_met_source_photos_train": [
+      {
+        "object_id": 546511,
+        "original_sha256": "0e02fa67746188a690b5a91e48774d5d6435e9fb845848db5ab30fcac842d101",
+        "training_domain_photo_tiles": 32
+      },
+      {
+        "object_id": 554654,
+        "original_sha256": "ab0f27036305fa55c6040e88d570d6c2d3d7bcbed586c9ce74f4a30030770b16",
+        "training_domain_photo_tiles": 32
+      }
+    ],
+    "genuine_publisher_original_sign_crops": 74,
+    "heldout": {
+      "balanced_domain_accuracy": 0.984375,
+      "new_original_photo_tiles": 32,
+      "new_photo_false_admitted": 1,
+      "new_photo_rejected": 31,
+      "photo_rejection_rate": 0.96875,
+      "print_accept_rate": 1,
+      "print_rejected": 0,
+      "publisher_print_vol3": 25,
+      "true_print_accepted": 25
+    },
+    "new_met_original_photo": {
+      "accession": "35.9.20a–w",
+      "jpeg_original_bytes": 1755227,
+      "object_id": 551786,
+      "original_sha256": "46a03fa43462372ccc7ce481f3f5b8b0627b887a97f815be10545779ec946f5e",
+      "original_wh": [
+        4000,
+        970
+      ],
+      "public_domain_claim_verified_from_museum_API": true,
+      "title": "Book of the Dead of the Priest of Horus, Imhotep (Imuthes)"
+    },
+    "publisher_photographic_raw_pixels_committed": false,
+    "publisher_source_sha_records": [
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "101007",
+        "publisher_volume": 1,
+        "source_original_SHA256": "cb1626d43a974982f333d53717bb7a4a2517eb570bceb7efed9f7880a46ae071"
+      },
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "101008",
+        "publisher_volume": 1,
+        "source_original_SHA256": "4802d4395fee1a0eca29e93f97161762834f2edf238765f3b3934a93c8f5ac9b"
+      },
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "202004",
+        "publisher_volume": 2,
+        "source_original_SHA256": "cd5f15c04a8f7cc7e630fc49ffb67743bd2d433afde0fcc1c1a02e0382f960fa"
+      },
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "202005",
+        "publisher_volume": 2,
+        "source_original_SHA256": "056920d592aef46e3efa9b3c3cd99b4b4f57f80245a74999a9c1104fd71a6296"
+      },
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "302004",
+        "publisher_volume": 3,
+        "source_original_SHA256": "09a2c724321cec6060d505b5cdba76f2910374126da12dd2ca1f723fe6b39e61"
+      },
+      {
+        "label_original_metadata": "A19",
+        "publisher_item_id": "302005",
+        "publisher_volume": 3,
+        "source_original_SHA256": "8a11cd441e5bea8eed67df39a2e43c1e112e47bb19e98c4cb84edc0b10f1a407"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "103005",
+        "publisher_volume": 1,
+        "source_original_SHA256": "f1f0f05f33a8d6380c593d534fdbb84fa95844a1cc719e0153035d193178cb31"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "103006",
+        "publisher_volume": 1,
+        "source_original_SHA256": "d3b35853826690bc9b11b8addd8ba8aaa110ab6fd9552964de721b86a6686ea3"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "203008",
+        "publisher_volume": 2,
+        "source_original_SHA256": "9bba6c3ea53512e03e09331f728a7b981712523d437bf52b3995af2bd090ec69"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "203009",
+        "publisher_volume": 2,
+        "source_original_SHA256": "cfe45f7618c634002587ba5234d860a15c4ac3bc27c709b7b3daf0a470e539e8"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "303010",
+        "publisher_volume": 3,
+        "source_original_SHA256": "1d23068c5600a3aef94fac76f966ef4965f2f672f016c7e1bf1b1e69c600aedc"
+      },
+      {
+        "label_original_metadata": "A2",
+        "publisher_item_id": "304001",
+        "publisher_volume": 3,
+        "source_original_SHA256": "ace196a4c4a243f04c18b720ef54b1ec0668ab4f999ab99f205414c20f2debab"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "118003",
+        "publisher_volume": 1,
+        "source_original_SHA256": "6be3f28074ec4200ef141871f13f9ed7486a6263f0f4c0362bf0d15fa2d6507c"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "118004",
+        "publisher_volume": 1,
+        "source_original_SHA256": "e4eda519b32e5e33f8aadee19d1144b1247a0d0cfa2cdd9753d766f30ce720cc"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "118005",
+        "publisher_volume": 1,
+        "source_original_SHA256": "496a935a9a864358b9fb9099855344f0039162910fd7d4e4a2a506d0390f0a3c"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "217002",
+        "publisher_volume": 2,
+        "source_original_SHA256": "2b54bcc60027920756325951d111c2f2547ced6d0e971a75433d6a2d1560e79b"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "217003",
+        "publisher_volume": 2,
+        "source_original_SHA256": "d29752d709f300c2e0eb052d3512d33884a1abd1e2da27fa5b02c2d9a09d3232"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "317007",
+        "publisher_volume": 3,
+        "source_original_SHA256": "4dfac9013188c4234319a634021ceecbfb567459d392c772c293260fe9820db4"
+      },
+      {
+        "label_original_metadata": "G1",
+        "publisher_item_id": "317008",
+        "publisher_volume": 3,
+        "source_original_SHA256": "a03c272957a1af23d9cb5cf4c9d4c4edaae460b43e8aa3e21c0c962c323f3161"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "118009",
+        "publisher_volume": 1,
+        "source_original_SHA256": "d33efee7aaca8c8922528686dcd90fba26c248d7736aa31b2f5f3a11bec59991"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "118010",
+        "publisher_volume": 1,
+        "source_original_SHA256": "eb412be1537d2ba65eb579e46fdb3b2c0cac42579bdc3b076217ac5e698fc479"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "217007",
+        "publisher_volume": 2,
+        "source_original_SHA256": "73bdc6989c4c74a16d047612ac6119756cbce8b557bf0d344ffb2907d7289f45"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "217008",
+        "publisher_volume": 2,
+        "source_original_SHA256": "d4cba33d240670e4e423424f560da484ac977a498ea1022886701dadc64d328c"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "318002",
+        "publisher_volume": 3,
+        "source_original_SHA256": "26e4b54645bce35629f3c2e26eb2cf05aa76bb7f003ebfea971026fe9ba5a0c0"
+      },
+      {
+        "label_original_metadata": "G17",
+        "publisher_item_id": "318003",
+        "publisher_volume": 3,
+        "source_original_SHA256": "0dc2cf7063167bfcdc446adbe883149c6985daa7be16cb43d399616d8a1a3696"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "119001",
+        "publisher_volume": 1,
+        "source_original_SHA256": "3f98bbbfcddf9f97ca6b56fe12fd42f0b630c3bdaf6c3a3ce13e090f3890f3a4"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "121004",
+        "publisher_volume": 1,
+        "source_original_SHA256": "74815f9618e25286ed77aaf5c09a9ccf2ad1eddeb6ad4cac42fc12dd9841870b"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "217009",
+        "publisher_volume": 2,
+        "source_original_SHA256": "843caaeddcc5dda7530e414794f7cb2dbd8c6d17aba9d31a2f90280f370db0e9"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "219008",
+        "publisher_volume": 2,
+        "source_original_SHA256": "55a93e95d45b30e2d39897046040d33757c34107d5ca42944b376bec571f69cc"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "318004",
+        "publisher_volume": 3,
+        "source_original_SHA256": "dd323057f0163589b577a03923b596e84cd22797d0982fdb3cc9baf5f7b53ca8"
+      },
+      {
+        "label_original_metadata": "G37",
+        "publisher_item_id": "320003",
+        "publisher_volume": 3,
+        "source_original_SHA256": "3a697435008659967497e6f8e7489901dc65e5b6a55dee8d3810b17220f988f8"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "138006",
+        "publisher_volume": 1,
+        "source_original_SHA256": "606271ee4f3b09d3caa9237e3e51e90802d16ea1f5339698207ba9fc56134e25"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "138007",
+        "publisher_volume": 1,
+        "source_original_SHA256": "ddd6efba75fdc784869063a78104f098c24348e007a5ab54e3d4c01af67f3524"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "236002",
+        "publisher_volume": 2,
+        "source_original_SHA256": "8a5a5f1e39f9d88b79a6896c86d7ebb262296d2b994248407333f15bea98b314"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "236003",
+        "publisher_volume": 2,
+        "source_original_SHA256": "561db0673e1280deb8aa69e2be7005871da7912beca65609c8ca25db619634de"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "338009",
+        "publisher_volume": 3,
+        "source_original_SHA256": "f9caa635da3b5594c08fed105c9135024336e2ab5d1b495524454be50a42fd3d"
+      },
+      {
+        "label_original_metadata": "O50",
+        "publisher_item_id": "338010",
+        "publisher_volume": 3,
+        "source_original_SHA256": "c9b431bba2dd371a9ac4fac01325dc6008dffcc3321d91505725b9690831d5c0"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "142006",
+        "publisher_volume": 1,
+        "source_original_SHA256": "4ab6975e93a6657366d83992ff1a6bb895acc34ae2998ba12c5007ea3df18e97"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "142007",
+        "publisher_volume": 1,
+        "source_original_SHA256": "f69bffb384405053cf6ae50c3654baa78aff48b5526358ef254bb65f4cf245ab"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "142008",
+        "publisher_volume": 1,
+        "source_original_SHA256": "7407726a4c378663b1951a1db64b9a38bb56acc71111222e92e3c22d5bfa1ae6"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "240002",
+        "publisher_volume": 2,
+        "source_original_SHA256": "bef86a4042b6683e8b6f9a2a6887cdf777cc3bea0d1775b29bafd83406aadf4c"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "240003",
+        "publisher_volume": 2,
+        "source_original_SHA256": "901c6e9a506cfc97eac0dbb22bd0ccef6758901caa9204d1d2d916c0ced5d657"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "240004",
+        "publisher_volume": 2,
+        "source_original_SHA256": "47c530d2a78c1fb544dcdc0247ee30d2173c7d13608d00e0f9ae3c9fcdc59b3d"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "343002",
+        "publisher_volume": 3,
+        "source_original_SHA256": "5cbad1ea5bed2dddce371d64339593079dfd57501c983948dd4b3e299980bd58"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "343003",
+        "publisher_volume": 3,
+        "source_original_SHA256": "4bc37f3f5d1283fe61842a7ec43edd97b1f25fba33fc3d6f1848a9fb1e8491d2"
+      },
+      {
+        "label_original_metadata": "S42",
+        "publisher_item_id": "343004",
+        "publisher_volume": 3,
+        "source_original_SHA256": "3bf9616d4f745fb326f315267cdc842c9c338ec0108aef113775039ca33e6c87"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "150009",
+        "publisher_volume": 1,
+        "source_original_SHA256": "91acfc3294cc341febb706b8f6e4f9392bfb9164122ac5829a9fd542f15cb835"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "150010",
+        "publisher_volume": 1,
+        "source_original_SHA256": "485882e0556973ffe3cf082f4f48f83a0770e91b8163943792dc585a643545be"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "248002",
+        "publisher_volume": 2,
+        "source_original_SHA256": "f12561261e3f2f13687e5609da01277014712273d5d059be5d315e0f584a4f46"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "248003",
+        "publisher_volume": 2,
+        "source_original_SHA256": "f4a16ae77e6ae4d7c5641f7f6ebd88589c310d8a1c2e8c165ec4e1c7b1974ff0"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "351006",
+        "publisher_volume": 3,
+        "source_original_SHA256": "e664aec755adf69ad203ae36ad81bd2bca07804ddccdd271111794fc10776e0f"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "351007",
+        "publisher_volume": 3,
+        "source_original_SHA256": "bdb4569abb6d57901b4a908594bd3df3b9c6c66676090fac03507b122975b8c1"
+      },
+      {
+        "label_original_metadata": "V10",
+        "publisher_item_id": "351008",
+        "publisher_volume": 3,
+        "source_original_SHA256": "4f6384f551432012bd5297ab06ad386c30d21b8f7443f6a53d9e7fb694e047e5"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "138001",
+        "publisher_volume": 1,
+        "source_original_SHA256": "c858f2703f184b3d70d5e50dff61257ddd83cb46ccfc053211ff9a05e1a767f1"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "138002",
+        "publisher_volume": 1,
+        "source_original_SHA256": "13cf94ee9bd88b077051258602bbcfdf8f7fef40625aa9aa42465f74c043c025"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "138003",
+        "publisher_volume": 1,
+        "source_original_SHA256": "adbc3ce16d492869603fd83b31769ae76bc0ed41898f6bbe8fda7a4fb9ebd31b"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "235008",
+        "publisher_volume": 2,
+        "source_original_SHA256": "dddcfe4c726515b7007daedbfd10f52d39215dfe2a339fe1db10d4f11d1dbf99"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "235009",
+        "publisher_volume": 2,
+        "source_original_SHA256": "22061106ff78dfcaadcf04ed12a398bb02ce8b34a30112cbaa408ae023b2e5a4"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "235010",
+        "publisher_volume": 2,
+        "source_original_SHA256": "5bd5ef37ee710cef0df65f6133a6c4ea4101f2e03d95dcca75ec1482434aae95"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "338004",
+        "publisher_volume": 3,
+        "source_original_SHA256": "6d1a5a18e4f3f9814ab4ced6521506e811a8b9094f71ed551fbe3c76c431bbbc"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "338005",
+        "publisher_volume": 3,
+        "source_original_SHA256": "82aa6675f05dbbc19da58c1057cefb290fdb8bd0b4174b5898bd0c8e220f04fc"
+      },
+      {
+        "label_original_metadata": "V29",
+        "publisher_item_id": "338006",
+        "publisher_volume": 3,
+        "source_original_SHA256": "d692c3c184ea13bf76087354857cd2f2485d581c7906feb91bbbe0014e161e84"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "147005",
+        "publisher_volume": 1,
+        "source_original_SHA256": "46a0c11ce179799db947f3a2ac0d3227203fccca09b0c1285e516d5e5aed94d9"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "147006",
+        "publisher_volume": 1,
+        "source_original_SHA256": "f59913de86df46438ad0d9bbdfd1e9f13ef7af566c0d32a0e027aa51d3d083aa"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "244009",
+        "publisher_volume": 2,
+        "source_original_SHA256": "6876f0514100d125b1bbf5617f00da591d3dd4a2dd23692774a9c67130f1d5c6"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "245001",
+        "publisher_volume": 2,
+        "source_original_SHA256": "9374cf06f2044e9d931b749fb5052968ea98cf798873f3c74b0f367689ea0500"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "347008",
+        "publisher_volume": 3,
+        "source_original_SHA256": "7f4043abcf4e795334ff47136ab2e812ae7929162b2136eb4597640c47cbd9c8"
+      },
+      {
+        "label_original_metadata": "W22",
+        "publisher_item_id": "347009",
+        "publisher_volume": 3,
+        "source_original_SHA256": "8cb40c0b00b8444a8778b0bf6fbc2c1e56955f281f56cf2703d817d678e931e3"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "147003",
+        "publisher_volume": 1,
+        "source_original_SHA256": "be513ade67375bb20edc253a26cac08daa93b0ce533e5fdb9d88d6a04bb67416"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "155001",
+        "publisher_volume": 1,
+        "source_original_SHA256": "2019955a7f5222d6186f624af7a77f9569f2d6d9022f0813b483dbc803a7da46"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "244007",
+        "publisher_volume": 2,
+        "source_original_SHA256": "e0c832bd9acc827109f5648f2b7cf78313ecf2d6828813f2db1490723de9ed31"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "251008",
+        "publisher_volume": 2,
+        "source_original_SHA256": "7f3c01c91a82a7c6f3b28b4c63ddf59bccdea7a2324e52936c713a2e85e949db"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "347006",
+        "publisher_volume": 3,
+        "source_original_SHA256": "34b3fc7b9f1e335f20bcc5a43ccb49a5929f368dfb48751bdf148e9077ddbb9c"
+      },
+      {
+        "label_original_metadata": "W24",
+        "publisher_item_id": "355007",
+        "publisher_volume": 3,
+        "source_original_SHA256": "9867310c577205e4f8fffe035eb7746dbbba3637ba32ec190b63c387b789f5ee"
+      }
+    ],
+    "source_independent_palaeography_gold": false,
+    "train_only_tuning": [
+      {
+        "alpha": 0.01,
+        "correct": 54,
+        "total": 56
+      },
+      {
+        "alpha": 0.1,
+        "correct": 53,
+        "total": 56
+      },
+      {
+        "alpha": 1,
+        "correct": 53,
+        "total": 56
+      },
+      {
+        "alpha": 10,
+        "correct": 53,
+        "total": 56
+      }
+    ],
+    "trained_on_real_source_images": true,
+    "true_manuscript_sign_accuracy": null,
+    "version": "W31-ORIGINAL-PHOTO-VS-PRINT-SOURCE-DOMAIN-LINEAR-RIDGE-v1",
+    "weighted_capability_points": 0
+  }
+}

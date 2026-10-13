@@ -121,3 +121,6 @@ Hard requirements:
 - when rights are uncertain, record metadata only and escalate rather than copying the asset.
 
 Execution agents may not downgrade a restriction or infer permission from public accessibility.
+
+## Owner CI testing override — 2026-10-13
+See `.github/CI_EXECUTION_POLICY.md`: existing Free CI credits are an authorized testing budget. Run necessary test/acceptance jobs, conserve duplicate runs, do not block work just to save credits, and never infer another project's budget. No paid upgrades or bypassed release/privacy gates.
